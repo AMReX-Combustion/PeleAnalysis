@@ -7,9 +7,19 @@ PRECISION     = DOUBLE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
 EBASE         = grad
-EBASE         = AmrDeriveCombinePlts
+#EBASE         = AmrDeriveCombinePlts
 #EBASE         = AmrDeriveIso
-NEEDS_f90_SRC = FALSE
+#EBASE         = stream
+#EBASE         = sampleStreamlines
+#EBASE         = streamScatter
+#EBASE         = streamSub
+#EBASE         = eltPathInt
+#EBASE         = curvature
+#EBASE         = surfMEFtoDAT
+#EBASE         = surfDATtoMEF
+#EBASE         = buildPMF
+EBASE         = subPlt
+#NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
