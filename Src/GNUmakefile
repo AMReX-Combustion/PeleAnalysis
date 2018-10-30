@@ -17,7 +17,8 @@ EBASE         = grad
 #EBASE         = curvature
 #EBASE         = surfMEFtoDAT
 #EBASE         = surfDATtoMEF
-EBASE         = buildPMF
+#EBASE         = buildPMF
+EBASE         = subPlt
 #NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
