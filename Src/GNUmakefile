@@ -13,9 +13,10 @@ EBASE         = grad
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
 #EBASE         = streamSub
-EBASE         = eltPathInt
-NEEDS_f90_SRC = FALSE
-#NEEDS_f90_SRC = TRUE
+#EBASE         = eltPathInt
+EBASE         = curvature
+#NEEDS_f90_SRC = FALSE
+NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
