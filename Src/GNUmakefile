@@ -7,8 +7,13 @@ PRECISION     = DOUBLE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
 EBASE         = grad
-EBASE         = AmrDeriveCombinePlts
+#EBASE         = AmrDeriveCombinePlts
 #EBASE         = AmrDeriveIso
+#EBASE         = stream
+#EBASE         = sampleStreamlines
+#EBASE         = streamScatter
+#EBASE         = streamSub
+EBASE         = eltPathInt
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
