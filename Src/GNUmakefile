@@ -16,7 +16,8 @@ EBASE         = grad
 #EBASE         = eltPathInt
 #EBASE         = curvature
 #EBASE         = surfMEFtoDAT
-EBASE         = surfDATtoMEF
+#EBASE         = surfDATtoMEF
+EBASE         = buildPMF
 #NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
