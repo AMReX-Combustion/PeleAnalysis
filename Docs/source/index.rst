@@ -7,6 +7,10 @@ PeleAnalysis documentation
    :maxdepth: 2
    :caption: Contents:
 
+   combinePlts
+   isosurface
+   
+
 README.rst:
 ^^^^^^^^^^^
 
