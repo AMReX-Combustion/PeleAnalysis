@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-streamTubeStats
-***************
+streamTubeStats - Stream tube statistics
+****************************************
 
 Given a set of streamlines that represents the bounds of triangular-wedge shaped volumes, gather statistics
 of the volumes.  Output the results as a triangulated surface MEF file, where for each triangle, the values at all three

@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-grad
-*****
+grad - Gradient of plotfile scalar
+**********************************
 
 Given a plotfile that contains a scalar quantity, compute the components of the gradient, and its
 magnitude, of that scalar at all cells in the solution.  Either create a new plotfile
