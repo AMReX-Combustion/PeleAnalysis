@@ -7,9 +7,17 @@ PeleAnalysis documentation
    :maxdepth: 2
    :caption: Contents:
 
+   buildPMF
    combinePlts
+   curvature
+   grad
    isosurface
-   
+   stream
+   streamSub
+   streamTubeStats
+   subPlt
+   surfMEFtools
+
 
 README.rst:
 ^^^^^^^^^^^
