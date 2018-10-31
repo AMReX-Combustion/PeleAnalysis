@@ -2,7 +2,11 @@
 PeleAnalysis
 ============
 
-A collection of standalone routines for processing AMReX plotfiles.
+this repository contains a collection of standalone routines for processing plotfiles created with the AMReX software framework for block-structure adaptive mesh refinement simulations.  AMReX is available at ::
+
+    https://github.com/AMReX-Codes/amrex
+
+In order to build these processing tools, you should clone or fork the amrex repository, and set the environment variable `AMREX_HOME` to point to the local folder where that is placed.  Then clone this repository, `cd Src` and edit the `GNUmakefile` to select which tool to build.  If AMReX is configured properly, a stand-alone executable will be built locally, based on the selected options, including spatial dimension (2 or 3), compiler choices, whether to build with MPI and/or OpenMP enabled, and whether to build a debugging or optimized version.  Note that some of the tools require building a companion `f90` source file - you must manually set the flag in the `GNUmakefile` accordingly.  More extensive documentation is available (see building instructions below).
 
 Contributions
 -------------
