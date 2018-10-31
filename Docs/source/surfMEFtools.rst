@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-surfMEF Tools
-*************
+surfMEF Tools - Manipulate MEF files
+************************************
 
 The MEF (Marc's element format) file format is hacked up data structure-on-disk, primarily intended to store
 a triangulated surface.  The data at the nodes (including the position, but also potentially other field

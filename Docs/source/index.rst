@@ -13,6 +13,7 @@ PeleAnalysis documentation
    grad
    isosurface
    stream
+   sampleStreamlines
    streamSub
    streamTubeStats
    subPlt

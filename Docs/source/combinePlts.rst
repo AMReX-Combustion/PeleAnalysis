@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-combinePlts
-***********
+combinePlts - Combine plotfiles
+*******************************
 
 Create a new plotfile that is composed of a set of components taken from each of
 two existing plotfiles.  The input plotfiles *must* have the same AMR hierarchy,

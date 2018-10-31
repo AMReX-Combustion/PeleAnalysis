@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-subPlt
-******
+subPlt - Subset plotfile
+************************
 
 Create a new plotfile from an original one by subsetting in space and/or component.  The spatial subsetting is
 specified by giving a bounding box in integer coordinates at the coarsest AMR level in the file (the default is

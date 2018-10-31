@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-stream
-******
+stream - Streamlines of plotfile vector
+***************************************
 
 Given a plotfile containing the components of a vector field (velocity, gradient, etc), and an MEF file
 containing a collection of "seed" points, create "streamlines" eminating from the seed points that are

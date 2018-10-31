@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-streamSub
-*********
+streamSub - Subset streamlines
+******************************
 
 Extract a subset of streamlines from a streamline file, based no a number of criteria (random sampling, physical
 location of the streamline seed point, etc). This process will fail to respect the connectivity of the streamlines
