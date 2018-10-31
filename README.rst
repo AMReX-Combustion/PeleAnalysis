@@ -2,7 +2,7 @@
 PeleAnalysis
 ============
 
-This repository contains a collection of standalone routines for processing plotfiles created with the AMReX software framework for block-structure adaptive mesh refinement simulations.  AMReX is available at ::
+This repository contains a collection of standalone routines for processing plotfiles created with the AMReX software framework for block-structured adaptive mesh refinement simulations.  AMReX is available at ::
 
     https://github.com/AMReX-Codes/amrex
 
