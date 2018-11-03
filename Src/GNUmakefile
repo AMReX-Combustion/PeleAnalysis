@@ -6,7 +6,7 @@ COMP          = gcc
 PRECISION     = DOUBLE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
-EBASE         = grad
+#EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
@@ -17,10 +17,10 @@ EBASE         = grad
 #EBASE         = curvature
 #EBASE         = surfMEFtoDAT
 #EBASE         = surfDATtoMEF
-#EBASE         = buildPMF
+EBASE         = buildPMF
 #EBASE         = subPlt
-#NEEDS_f90_SRC = FALSE
-NEEDS_f90_SRC = TRUE
+NEEDS_f90_SRC = FALSE
+#NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 

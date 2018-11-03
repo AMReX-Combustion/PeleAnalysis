@@ -1,14 +1,8 @@
-
-#include <cstdio>
-#include <fstream>
-#include <iomanip>
-#include <vector>
-#include <string>
-
 #include <AMReX_Utility.H>
 #include <AMReX_ParallelDescriptor.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_ArrayLim.H>
+#include <AMReX_Print.H>
 
 using namespace amrex;
 
@@ -41,6 +35,40 @@ void makeRoutine(std::vector<Vector<std::string> >& X,
                  std::string&                      routineName,
                  std::string&                      fileName);
 
+int findIndex(const std::vector<std::string>& tokens, const std::string& str)
+{
+  int result = -1;
+  for (int i=0; i<tokens.size() && result<0; ++i) {
+    if (tokens[i] == str) result = i;
+  }
+  return result;
+}
+
+std::string ReplaceString(const std::string source_string,
+                          const std::string old_substring,
+                          const std::string new_substring)
+{
+    // Can't replace nothing.
+    if (old_substring.empty())
+        return source_string;
+
+    // Find the first occurrence of the substring we want to replace.
+    size_t substring_position = source_string.find(old_substring);
+
+    // If not found, there is nothing to replace.
+    if (substring_position == std::string::npos)
+        return source_string;
+
+    // Return the part of the source string until the first occurance of
+    // the old substring + the new replacement substring + the result of the same function on the remainder.
+    return source_string.substr(0,substring_position) +
+      new_substring + ReplaceString(source_string.substr(substring_position+ old_substring.length(),
+                                                         source_string.length()
+                                                         - (substring_position + old_substring.length())),
+                                    old_substring,
+                                    new_substring);
+}
+
 int
 main (int   argc,
       char* argv[])
@@ -52,73 +80,177 @@ main (int   argc,
     if (pp.contains("help"))
         PrintUsage(argv[0]);
 
-    std::string premixfile;   pp.get("premixfile",premixfile);
-    int Nspec=-1; pp.get("Nspec",Nspec);
-    const int Nvals = Nspec + 4;
+    std::string premixfile = "";   pp.query("premixfile",premixfile);
+    std::string chem1Dfile = "";   pp.query("chem1Dfile",chem1Dfile);
+
+    bool use_premix = (premixfile != "");
+    bool use_chem1D = (chem1Dfile != "");
+
+    if ( (!use_premix && !use_chem1D) || (use_premix && use_chem1D)) {
+      Abort("Must specific EITHER a premix or chem1D file");
+    }
+    
     std::string outfile="interp.f"; pp.query("outfile",outfile);
     std::string routineName="pmf"; pp.query("routineName",routineName);
 
-    const std::string TWOPNT("TWOPNT");
-    const std::string FINAL("FINAL");
     std::vector<Vector<std::string> > X;
+    if (use_premix)
+    {
+      int Nspec=-1; pp.get("Nspec",Nspec);
+      const int Nvals = Nspec + 4;
+      
+      const std::string TWOPNT("TWOPNT");
+      const std::string FINAL("FINAL");
 
-    std::cout << "Reading data from " << premixfile << "..." << std::endl;
-    std::ifstream is(premixfile.c_str(),std::ios::in);
-    if (!is.good())
+      std::cout << "Reading data from " << premixfile << "..." << std::endl;
+      std::ifstream is(premixfile.c_str(),std::ios::in);
+      if (!is.good())
         amrex::Abort(std::string((std::string("File ") + premixfile +
-                                   std::string(" not opened"))).c_str());
-    std::string line;
-    std::getline(is,line);
+                                  std::string(" not opened"))).c_str());
+      std::string line;
+      std::getline(is,line);
 
-    while (line.size()==0)
-    {
+      while (line.size()==0)
+      {
         std::getline(is,line);
-    }
+      }
 
-    bool inData = false;
-    bool finalDataSetRead = false;
-    while (is.good() && !finalDataSetRead)
-    {
+      bool inData = false;
+      bool finalDataSetRead = false;
+      while (is.good() && !finalDataSetRead)
+      {
         std::getline(is,line);
 
         std::vector<std::string> tokens;
 
         if (line.size() != 0)
-            tokens = Tokenize(line,std::string(" :"));
+          tokens = Tokenize(line,std::string(" :"));
 
         // In data, first value is integer pt number
         if (inData)
         {
-            if (tokens.size() == Nvals + 1)
-            {
-                Vector<std::string> vals(Nvals);
-                for (int i=0; i<Nvals; ++i)
-                    vals[i] = tokens[1+i];
-                X.push_back(vals);
-            }
-            else
-            {
-                inData == false;
-            }
+          if (tokens.size() == Nvals + 1)
+          {
+            Vector<std::string> vals(Nvals);
+            for (int i=0; i<Nvals; ++i)
+              vals[i] = tokens[1+i];
+            X.push_back(vals);
+          }
+          else
+          {
+            inData = false;
+          }
         }
 
         if ((tokens.size() == Nvals))
         {
-            X.clear();
-            inData = true;
+          X.clear();
+          inData = true;
         }
 
         if ((tokens.size() == Nvals + 1) && (tokens[0] == std::string("X")))
         {
-            amrex::Abort("In the data");
-            X.clear();
-            inData = true;
+          amrex::Abort("In the data");
+          X.clear();
+          inData = true;
         }
 
         if (tokens.size()>=2 && tokens[0] == std::string("Total") && tokens[1] == std::string("CPUtime"))
-            finalDataSetRead = true;
+          finalDataSetRead = true;
+      }
+      std::cout << "Read " << X.size() << " values" << std::endl;
     }
-    std::cout << "Read " << X.size() << " values" << std::endl;
+    else
+    {
+      std::ifstream is(chem1Dfile.c_str(),std::ios::in);
+      if (!is.good())
+        amrex::Abort(std::string((std::string("File ") + premixfile +
+                                  std::string(" not opened"))).c_str());
+
+      int nPoints = -1;
+      int nVars = -1;
+      std::string line;
+
+      // Find some integers in the header, the first in the list does not
+      //  indicate an integer, but rather syas to stop processing the header
+      Vector<std::string> str = {"FILE_STRUCTURE_COLUMNS_CONTAINING",
+                                 "NUMBER_OF_GRIDPOINTS",
+                                 "NUMBER_OF_VARIABLES",
+                                 "NUMBER_OF_SPECIES"};
+      std::map<std::string,int> res;
+
+      int MassflowComp = -1;
+      int Tcomp = -1;
+      int Rcomp = -1;
+      int Nspec = -1;
+
+      {
+        bool stopFound = false;
+        std::getline(is,line);
+        while (is.good() && !stopFound)
+        {
+          auto tokens = Tokenize(line,"[] ");
+          if (tokens.size() > 0) {
+            if (tokens[0] == str[0]) {
+              stopFound = true;
+            }
+            else
+            {
+              for (int i=1; i<str.size(); ++i) {
+                if (tokens[0] == str[i]) {
+                  is >> res[str[i]];
+                }
+              }
+            }
+          }
+          if (!stopFound) 
+            std::getline(is,line);
+        }
+
+        nPoints = res["NUMBER_OF_GRIDPOINTS"];
+        nVars = res["NUMBER_OF_VARIABLES"];
+        Nspec = res["NUMBER_OF_SPECIES"];
+
+        AMREX_ALWAYS_ASSERT(nPoints > 0);
+        AMREX_ALWAYS_ASSERT(nVars > 0);
+        AMREX_ALWAYS_ASSERT(Nspec > 0);
+        
+        std::getline(is,line);
+        auto tokens = Tokenize(line," ");
+        
+        // Print() << "Species names: ";
+        // for (int i=0; i<Nspec; ++i) {
+        //   Print() << tokens[2+i] << " ";
+        // }
+        // Print() << std::endl;
+
+        MassflowComp = -1;
+        Tcomp = findIndex(tokens,"Temp");
+        Rcomp = findIndex(tokens,"Density");
+        MassflowComp  = findIndex(tokens,"Massflow");
+      }
+
+      X.resize(nPoints);
+      for (int i=0; i<nPoints; ++i) {
+        std::getline(is,line);
+
+        line = ReplaceString(line,"E+","D+");
+        line = ReplaceString(line,"E-","D-");
+        
+        auto tokens = Tokenize(line," ");
+        AMREX_ALWAYS_ASSERT(tokens.size() == nVars + 2); // #, X, nVars
+
+        // Set X vector from token data
+        X[i].resize(Nspec + 4);
+        X[i][0] = tokens[1]; // X
+        X[i][1] = tokens[Tcomp];
+        X[i][2] = std::to_string(std::stod(tokens[MassflowComp]) / std::stod(tokens[Rcomp]));
+        X[i][3] = tokens[Rcomp];
+        for (int j=0; j<Nspec; ++j) {
+          X[i][4+j] = tokens[j+2];
+        }
+      }
+    }
 
     makeRoutine(X,routineName,outfile);
     amrex::Finalize();
