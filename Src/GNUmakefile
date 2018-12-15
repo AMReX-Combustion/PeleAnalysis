@@ -17,8 +17,10 @@ USE_OMP       = FALSE
 #EBASE         = curvature
 #EBASE         = surfMEFtoDAT
 #EBASE         = surfDATtoMEF
-EBASE         = buildPMF
+#EBASE         = buildPMF
 #EBASE         = subPlt
+EBASE         = conditionalMean
+#EBASE         = jpdf
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 

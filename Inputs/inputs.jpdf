@@ -1,0 +1,5 @@
+output_gnuplot=1
+output_matlab=1
+output_fab=1
+vars= temp Y(CH4)
+nBins=128
