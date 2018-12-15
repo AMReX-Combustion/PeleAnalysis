@@ -8,10 +8,12 @@ PeleAnalysis documentation
    :caption: Contents:
 
    buildPMF
+   conditionalMean
    combinePlts
    curvature
    grad
    isosurface
+   jpdf
    stream
    sampleStreamlines
    streamSub
