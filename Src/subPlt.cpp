@@ -152,7 +152,7 @@ main (int   argc,
     }
 
     // Write out the subregion pltfile
-    WritePlotFile(data_sub,amrData,outfile,verbose,names);
+    WritePlotFile(data_sub,subboxes,amrData,outfile,verbose,names);
 
     Finalize();
     return 0;
