@@ -82,7 +82,7 @@ main (int   argc,
         pp.query("sComp",sComp);
         int nComp = amrData.NComp();
         pp.query("nComp",nComp);
-        BL_ASSERT(sComp+nComp < amrData.NComp());
+        BL_ASSERT(sComp+nComp <= amrData.NComp());
         comps.resize(nComp);
         for (int i=0; i<nComp; ++i)
             comps[i] = sComp + i;
