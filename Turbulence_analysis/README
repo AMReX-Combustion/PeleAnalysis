@@ -1,0 +1,71 @@
+#############################################
+####          Turbulence analysis        ####
+#############################################
+
+Authors: John Wakefield (University of Michigan)
+         Emmanuel Motheau (LBNL-CCSE)
+
+Last update: March 2019
+
+This purpose of this package of scripts is to perform a temporal and spectral analysis of simulations.
+Note that this package has been developed to post-process the HIT simulations from the PeleC code regression test case.
+This tets case writes a file ic.txt that contains several physical variables used to perform the non-dimentionalisation.
+For a more general use of the present package of scripts, the user has to adapt the reading of the file ic.txt.
+
+##############
+How to install
+
+
+FIRST, you must intall:
+
+* The lastest yt distribution:
+https://yt-project.org/
+
+* FFTW2 (FFTW3 is not supported) with MPI support:
+http://www.fftw.org/
+
+This installation should work fine with:
+./configure --enable-mpi
+make
+make install
+
+SECOND, you must compile (in 3D amd with MPI support)
+
+* AugmentPlotfile from AMReX tools, located in 
+/amrex/Tools/C_util/AugmentPlotfile
+
+* AmrDeriveSpectrum
+https://github.com/AMReX-Astro/AmrDeriveSpectrum
+
+this one is tricky, you have to define some environement variables to
+AMREX_HOME
+MPI_HOME
+FFTW2_HOME
+
+for me, these ones works:
+export MPI_HOME=/usr/lib/mpich
+export USRLIB=/usr/lib
+export FFTW2_HOME=/usr/local/
+
+#############
+How to use
+
+* Prepare a directory containing all your plotfiles (plt******) and the ic.txt file
+* Just run ./post.sh NAME_OF_DIRECTORY/ 1
+
+The script should go in the directory, update the plotfiles with additional variables like vorticity and divergence (we do that with AMReX to save time for big plotfiles), compute some physical variables and their temporal evolution, and then perform the spectral analysis.
+
+The integer 1 means that we want the script of launch AugmentPlotfile to create vorticity and divergence data. This step may be time consuming, so if it has already been done previously, setting the integer to 0 will skip this part.
+
+Note that in post.sh, some informations have to be provided by the user
+* the path to the external tools:
+exec_AugmentPlotfile='AugmentPlotfile3d.gnu.MPI.ex'
+exec_DeriveSpectrum='AmrDeriveSpectrum3d.gnu.MPI.ex'
+
+* nprocs and the run command on lines 27 and 30  has to be adapted to your configuration
+
+##########
+How to post-process
+
+All data are gathered in CSV files in your directory. More data are available in each plotfile directory.
+ 
