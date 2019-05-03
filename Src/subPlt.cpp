@@ -90,6 +90,7 @@ main (int   argc,
 
     Vector< Vector<int> > compsNEW = contigLists(comps);
     int finestLevel = amrData.FinestLevel(); pp.query("finestLevel",finestLevel);
+    AMREX_ALWAYS_ASSERT(finestLevel >= 0 && finestLevel<=amrData.FinestLevel());
     Box subbox = amrData.ProbDomain()[finestLevel];
     Vector<int> inBox;
 
