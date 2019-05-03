@@ -74,7 +74,7 @@ main (int   argc,
       char* argv[])
 {
     amrex::Initialize(argc,argv);
-
+    {
     ParmParse pp;
 
     if (pp.contains("help"))
@@ -253,6 +253,7 @@ main (int   argc,
     }
 
     makeRoutine(X,routineName,outfile);
+    }
     amrex::Finalize();
     return 0;
 }

@@ -65,7 +65,7 @@ main (int   argc,
       char* argv[])
 {
     Initialize(argc,argv);
-
+    {
     if (argc < 2)
         print_usage(argc,argv);
 
@@ -1070,7 +1070,7 @@ main (int   argc,
             } // var1
         } // IOProcessor
     }
-    
+    } 
     Finalize();
     return 0;
 }

@@ -94,7 +94,7 @@ main (int   argc,
       char* argv[])
 {
     BoxLib::Initialize(argc,argv);
-
+    {
     ParmParse pp;
 
     string infileL; pp.get("infileL",infileL);
@@ -179,7 +179,7 @@ main (int   argc,
     }
 
     write_iso(outfile,nodesOut,faceDataL,nEltsL,namesOut,labelL);
-
+    }
     BoxLib::Finalize();
     return 0;
 }

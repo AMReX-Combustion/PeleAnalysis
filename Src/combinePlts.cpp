@@ -34,7 +34,7 @@ main (int   argc,
       char* argv[])
 {
     amrex::Initialize(argc,argv);
-
+    {
     if (argc < 2)
         print_usage(argc,argv);
 
@@ -176,7 +176,7 @@ main (int   argc,
     
     bool verb = false;
     WritePlotFile(fileData,amrDataL,outfile,verb,names);
-
+    }
     amrex::Finalize();
     return 0;
 }

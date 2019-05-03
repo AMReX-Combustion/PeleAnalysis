@@ -39,7 +39,7 @@ main (int   argc,
         PrintUsage(argv[0]);
 
     Initialize(argc,argv);    
-
+    {
     ParmParse pp;
 
     if (pp.contains("help"))
@@ -153,7 +153,7 @@ main (int   argc,
 
     // Write out the subregion pltfile
     WritePlotFile(data_sub,subboxes,amrData,outfile,verbose,names);
-
+    }
     Finalize();
     return 0;
 }

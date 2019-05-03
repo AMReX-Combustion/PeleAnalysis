@@ -1,5 +1,3 @@
-#include "winstd.H"
-
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -36,44 +34,6 @@ write_iso(const std::string&    outfile,
           const vector<string>& names,
           const string&         label);
 
-vector<std::string>
-Tokenize (const std::string& instr, const std::string& separators)
-{
-    vector<char*> ptr;
-    //
-    // Make copy of line that we can modify.
-    //
-    char* line = new char[instr.size()+1];
-
-    (void) strcpy(line, instr.c_str());
-
-    char* token = 0;
-
-    if (!((token = strtok(line, separators.c_str())) == 0))
-    {
-        ptr.push_back(token);
-        while (!((token = strtok(0, separators.c_str())) == 0))
-            ptr.push_back(token);
-    }
-
-    vector<std::string> tokens(ptr.size());
-
-    for (int i = 1; i < ptr.size(); i++)
-    {
-        char* p = ptr[i];
-
-        while (strchr(separators.c_str(), *(p-1)) != 0)
-            *--p = 0;
-    }
-
-    for (int i = 0; i < ptr.size(); i++)
-        tokens[i] = ptr[i];
-
-    delete line;
-
-    return tokens;
-}
-
 static
 std::vector<std::string> parseVarNames(std::istream& is)
 {
@@ -106,7 +66,7 @@ main (int   argc,
       char* argv[])
 {
     BoxLib::Initialize(argc,argv);
-
+    {
     ParmParse pp;
 
     int verbose=0; pp.query("verbose",verbose);
@@ -170,7 +130,7 @@ main (int   argc,
     cout << "Writing " << outfile << endl;
 
     write_iso(outfile,nodesM,faceDataM,nEltsM,namesM,labelM);
-
+    }
     BoxLib::Finalize();
     return 0;
 }

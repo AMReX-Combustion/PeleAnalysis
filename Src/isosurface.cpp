@@ -1029,7 +1029,7 @@ main (int   argc,
       char* argv[])
 {
   amrex::Initialize(argc,argv);
-
+  {
   if (argc < 2)
     print_usage(argc,argv);
 
@@ -1682,7 +1682,7 @@ main (int   argc,
 #endif
 
   }
-
+  }
   amrex::Finalize();
   return 0;
 }
