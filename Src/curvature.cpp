@@ -13,6 +13,7 @@
 #include <AMReX_BLFort.H>
 
 using namespace amrex;
+//typedef StateDescriptor::BndryFunc BndryFunc;
 
 extern "C" {
     void pushvtog(const int* lo,  const int* hi,
@@ -22,7 +23,7 @@ extern "C" {
     void normalize(const int* lo,  const int* hi,
                    const Real *U, const int* U_lo, const int* U_hi,
                    Real* S, const int* S_lo, const int* S_hi,
-                   const Real* nmin, const Real* nmax);
+                   const Real* nmin, const Real* nmax, const Real* dx);
     void smooth(const int* lo,  const int* hi,
                 const Real *Tin, const int* Tin_lo, const int* Tin_hi,
                 Real *Tout, const int* Tout_lo, const int* Tout_hi);
@@ -59,11 +60,9 @@ getFileRoot(const std::string& infile)
 }
 
 void
-FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms, int lev,
+FillCFgrowCells(int refRatio, const BoxArray& fine_ba,Vector<Geometry*>& geoms, int lev,
                 MultiFab& crseSrc, int sComp, int nComp, int nGrow, MultiFab& growScr)
 {
-    int refRatio = amrd.RefRatio()[lev-1];
-    //const BoxArray cfBoxesCRSE = CFBoxes(BoxArray(fine_ba).coarsen(refRatio),nGrow,*geoms[lev-1]);
     const BoxArray cfBoxesCRSE = BoxArray(GetBndryCells(BoxArray(fine_ba).coarsen(refRatio),nGrow));
     const DistributionMapping dmScrCRSE(cfBoxesCRSE);
     MultiFab growScrCRSE(cfBoxesCRSE,dmScrCRSE,nComp,0);
@@ -84,8 +83,8 @@ FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms,
     Vector<BCRec> bc(1); // unused for pc_interp...
     int idummy1=0, idummy2=0;
     for (MFIter mfi(growScrFC);mfi.isValid();++mfi) {
-        pc_interp.interp(growScrCRSE[mfi],0,growScrFC[mfi],0,1,growScrFC[mfi].box(),
-                         refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2);
+      pc_interp.interp(growScrCRSE[mfi],0,growScrFC[mfi],0,1,growScrFC[mfi].box(),
+                       refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2,RunOn::Cpu);
     }    
     // Finally, build correct c-f boxes and copy-on-intersect from interp data
     const BoxArray cfBoxesFINE = BoxArray(GetBndryCells(fine_ba,nGrow));
@@ -99,7 +98,7 @@ main (int   argc,
       char* argv[])
 {
     amrex::Initialize(argc,argv);
-  
+    {
     // if (argc < 2)
     //    print_usage(argc,argv);
     
@@ -168,15 +167,20 @@ main (int   argc,
 
     const int idCst = 0;
     const int idVst = idCst + 1;
-    int nCompIn = idVst + BL_SPACEDIM;
+    int nCompIn = idVst;
 
     Vector<std::string> inVarNames(nCompIn);
     inVarNames[idCst] = plotVarNames[idC];
-    inVarNames[idVst+0] = "x_velocity";
-    inVarNames[idVst+1] = "y_velocity";
+    bool do_strain = false;
+    pp.query("do_strain",do_strain);
+    if (do_strain) {
+      nCompIn += BL_SPACEDIM;
+      inVarNames[idVst+0] = "x_velocity";
+      inVarNames[idVst+1] = "y_velocity";
 #if BL_SPACEDIM>2
-    inVarNames[idVst+2] = "z_velocity";
+      inVarNames[idVst+2] = "z_velocity";
 #endif
+    }
     Vector<int> destFillComps(nCompIn);
     for (int i=0; i<nCompIn; ++i)
         destFillComps[i] = i;    
@@ -221,15 +225,29 @@ main (int   argc,
     const int idProg = nCompIn;
     const int idSmProg = idProg + 1;
     const int idKm = idSmProg + 1;
+    int idSR = -1;
+    int nCompOut = 0;
 #if BL_SPACEDIM>2
     const int idKg = idKm + 1;
-    const int idSR = idKg + 1;
+    if (do_strain) {
+      idSR = idKg + 1;
+      nCompOut = idSR + 1;
+    }
+    else {
+      nCompOut = idKg + 1;
+    }
 #else
-    const int idSR = idKm + 1;
+    if (do_strain) {
+      idSR = idKm + 1;
+      nCompOut = idSR + 1;
+    }
+    else {
+      nCompOut = idKm + 1;
+    }
 #endif
-    int nCompOut = idSR + 1;
 
-    bool getStrainTensor = false; pp.query("getStrainTensor",getStrainTensor);
+    bool getStrainTensor = false;
+    if (do_strain) pp.query("getStrainTensor",getStrainTensor);
     int idROST=-1;
     if (getStrainTensor)
     {
@@ -264,7 +282,9 @@ main (int   argc,
 #if BL_SPACEDIM>2
     Print() << "   idKg:     " << idKg << '\n';
 #endif
-    Print() << "   idSR:     " << idSR << '\n';
+    if (do_strain) {
+      Print() << "   idSR:     " << idSR << '\n';
+    }
     
     RealBox rb(&(amrData.ProbLo()[0]),
                &(amrData.ProbHi()[0]));
@@ -284,6 +304,8 @@ main (int   argc,
         DistributionMapping dm(ba);
         state[lev] = new MultiFab(ba,dm,nCompOut,nGrow);
         const Vector<Real>& delta = amrData.DxLevel()[lev];
+        Real dxn[3];
+        for (int i=0; i<BL_SPACEDIM; ++i) dxn[i] = delta[i];
 
         // Get input state data onto intersection ba
         const int myNcompIsOne = 1; // gonna need this for fortran calls
@@ -302,7 +324,7 @@ main (int   argc,
             normalize(BL_TO_FORTRAN_BOX(box),
                       BL_TO_FORTRAN_N_ANYD(fab,idCst),
                       BL_TO_FORTRAN_N_ANYD(fab,idProg),
-                      &progMin,&progMax);
+                      &progMin,&progMax,dxn);
         }
 
         Print() << "Progress variable computed for level " << lev << std::endl;
@@ -314,7 +336,7 @@ main (int   argc,
         {
             MultiFab growScr; // Container in c-f grow cells, filled with interped coarse unsmoothed Progress value
             if (lev>0)
-                FillCFgrowCells(amrData,ba,geoms,lev,*state[lev-1],idSmProg,myNcompIsOne,nGrow,growScr);
+              FillCFgrowCells(amrData.RefRatio()[lev-1],ba,geoms,lev,*state[lev-1],idSmProg,myNcompIsOne,nGrow,growScr);
 
             MultiFab::Copy(*state[lev],*state[lev],idProg,idSmProg,myNcompIsOne,0); // initialize progress w/unsmoothed
 
@@ -411,9 +433,9 @@ main (int   argc,
         // Fix up fine-fine and periodic for scr
         scr.FillBoundary(0,myNcompIsOne,geoms[lev]->periodicity());
 
-        if (lev > 0)
+        if (lev > 0 && num_smooth_post>0)
         {
-            FillCFgrowCells(amrData,ba,geoms,lev,*state[lev-1],idKm,myNcompIsOne,nGrow,growScr);
+            FillCFgrowCells(amrData.RefRatio()[lev-1],ba,geoms,lev,*state[lev-1],idKm,myNcompIsOne,nGrow,growScr);
 
             // Get data into grow-free mf to allow parallel copy for grabbing c-f data
             for (MFIter mfi(scr); mfi.isValid(); ++mfi)
@@ -447,15 +469,17 @@ main (int   argc,
             MultiFab::Copy(scr,*state[lev],idKm,0,myNcompIsOne,0);
         }
 
-        Print() << "Filling velocity grow cells on level " << lev << std::endl;
-
-        // Fill boundary cells for velocity
-        // Do extrap to fill grow cells of scr, if lev>0 improve this with interp from coarse data
-        const int nCompVEL=BL_SPACEDIM;
-        const int nCompC=1;
-        const int Ccomp = idSmProg;
-        for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi)
+        if (do_strain)
         {
+          Print() << "Filling velocity grow cells on level " << lev << std::endl;
+
+          // Fill boundary cells for velocity
+          // Do extrap to fill grow cells of scr, if lev>0 improve this with interp from coarse data
+          const int nCompVEL=BL_SPACEDIM;
+          const int nCompC=1;
+          const int Ccomp = idSmProg;
+          for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi)
+          {
             const Box& box = mfi.validbox();
             pushvtog(BL_TO_FORTRAN_BOX(box),
                      BL_TO_FORTRAN_BOX(dbox),
@@ -465,16 +489,16 @@ main (int   argc,
                      BL_TO_FORTRAN_BOX(dbox),
                      BL_TO_FORTRAN_N_ANYD((*state[lev])[mfi],Ccomp),
                      &nCompC);
-        }
-        // Fix up fine-fine and periodic for scr
-        state[lev]->FillBoundary(idVst,nCompVEL,geoms[lev]->periodicity());
-        state[lev]->FillBoundary(Ccomp,nCompC,geoms[lev]->periodicity());
+          }
+          // Fix up fine-fine and periodic for scr
+          state[lev]->FillBoundary(idVst,nCompVEL,geoms[lev]->periodicity());
+          state[lev]->FillBoundary(Ccomp,nCompC,geoms[lev]->periodicity());
 
-        Print() << "Computing tangential strain on level " << lev << std::endl;
+          Print() << "Computing tangential strain on level " << lev << std::endl;
 
-        FArrayBox nWork2;
-        for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi)
-        {
+          FArrayBox nWork2;
+          for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi)
+          {
             const Box& box = mfi.validbox();
             const Box nodebox = amrex::surroundingNodes(box);
             nWork2.resize(nodebox,BL_SPACEDIM);
@@ -485,11 +509,11 @@ main (int   argc,
                        BL_TO_FORTRAN_N_ANYD(s,idSR),
                        BL_TO_FORTRAN_ANYD(nWork2),
                        delta.dataPtr());
-        }
+          }
 
 
-        if (getStrainTensor)
-        {
+          if (getStrainTensor)
+          {
             Print() << "Filling rate of strain on level " << lev << std::endl;
 
             const int nCompV=BL_SPACEDIM;
@@ -510,7 +534,7 @@ main (int   argc,
 
             if (lev > 0)
             {
-                FillCFgrowCells(amrData,ba,geoms,lev,*state[lev-1],idVst,nCompV,nGrow,growScr);
+                FillCFgrowCells(amrData.RefRatio()[lev-1],ba,geoms,lev,*state[lev-1],idVst,nCompV,nGrow,growScr);
 
                 // Get data into grow-free mf to allow parallel copy for grabbing c-f data
                 MultiFab bigMF1(BoxArray(ba).grow(nGrow),dm,nCompV,0);
@@ -533,6 +557,7 @@ main (int   argc,
                              BL_TO_FORTRAN_N_ANYD(s,idROST),
                              delta.dataPtr());
             }
+          }
         }
 
         if (getProgGrad)
@@ -557,13 +582,14 @@ main (int   argc,
 
             if (lev > 0)
             {
-                FillCFgrowCells(amrData,ba,geoms,lev,*state[lev-1],idCst,nCompCG,nGrow,growScr);
-                
+                FillCFgrowCells(amrData.RefRatio()[lev-1],ba,geoms,lev,*state[lev-1],idCst,nCompCG,nGrow,growScr);
+
                 // Get data into grow-free mf to allow parallel copy for grabbing c-f data
                 MultiFab bigMFG(BoxArray(ba).grow(nGrow),dm,nCompCG,0);
                 for (MFIter mfi(scr); mfi.isValid(); ++mfi)
                     bigMFG[mfi].copy((*state[lev])[mfi],idCst,0,nCompCG); // get valid data, and extrap grow data
-                
+
+                const int nCompC=1;
                 bigMFG.copy(growScr,0,0,nCompC); // Overwrite c-f with preferred c-f interp data
             
                 for (MFIter mfi(bigMFG); mfi.isValid(); ++mfi)
@@ -593,7 +619,7 @@ main (int   argc,
 #if BL_SPACEDIM>2
     nnames[idKg] = "GaussianCurvature_" + progressName;
 #endif
-    nnames[idSR] = "StrainRate_" + progressName;
+    if (do_strain) nnames[idSR] = "StrainRate_" + progressName;
 
     if (getStrainTensor)
     {
@@ -642,7 +668,7 @@ main (int   argc,
         Print() << "Writing new data to " << outfile << std::endl;
         WritePlotFile(state,amrData,outfile,verb,nnames);
     }
-
+    }
     amrex::Finalize();
     return 0;
 }

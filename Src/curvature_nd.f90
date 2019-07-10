@@ -27,19 +27,25 @@ contains
       
   end subroutine pushvtog
 
-  subroutine normalize(lo, hi, U, U_lo, U_hi, S, S_lo, S_hi, nmin, nmax) bind(C,name='normalize')
+  subroutine normalize(lo, hi, U, U_lo, U_hi, S, S_lo, S_hi, nmin, nmax, dx) bind(C,name='normalize')
     implicit none
     integer, intent(in) :: lo(3),  hi(3)
     integer, intent(in) :: U_lo(3), U_hi(3), S_lo(3), S_hi(3)
     real(amrex_real), intent(in   ) :: U(U_lo(1):U_hi(1),U_lo(2):U_hi(2),U_lo(3):U_hi(3))
     real(amrex_real), intent(inout) :: S(S_lo(1):S_hi(1),S_lo(2):S_hi(2),S_lo(3):S_hi(3))
-    real(amrex_real) :: nmin, nmax, fac
+    real(amrex_real) :: nmin, nmax, dx(3), fac
+    real(amrex_real) :: x, y, z
     integer :: i,j, k
     fac = 1._amrex_real / (nmax - nmin)
     do k=lo(3),hi(3)
        do j=lo(2),hi(2)
           do i=lo(1),hi(1)
              S(i,j,k) = ( U(i,j,k) - nmin ) * fac
+             ! uncomment to replace T with a field of r for testing
+             !x = (i+0.5)*dx(1)
+             !y = (j+0.5)*dx(2)
+             !z = (k+0.5)*dx(3)
+             !S(i,j,k) = SQRT((x-.015)**2 + (y-.015)**2 + (z-.015)**2 )
           end do
        end do
     end do
@@ -98,7 +104,7 @@ contains
              do i = lo(1),hi(1)
                 Tx = halfDxInv(1)*(T(i+1,j,k) - T(i-1,j,k))
                 Ty = halfDxInv(2)*(T(i,j+1,k) - T(i,j-1,k))
-                Tz = halfDxInv(3)*(T(i,j,k+1) - T(i,j,k-1))                
+                Tz = halfDxInv(3)*(T(i,j,k+1) - T(i,j,k-1))
                 Txx = dxInvSq(1)*(T(i+1,j,k) - 2*T(i,j,k) + T(i-1,j,k))
                 Tyy = dxInvSq(2)*(T(i,j+1,k) - 2*T(i,j,k) + T(i,j-1,k))
                 Tzz = dxInvSq(3)*(T(i,j,k+1) - 2*T(i,j,k) + T(i,j,k-1))
@@ -130,6 +136,11 @@ contains
                      - ( Tx*(Tx*Txx + Ty*Txy + Tz*Txz) &
                      +   Ty*(Tx*Txy + Ty*Tyy + Tz*Tyz) &
                      +   Tz*(Tx*Txz + Ty*Tyz + Tz*Tzz) )/mag**2 )/mag
+
+                ! uncomment to get back average radius of curvature instead of mean curvature
+                !curv(i,j,k) = sign( max(abs(curv(i,j,k)),1.e-12), curv(i,j,k))
+                !curv(i,j,k) = -1.d0 / curv(i,j,k)
+                
              enddo
           enddo
        enddo
