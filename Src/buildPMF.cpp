@@ -82,13 +82,18 @@ main (int   argc,
 
     std::string premixfile = "";   pp.query("premixfile",premixfile);
     std::string chem1Dfile = "";   pp.query("chem1Dfile",chem1Dfile);
+    std::string canterafile = "";   pp.query("canterafile",canterafile);
 
     bool use_premix = (premixfile != "");
     bool use_chem1D = (chem1Dfile != "");
+    bool use_cantera = (canterafile != "");
 
-    if ( (!use_premix && !use_chem1D) || (use_premix && use_chem1D)) {
-      Abort("Must specific EITHER a premix or chem1D file");
-    }
+    int filetypeCount=0;
+    if (use_premix) filetypeCount++;
+    if (use_chem1D) filetypeCount++;
+    if (use_cantera) filetypeCount++;
+    if (filetypeCount!=1)
+      Abort("Must specific either a premix, chem1D or cantera file");
     
     std::string outfile="interp.f"; pp.query("outfile",outfile);
     std::string routineName="pmf"; pp.query("routineName",routineName);
@@ -160,7 +165,7 @@ main (int   argc,
       }
       std::cout << "Read " << X.size() << " values" << std::endl;
     }
-    else
+    else if (use_chem1D)
     {
       std::ifstream is(chem1Dfile.c_str(),std::ios::in);
       if (!is.good())
@@ -250,7 +255,105 @@ main (int   argc,
           X[i][4+j] = tokens[j+2];
         }
       }
+    } else if (use_cantera) {
+        // aja hack
+        int Nspec=-1; pp.get("Nspec",Nspec);
+	//
+	// Read data
+	//
+        std::cout << "Reading " << canterafile << std::endl;
+	std::ifstream is(canterafile.c_str());
+        std::string line;
+	std::vector<std::string> tokens;
+
+	int nPts(0);
+
+	// header
+	std::getline(is,line);
+	if (line.size() != 0) {
+	  tokens = Tokenize(line,std::string(" ,"));
+	  std::cout << "tokens = " << tokens.size() << std::endl;
+	}
+
+	do {
+	  std::getline(is,line);
+	  nPts++;
+	} while (!is.eof());
+	nPts--;  // empty last line
+
+	std::cout << "nPts = " << nPts << std::endl;
+	
+	// destination
+	// Nvals = 4 + nSpec: x / T / vel / rho / spec
+	// stuff state into a fab
+	X.resize(nPts);
+
+	// source
+	// 5 + nSpec: x / u / V / T / rho / X
+	int nEntries=5+Nspec;
+	int iZ=0;
+	int iU=iZ+1;
+	int iV=iU+1; // ???
+	int iT=iV+1;
+	int iR=iT+1;
+	int iX=iR+1;
+	Real vals[nEntries];
+
+	// reset and read off header
+	is.clear();
+	is.seekg(0);
+	std::getline(is,line);
+
+	// loop over number of points and corresponding box
+	for (int i=0; i<nPts; i++) {
+
+	  // read line of data
+	  std::getline(is,line);
+
+	  // sanity check
+	  if (line.size() == 0)
+	    Abort("Empty line/EOF reading 1d data");
+	  
+	  // tokenize
+	  tokens = Tokenize(line,std::string(","));
+
+	  // if good, populate data
+	  char tmpStr[32];
+	  if (tokens.size()==nEntries) {
+	    X[i].resize(Nspec + 4);
+	    
+	    for (int j=0; j<nEntries; j++) {
+	      vals[j]=atof(tokens[j].c_str());
+	    }
+	    // space (m -> cm)
+	    sprintf(tmpStr,"%.12e",vals[iZ] * 1.e2);
+	    X[i][0] = tmpStr;
+	    // temp
+	    sprintf(tmpStr,"%.12e",vals[iT]);
+	    X[i][1] = tmpStr;
+	    // vel (m/s -> cm/s)
+	    sprintf(tmpStr,"%.12e",vals[iU] * 1.e2);
+	    X[i][2] = tmpStr;
+	    // density (kg/m^3 -> g/cm^3)
+	    sprintf(tmpStr,"%.12e",vals[iR] * 1.e-3);
+	    X[i][3] = tmpStr;
+	    // spec
+	    for (int n=0; n<Nspec; n++) {
+	      sprintf(tmpStr,"%.12e",vals[iX+n]);
+	      X[i][4+n]=tmpStr;
+	    }
+	    
+	  } else {
+	    std::cout << "Expecting " << nEntries 
+		      << " entries, but found " << tokens.size() << std::endl;
+	    std::cout << line << std::endl;
+	    Abort("Wrong number of entries reading 1d data");
+	  }
+
+	}
+
     }
+
 
     makeRoutine(X,routineName,outfile);
     }
