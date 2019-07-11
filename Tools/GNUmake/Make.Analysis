@@ -1,0 +1,143 @@
+CEXE_sources += $(EBASE).cpp
+
+EOS_HOME       = $(PELE_PHYSICS_HOME)/Eos
+REACTIONS_HOME = $(PELE_PHYSICS_HOME)/Reactions
+TRAN_HOME      = $(PELE_PHYSICS_HOME)/Transport
+
+# EXTERN_CORE is simply a list of the directories we use in Eos, Reactions, Transport and Util
+# this list will be searched for runtime parameters
+EXTERN_CORE ?=
+
+include $(AMREX_HOME)/Tools/GNUMake/Make.defs
+
+all: $(executable) 
+	$(SILENT) $(RM) AMReX_buildInfo.cpp
+	@echo SUCCESS
+
+# EOS
+EOS_PATH := $(EOS_HOME)/$(strip $(Eos_dir))
+include $(EOS_HOME)/Make.package
+include $(EOS_PATH)/Make.package
+EXTERN_CORE       += $(EOS_HOME) $(EOS_PATH)
+INCLUDE_LOCATIONS += $(EOS_HOME) $(EOS_PATH)
+VPATH_LOCATIONS   += $(EOS_HOME) $(EOS_PATH)
+ifeq ($(Eos_dir), Fuego)
+  TRANSPORT_TYPE := IDEAL_GAS
+else
+  ifeq ($(Eos_dir), GammaLaw)
+    TRANSPORT_TYPE := IDEAL_GAS
+  else
+    TRANSPORT_TYPE := REAL_GAS
+  endif
+endif
+
+# Reactions
+REACTIONS_PATH := $(REACTIONS_HOME)/$(strip $(Reactions_dir))
+include $(REACTIONS_HOME)/Make.package
+include $(REACTIONS_PATH)/Make.package
+EXTERN_CORE       += $(REACTIONS_HOME) $(REACTIONS_PATH)
+INCLUDE_LOCATIONS += $(REACTIONS_HOME) $(REACTIONS_PATH)
+VPATH_LOCATIONS   += $(REACTIONS_HOME) $(REACTIONS_PATH)
+ifdef Chemistry_Model
+  CHEM_HOME = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models/$(Chemistry_Model)
+  CHEM_ALL  = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models
+  VPATH_LOCATIONS += $(CHEM_HOME) $(CHEM_ALL)
+  Bpack += $(CHEM_HOME)/Make.package \
+           $(CHEM_ALL)/Make.package
+  Blocs += $(CHEM_HOME) $(CHEM_ALL)
+
+  CHEM_HOME1 = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism
+  VPATH_LOCATIONS += $(CHEM_HOME1)
+  Bpack += $(CHEM_HOME1)/Make.package
+  Blocs += $(CHEM_HOME1)
+endif
+
+# Transport
+TRAN_PATH := $(TRAN_HOME)/$(strip $(Transport_dir))
+include $(TRAN_HOME)/Make.package
+include $(TRAN_PATH)/Make.package
+EXTERN_CORE       += $(TRAN_HOME) $(TRAN_PATH)
+INCLUDE_LOCATIONS += $(TRAN_HOME) $(TRAN_PATH)
+VPATH_LOCATIONS   += $(TRAN_HOME) $(TRAN_PATH)
+USE_FUEGO = FALSE
+ifeq ($(Transport_dir), EGLib)
+  USE_FUEGO = TRUE
+  DEFINES += -DEGLIB_TRANSPORT
+  Bpack   += $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Make.package \
+             $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation/Make.package
+
+  Blocs   += $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism \
+             $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation
+endif
+ifeq ($(Transport_dir), Simple)
+  DEFINES += -DSIMPLE_TRANSPORT
+  Bpack   += $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Make.package \
+             $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation/Make.package
+
+  Blocs   += $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism \
+             $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation
+endif
+ifeq ($(Transport_dir), Constant)
+  DEFINES += -DCONSTANT_TRANSPORT
+endif
+
+Bdirs   := $(PELE_ANALYSIS_HOME)/Tools/Util
+Pdirs   := Base Boundary AmrCore Extern/amrdata
+
+Bpack	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
+Blocs	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
+
+Bpack	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
+Blocs	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir))
+
+$(info $${Blocs} is [${Blocs}])
+
+include $(Bpack)
+
+INCLUDE_LOCATIONS += $(Blocs)
+VPATH_LOCATIONS   += $(Blocs)
+
+CEXE_sources += AppendToPlotFile.cpp WritePlotFile.cpp
+CEXE_headers += AppendToPlotFile.H   WritePlotFile.cpp
+INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_util
+VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
+
+# runtime parameter support for extern/ routines
+f90EXE_sources += extern.f90
+
+EXTERN_TEMPLATE := $(PELE_ANALYSIS_HOME)/Tools/Util/extern_probin.template
+
+EXTERN_PARAMETERS := $(shell $(AMREX_HOME)/Tools/F_scripts/findparams.py $(EXTERN_CORE))
+
+extern.f90: $(EXTERN_PARAMETERS) $(EXTERN_TEMPLATE)
+	$(AMREX_HOME)/Tools/F_scripts/write_probin.py \
+           -t $(EXTERN_TEMPLATE) -o extern.f90 -n extern \
+           --pa "$(EXTERN_PARAMETERS)" 
+
+# job_info support
+CEXE_sources += AMReX_buildInfo.cpp
+CEXE_headers += $(AMREX_HOME)/Tools/C_scripts/AMReX_buildInfo.H
+INCLUDE_LOCATIONS +=  $(AMREX_HOME)/Tools/C_scripts
+
+
+MNAMES := EOS=$(EOS_PATH) REACTIONS=$(REACTIONS_PATH)
+MNAMES += TRANSPORT=$(TRAN_HOME)
+ifdef Chemistry_Model
+  MNAMES += CHEMISTRY=$(Chemistry_Model)
+endif
+
+AMReX_buildInfo.cpp:
+	$(AMREX_HOME)/Tools/C_scripts/makebuildinfo_C.py \
+          --amrex_home "$(AMREX_HOME)" \
+          --COMP "$(COMP)" --COMP_VERSION "$(COMP_VERSION)" \
+          --FCOMP "$(FCOMP)" --FCOMP_VERSION "$(FCOMP_VERSION)" \
+          --MODULES "$(MNAMES)" \
+          --GIT "$(TOP) $(AMREX_HOME) $(PELE_PHYSICS_HOME)"
+
+include $(AMREX_HOME)/Tools/GNUMake/Make.rules
+
+clean::
+	$(SILENT) $(RM) extern.f90
+	$(SILENT) $(RM) AMReX_buildInfo.cpp
+
+print-%: ; @echo $* is $($*) ; $(SILENT) $(RM) AMReX_buildInfo.cpp
