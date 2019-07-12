@@ -145,10 +145,10 @@ main (int   argc,
             Yl[n] = Y(i,j,k,idYlocal+n);
           }
           get_transport_coeffs(b, b,
-                               Yl, b, b,
+                               Yl,                 b, b,
                                &T(i,j,k,idTlocal), b, b,
                                &R(i,j,k,idRlocal), b, b,
-                               rhoDl, b, b,
+                               rhoDl,              b, b,
                                &D(i,j,k,idMuout),  b, b,
                                &D(i,j,k,idXiout),  b, b,
                                &D(i,j,k,idLamout), b, b);
