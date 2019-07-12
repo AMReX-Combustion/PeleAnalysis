@@ -63,7 +63,7 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    init_network();
+    init_mech();
 
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
