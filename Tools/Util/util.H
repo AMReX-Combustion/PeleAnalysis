@@ -5,6 +5,10 @@
 
 namespace analysis_util
 {
-  amrex::Vector<std::string> GetSpecNames ();
+  int NumElements();
+  int NumSpecies();
+  
+  amrex::Vector<std::string> GetElemNames();
+  amrex::Vector<std::string> GetSpecNames();
 }
 #endif

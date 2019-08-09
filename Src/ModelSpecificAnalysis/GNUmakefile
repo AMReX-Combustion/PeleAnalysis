@@ -14,6 +14,7 @@ USE_MPI    = FALSE
 
 EBASE = plotYtoX
 EBASE = plotXtoY
+EBASE = test
 
 # This sets the EOS directory in $(PELE_PHYSICS_HOME)/Eos
 #Eos_dir     := Soave-Redlich-Kwong
