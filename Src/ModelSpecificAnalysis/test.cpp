@@ -30,15 +30,19 @@ main (int   argc,
 
     Vector<std::string> elem_names = GetElemNames();
     int nelements = NumElements();
+    Print() << "{ ";
     for (int i=0; i<nelements; ++i) {
-      Print() << i << " " << elem_names[i] << std::endl;
+      Print() << elem_names[i] << " ";
     }
+    Print() << "}" << std::endl;
 
     Vector<std::string> spec_names = GetSpecNames();
     int nspecies = NumSpecies();
+    Print() << "{ ";
     for (int i=0; i<nspecies; ++i) {
-      Print() << i << " " << spec_names[i] << std::endl;
+      Print() << spec_names[i] << " ";
     }
+    Print() << "}" << std::endl;
   }
   Finalize();
   return 0;

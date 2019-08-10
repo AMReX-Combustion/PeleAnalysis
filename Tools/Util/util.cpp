@@ -61,6 +61,20 @@ namespace analysis_util {
     return elem_names;
   }
 
+  amrex::Vector<int>
+  reactionsWithXonL(const std::string& specName)
+  {
+    const int idx = index(specName) + 1;
+    int Nreacs = -1;
+    Array<int> reactions(numReactions());
+    FORT_FINDLHS(reactions.dataPtr(),&Nreacs,&idx);
+    reactions.resize(Nreacs);
+    for (int i=0; i<reactions.size(); ++i)
+      reactions[i]--;
+    return reactions;
+  }
+
+  
 }
 
 

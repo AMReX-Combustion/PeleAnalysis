@@ -10,5 +10,7 @@ namespace analysis_util
   
   amrex::Vector<std::string> GetElemNames();
   amrex::Vector<std::string> GetSpecNames();
+
+  amrex::Vector<int> reactionsWithXonL(const std::string& specName);
 }
 #endif
