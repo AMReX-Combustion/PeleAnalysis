@@ -102,8 +102,10 @@ main (int   argc,
       Print() << "}\n";
     }
 
-    const std::string trElt = "C";
-    auto edges = getEdges(trElt,1,1);
+    std::string trElem = "C";
+    pp.query("trElem",trElem);
+    AMREX_ALWAYS_ASSERT(IndexElem(trElem)>=0 && IndexElem(trElem)<NumElements());
+    auto edges = getEdges(trElem,1,1);
     for (auto edge : edges) {
       Print() << edge << std::endl;
     }

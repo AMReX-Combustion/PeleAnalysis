@@ -6,15 +6,17 @@ PROFILE    = FALSE
 DEBUG      = FALSE
 
 #DIM        = 1
-DIM        = 2
-#DIM        = 3
+#DIM        = 2
+DIM        = 3
 
 COMP	   = gcc
-USE_MPI    = FALSE
+USE_MPI    = TRUE
+USE_OMP    = FALSE
 
 EBASE = plotYtoX
 EBASE = plotXtoY
 EBASE = testQPDtools
+EBASE = plotQPD
 
 # This sets the EOS directory in $(PELE_PHYSICS_HOME)/Eos
 #Eos_dir     := Soave-Redlich-Kwong
@@ -26,6 +28,7 @@ Reactions_dir := Fuego
 # This sets the model directory in $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models
 #Chemistry_Model := Davis
 #Chemistry_Model := LiDryer
+#Chemistry_Model := grimech12
 Chemistry_Model := drm19
 
 # This sets the transport directory in $(PELE_PHYSICS_HOME)/Transport
