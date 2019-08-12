@@ -200,6 +200,7 @@ main (int   argc,
       std::map<EdgeList::const_iterator,Real,ELIcompare> Q;
       Real normVal = 0;
       Real normVal_temp = 0;
+      std::string fuelSpec = "CH4"; pp.query("fuelSpec",fuelSpec);
  
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
@@ -209,11 +210,10 @@ main (int   argc,
           Q[it] += Qsum[ RWL[i].first ]*RWL[i].second;
         }
             
-        //if (it->touchesSp("NC12H26"))
-        if (it->touchesSp("CH3"))
+        if (it->touchesSp(fuelSpec))
         {
           normVal_temp = 1./(Q[it]); // Normalize to CH4 destruction on CH4->CH3 edge
-          if (it->right()=="CH3")
+          if (it->right()==fuelSpec)
             normVal_temp *= -1;
           normVal += normVal_temp;
         }
@@ -228,13 +228,15 @@ main (int   argc,
         }
         osfr << it->left() << " " << it->right() << " " << Q[it] << " " << 0 << " " << '\n'; 
       }
+
+      // Dump a subset of the edges to the screen
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
-        if (it->touchesSp("CH3"))
+        if (it->touchesSp(fuelSpec))
         {
           std::cout << *it << std::endl;
           std::map<std::string,Real> edgeContrib;
-          int rSgn = ( it->left()=="CH3"  ?  -1  :  +1);
+          int rSgn = ( it->left()==fuelSpec  ?  -1  :  +1);
           const Vector<std::pair<int,Real> > RWL=it->rwl();
           for (int i=0; i<RWL.size(); ++i) {
             int rxn = RWL[i].first;
@@ -245,14 +247,14 @@ main (int   argc,
             int thisSgn;
             for (int j=0; j<specCoefs.size(); ++j)
             {
-              if (specCoefs[j].first == "CH3")
+              if (specCoefs[j].first == fuelSpec)
                 thisSgn = specCoefs[j].second;
             }
             std::string partnerName = "";
             for (int j=0; j<specCoefs.size(); ++j)
             {
               const std::string& sp = specCoefs[j].first;
-              if (sp != "CH3"  &&  thisSgn*specCoefs[j].second > 0)
+              if (sp != fuelSpec  &&  thisSgn*specCoefs[j].second > 0)
                 partnerName = ( partnerName != ""  ?  partnerName + "+" + sp : sp);
             }
             if (partnerName=="")
