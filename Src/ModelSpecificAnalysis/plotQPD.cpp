@@ -167,9 +167,14 @@ main (int   argc,
           }
         }
 
-        // Increment sum of each reaction over all levels
+        // Increment volume-weighted sum of each reaction over all levels
+        Real vol = 1;
+        for (int i=0; i<BL_SPACEDIM; ++i) {
+          vol *= amrData.ProbSize()[i] / amrData.ProbDomain()[lev].length(i);
+        }
+
         for (int i=0; i<nreactions; ++i) {
-          Qsum[i] += Q.sum(i);
+          Qsum[i] += Q.sum(i) * vol;
         }
       }
 
