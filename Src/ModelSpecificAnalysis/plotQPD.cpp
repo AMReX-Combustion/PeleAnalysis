@@ -153,6 +153,7 @@ main (int   argc,
 
           Real Ql[nreactions];
           CKQC(&Tl,Cl,Ql);
+
           for (int n=0; n<nreactions; ++n) {
             Qarr(i,j,k,n) = Ql[n];
           }
@@ -200,14 +201,26 @@ main (int   argc,
       std::map<EdgeList::const_iterator,Real,ELIcompare> Q;
       Real normVal = 0;
       Real normVal_temp = 0;
-      std::string fuelSpec = "CH4"; pp.query("fuelSpec",fuelSpec);
- 
+      std::string fuelSpec;
+      bool do_dump = false;
+      if (pp.countval("fuelSpec") > 0) {
+        do_dump = true;
+        pp.get("fuelSpec",fuelSpec);
+      }
+
+      // Build revese reaction map
+      Vector<int> rmap = GetReactionMap();
+      Vector<int> rrmap(nreactions);
+      for (int i=0; i<nreactions; ++i) {
+        rrmap[rmap[i]] = i;
+      }
+
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
         const Vector<std::pair<int,Real> > RWL=it->rwl();
         for (int i=0; i<RWL.size(); ++i)
         {
-          Q[it] += Qsum[ RWL[i].first ]*RWL[i].second;
+          Q[it] += Qsum[ rrmap[ RWL[i].first ] ]*RWL[i].second;
         }
             
         if (it->touchesSp(fuelSpec))
@@ -230,49 +243,52 @@ main (int   argc,
       }
 
       // Dump a subset of the edges to the screen
-      for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
+      if (do_dump)
       {
-        if (it->touchesSp(fuelSpec))
+        for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
         {
-          std::cout << *it << std::endl;
-          std::map<std::string,Real> edgeContrib;
-          int rSgn = ( it->left()==fuelSpec  ?  -1  :  +1);
-          const Vector<std::pair<int,Real> > RWL=it->rwl();
-          for (int i=0; i<RWL.size(); ++i) {
-            int rxn = RWL[i].first;
-            Real wgt = RWL[i].second;
-            auto specCoefs = specCoeffsInReactions(rxn);
-
-            // Find name of reaction partner(s), NP = no partner
-            int thisSgn;
-            for (int j=0; j<specCoefs.size(); ++j)
-            {
-              if (specCoefs[j].first == fuelSpec)
-                thisSgn = specCoefs[j].second;
-            }
-            std::string partnerName = "";
-            for (int j=0; j<specCoefs.size(); ++j)
-            {
-              const std::string& sp = specCoefs[j].first;
-              if (sp != fuelSpec  &&  thisSgn*specCoefs[j].second > 0)
-                partnerName = ( partnerName != ""  ?  partnerName + "+" + sp : sp);
-            }
-            if (partnerName=="")
-              partnerName="NP";
-
-            edgeContrib[partnerName] += wgt*(Qsum[rxn])*normVal;
-          }
-
-          Real sump=0, sumn=0;
-          for (std::map<std::string,Real>::const_iterator cit=edgeContrib.begin(); cit!=edgeContrib.end(); ++cit)
+          if (it->touchesSp(fuelSpec))
           {
-            std::cout << "   partner: " << cit->first << " " << cit->second << std::endl;
-            if (cit->second > 0.)
-              sump += cit->second;
-            else
-              sumn += cit->second;
+            std::cout << *it << std::endl;
+            std::map<std::string,Real> edgeContrib;
+            int rSgn = ( it->left()==fuelSpec  ?  -1  :  +1);
+            const Vector<std::pair<int,Real> > RWL=it->rwl();
+            for (int i=0; i<RWL.size(); ++i) {
+              int rxn = RWL[i].first;
+              Real wgt = RWL[i].second;
+              auto specCoefs = specCoeffsInReactions(rxn);
+
+              // Find name of reaction partner(s), NP = no partner
+              int thisSgn;
+              for (int j=0; j<specCoefs.size(); ++j)
+              {
+                if (specCoefs[j].first == fuelSpec)
+                  thisSgn = specCoefs[j].second;
+              }
+              std::string partnerName = "";
+              for (int j=0; j<specCoefs.size(); ++j)
+              {
+                const std::string& sp = specCoefs[j].first;
+                if (sp != fuelSpec  &&  thisSgn*specCoefs[j].second > 0)
+                  partnerName = ( partnerName != ""  ?  partnerName + "+" + sp : sp);
+              }
+              if (partnerName=="")
+                partnerName="NP";
+
+              edgeContrib[partnerName] += wgt*(Qsum[rxn])*normVal;
+            }
+
+            Real sump=0, sumn=0;
+            for (std::map<std::string,Real>::const_iterator cit=edgeContrib.begin(); cit!=edgeContrib.end(); ++cit)
+            {
+              std::cout << "   partner: " << cit->first << " " << cit->second << std::endl;
+              if (cit->second > 0.)
+                sump += cit->second;
+              else
+                sumn += cit->second;
+            }
+            std::cout << "     sum +ve,-ve: " << sump << " " << sumn << std::endl;
           }
-          std::cout << "     sum +ve,-ve: " << sump << " " << sumn << std::endl;
         }
       }
     }
