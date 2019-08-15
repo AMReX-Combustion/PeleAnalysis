@@ -199,14 +199,9 @@ main (int   argc,
       auto edges = getEdges(QPDatom,1,1);
       std::cout<<"\n total edges "<<edges.size()<<std::endl;
       std::map<EdgeList::const_iterator,Real,ELIcompare> Q;
-      Real normVal = 0;
       Real normVal_temp = 0;
       std::string fuelSpec;
       bool do_dump = false;
-      if (pp.countval("fuelSpec") > 0) {
-        do_dump = true;
-        pp.get("fuelSpec",fuelSpec);
-      }
 
       // Build revese reaction map
       Vector<int> rmap = GetReactionMap();
@@ -215,6 +210,7 @@ main (int   argc,
         rrmap[rmap[i]] = i;
       }
 
+      Real normVal = 0;
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
         const Vector<std::pair<int,Real> > RWL=it->rwl();
@@ -223,16 +219,19 @@ main (int   argc,
           Q[it] += Qsum[ rrmap[ RWL[i].first ] ]*RWL[i].second;
         }
             
-        if (it->touchesSp(fuelSpec))
+        if (it->touchesSp("CH4") && it->touchesSp("CH3"))
         {
           normVal_temp = 1./(Q[it]); // Normalize to CH4 destruction on CH4->CH3 edge
           if (it->right()==fuelSpec)
             normVal_temp *= -1;
-          normVal += normVal_temp;
         }
       }
       std::cout << "NormVal: " << normVal << std::endl;
 
+      if (pp.countval("fuelSpec") > 0) {
+        do_dump = true;
+        pp.get("fuelSpec",fuelSpec);
+      }
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
         if (normVal!=0)
