@@ -113,7 +113,7 @@ main (int   argc,
     inNames[idTlocal] = TName;
     inNames[idRlocal] = RName;
     
-    Vector<Real> Qsum(nreactions,0);
+    Vector<Real> Qfsum(nreactions,0), Qrsum(nreactions,0);
     
     const int nGrow = 0;
     for (int lev=0; lev<Nlev; ++lev)
@@ -126,7 +126,8 @@ main (int   argc,
       amrData.FillVar(indata,lev,inNames,destFillComps);
       Print() << "Data has been read for level " << lev << std::endl;
 
-      MultiFab Q(ba,dm,nreactions,nGrow);
+      MultiFab Qf(ba,dm,nreactions,nGrow);
+      MultiFab Qr(ba,dm,nreactions,nGrow);
 
       // NOTE: 
 #ifdef _OPENMP
@@ -137,25 +138,28 @@ main (int   argc,
       {
         const Box& bx = mfi.tilebox();
         Array4<Real> const& inarr = indata.array(mfi);
-        Array4<Real> const& Qarr = Q.array(mfi);
+        //Array4<Real> const& Qarr = Q.array(mfi);
+        Array4<Real> const& Qfarr = Qf.array(mfi);
+        Array4<Real> const& Qrarr = Qr.array(mfi);
 
         AMREX_PARALLEL_FOR_3D ( bx, i, j, k,
         {
           Real Xl[nspecies];
-          Real Cl[nspecies];
           Real Tl = inarr(i,j,k,idTlocal);
-          Real Rl = inarr(i,j,k,idRlocal);
+          Real Rl = inarr(i,j,k,idRlocal) * 1.e-3;
           for (int n=0; n<nspecies; ++n) {
             Xl[n] = inarr(i,j,k,idXlocal+n);
           }
 
-          CKXTCR(&Rl,&Tl,Xl,Cl);
-
-          Real Ql[nreactions];
-          CKQC(&Tl,Cl,Ql);
+          Real Qf[nreactions];
+          Real Qr[nreactions];
+          Real Pcgs;
+          CKPX(&Rl,&Tl,Xl,&Pcgs);
+          CKKFKR(&Pcgs,&Tl,Xl,Qf,Qr);
 
           for (int n=0; n<nreactions; ++n) {
-            Qarr(i,j,k,n) = Ql[n];
+            Qfarr(i,j,k,n) = Qf[n];
+            Qrarr(i,j,k,n) = Qr[n];
           }
         });
         
@@ -164,7 +168,8 @@ main (int   argc,
           BoxArray baf = BoxArray(amrData.boxArray(lev)).coarsen(amrData.RefRatio()[lev]);
           std::vector< std::pair<int,Box> > isects = baf.intersections(bx);               
           for (int ii = 0; ii < isects.size(); ii++){
-            Q[mfi].setVal(0,isects[ii].second,0,nreactions);
+            Qf[mfi].setVal(0,isects[ii].second,0,nreactions);
+            Qr[mfi].setVal(0,isects[ii].second,0,nreactions);
           }
         }
 
@@ -175,14 +180,17 @@ main (int   argc,
         }
 
         for (int i=0; i<nreactions; ++i) {
-          Qsum[i] += Q.sum(i) * vol;
+          Qfsum[i] += Qf.sum(i) * vol;
+          Qrsum[i] += Qr.sum(i) * vol;
         }
       }
 
       Print() << "Derive finished for level " << lev << std::endl;
     }
 
-    ParallelDescriptor::ReduceRealSum(Qsum.dataPtr(),nreactions,ParallelDescriptor::IOProcessorNumber());
+    //ParallelDescriptor::ReduceRealSum(Qsum.dataPtr(),nreactions,ParallelDescriptor::IOProcessorNumber());
+    ParallelDescriptor::ReduceRealSum(Qfsum.dataPtr(),nreactions,ParallelDescriptor::IOProcessorNumber());
+    ParallelDescriptor::ReduceRealSum(Qrsum.dataPtr(),nreactions,ParallelDescriptor::IOProcessorNumber());
 
     std::string QPDatom="C"; pp.query("QPDatom",QPDatom);
     std::string QPDlabel = plotFileName; pp.query("QPDlabel",QPDlabel);
@@ -198,49 +206,58 @@ main (int   argc,
 
       auto edges = getEdges(QPDatom,1,1);
       std::cout<<"\n total edges "<<edges.size()<<std::endl;
-      std::map<EdgeList::const_iterator,Real,ELIcompare> Q;
-      Real normVal_temp = 0;
-      std::string fuelSpec;
-      bool do_dump = false;
-
-      // Build revese reaction map
-      Vector<int> rmap = GetReactionMap();
-      Vector<int> rrmap(nreactions);
-      for (int i=0; i<nreactions; ++i) {
-        rrmap[rmap[i]] = i;
+      bool dump_edges = false;
+      pp.query("dump_edges",dump_edges);
+      if (dump_edges) {
+        for (auto eit : edges) {
+          Print() << eit << std::endl;
+        }
       }
 
-      Real normVal = 0;
+      std::map<EdgeList::const_iterator,Real,ELIcompare> Qf,Qr;
+
+      Real normVal = 1;
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
         const Vector<std::pair<int,Real> > RWL=it->rwl();
         for (int i=0; i<RWL.size(); ++i)
         {
-          Q[it] += Qsum[ rrmap[ RWL[i].first ] ]*RWL[i].second;
+          //Note: Assumes that the edges are in terms of *mapped* reactions
+          Qf[it] += Qfsum[ RWL[i].first ]*RWL[i].second;
+          Qr[it] += Qrsum[ RWL[i].first ]*RWL[i].second;
         }
-            
         if (it->touchesSp("CH4") && it->touchesSp("CH3"))
         {
-          normVal_temp = 1./(Q[it]); // Normalize to CH4 destruction on CH4->CH3 edge
-          if (it->right()==fuelSpec)
-            normVal_temp *= -1;
+          normVal = 1./(Qf[it]-Qr[it]); // Normalize to CH4 destruction on CH4->CH3 edge
+          if (it->right()=="CH4")
+            normVal *= -1;
         }
       }
-      std::cout << "NormVal: " << normVal << std::endl;
-
-      if (pp.countval("fuelSpec") > 0) {
-        do_dump = true;
-        pp.get("fuelSpec",fuelSpec);
+      if (pp.countval("scaleNorm") > 0) {
+        Real scaleNorm;
+        pp.get("scaleNorm",scaleNorm);
+        normVal *= scaleNorm;
       }
+      std::cout << "NormVal: " << normVal << std::endl;
+      
+
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
         if (normVal!=0)
         {
-          Q[it] *= normVal;
+          Qf[it] *= normVal;
+          Qr[it] *= normVal;
         }
-        osfr << it->left() << " " << it->right() << " " << Q[it] << " " << 0 << " " << '\n'; 
+        osfr << it->left() << " " << it->right() << " " << Qf[it] << " " << -Qr[it] << '\n'; 
       }
 
+      std::string fuelSpec;
+      bool do_dump = false;
+      if (pp.countval("fuelSpec") > 0) {
+        do_dump = true;
+        pp.get("fuelSpec",fuelSpec);
+      }
+      
       // Dump a subset of the edges to the screen
       if (do_dump)
       {
@@ -274,7 +291,7 @@ main (int   argc,
               if (partnerName=="")
                 partnerName="NP";
 
-              edgeContrib[partnerName] += wgt*(Qsum[rxn])*normVal;
+              edgeContrib[partnerName] += wgt*((Qrsum[rxn])-Qrsum[rxn])*normVal;
             }
 
             Real sump=0, sumn=0;
