@@ -4,13 +4,17 @@
 
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
-#include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
-#include <AppendToPlotFile.H>
 
 #include <AMReX_BLFort.H>
+#include <AMReX_PlotFileUtil.H>
+#include <AMReX_FillPatchUtil.H>
+
+#include "makelevelset3.h"
 
 using namespace amrex;
+using std::list;
+using std::vector;
+using std::string;
 
 static Real isoVal_DEF = 1090.;
 static string isoCompName_DEF = "temp";
@@ -33,10 +37,6 @@ print_usage (int,
   std::cerr << "\t     finestLevel=<n> finest level to use in pltfile[DEF->all]\n";
   std::cerr << "\t     writeSurf=<1,0> output surface in binary MEF format [DEF->1]\n";
   std::cerr << "\t     outfile=<s> name of tecplot output file [DEF->gen'd]\n";
-  std::cerr << "\t  NOTE: The remaining options are as yet untested\n";
-  std::cerr << "\t     box=int list of LL+UR of subbox of source data (lev-0 coords) [DEF->all]>\n";
-  std::cerr << "\t     bounds=real list of LL+UR of subbox of final surface [DEF->all]>\n";
-  std::cerr << "\t     nGrowPer=<#> number of coarse-grid cells to tack onto periodic bndry [DEF->0]>\n";
   std::cerr << "\t     finestLevel=<#> finest level to use [DEF->pltfile finest]>\n";
   exit(1);
 }
@@ -1039,241 +1039,243 @@ main (int   argc,
     print_usage(argc,argv);
 
   int verbose=0; pp.query("verbose",verbose);
-  if (verbose>1) AmrData::SetVerbose(true);
 
   std::string infile; pp.get("infile",infile);
 
-  DataServices::SetBatchMode();
-  Amrvis::FileType fileType(Amrvis::NEWPLT);
-  DataServices dataServices(infile, fileType);
-
-  if (!dataServices.AmrDataOk())
-    DataServices::Dispatch(DataServices::ExitRequest, NULL);
-
-  AmrData& amrData = dataServices.AmrDataRef();
+  PlotFileData pf(infile);
 
   Real isoVal = isoVal_DEF; pp.query("isoVal",isoVal);
   string isoCompName = isoCompName_DEF; pp.query("isoCompName",isoCompName);
 
-  Vector<int> comps;
+  Vector<int> pltComps;
   if (int nc = pp.countval("comps"))
   {
-    comps.resize(nc);
-    pp.getarr("comps",comps,0,nc);
+    pltComps.resize(nc);
+    pp.getarr("comps",pltComps,0,nc);
   }
   else
   {
-    int sComp = amrData.StateNumber(isoCompName);
-    pp.query("sComp",sComp);
-    int nComp = 1;
-    pp.query("nComp",nComp);
-    BL_ASSERT(sComp+nComp <= amrData.NComp());
-    comps.resize(nComp);
-    for (int i=0; i<nComp; ++i)
-      comps[i] = sComp + i;
+    int pltsComp = 0;
+    pp.query("sComp",pltsComp);
+    int pltnComp = 1;
+    pp.query("nComp",pltnComp);
+    BL_ASSERT(pltsComp+pltnComp <= pf.nComp());
+    pltComps.resize(pltnComp);
+    for (int i=0; i<pltnComp; ++i)
+      pltComps[i] = pltsComp + i;
   }
 
-  // Add physical coordinates to bottom end of this list, set index to isoCompName
   int isoComp = -1;
-  const Vector<std::string>& pltNames = amrData.PlotVarNames();
-  Vector<string> varnames(comps.size());
+  const Vector<std::string>& pltNames = pf.varNames();
+  Vector<string> varnames(pltComps.size()); // names of variables to get
   for (int i=0; i<varnames.size(); ++i) {
-    if (comps[i]>=pltNames.size()) {
+    if (pltComps[i]>=pltNames.size()) {
       Abort("At least one of the components requested is not in pltfile");
     }
-    varnames[i] = pltNames[comps[i]];
-    if (varnames[i]==isoCompName) isoComp = i;
+    varnames[i] = pltNames[pltComps[i]];
+    if (varnames[i]==isoCompName) isoComp = BL_SPACEDIM + i;
   }
-  comps.resize(comps.size()+BL_SPACEDIM);
-  for (int i=comps.size()-1; i>=BL_SPACEDIM; --i) {
-    comps[i] = comps[i-BL_SPACEDIM] + BL_SPACEDIM;
-  }
-  for (int i=0; i<BL_SPACEDIM; ++i)
-    comps[i] = i;
-  isoComp += BL_SPACEDIM;
   if (isoComp<BL_SPACEDIM) {
     Abort("isoCompName not in list of variables to read in");
   }
-  Box subbox;
-  if (int nx=pp.countval("box"))
-  {
-    Vector<int> barr;
-    pp.getarr("box",barr,0,nx);
-    int d=BL_SPACEDIM;
-    BL_ASSERT(barr.size()==2*d);
-    subbox=Box(IntVect(D_DECL(barr[0],barr[1],barr[2])),
-               IntVect(D_DECL(barr[d],barr[d+1],barr[d+2])));
 
-  }
-  else
-  {
-    subbox = amrData.ProbDomain()[0];
-  }
-
-  int finestLevel = amrData.FinestLevel(); pp.query("finestLevel",finestLevel);
+  const int nComp=pltComps.size();
+  int finestLevel = pf.finestLevel(); pp.query("finestLevel",finestLevel);
+  BL_ASSERT(finestLevel <= pf.finestLevel());
   int Nlev = finestLevel + 1;
   Vector<BoxArray> gridArray(Nlev);
-  Vector<Box> subboxArray(Nlev);
-
-  int nGrowPer = 0; pp.query("nGrowPer",nGrowPer);
-  int levNGP = nGrowPer;
-  RealBox rb(&(amrData.ProbLo()[0]),
-             &(amrData.ProbHi()[0]));
-  Vector<int> is_per(BL_SPACEDIM,1);
-  pp.queryarr("is_per",is_per,0,BL_SPACEDIM);
-  int coord = 0;
-
   for (int lev=0; lev<Nlev; ++lev)
   {
-    subboxArray[lev]
-      = (lev==0 ? subbox
-         : Box(subboxArray[lev-1]).refine(amrData.RefRatio()[lev-1]));
-
-    Geometry geom(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
-    if (nGrowPer>0)
-    {
-      if (lev>0)
-        levNGP *= amrData.RefRatio()[lev-1];
-      for (int i=0; i<BL_SPACEDIM; ++i)
-      {
-        if (geom.isPeriodic(i))
-        {
-          if (subboxArray[lev].smallEnd()[i] == amrData.ProbDomain()[lev].smallEnd()[i])
-            subboxArray[lev].growLo(i,levNGP);
-          if (subboxArray[lev].bigEnd()[i] == amrData.ProbDomain()[lev].bigEnd()[i])
-            subboxArray[lev].growHi(i,levNGP);
-        }
-      }
-    }
-
-    gridArray[lev] = amrex::intersect(amrData.boxArray(lev), subboxArray[lev]);
-
-    if (nGrowPer>0)
-    {
-
-      for (int i=0; i<BL_SPACEDIM; ++i)
-      {
-        if (geom.isPeriodic(i))
-        {
-          const Box& probDomain = amrData.ProbDomain()[lev];
-          Box gPD = subboxArray[lev];
-          BoxList baL =
-            BoxList(BoxArray(amrData.boxArray(lev)).shift(
-                      i,-probDomain.length(i))).intersect(gPD);
-          BoxList baR =
-            BoxList(BoxArray(amrData.boxArray(lev)).shift(
-                      i,+probDomain.length(i))).intersect(gPD);
-          BoxList newBL = gridArray[lev].boxList();
-          newBL.join(baL);
-          newBL.join(baR);
-          gridArray[lev] = BoxArray(newBL);
-        }
-      }
-    }
-
-    if (!gridArray[lev].size())
-    {
-      Nlev = lev;
-      gridArray.resize(Nlev);
-      subboxArray.resize(Nlev);
-    }
+    gridArray[lev] = pf.boxArray(lev);
   }
-
-  const Real strt_time_surf = ParallelDescriptor::second();
-  Real io_time = 0;
 
   std::set<Node> nodeSet;
   std::set<Element> eltSet;
   int nodeCtr = 0;
 
-  const int nComp=comps.size();
+  const int nodesPerElt = BL_SPACEDIM;
+  bool remove_extended_elements = true;
+  pp.query("remove_extended_elements",remove_extended_elements);
+  bool build_distance_function = false;
+  pp.query("build_distance_function",build_distance_function);
+  Vector<std::unique_ptr<MultiFab>> distance(Nlev);
+
+  Vector<int> nGrow(Nlev,1);
+  Real dmax = pf.probSize()[0] / pf.probDomain(0).length(0);
+  if (build_distance_function) {
+    pp.query("dmax",dmax);
+    Print() << "dmax: " << dmax << std::endl;
+    for (int lev=0; lev<Nlev; ++lev)
+    {
+      Real dxL = pf.probSize()[lev] / pf.probDomain(lev).length(0);
+      nGrow[lev] = int(dmax*(1.0000001) / dxL);
+    }
+  }
+  else
+  {
+    nGrow[0] = 1;
+    pp.query("nGrow",nGrow[0]);
+    for (int lev=1; lev<Nlev; ++lev)
+    {
+      nGrow[lev] = nGrow[0];
+    }
+  }
+
+  const Real strt_time_io = ParallelDescriptor::second();
+  Vector<Vector<MultiFab>> pfdata(Nlev);
+  Vector<Geometry> geoms(Nlev);
+  for (int lev=0; lev<Nlev; ++lev) {
+    pfdata[lev].resize(nComp);
+    Print() << "Reading the plotfile data at level " << lev
+            << "... (nComp,nGrow) = (" << nComp
+            << "," << nGrow[lev] << ")"<< std::endl;
+    for (int n=0; n<nComp; ++n) {
+      Print() << "   var = " << varnames[n] << "..." << std::endl;
+      pfdata[lev][n] = pf.get(lev,varnames[n]);
+    }
+    Print() << "...done reading the plotfile data at level " << lev << "..." << std::endl;
+    geoms[lev] = Geometry(pf.probDomain(lev));
+  }
+  const Real end_time_io = ParallelDescriptor::second();
+  Real io_time = end_time_io - strt_time_io;
+
+  Real time = 0;
+  PhysBCFunctNoOp f;
+  PCInterp pci;
+
+  Array<Real,AMREX_SPACEDIM> plo = pf.probLo();
+  
+  const Real strt_time_surf = ParallelDescriptor::second();
   for (int lev=0; lev<Nlev; ++lev)
   {
-    const BoxArray gGridArray =
-      amrex::intersect(BoxArray(gridArray[lev]).grow(1),amrData.ProbDomain()[lev]);
+    const Box& domain = geoms[lev].Domain();
+    Box tb = domain;
+    for (int d=0; d<BL_SPACEDIM; ++d) {
+      if (geoms[lev].isPeriodic(d)) {
+        tb.grow(d,nGrow[lev]);
+      }
+    }
+    
+    DistributionMapping dm(gridArray[lev]);
+    BoxArray gba = BoxArray(gridArray[lev]).grow(nGrow[lev]);
+    int r = lev==0 ? 1 : pf.refRatio(lev-1);
+    IntVect ratio(D_DECL(r,r,r));
 
-    DistributionMapping dm(gGridArray);
-    MultiFab state(gGridArray,dm,nComp,0);
-
-    // Turns out we can't trust the DxLevel here (ASCII I/O precision issues), so we make our own
-    //const Vector<Real>& dxf = amrData.DxLevel()[lev];
     Vector<Real> dxf(BL_SPACEDIM);
     for (int i=0; i<BL_SPACEDIM; ++i)
-      dxf[i] = amrData.ProbSize()[i] / amrData.ProbDomain()[lev].length(i);
+      dxf[i] = pf.probSize()[i] / pf.probDomain(lev).length(i);
 
-    const Vector<Real>& plo = amrData.ProbLo();
+    MultiFab state(gridArray[lev],dm,nComp+BL_SPACEDIM,nGrow[lev]);
+    if (build_distance_function)
+    {
+      distance[lev].reset(new MultiFab(gridArray[lev],dm,1,0));
+    }
+
+    if (lev!=0)
+    {
+      for (MFIter mfi(state); mfi.isValid(); ++mfi)
+      {
+        FArrayBox& fab = state[mfi];
+        const Box& box = fab.box();
+        const int ratio = pf.refRatio(lev-1);
+        setcloc(BL_TO_FORTRAN_BOX(box),
+                BL_TO_FORTRAN_ANYD(fab),
+                &(dxf[0]), &(plo[0]), &ratio);
+      }
+    }
 
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
     {
       FArrayBox& fab = state[mfi];
-      const Box& box = fab.box();
-
-      if (lev!=0)
-      {
-        const int ratio = amrData.RefRatio()[lev-1];
-        setcloc(BL_TO_FORTRAN_BOX(box),
-                BL_TO_FORTRAN_ANYD(fab),
-                dxf.dataPtr(), plo.dataPtr(), &ratio);
-      }
+      const Box& box = gridArray[lev][mfi.index()];
+      setloc(BL_TO_FORTRAN_BOX(box),
+             BL_TO_FORTRAN_ANYD(fab),
+             &(dxf[0]), &(plo[0]));
     }
+    
+    state.FillBoundary(0,BL_SPACEDIM,geoms[lev].periodicity()); // After this, bad data in periodic directions however
 
+    // In periodic direction, manually shift the coordinate back to its original location
+    if (geoms[lev].isAnyPeriodic())
     {
-      DistributionMapping dmGA(gridArray[lev]);
-      MultiFab vstate(gridArray[lev],dmGA,BL_SPACEDIM,0);
-      for (MFIter mfi(vstate); mfi.isValid(); ++mfi)
+      Vector<IntVect> pshifts(27);
+      for (MFIter mfi(state); mfi.isValid(); ++mfi)
       {
-        const Box& vbox = mfi.validbox();
-        FArrayBox& fab = vstate[mfi];
-        setloc(BL_TO_FORTRAN_BOX(vbox),
-               BL_TO_FORTRAN_ANYD(fab),
-               dxf.dataPtr(), plo.dataPtr());
+        auto& sfab = state[mfi];
+        const auto& box = sfab.box();
+        geoms[lev].periodicShift(domain,box,pshifts);
+        for (const auto& iv : pshifts) {
+          const auto shbox = box + iv;
+          auto pisect = domain & shbox;
+          if (pisect.ok()) {
+            pisect -= iv;
+            for (int d=0; d<BL_SPACEDIM; ++d)
+            {
+              auto L = geoms[lev].ProbLength(d);
+              if (iv[d] != 0) {
+                sfab.plus((iv[d]>0 ? -L : L),pisect,d,1); // shift the location back
+              }
+            }
+          }
+        }
       }
-      state.copy(vstate,0,0,BL_SPACEDIM);
     }
 
-    if (verbose && ParallelDescriptor::IOProcessor())
-      std::cerr << "Filling interp data at level " << lev << ": ";
-
-    const Real strt_time_io = ParallelDescriptor::second();
-    MultiFab tmp(gGridArray,dm,1,0);
-    for (int i=0; i<varnames.size(); ++i)
+    // Use FillPatch rather than Copy in order to get grow cells filled correctly
+    Print() << "FillPatching the grown structures at level " << lev << "..." << std::endl;
+    MultiFab gstate(gridArray[lev],dm,1,nGrow[lev]); gstate.setVal(-666);
+    for (int n=0; n<nComp; ++n)
     {
-      amrData.FillVar(tmp,lev,varnames[i],0);
-      for (MFIter mfi(state); mfi.isValid(); ++mfi) {
-        state[mfi].copy(tmp[mfi],0,BL_SPACEDIM+i,1);
+      if (lev==0) {
+        FillPatchSingleLevel(gstate,time,{&pfdata[lev][n]},{time},0,0,1,geoms[0],f,0);
       }
-      //amrData.FlushGrids(amrData.StateNumber(varnames[i]));
-      if (verbose) {
-        Print() << varnames[i] << " ";
+      else
+      {
+        BCRec bc;
+        FillPatchTwoLevels(gstate,time,{&pfdata[lev-1][n]},{time},{&pfdata[lev][n]},{time},0,0,1,
+                           geoms[lev-1],geoms[lev],f,0,f,0,ratio,&pci,{bc},0);
       }
+      state.copy(gstate,0,BL_SPACEDIM+n,1,nGrow[lev],nGrow[lev],geoms[lev].periodicity());
     }
-    if (verbose && ParallelDescriptor::IOProcessor()) std::cerr << '\n';
-    const Real end_time_io = ParallelDescriptor::second();
-    io_time += end_time_io - strt_time_io;
+    Print() << "...done FillPatching the grown structures at level " << lev << "..." << std::endl;
 
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
     {
       const FArrayBox& sfab = state[mfi];
 
-      // Build a mask using tmp...we know it is built on the box array in state
-      FArrayBox& mask = tmp[mfi];
-      const Box& myGbox = mask.box();
+      // Build a mask using gstate
+      FArrayBox& mask = gstate[mfi];
+      const Box& gbox = mask.box();
+      const Box g1box = grow(mfi.validbox(),1);
 
       mask.setVal(1.0);
-      if (lev<finestLevel)
+
+      if (lev<finestLevel && !build_distance_function)
       {
-        const int ratio = amrData.RefRatio()[lev];
+        const int ratio = pf.refRatio(lev);
         const BoxArray& fineBoxes = gridArray[lev+1];
         for (int i=0; i<fineBoxes.size(); ++i) {
           const Box cgFineBox = Box(fineBoxes[i]).coarsen(ratio);
-          const Box isect = myGbox & cgFineBox;
-          if (isect.ok())
+          const Box isect = gbox & cgFineBox;
+          if (isect.ok()) {
             mask.setVal(-1.0,isect,0);
+          }
+          if (geoms[lev].isAnyPeriodic()) {
+            Vector<IntVect> pshifts(27);
+            geoms[lev].periodicShift(gbox,cgFineBox,pshifts);
+            for (const auto& iv : pshifts) {
+              Box shbox = cgFineBox + iv;
+              const Box pisect = gbox & shbox;
+              if (pisect.ok()) {
+                mask.setVal(-1.0,pisect,0);
+              }
+            }
+          }
         }
       }
 
       // For looping over quads/bricks, make set of "base" points
-      Box loopBox(myGbox);
+      Box loopBox(gbox & tb);
       for (int i=0; i<BL_SPACEDIM; ++i) {
         loopBox.growHi(i,-1);
       }
@@ -1281,30 +1283,105 @@ main (int   argc,
       PMap vertCache;
 
 #if BL_SPACEDIM==2
-      SegList segments;
+      SegList elements;
       for (IntVect iv=loopBox.smallEnd(); iv<=loopBox.bigEnd(); loopBox.next(iv))
       {
         Vector<Segment> eltSegs = Segmentise(sfab,mask,vertCache,iv,isoVal,isoComp);
         for (int i = 0; i < eltSegs.size(); i++)
         {
-          // std::cout << "adding segment: " << eltSegs[i] << '\n';
-          segments.push_back(eltSegs[i]);
+          elements.push_back(eltSegs[i]);
         }
       }
 #else
-      list<Triangle> triangles;
+      list<Triangle> elements;
       for (IntVect iv=loopBox.smallEnd(); iv<=loopBox.bigEnd(); loopBox.next(iv))
       {
         Vector<Triangle> eltTris = Polygonise(sfab,mask,vertCache,iv,isoVal,isoComp);
         for (int i = 0; i < eltTris.size(); i++)
-          triangles.push_back(eltTris[i]);
+          elements.push_back(eltTris[i]);
       }
 #endif
 
+      if (build_distance_function)
+      {
+        std::vector<Vec3f> vertList;
+        std::vector<Vec3ui> faceList;
+
+        std::map<PMapIt,unsigned int,PMapItCompare> ptID;
+        unsigned int id = 0;
+        for (PMapIt it=vertCache.begin(); it!=vertCache.end(); ++it)
+        {
+          const auto& loc = it->second;
+          vertList.push_back(Vec3f(loc[0],loc[1],loc[2]));
+          ptID[it] = id++;
+        }
+
+        for (const auto& elt : elements)
+        {
+          faceList.push_back(Vec3ui(ptID[elt[0]],ptID[elt[1]],ptID[elt[2]]));
+        }
+
+        const Box& vbox = gridArray[lev][mfi.index()];
+        Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dxf[0],
+                           plo[1] + vbox.smallEnd()[1]*dxf[1],
+                           plo[2] + vbox.smallEnd()[2]*dxf[2]);
+        Array3f phi_grid;
+        float dx = float(dxf[0]);
+        make_level_set3(faceList, vertList, local_origin, dx,
+                        vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
+
+        vertList.clear();
+        faceList.clear();
+        ptID.clear();
+
+        const auto& d = distance[lev]->array(mfi);
+        const auto& sfaba = state.array(mfi);
+        const int* lo = vbox.loVect();
+        const int* hi = vbox.hiVect();
+        for (int k=lo[2]; k<=hi[2]; ++k)
+        {
+          int kL=k-lo[2];
+          for (int j=lo[1]; j<=hi[1]; ++j)
+          {
+            int jL=j-lo[1];
+            for (int i=lo[0]; i<=hi[0]; ++i)
+            {
+              int iL=i-lo[0];
+              Real abs_d = std::min(dmax,Real(phi_grid(iL,jL,kL)));
+              int sgn = sfaba(i,j,k,isoComp) < isoVal ? -1 : +1;
+              d(i,j,k) = sgn * abs_d;
+            }
+          }
+        }
+      }
+
+      if (remove_extended_elements)
+      {
+        // If all nodes of element not in g1box, remove before merging set with master list
+        std::set<PMapIt,PMapItCompare> ptsToRm;
+        list<Triangle> eltsInside;
+        for (const auto& it : elements) {
+          bool eltValid = true;
+          for (int i=0; i<nodesPerElt; ++i) {
+            const auto& e = it[i]->first;
+            if ( !(g1box.contains(e.IV_l) && g1box.contains(e.IV_r)) ) {
+              ptsToRm.insert(it[i]);
+              eltValid = false;
+            }
+          }
+          if (eltValid) eltsInside.push_back(it);
+        }
+        for (const auto& it : ptsToRm) {
+          vertCache.erase(it);
+        }
+        std::swap(elements,eltsInside);
+        eltsInside.clear();
+      }
+      
       std::map<PMapIt,std::set<Node>::iterator,PMapItCompare> PMI_N_map;
 
       for (PMapIt it=vertCache.begin(); it!=vertCache.end(); ++it)
-      {
+      {        
         Node n(it->second,nodeSet.size());
         std::pair<std::set<Node>::iterator,bool> nsit = nodeSet.insert(n);
         if (nsit.second)
@@ -1319,7 +1396,7 @@ main (int   argc,
       std::vector<int> v(BL_SPACEDIM);
 
 #if BL_SPACEDIM==2
-      for (std::list<Segment>::const_iterator it=segments.begin(); it!=segments.end(); ++it)
+      for (std::list<Segment>::const_iterator it=elements.begin(); it!=elements.end(); ++it)
       {
         for (int k=0; k<BL_SPACEDIM; ++k)
         {
@@ -1328,7 +1405,7 @@ main (int   argc,
         if (v[0] != v[1]) eltSet.insert(Element(v));
       }
 #else
-      for (std::list<Triangle>::const_iterator it=triangles.begin(); it!=triangles.end(); ++it)
+      for (std::list<Triangle>::const_iterator it=elements.begin(); it!=elements.end(); ++it)
       {
         for (int k=0; k<BL_SPACEDIM; ++k)
         {
@@ -1341,13 +1418,34 @@ main (int   argc,
     }
   }
 
+  Print(Print::AllProcs) << " proc: " << ParallelDescriptor::MyProc() << " at barrier" << std::endl;
+  ParallelDescriptor::Barrier();
+  if (build_distance_function) {
+    std::string outfile("distance");
+    pp.query("outfile",outfile);
+    Vector<int> levelSteps(Nlev);
+    Vector<IntVect> refRatio(Nlev-1);
+    Vector<const MultiFab*> ptrs(Nlev);
+    for (int lev=0; lev<Nlev; ++lev) {
+      Print(Print::AllProcs) << "lev: " << lev << " proc: " << ParallelDescriptor::MyProc() << std::endl;
+      ptrs[lev] = distance[lev].get();
+      levelSteps[lev] = pf.levelStep(lev);
+      if (lev<finestLevel) {
+        int ir = pf.refRatio(lev);
+        refRatio[lev] = IntVect(D_DECL(ir,ir,ir));
+      }
+    }
+    WriteMultiLevelPlotfile(outfile,Nlev,ptrs,{"distance"},geoms,time,levelSteps,refRatio);
+    distance.clear();
+  }
+
   // simulate a sort of the node set to node ordering to be consistent with element pointers
   std::vector<std::set<Node>::iterator> sortedNodes(nodeSet.size());
   for (std::set<Node>::iterator it=nodeSet.begin(); it!=nodeSet.end(); ++it)
     sortedNodes[it->m_idx] = it;
 
   const Real end_time_surf = ParallelDescriptor::second();
-  const Real surf_time = end_time_surf - strt_time_surf - io_time;
+  const Real surf_time = end_time_surf - strt_time_surf;
 
   Real surf_time_max, surf_time_min; surf_time_max = surf_time_min = surf_time;
   Real io_time_max, io_time_min; io_time_max = io_time_min = io_time;
@@ -1365,7 +1463,7 @@ main (int   argc,
   }
 
   // Prepare floating point and integer data for MPI communication (make two arrays to pass around)
-  const int nReal = comps.size()*nodeSet.size();
+  const int nReal = (pltComps.size()+BL_SPACEDIM)*nodeSet.size();
   Vector<Real> nodeRaw(nReal);
   for (long i=0; i<sortedNodes.size(); ++i)
   {
@@ -1377,8 +1475,7 @@ main (int   argc,
   }
 
   int cnt = 0;
-  Vector<int> eltRaw(BL_SPACEDIM*eltSet.size());
-
+  Vector<int> eltRaw(nodesPerElt*eltSet.size());
 
   for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it)
   {
@@ -1398,6 +1495,7 @@ main (int   argc,
       Abort("Bailing...");
     }
     const int N = e.size();
+    AMREX_ASSERT(N==nodesPerElt);
     for (int j=0; j<N; ++j) {
       eltRaw[cnt*N+j] = e[j];
     }
@@ -1410,15 +1508,15 @@ main (int   argc,
   sortedNodes.clear();
 
   // Communicate node and element info from all procs to IOProc
-  Collate(nodeRaw,eltRaw,nComp);
+  Collate(nodeRaw,eltRaw,nComp+BL_SPACEDIM);
 
   if (ParallelDescriptor::IOProcessor())
   {
     // Uniquify nodes, and make elements consistent
     const Real strt_time_uniq = ParallelDescriptor::second();
 
-    std::vector<Real> newData(nComp);
-    int nNodes = nodeRaw.size()/nComp;
+    std::vector<Real> newData(nComp+BL_SPACEDIM);
+    int nNodes = nodeRaw.size()/(nComp+BL_SPACEDIM);
 
     nodeCtr = 0;
     std::vector<std::set<Node>::iterator> nodeVec(nNodes);
@@ -1434,8 +1532,8 @@ main (int   argc,
 
     for (int j=0; j<nNodes; ++j)
     {
-      for (int k=0; k<nComp; ++k)
-        newData[k] = nodeRaw[j*nComp+k];
+      for (int k=0; k<nComp+BL_SPACEDIM; ++k)
+        newData[k] = nodeRaw[j*(nComp+BL_SPACEDIM)+k];
 
       Node n(newData,nodeSet.size());
       std::pair<std::set<Node>::iterator,bool> nsit = nodeSet.insert(n);
@@ -1498,7 +1596,6 @@ main (int   argc,
       Print() << "      (Nelts,Nnodes):(" << nElts << ", " << sortedNodes.size() << ")" << std::endl;
 
       // eltRaw presently contains elts prior to uniquefying, shrink and reload correctly
-      const int nodesPerElt = BL_SPACEDIM;
       eltRaw.resize(nElts*nodesPerElt);
       size_t icnt = 0;
       for (std::set<Element>::const_iterator eit=eltSet.begin(); eit!=eltSet.end(); ++eit)
@@ -1621,7 +1718,7 @@ main (int   argc,
 
       // Build a label and a filename
       char buf[72];
-      sprintf(buf,"%g",amrData.Time());
+      sprintf(buf,"%g",pf.time());
       string label(buf);
 
       sprintf(buf, "%g", isoVal); 

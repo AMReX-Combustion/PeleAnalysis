@@ -1,6 +1,6 @@
 AMREX_HOME ?= ../../..
 
-DEBUG	      = TRUE
+DEBUG	      = FALSE
 DIM	      = 3
 COMP          = gcc
 PRECISION     = DOUBLE
@@ -8,7 +8,7 @@ USE_MPI       = TRUE
 USE_OMP       = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
-#EBASE         = isosurface
+EBASE         = isosurface
 #EBASE         = stream
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
@@ -19,10 +19,10 @@ USE_OMP       = FALSE
 #EBASE         = surfDATtoMEF
 #EBASE         = buildPMF
 #EBASE         = subPlt
-EBASE         = conditionalMean
+#EBASE         = conditionalMean
 #EBASE         = jpdf
-NEEDS_f90_SRC = FALSE
-#NEEDS_f90_SRC = TRUE
+#NEEDS_f90_SRC = FALSE
+NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
@@ -45,6 +45,11 @@ CEXE_sources += AppendToPlotFile.cpp WritePlotFile.cpp
 CEXE_headers += AppendToPlotFile.H   WritePlotFile.cpp
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
+
+SDF_LOC = ../Tools/SDFGen
+include $(SDF_LOC)/Make.package
+INCLUDE_LOCATIONS += $(SDF_LOC)
+VPATH_LOCATIONS += $(SDF_LOC)
 
 vpath %.c   : $(VPATH_LOCATIONS)
 vpath %.h   : $(VPATH_LOCATIONS)
