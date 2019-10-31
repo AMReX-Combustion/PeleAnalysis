@@ -1295,67 +1295,70 @@ main (int   argc,
       }
 #endif
 
-      if (build_distance_function && elements.size()>0)
+      if (build_distance_function)
       {
+        if (elements.size()>0)
+        {
 #if BL_SPACEDIM==2
-        Abort("Distance function not worked out for 2D yet");
+          Abort("Distance function not worked out for 2D yet");
 #else
-        std::vector<Vec3f> vertList;
-        std::vector<Vec3ui> faceList;
+          std::vector<Vec3f> vertList;
+          std::vector<Vec3ui> faceList;
 
-        std::map<PMapIt,unsigned int,PMapItCompare> ptID;
-        unsigned int id = 0;
-        for (PMapIt it=vertCache.begin(); it!=vertCache.end(); ++it)
-        {
-          const auto& loc = it->second;
-          vertList.push_back(Vec3f(loc[0],loc[1],loc[2]));
-          ptID[it] = id++;
-        }
-
-        for (const auto& elt : elements)
-        {
-          faceList.push_back(Vec3ui(ptID[elt[0]],ptID[elt[1]],ptID[elt[2]]));
-        }
-
-        const Box& vbox = gridArray[lev][mfi.index()];
-        Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dxf[0],
-                           plo[1] + vbox.smallEnd()[1]*dxf[1],
-                           plo[2] + vbox.smallEnd()[2]*dxf[2]);
-        Array3f phi_grid;
-        float dx = float(dxf[0]);
-        make_level_set3(faceList, vertList, local_origin, dx,
-                        vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
-
-        vertList.clear();
-        faceList.clear();
-        ptID.clear();
-
-        const auto& d = distance[lev]->array(mfi);
-        const auto& sfaba = state.array(mfi);
-        const int* lo = vbox.loVect();
-        const int* hi = vbox.hiVect();
-        for (int k=lo[2]; k<=hi[2]; ++k)
-        {
-          int kL=k-lo[2];
-          for (int j=lo[1]; j<=hi[1]; ++j)
+          std::map<PMapIt,unsigned int,PMapItCompare> ptID;
+          unsigned int id = 0;
+          for (PMapIt it=vertCache.begin(); it!=vertCache.end(); ++it)
           {
-            int jL=j-lo[1];
-            for (int i=lo[0]; i<=hi[0]; ++i)
+            const auto& loc = it->second;
+            vertList.push_back(Vec3f(loc[0],loc[1],loc[2]));
+            ptID[it] = id++;
+          }
+
+          for (const auto& elt : elements)
+          {
+            faceList.push_back(Vec3ui(ptID[elt[0]],ptID[elt[1]],ptID[elt[2]]));
+          }
+
+          const Box& vbox = gridArray[lev][mfi.index()];
+          Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dxf[0],
+                             plo[1] + vbox.smallEnd()[1]*dxf[1],
+                             plo[2] + vbox.smallEnd()[2]*dxf[2]);
+          Array3f phi_grid;
+          float dx = float(dxf[0]);
+          make_level_set3(faceList, vertList, local_origin, dx,
+                          vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
+
+          vertList.clear();
+          faceList.clear();
+          ptID.clear();
+
+          const auto& d = distance[lev]->array(mfi);
+          const auto& sfaba = state.array(mfi);
+          const int* lo = vbox.loVect();
+          const int* hi = vbox.hiVect();
+          for (int k=lo[2]; k<=hi[2]; ++k)
+          {
+            int kL=k-lo[2];
+            for (int j=lo[1]; j<=hi[1]; ++j)
             {
-              int iL=i-lo[0];
-              Real abs_d = std::min(dmax,Real(phi_grid(iL,jL,kL)));
-              int sgn = sfaba(i,j,k,isoComp) < isoVal ? -1 : +1;
-              d(i,j,k) = sgn * abs_d;
+              int jL=j-lo[1];
+              for (int i=lo[0]; i<=hi[0]; ++i)
+              {
+                int iL=i-lo[0];
+                Real abs_d = std::min(dmax,Real(phi_grid(iL,jL,kL)));
+                int sgn = sfaba(i,j,k,isoComp) < isoVal ? -1 : +1;
+                d(i,j,k) = sgn * abs_d;
+              }
             }
           }
-        }
 #endif
-      }
-      else
-      {
-        const auto& vb = gridArray[lev][mfi.index()];
-        const auto& iv = vb.smallEnd();
-        (*distance[lev])[mfi].setVal(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
+        }
+        else
+        {
+          const auto& vb = gridArray[lev][mfi.index()];
+          const auto& iv = vb.smallEnd();
+          (*distance[lev])[mfi].setVal(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
+        }
       }
 
       if (tm_ext_elts)
