@@ -8,7 +8,6 @@
 #include <AMReX_BLFort.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
-
 #include "makelevelset3.h"
 
 using namespace amrex;
@@ -40,18 +39,6 @@ print_usage (int,
   std::cerr << "\t     finestLevel=<#> finest level to use [DEF->pltfile finest]>\n";
   exit(1);
 }
-
-extern "C" {
-  void setloc(const int* lo,  const int* hi,
-              Real* U, const int* Ulo, const int* Uhi,
-              const Real* dx, const Real* domlo);
-
-  void setcloc(const int* lo,  const int* hi,
-               Real* U, const int* Ulo, const int* Uhi,
-               const Real* fdx, const Real* domnlo, const int* ratio);
-
-}
-
 
 struct Edge
 {
@@ -1171,28 +1158,33 @@ main (int   argc,
       distance[lev].reset(new MultiFab(gridArray[lev],dm,1,0));
     }
 
-    if (lev!=0)
-    {
-      for (MFIter mfi(state); mfi.isValid(); ++mfi)
-      {
-        FArrayBox& fab = state[mfi];
-        const Box& box = fab.box();
-        const int ratio = pf.refRatio(lev-1);
-        setcloc(BL_TO_FORTRAN_BOX(box),
-                BL_TO_FORTRAN_ANYD(fab),
-                &(dxf[0]), &(plo[0]), &ratio);
-      }
-    }
-
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
     {
-      FArrayBox& fab = state[mfi];
-      const Box& box = gridArray[lev][mfi.index()];
-      setloc(BL_TO_FORTRAN_BOX(box),
-             BL_TO_FORTRAN_ANYD(fab),
-             &(dxf[0]), &(plo[0]));
+      const auto& f = state.array(mfi);
+      const Box& gbox = state[mfi].box();
+      const int ratio = pf.refRatio(lev-1);
+      Real loc[BL_SPACEDIM];
+      if (lev!=0)
+      {
+        const Real ri = 1./ratio;
+
+        AMREX_PARALLEL_FOR_3D ( gbox, i, j, k,
+        {
+          f(i,j,k,0) = ((i < 0 ? i*ri-1  : i*ri) + 0.5)*dxf[0]*ratio + plo[0];
+          f(i,j,k,1) = ((j < 0 ? j*ri-1  : j*ri) + 0.5)*dxf[1]*ratio + plo[1];
+          f(i,j,k,2) = ((k < 0 ? k*ri-1  : k*ri) + 0.5)*dxf[2]*ratio + plo[2];
+        });
+      }
+
+      const Box& vbox = gridArray[lev][mfi.index()];
+      AMREX_PARALLEL_FOR_3D ( vbox, i, j, k,
+      {
+        f(i,j,k,0) = (i + 0.5)*dxf[0] + plo[0];
+        f(i,j,k,1) = (j + 0.5)*dxf[1] + plo[1];
+        f(i,j,k,2) = (k + 0.5)*dxf[2] + plo[2];
+      });
     }
-    
+
     state.FillBoundary(0,BL_SPACEDIM,geoms[lev].periodicity()); // After this, bad data in periodic directions however
 
     // In periodic direction, manually shift the coordinate back to its original location
@@ -1302,7 +1294,7 @@ main (int   argc,
       }
 #endif
 
-      if (build_distance_function)
+      if (build_distance_function && elements.size()>0)
       {
         std::vector<Vec3f> vertList;
         std::vector<Vec3ui> faceList;
@@ -1353,6 +1345,12 @@ main (int   argc,
             }
           }
         }
+      }
+      else
+      {
+        const auto& vb = gridArray[lev][mfi.index()];
+        const auto& iv = vb.smallEnd();
+        (*distance[lev])[mfi].setVal(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
       }
 
       if (remove_extended_elements)
@@ -1418,7 +1416,6 @@ main (int   argc,
     }
   }
 
-  Print(Print::AllProcs) << " proc: " << ParallelDescriptor::MyProc() << " at barrier" << std::endl;
   ParallelDescriptor::Barrier();
   if (build_distance_function) {
     std::string outfile("distance");
@@ -1427,7 +1424,6 @@ main (int   argc,
     Vector<IntVect> refRatio(Nlev-1);
     Vector<const MultiFab*> ptrs(Nlev);
     for (int lev=0; lev<Nlev; ++lev) {
-      Print(Print::AllProcs) << "lev: " << lev << " proc: " << ParallelDescriptor::MyProc() << std::endl;
       ptrs[lev] = distance[lev].get();
       levelSteps[lev] = pf.levelStep(lev);
       if (lev<finestLevel) {
