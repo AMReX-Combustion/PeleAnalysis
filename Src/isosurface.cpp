@@ -36,8 +36,9 @@ print_usage (int,
   std::cerr << "\t     finestLevel=<n> finest level to use in pltfile[DEF->all]\n";
   std::cerr << "\t     writeSurf=<1,0> output surface in binary MEF format [DEF->1]\n";
   std::cerr << "\t     outfile=<s> name of tecplot output file [DEF->gen'd]\n";
-  std::cerr << "\t     finestLevel=<#> finest level to use [DEF->pltfile finest]>\n";
-  exit(1);
+  std::cerr << "\t     build_distance_function=<t,f> create cc signed distance function [DEF->f]\n";
+  std::cerr << "\t     rm_ext_elts=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
+exit(1);
 }
 
 struct Edge
@@ -1081,8 +1082,8 @@ main (int   argc,
   int nodeCtr = 0;
 
   const int nodesPerElt = BL_SPACEDIM;
-  bool remove_extended_elements = true;
-  pp.query("remove_extended_elements",remove_extended_elements);
+  bool tm_ext_elts = true;
+  pp.query("tm_ext_elts",tm_ext_elts);
   bool build_distance_function = false;
   pp.query("build_distance_function",build_distance_function);
   Vector<std::unique_ptr<MultiFab>> distance(Nlev);
@@ -1296,6 +1297,9 @@ main (int   argc,
 
       if (build_distance_function && elements.size()>0)
       {
+#if BL_SPACEDIM==2
+        Abort("Distance function not worked out for 2D yet");
+#else
         std::vector<Vec3f> vertList;
         std::vector<Vec3ui> faceList;
 
@@ -1345,6 +1349,7 @@ main (int   argc,
             }
           }
         }
+#endif
       }
       else
       {
@@ -1353,7 +1358,7 @@ main (int   argc,
         (*distance[lev])[mfi].setVal(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
       }
 
-      if (remove_extended_elements)
+      if (tm_ext_elts)
       {
         // If all nodes of element not in g1box, remove before merging set with master list
         std::set<PMapIt,PMapItCompare> ptsToRm;
