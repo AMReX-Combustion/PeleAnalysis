@@ -8,7 +8,6 @@
 #include <AMReX_BLFort.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
-
 #include "makelevelset3.h"
 
 using namespace amrex;
@@ -37,21 +36,10 @@ print_usage (int,
   std::cerr << "\t     finestLevel=<n> finest level to use in pltfile[DEF->all]\n";
   std::cerr << "\t     writeSurf=<1,0> output surface in binary MEF format [DEF->1]\n";
   std::cerr << "\t     outfile=<s> name of tecplot output file [DEF->gen'd]\n";
-  std::cerr << "\t     finestLevel=<#> finest level to use [DEF->pltfile finest]>\n";
-  exit(1);
+  std::cerr << "\t     build_distance_function=<t,f> create cc signed distance function [DEF->f]\n";
+  std::cerr << "\t     rm_ext_elts=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
+exit(1);
 }
-
-extern "C" {
-  void setloc(const int* lo,  const int* hi,
-              Real* U, const int* Ulo, const int* Uhi,
-              const Real* dx, const Real* domlo);
-
-  void setcloc(const int* lo,  const int* hi,
-               Real* U, const int* Ulo, const int* Uhi,
-               const Real* fdx, const Real* domnlo, const int* ratio);
-
-}
-
 
 struct Edge
 {
@@ -1094,8 +1082,8 @@ main (int   argc,
   int nodeCtr = 0;
 
   const int nodesPerElt = BL_SPACEDIM;
-  bool remove_extended_elements = true;
-  pp.query("remove_extended_elements",remove_extended_elements);
+  bool tm_ext_elts = true;
+  pp.query("tm_ext_elts",tm_ext_elts);
   bool build_distance_function = false;
   pp.query("build_distance_function",build_distance_function);
   Vector<std::unique_ptr<MultiFab>> distance(Nlev);
@@ -1171,28 +1159,33 @@ main (int   argc,
       distance[lev].reset(new MultiFab(gridArray[lev],dm,1,0));
     }
 
-    if (lev!=0)
-    {
-      for (MFIter mfi(state); mfi.isValid(); ++mfi)
-      {
-        FArrayBox& fab = state[mfi];
-        const Box& box = fab.box();
-        const int ratio = pf.refRatio(lev-1);
-        setcloc(BL_TO_FORTRAN_BOX(box),
-                BL_TO_FORTRAN_ANYD(fab),
-                &(dxf[0]), &(plo[0]), &ratio);
-      }
-    }
-
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
     {
-      FArrayBox& fab = state[mfi];
-      const Box& box = gridArray[lev][mfi.index()];
-      setloc(BL_TO_FORTRAN_BOX(box),
-             BL_TO_FORTRAN_ANYD(fab),
-             &(dxf[0]), &(plo[0]));
+      const auto& f = state.array(mfi);
+      const Box& gbox = state[mfi].box();
+      const int ratio = pf.refRatio(lev-1);
+      Real loc[BL_SPACEDIM];
+      if (lev!=0)
+      {
+        const Real ri = 1./ratio;
+
+        AMREX_PARALLEL_FOR_3D ( gbox, i, j, k,
+        {
+          f(i,j,k,0) = ((i < 0 ? i*ri-1  : i*ri) + 0.5)*dxf[0]*ratio + plo[0];
+          f(i,j,k,1) = ((j < 0 ? j*ri-1  : j*ri) + 0.5)*dxf[1]*ratio + plo[1];
+          f(i,j,k,2) = ((k < 0 ? k*ri-1  : k*ri) + 0.5)*dxf[2]*ratio + plo[2];
+        });
+      }
+
+      const Box& vbox = gridArray[lev][mfi.index()];
+      AMREX_PARALLEL_FOR_3D ( vbox, i, j, k,
+      {
+        f(i,j,k,0) = (i + 0.5)*dxf[0] + plo[0];
+        f(i,j,k,1) = (j + 0.5)*dxf[1] + plo[1];
+        f(i,j,k,2) = (k + 0.5)*dxf[2] + plo[2];
+      });
     }
-    
+
     state.FillBoundary(0,BL_SPACEDIM,geoms[lev].periodicity()); // After this, bad data in periodic directions however
 
     // In periodic direction, manually shift the coordinate back to its original location
@@ -1304,58 +1297,71 @@ main (int   argc,
 
       if (build_distance_function)
       {
-        std::vector<Vec3f> vertList;
-        std::vector<Vec3ui> faceList;
-
-        std::map<PMapIt,unsigned int,PMapItCompare> ptID;
-        unsigned int id = 0;
-        for (PMapIt it=vertCache.begin(); it!=vertCache.end(); ++it)
+        if (elements.size()>0)
         {
-          const auto& loc = it->second;
-          vertList.push_back(Vec3f(loc[0],loc[1],loc[2]));
-          ptID[it] = id++;
-        }
+#if BL_SPACEDIM==2
+          Abort("Distance function not worked out for 2D yet");
+#else
+          std::vector<Vec3f> vertList;
+          std::vector<Vec3ui> faceList;
 
-        for (const auto& elt : elements)
-        {
-          faceList.push_back(Vec3ui(ptID[elt[0]],ptID[elt[1]],ptID[elt[2]]));
-        }
-
-        const Box& vbox = gridArray[lev][mfi.index()];
-        Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dxf[0],
-                           plo[1] + vbox.smallEnd()[1]*dxf[1],
-                           plo[2] + vbox.smallEnd()[2]*dxf[2]);
-        Array3f phi_grid;
-        float dx = float(dxf[0]);
-        make_level_set3(faceList, vertList, local_origin, dx,
-                        vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
-
-        vertList.clear();
-        faceList.clear();
-        ptID.clear();
-
-        const auto& d = distance[lev]->array(mfi);
-        const auto& sfaba = state.array(mfi);
-        const int* lo = vbox.loVect();
-        const int* hi = vbox.hiVect();
-        for (int k=lo[2]; k<=hi[2]; ++k)
-        {
-          int kL=k-lo[2];
-          for (int j=lo[1]; j<=hi[1]; ++j)
+          std::map<PMapIt,unsigned int,PMapItCompare> ptID;
+          unsigned int id = 0;
+          for (PMapIt it=vertCache.begin(); it!=vertCache.end(); ++it)
           {
-            int jL=j-lo[1];
-            for (int i=lo[0]; i<=hi[0]; ++i)
+            const auto& loc = it->second;
+            vertList.push_back(Vec3f(loc[0],loc[1],loc[2]));
+            ptID[it] = id++;
+          }
+
+          for (const auto& elt : elements)
+          {
+            faceList.push_back(Vec3ui(ptID[elt[0]],ptID[elt[1]],ptID[elt[2]]));
+          }
+
+          const Box& vbox = gridArray[lev][mfi.index()];
+          Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dxf[0],
+                             plo[1] + vbox.smallEnd()[1]*dxf[1],
+                             plo[2] + vbox.smallEnd()[2]*dxf[2]);
+          Array3f phi_grid;
+          float dx = float(dxf[0]);
+          make_level_set3(faceList, vertList, local_origin, dx,
+                          vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
+
+          vertList.clear();
+          faceList.clear();
+          ptID.clear();
+
+          const auto& d = distance[lev]->array(mfi);
+          const auto& sfaba = state.array(mfi);
+          const int* lo = vbox.loVect();
+          const int* hi = vbox.hiVect();
+          for (int k=lo[2]; k<=hi[2]; ++k)
+          {
+            int kL=k-lo[2];
+            for (int j=lo[1]; j<=hi[1]; ++j)
             {
-              int iL=i-lo[0];
-              Real abs_d = std::min(dmax,Real(phi_grid(iL,jL,kL)));
-              int sgn = sfaba(i,j,k,isoComp) < isoVal ? -1 : +1;
-              d(i,j,k) = sgn * abs_d;
+              int jL=j-lo[1];
+              for (int i=lo[0]; i<=hi[0]; ++i)
+              {
+                int iL=i-lo[0];
+                Real abs_d = std::min(dmax,Real(phi_grid(iL,jL,kL)));
+                int sgn = sfaba(i,j,k,isoComp) < isoVal ? -1 : +1;
+                d(i,j,k) = sgn * abs_d;
+              }
             }
           }
+#endif
+        }
+        else
+        {
+          const auto& vb = gridArray[lev][mfi.index()];
+          const auto& iv = vb.smallEnd();
+          (*distance[lev])[mfi].setVal(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
         }
       }
 
-      if (remove_extended_elements)
+      if (tm_ext_elts)
       {
         // If all nodes of element not in g1box, remove before merging set with master list
         std::set<PMapIt,PMapItCompare> ptsToRm;
@@ -1418,7 +1424,6 @@ main (int   argc,
     }
   }
 
-  Print(Print::AllProcs) << " proc: " << ParallelDescriptor::MyProc() << " at barrier" << std::endl;
   ParallelDescriptor::Barrier();
   if (build_distance_function) {
     std::string outfile("distance");
@@ -1427,7 +1432,6 @@ main (int   argc,
     Vector<IntVect> refRatio(Nlev-1);
     Vector<const MultiFab*> ptrs(Nlev);
     for (int lev=0; lev<Nlev; ++lev) {
-      Print(Print::AllProcs) << "lev: " << lev << " proc: " << ParallelDescriptor::MyProc() << std::endl;
       ptrs[lev] = distance[lev].get();
       levelSteps[lev] = pf.levelStep(lev);
       if (lev<finestLevel) {
