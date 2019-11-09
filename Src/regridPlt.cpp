@@ -128,9 +128,16 @@ main (int   argc,
     Vector<int> levelSteps(Nlev);
     Vector<IntVect> refRatio(Nlev-1);
     Vector<const MultiFab*> dat(Nlev);
+
+    RealBox rb(&(amrData.ProbLo()[0]),
+               &(amrData.ProbHi()[0]));
+    Vector<int> is_per(BL_SPACEDIM,1);
+    pp.queryarr("is_per",is_per,0,BL_SPACEDIM);
+    int coord = 0;
+
     for (int lev=0; lev<Nlev; ++lev)
     {
-      geoms[lev] = Geometry(amrData.ProbDomain()[lev]);
+      geoms[lev] = Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
       levelSteps[lev] = 666;
       if (lev < Nlev-1) {
         int r = amrData.RefRatio()[lev];
