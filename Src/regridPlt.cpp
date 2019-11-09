@@ -87,7 +87,10 @@ main (int   argc,
             comps[i] = sComp + i;
     }
 
-    int Nlev = amrData.FinestLevel() + 1;
+    int finestLevel = amrData.FinestLevel();
+    int Nlev = finestLevel + 1;
+    pp.query("finestLevel",finestLevel);
+    Nlev = std::max(0, std::min(Nlev, finestLevel+1));
 
     int max_grid_size = 128;
     pp.query("max_grid_size",max_grid_size);
