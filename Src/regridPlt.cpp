@@ -4,8 +4,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
-#include <AppendToPlotFile.H>
+#include <AMReX_PlotFileUtil.H>
 
 using namespace amrex;
 
@@ -122,9 +121,30 @@ main (int   argc,
     Vector<std::string> names(nComp);
     for (int i=0; i<comps.size(); ++i)
         names[i] = amrData.PlotVarNames()[comps[i]];
+
+    Vector<Geometry> geoms(Nlev);
+    Vector<int> levelSteps(Nlev);
+    Vector<IntVect> refRatio(Nlev-1);
+    Vector<const MultiFab*> dat(Nlev);
+
+    RealBox rb(&(amrData.ProbLo()[0]),
+               &(amrData.ProbHi()[0]));
+    Vector<int> is_per(BL_SPACEDIM,1);
+    pp.queryarr("is_per",is_per,0,BL_SPACEDIM);
+    int coord = 0;
+
+    for (int lev=0; lev<Nlev; ++lev)
+    {
+      geoms[lev] = Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
+      levelSteps[lev] = 666;
+      if (lev < Nlev-1) {
+        int r = amrData.RefRatio()[lev];
+        refRatio[lev] = IntVect(D_DECL(r,r,r));
+      }
+      dat[lev] = fileData[lev];
+    }
     
-    bool verb = false;
-    WritePlotFile(fileData,amrData,outfile,verb,names);
+    WriteMultiLevelPlotfile(outfile,Nlev,dat,names,geoms,amrData.Time(),levelSteps,refRatio);
     }
     amrex::Finalize();
     return 0;
