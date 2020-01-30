@@ -136,7 +136,7 @@ main (int   argc,
           for (int n=0; n<NUM_SPECIES; ++n) {
             Y(i,j,k,idYout+n) = Yl[n];
           }
-          Tout(i,j,k,idTout) = Tin(i,j,k,idTin);
+          Tout(i,j,k,idTout) = Tin(i,j,k,idTlocal);
         });
       }
 
