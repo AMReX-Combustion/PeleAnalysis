@@ -118,6 +118,8 @@ void findDE(const vector<Real>& A,
         fBC = (B[comp]-binLO[abin])/(B[comp]-C[comp]);
     }
 
+    AMREX_ALWAYS_ASSERT(fAC>=0 && fAC<=1 && fBC>=0 && fBC<=1);
+
     // Interpolate all states to the interface
     for (int i=0; i<A.size(); ++i)
     {
@@ -154,6 +156,7 @@ void findFG(const vector<Real>& A,
         fAB = (A[comp]-binLO[abin])/(A[comp]-B[comp]);
         fAC = (A[comp]-binLO[abin])/(A[comp]-C[comp]);
     }
+    AMREX_ALWAYS_ASSERT(fAB>=0 && fAB<=1 && fAC>=0 && fAC<=1);
     for (int i=0; i<A.size(); ++i)
     {
         F[i] = A[i] - fAB*(A[i] - B[i]);
@@ -238,8 +241,9 @@ void processTriangle(const vector<Real>& Ai, const vector<int>& AbinI,
 {
     const Real area = triangleArea(Ai,Bi,Ci);
 
-    if (area < areaEps)
-        return;
+    if (area < areaEps) {
+      return;
+    }
 
     if (binID >= AbinI.size())
     {
@@ -334,16 +338,34 @@ main (int   argc,
   {
     ParmParse pp;
 
-    std::string infile; pp.get("infile",infile);
     bool dumpFab = false; pp.query("dumpFab",dumpFab);
     std::string fabFileBase="bin"; pp.query("fabFileBase",fabFileBase);
 
+    vector<vector<Real> > nodeVec;
+    vector<vector<int> > eltVec;
+
+#define DEBUG_TEST
+#undef DEBUG_TEST
+#ifdef DEBUG_TEST
+    int nPts = 4;
+    int nElts = 2;
+    int nComp = 3;
+    nodeVec.resize(nPts);
+    nodeVec[0] = {0, 0, 0};
+    nodeVec[1] = {0, 1, 0};
+    nodeVec[2] = {0, 1, 1};
+    nodeVec[3] = {0, 0, 1};
+    eltVec.resize(nElts);
+    eltVec[0] = {1, 2, 3};
+    eltVec[1] = {1, 3, 4};
+#else
+    std::string infile; pp.get("infile",infile);
     std::ifstream ifs;
     ifs.open(infile.c_str());
 
     const std::string title = parseTitle(ifs);
     const std::vector<std::string> names = parseVarNames(ifs);
-    const int nComp = names.size();
+    int nComp = names.size();
 
     size_t nElts;
     int MYLEN;
@@ -351,6 +373,44 @@ main (int   argc,
     ifs >> MYLEN;
     if (ParallelDescriptor::IOProcessor())
       cerr << "...finished reading data header" << endl;
+
+    // Read MEF data
+    FArrayBox nodeFab;
+    nodeFab.readFrom(ifs);
+    Real* nodeData = nodeFab.dataPtr();
+    int nPts = nodeFab.box().numPts();
+    if (ParallelDescriptor::IOProcessor())
+      cerr << "..." << nPts << " nodes read from data file (nComp=" << nComp << ")" << endl;
+
+    // Rotate data to be accessible pointwise for triangle stuff below
+    nodeVec.resize(nPts);
+    for (int i=0; i<nPts; ++i)
+    {
+      nodeVec[i].resize(nComp);
+      for (int n=0; n<nComp; ++n)
+        nodeVec[i][n] = *nodeData++;
+    }
+    nodeFab.clear();
+
+    Vector<int> connData(nElts*MYLEN,0);
+    ifs.read((char*)connData.dataPtr(),sizeof(int)*connData.size());
+    if (ParallelDescriptor::IOProcessor())
+      cerr << "..." << nElts << " elements read from data file" << endl;
+
+    // Rearrange elt data into handy format (this sure takes a while...)
+    eltVec.resize(nElts);
+    int cnt = 0;
+    for (int i=0; i<nElts; ++i)
+    {
+      eltVec[i].resize(MYLEN);
+      for (int n=0; n<MYLEN; ++n)
+        eltVec[i][n]=connData[cnt++];
+    }
+    connData.clear();
+
+    if (ParallelDescriptor::IOProcessor())
+      cerr << "...finished reading data" << endl;
+#endif
 
     vector<int> binComps;
     int nc;
@@ -439,45 +499,9 @@ main (int   argc,
       }
     }
 
-    Real areaEps = 1.e-12; pp.query("areaEps",areaEps);
+    Real areaEps = 1.e-20; pp.query("areaEps",areaEps);
 
 
-    // Read MEF data
-    FArrayBox nodeFab;
-    nodeFab.readFrom(ifs);
-    Real* nodeData = nodeFab.dataPtr();
-    int nPts = nodeFab.box().numPts();
-    if (ParallelDescriptor::IOProcessor())
-      cerr << "..." << nPts << " nodes read from data file (nComp=" << nComp << ")" << endl;
-
-    // Rotate data to be accessible pointwise for triangle stuff below
-    vector<vector<Real> > nodeVec(nPts);
-    for (int i=0; i<nPts; ++i)
-    {
-      nodeVec[i].resize(nComp);
-      for (int n=0; n<nComp; ++n)
-        nodeVec[i][n] = *nodeData++;
-    }
-    nodeFab.clear();
-    
-    Vector<int> connData(nElts*MYLEN,0);
-    ifs.read((char*)connData.dataPtr(),sizeof(int)*connData.size());
-    if (ParallelDescriptor::IOProcessor())
-      cerr << "..." << nElts << " elements read from data file" << endl;
-
-    // Rearrange elt data into handy format (this sure takes a while...)
-    vector<vector<int> > eltVec(nElts);
-    int cnt = 0;
-    for (int i=0; i<nElts; ++i)
-    {
-      eltVec[i].resize(MYLEN);
-      for (int n=0; n<MYLEN; ++n)
-        eltVec[i][n]=connData[cnt++];
-    }
-    connData.clear();
-
-    if (ParallelDescriptor::IOProcessor())
-      cerr << "...finished reading data" << endl;
 
     //
     // Let each CPU process a non-intersecting group of the triangles.
@@ -501,13 +525,13 @@ main (int   argc,
         const vector<Real>& A = nodeVec[E[0]-1];
         const vector<Real>& B = nodeVec[E[1]-1];
         const vector<Real>& C = nodeVec[E[2]-1];
-            
+
         vector<int> Abin = getBin(A,binComps,binLO,binMax);
         vector<int> Bbin = getBin(B,binComps,binLO,binMax);
         vector<int> Cbin = getBin(C,binComps,binLO,binMax);
             
         area += triangleArea(A,B,C);
-            
+
         processTriangle(A,Abin,B,Bbin,C,Cbin,bins,binLO,binMax,areaEps,binComps,
                         condComp,condVal,condSgn,condApply);
       }
