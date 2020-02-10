@@ -351,13 +351,15 @@ main (int   argc,
     int nElts = 2;
     int nComp = 3;
     nodeVec.resize(nPts);
-    nodeVec[0] = {0, 0, 0};
-    nodeVec[1] = {0, 1, 0};
-    nodeVec[2] = {0, 1, 1};
-    nodeVec[3] = {0, 0, 1};
+    nodeVec[0] = {-.1, -.1, 0};
+    nodeVec[1] = {1.1, -.1, 0};
+    nodeVec[2] = {1.1, 1.1, 0};
+    nodeVec[3] = {-.1, 1.1, 0};
     eltVec.resize(nElts);
     eltVec[0] = {1, 2, 3};
     eltVec[1] = {1, 3, 4};
+    // run with: binComps=0 1 binMin=0 0  binMax=1 1 nBins=1 1
+    // Total area of this surface: 1.44 (sum of bins: 1)
 #else
     std::string infile; pp.get("infile",infile);
     std::ifstream ifs;
