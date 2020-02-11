@@ -7,6 +7,7 @@ PeleAnalysis documentation
    :maxdepth: 2
    :caption: Contents:
 
+   data
    buildPMF
    conditionalMean
    combinePlts
