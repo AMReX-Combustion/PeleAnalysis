@@ -1,14 +1,14 @@
 AMREX_HOME ?= ../../..
 
 DEBUG	      = FALSE
-DIM	      = 3
+DIM	      = 2
 COMP          = gcc
 PRECISION     = DOUBLE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
-EBASE         = isosurface
+#EBASE         = isosurface
 #EBASE         = stream
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
@@ -21,6 +21,7 @@ EBASE         = isosurface
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
+EBASE         = scatterplot
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
