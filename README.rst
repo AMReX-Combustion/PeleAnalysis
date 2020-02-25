@@ -17,20 +17,20 @@ To add a new feature to PeleAnalysis, the procedure is:
 
     git checkout -b AmazingNewFeature
 
-2. Develop the feature, merging changes often from the development branch into your AmazingNewFeature branch ::
+2. Develop the feature, merging changes often from the `master` branch into your AmazingNewFeature branch ::
    
     git commit -m "Developed AmazingNewFeature"
-    git checkout development
-    git pull                     [fix any identified conflicts between local and remote branches of "development"]
+    git checkout master
+    git pull                     [fix any identified conflicts between local and remote branches of "master"]
     git checkout AmazingNewFeature
-    git merge development        [fix any identified conflicts between "development" and "AmazingNewFeature"]
+    git merge master        [fix any identified conflicts between "master" and "AmazingNewFeature"]
 
 3. Push feature branch to PeleAnalysis repository (if you have write access, otherwise fork the repo and
 push the new branch to your fork)::
 
     git push -u origin AmazingNewFeature [Note: -u option required only for the first push of new branch]
 
-4.  Submit a merge request through the github project page - be sure you are requesting to merge your branch to the development branch.
+4.  Submit a merge request through the github project page - be sure you are requesting to merge your branch to the master branch.
 
 
 
