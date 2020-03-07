@@ -83,7 +83,7 @@ FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms,
     int idummy1=0, idummy2=0;
     for (MFIter mfi(growScrFC);mfi.isValid();++mfi) {
         pc_interp.interp(growScrCRSE[mfi],0,growScrFC[mfi],0,1,growScrFC[mfi].box(),
-                         refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2);
+                         refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2,RunOn::Cpu);
     }    
     // Finally, build correct c-f boxes and copy-on-intersect from interp data
     const BoxArray cfBoxesFINE = BoxArray(GetBndryCells(fine_ba,nGrow));
