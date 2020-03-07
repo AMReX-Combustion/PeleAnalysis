@@ -8,25 +8,6 @@ module stream_module
 
 contains
 
-  subroutine pushvtog(lo, hi, dlo, dhi, U, U_lo, U_hi, nc) bind(c,name='pushvtog')
-    implicit none
-    integer, intent(in) :: nc, lo(3),  hi(3), dlo(3), dhi(3)
-    integer, intent(in) :: U_lo(3), U_hi(3)
-    real(amrex_real), intent(inout) :: U(U_lo(1):U_hi(1),U_lo(2):U_hi(2),U_lo(3):U_hi(3),nc)
-
-    integer :: n
-    real(amrex_real) :: xlo(3), dx(3)
-
-    ! Make up something for these that gets what we want
-    dx(1:3)  = 1._amrex_real
-    xlo(1:3) = 0._amrex_real
-
-    do n = 1,nc
-       call hoextraptocc(U(:,:,:,n),U_lo(1),U_lo(2),U_lo(3),U_hi(1),U_hi(2),U_hi(3),lo,hi,dx,xlo)
-    enddo
-      
-  end subroutine pushvtog
-
   subroutine vtrace(T, T_lo, T_hi, nT, loc, loc_lo, loc_hi, nl,&
      &     ids, n_ids, g, g_lo, g_hi, computeVec, strm, strm_lo, strm_hi,&
      &     ncs, dx, plo, hRK, errFlag) bind(C,name="vtrace")

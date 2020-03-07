@@ -13,10 +13,6 @@
 using namespace amrex;
 
 extern "C" {
-  void pushvtog(const int* lo,  const int* hi,
-                const int* dlo, const int* dhi,
-                Real* U, const int* Ulo, const int* Uhi,
-                const int* nc);
   void vtrace(const Real* T,    const int* T_lo,    const int* T_hi,    const int* nT,
               const Real* loc,  const int* loc_lo,  const int* loc_hi,  const int* nl,
               const int*  ids,  const int* n_ids,
@@ -42,7 +38,9 @@ print_usage (int,
              char* argv[])
 {
     std::cerr << "usage:\n";
-    std::cerr << argv[0] << " infile plotfile=<string> isoFile=<string> streamFile=<string> [options] \n\tOptions:\n";
+    std::cerr << argv[0] << " infile plotfile=<string> [options] \n\tOptions:\n";
+    std::cerr << " isoFile=<string>  OR  seedLoc=<real real [real]\n";
+    std::cerr << " streamFile=<string>  OR  outFile=<string>\n"; 
     std::cerr << " is_per=<int int int> (DEF=1 1 1)\n";
     std::cerr << " finestLevel=<int> (DEF=finest level in plotfile)\n";
     std::cerr << " progressName=<string> (DEF=temp)\n";
@@ -331,14 +329,23 @@ add_angle_to_surf(const Vector<MultiFab*>&   paths,
                   const string&             angleName);
 
 void
-write_ml_streamline_data(const std::string&      outfile,
+write_ml_streamline_data(const std::string&       outfile,
                          const Vector<MultiFab*>& data,
-                         int                     sComp,
-                         const vector<string>&   names,
+                         int                      sComp,
+                         const vector<string>&    names,
                          const Vector<int>&       faceData,
-                         int                     nElts,
+                         int                      nElts,
                          const Vector<Vector<Vector<int> > >& inside_nodes,
-                         const AmrData&          amrdata);
+                         const AmrData&           amrdata);
+
+void
+dump_ml_streamline_data(const std::string&       outfile,
+                        const Vector<MultiFab*>& data,
+                        int                      sComp,
+                        const vector<string>&    names,
+                        const Vector<int>&       faceData,
+                        int                      nElts,
+                        const Vector<Vector<Vector<int> > >& inside_nodes);
 
 void
 write_iso(const std::string&    outfile,
@@ -415,11 +422,6 @@ main (int   argc,
     if (ParallelDescriptor::IOProcessor() && idC<0)
         std::cerr << "Cannot find required data in pltfile" << std::endl;
 
-    // Get output filename
-    std::string streamFile; pp.get("streamFile",streamFile);
-    if (!streamFile.empty() && streamFile[streamFile.length()-1] != '/')
-        streamFile += '/';
-
     // Read in seed pt locations
     FArrayBox nodes;
     Vector<int> faceData;
@@ -429,7 +431,6 @@ main (int   argc,
     std::vector<std::string> surfNames;
     if (pp.countval("isoFile")>0)
     {
-    
       // Read in isosurface
       std::string isoFile; pp.get("isoFile",isoFile);
       if (ParallelDescriptor::IOProcessor())
@@ -844,18 +845,33 @@ main (int   argc,
             std::cerr << "Derive finished for level " << lev << std::endl;
     }
 
-    ParallelDescriptor::Barrier();
-    if (ParallelDescriptor::IOProcessor())
+    if (pp.countval("streamFile") > 0)
+    {
+      ParallelDescriptor::Barrier();
+      if (ParallelDescriptor::IOProcessor())
         std::cerr << "Writing the streamline data " << std::endl;
 
-    strt_io = ParallelDescriptor::second();
-    int sComp = 0; // write stream lines ...
-    write_ml_streamline_data(streamFile,streamlines,sComp,strNames,faceData,nElts,inside_nodes,amrData);
-    io_time += ParallelDescriptor::second() - strt_io;
+      // Get output filename
+      std::string streamFile; pp.get("streamFile",streamFile);
+      if (!streamFile.empty() && streamFile[streamFile.length()-1] != '/')
+        streamFile += '/';
+    
+      int sComp = 0; // write stream lines ...
+      strt_io = ParallelDescriptor::second();
+      write_ml_streamline_data(streamFile,streamlines,sComp,strNames,faceData,nElts,inside_nodes,amrData);
+      io_time += ParallelDescriptor::second() - strt_io;
 
-    if (ParallelDescriptor::IOProcessor())
+      if (ParallelDescriptor::IOProcessor())
         std::cerr << "...done writing the streamline data " << std::endl;
-
+    }
+    else
+    {
+      std::string outFile;
+      if (pp.countval("outFile")==0) Abort("Must specify streamFile or outFile");
+      pp.get("outFile",outFile);
+      dump_ml_streamline_data(outFile,streamlines,0,strNames,faceData,nElts,inside_nodes);
+    }
+    
     if (buildAltSurf)
     {
         FArrayBox altSurfNodes;
@@ -2108,4 +2124,61 @@ write_ml_streamline_data(const std::string&       outfile,
             VisMF::Write(tmp,FabDataFile);
         }
     }
+}
+
+void
+dump_ml_streamline_data(const std::string&       outFile,
+                        const Vector<MultiFab*>& data,
+                        int                      sComp,
+                        const vector<string>&    names,
+                        const Vector<int>&       faceData,
+                        int                      nElts,
+                        const Vector<Vector<Vector<int> > >& inside_nodes)
+{
+  // Create a folder and have each processor write their own data, one file per streamline
+  auto myProc = ParallelDescriptor::MyProc();
+  auto nProcs = ParallelDescriptor::NProcs();
+  int cnt = 0;
+  
+  if (!amrex::UtilCreateDirectory(outFile, 0755))
+    amrex::CreateDirectoryFailed(outFile);
+  ParallelDescriptor::Barrier();
+  
+  const Box nullBox(IntVect::TheZeroVector(),IntVect::TheZeroVector());
+  for (int lev=0; lev<data.size(); ++lev)
+  {
+    const auto& ba = data[lev]->boxArray();
+    const auto& dm = data[lev]->DistributionMap();
+    int nComp = data[lev]->nComp();
+    for (int j=0; j<ba.size(); ++j)
+    {
+      if (dm[j] == myProc)
+      {
+        const auto& b = ba[j];
+        if (b!=nullBox)
+        {
+          std::string fileName = outFile + "/str_";
+          fileName = Concatenate(fileName,myProc) + "_";
+          fileName = Concatenate(fileName,cnt++);
+          std::ofstream ofs(fileName.c_str());
+
+          for (int i=0; i<names.size(); ++i) {
+            ofs << names[i] << " ";
+          }
+          ofs << '\n';
+          
+          for (auto iv=b.smallEnd(); iv<=b.bigEnd(); b.next(iv))
+          {
+            for (int i=sComp; i<nComp; ++i)
+            {
+              ofs << (*data[lev])[j](iv,i) << " ";
+            }
+            ofs << '\n';
+          }
+          ofs.close();
+        }
+      }
+      ParallelDescriptor::Barrier();
+    }
+  }
 }
