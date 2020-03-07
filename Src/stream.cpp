@@ -7,7 +7,7 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
-
+#include <AMReX_Extrapolater.H>
 #include <AMReX_BLFort.H>
 
 using namespace amrex;
@@ -371,7 +371,7 @@ main (int   argc,
       char* argv[])
 {
     amrex::Initialize(argc,argv);
-
+    {
     Real strt_io, io_time = 0;
 
     if (argc < 2)
@@ -415,54 +415,75 @@ main (int   argc,
     if (ParallelDescriptor::IOProcessor() && idC<0)
         std::cerr << "Cannot find required data in pltfile" << std::endl;
 
-    // Read in isosurface
-    strt_io = ParallelDescriptor::second();
-    std::string isoFile; pp.get("isoFile",isoFile);
-    if (ParallelDescriptor::IOProcessor())
-        std::cerr << "Reading isoFile... " << isoFile << std::endl;
-
     // Get output filename
     std::string streamFile; pp.get("streamFile",streamFile);
     if (!streamFile.empty() && streamFile[streamFile.length()-1] != '/')
         streamFile += '/';
 
-    std::ifstream ifs;
-    ifs.open(isoFile.c_str(),std::ios::in|std::ios::binary);
-    const std::string title = parseTitle(ifs);
-    const std::vector<std::string> surfNames = parseVarNames(ifs);
-    const int nCompSurf = surfNames.size();
-
+    // Read in seed pt locations
+    FArrayBox nodes;
+    Vector<int> faceData;
     int nElts;
     int nodesPerElt;
-    ifs >> nElts;
-    ifs >> nodesPerElt;
+    int nSeedNodes, nCompSeedNodes;
+    std::vector<std::string> surfNames;
+    if (pp.countval("isoFile")>0)
+    {
+    
+      // Read in isosurface
+      std::string isoFile; pp.get("isoFile",isoFile);
+      if (ParallelDescriptor::IOProcessor())
+        std::cerr << "Reading isoFile... " << isoFile << std::endl;
+    
+      strt_io = ParallelDescriptor::second();
 
-    FArrayBox tnodes;
-    tnodes.readFrom(ifs);
-    int nNodes = tnodes.box().numPts();
+      std::ifstream ifs;
+      ifs.open(isoFile.c_str(),std::ios::in|std::ios::binary);
+      const std::string title = parseTitle(ifs);
+      surfNames = parseVarNames(ifs);
+      nCompSeedNodes = surfNames.size();
 
-    // "rotate" the data so that the components are 'in the right spot for fab data'
-    FArrayBox nodes(tnodes.box(),nCompSurf);
-    Real** np = new Real*[nCompSurf];
-    for (int j=0; j<nCompSurf; ++j)
+      ifs >> nElts;
+      ifs >> nodesPerElt;
+
+      FArrayBox tnodes;
+      tnodes.readFrom(ifs);
+      nSeedNodes = tnodes.box().numPts();
+
+      // transpose the data so that the components are 'in the right spot for fab data'
+      nodes.resize(tnodes.box(),nCompSeedNodes);
+      Real** np = new Real*[nCompSeedNodes];
+      for (int j=0; j<nCompSeedNodes; ++j)
         np[j] = nodes.dataPtr(j);
 
-    Real* ndat = tnodes.dataPtr();
-    for (int i=0; i<nNodes; ++i)
-    {
-        for (int j=0; j<nCompSurf; ++j)
+      Real* ndat = tnodes.dataPtr();
+      for (int i=0; i<nSeedNodes; ++i)
+      {
+        for (int j=0; j<nCompSeedNodes; ++j)
         {
-            np[j][i] = ndat[j];
+          np[j][i] = ndat[j];
         }
-        ndat += nCompSurf;
+        ndat += nCompSeedNodes;
+      }
+      delete [] np;
+      tnodes.clear();
+
+      faceData.resize(nElts*nodesPerElt,0);
+      ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
+      ifs.close();
     }
-    delete [] np;
-    tnodes.clear();
-
-    Vector<int> faceData(nElts*nodesPerElt,0);
-    ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
-    ifs.close();
-
+    else
+    {
+      nSeedNodes = 1;
+      nodes.resize(Box(IntVect::TheZeroVector(),IntVect::TheZeroVector()),BL_SPACEDIM);
+      nodesPerElt = 1;
+      nElts = 1;
+      faceData.resize(nElts*nodesPerElt,1);
+      surfNames = {D_DECL("X", "Y", "Z")};
+      Vector<Real> loc(BL_SPACEDIM); 
+      pp.getarr("seedLoc",loc,0,BL_SPACEDIM);
+      for (int i=0; i<BL_SPACEDIM; ++i) nodes(IntVect::TheZeroVector(),i) = loc[i];
+    }
     io_time += ParallelDescriptor::second() - strt_io;
     if (ParallelDescriptor::IOProcessor() && verbose>0)
         std::cerr << "...finished reading isoFile " << std::endl;
@@ -492,7 +513,7 @@ main (int   argc,
                  << bbur[0] << "," << bbur[1] << "," << bbur[2] << ")" << std::endl;
 
         trim_surface(bbll,bbur,nodes,faceData,nodesPerElt);
-        nNodes = nodes.box().numPts();
+        nSeedNodes = nodes.box().numPts();
         nElts = faceData.size() / nodesPerElt;
         BL_ASSERT(nElts*nodesPerElt == faceData.size());
 
@@ -728,6 +749,7 @@ main (int   argc,
 
         strt_io = ParallelDescriptor::second();
         amrData.FillVar(*state[lev],lev,inVarNames,destFillComps);
+        
         for (int i=0; i<inVarNames.size(); ++i)
             amrData.FlushGrids(amrData.StateNumber(inVarNames[i]));
         io_time += ParallelDescriptor::second() - strt_io;
@@ -742,20 +764,13 @@ main (int   argc,
 
         // Fill progress variable grow cells using interp over c-f boundaries
         {
-            // Do extrap to fill grow cells.  If not base grid, overwrite c-f grow cells with coarse interp
-            for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi)
+            state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
+            Extrapolater::FirstOrderExtrap(*state[lev],*geoms[lev],isoCompSt,nCompSt);
+            
+            if (lev>0)
             {
-                FArrayBox& fab = (*state[lev])[mfi];
-                const Box& box = mfi.validbox();
-                pushvtog(BL_TO_FORTRAN_BOX(box),
-                         BL_TO_FORTRAN_BOX(box),
-                         BL_TO_FORTRAN_N_ANYD(fab,isoCompSt),
-                         &nCompSt);
-            }
-                
-            if (lev>0) {
-
                 MultiFab growScr; // Container in c-f grow cells
+
                 FillCFgrowCells(amrData,ba,geoms,lev,*state[lev-1],isoCompSt,nCompSt,nGrow,growScr);
 
                 // Get data into grow-free mf to allow parallel copy for grabbing c-f data
@@ -811,7 +826,7 @@ main (int   argc,
                 int errFlag = 0;
 
                 vtrace(BL_TO_FORTRAN_N_ANYD(fab,isoCompSt),  &nCompSt,
-                       BL_TO_FORTRAN_N_ANYD(nodes,      0),  &nCompSurf,
+                       BL_TO_FORTRAN_N_ANYD(nodes,      0),  &nCompSeedNodes,
                        ids.dataPtr(), &n_ids,
                        BL_TO_FORTRAN_N_ANYD(*vec, vecComp),  &computeVec,
                        BL_TO_FORTRAN_N_ANYD(strm,       0),  &nCompStr,
@@ -956,12 +971,8 @@ main (int   argc,
 
             // Write the alt surface file
             strt_io = ParallelDescriptor::second();
-            vector<string> isoFileTokens = Tokenize(isoFile,".");
-            string altIsoFile = isoFileTokens[0];
-            for (int i=1; i<isoFileTokens.size()-1; ++i)
-                altIsoFile += string(".") + isoFileTokens[i];
+            string altIsoFile = "surf";
             string label;
-
             if (advectColdIso)
             {
                 altIsoFile += "_alt.mef";
@@ -1033,6 +1044,7 @@ main (int   argc,
         std::cout << "Min I/O time: " << io_time_min << '\n';
     }
 #endif
+    }
     amrex::Finalize();
     return 0;
 }

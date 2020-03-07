@@ -1,15 +1,15 @@
 AMREX_HOME ?= ../../..
 
 DEBUG	      = FALSE
-DIM	      = 3
+DIM	      = 2
 COMP          = gcc
 PRECISION     = DOUBLE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
-EBASE         = isosurface
-#EBASE         = stream
+#EBASE         = isosurface
+EBASE         = stream
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
 #EBASE         = streamSub
@@ -21,8 +21,8 @@ EBASE         = isosurface
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-NEEDS_f90_SRC = FALSE
-#NEEDS_f90_SRC = TRUE
+#NEEDS_f90_SRC = FALSE
+NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
@@ -34,7 +34,7 @@ endif
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
 
-Pdirs   := Base Boundary AmrCore Extern/amrdata
+Pdirs   := Base Boundary Amr AmrCore Extern/amrdata
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)
