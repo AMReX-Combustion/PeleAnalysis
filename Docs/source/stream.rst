@@ -91,7 +91,7 @@ Vector field
 ************
 
 Currently, the vector field can be constructed to align with the gradient of a scalar
-field, or with the flow velocity (if the option `traceAlongV = t`). The the velocity
+field, or with the flow velocity (if the option `traceAlongV = t`). If the the velocity
 field is not used, the required components of the gradient vector field (identified
 via the keyword, `progressName`) are computed on the fly with second-order centered
 differences.
