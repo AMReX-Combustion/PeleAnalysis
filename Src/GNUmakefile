@@ -34,7 +34,7 @@ endif
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
 
-Pdirs   := Base Boundary Amr AmrCore Extern/amrdata
+Pdirs   := Base Boundary AmrCore Extern/amrdata
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)
@@ -45,6 +45,12 @@ CEXE_sources += AppendToPlotFile.cpp WritePlotFile.cpp
 CEXE_headers += AppendToPlotFile.H   WritePlotFile.cpp
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
+
+CEXE_sources += AMReX_Extrapolater.cpp
+CEXE_headers += AMReX_Extrapolater.H
+f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
+INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
+VPATH_LOCATIONS += $(AMREX_HOME)/Src/Amr
 
 SDF_LOC = ../Tools/SDFGen
 include $(SDF_LOC)/Make.package

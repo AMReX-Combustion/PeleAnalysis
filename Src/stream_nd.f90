@@ -15,11 +15,11 @@ contains
     integer, intent(in) ::  nT, nl, computeVec, ncs, n_ids
     integer, intent(in) :: T_lo(3),T_hi(3),g_lo(3),g_hi(3),loc_lo(3),loc_hi(3),strm_lo(3),strm_hi(3)
     real(amrex_real), intent(in) :: T(T_lo(1):T_hi(1),T_lo(2):T_hi(2),T_lo(3):T_hi(3),nT)
-    real(amrex_real), intent(inout) :: g(g_lo(1):g_hi(1),g_lo(2):g_hi(2),g_lo(3):g_hi(3),dim)
+    real(amrex_real), intent(inout) :: g(g_lo(1):g_hi(1),g_lo(2):g_hi(2),g_lo(3):g_hi(3),3)
     real(amrex_real), intent(in) :: loc(loc_lo(1):loc_hi(1),loc_lo(2):loc_hi(2),loc_lo(3):loc_hi(3),nl)
     real(amrex_real), intent(inout) :: strm(strm_lo(1):strm_hi(1),strm_lo(2):strm_hi(2),strm_lo(3):strm_hi(3),ncs)
     integer, intent(in) :: ids(0:n_ids-1)
-    real(amrex_real), intent(in) :: dx(dim), plo(dim), hRK
+    real(amrex_real), intent(in) :: dx(3), plo(3), hRK
 
     integer :: i,j,k,n,m
     real(amrex_real) :: x(3),xp(3),xm(3)
@@ -142,14 +142,16 @@ contains
   subroutine ntrpv(x,g,g_lo,g_hi,dx,plo,u,nc,ok)
     implicit none
     integer, intent(in) :: nc
-    real(amrex_real), intent(in) :: x(dim), dx(dim), plo(dim)
+    real(amrex_real), intent(in) :: x(3), dx(3), plo(3)
     real(amrex_real), intent(inout) :: u(nc)
-    integer, intent(in) :: g_lo(dim), g_hi(dim)
+    integer, intent(in) :: g_lo(3), g_hi(3)
     real(amrex_real), intent(in) :: g(g_lo(1):g_hi(1),g_lo(2):g_hi(2),g_lo(3):g_hi(3),nc)
     logical, intent(inout) :: ok
 
-    integer :: b(dim), i
-    real(amrex_real) :: n(dim), tmp
+    integer :: b(3), i
+    real(amrex_real) :: n(3), tmp
+    b = 0
+    n = 0
     do i=1,dim
        tmp = (x(i) - plo(i)) / dx(i) - 0.5d0
        b(i) = FLOOR( tmp )
@@ -191,7 +193,7 @@ contains
 
   subroutine vnrml(vec)
     implicit none
-    real(amrex_real), intent(inout) :: vec(dim)
+    real(amrex_real), intent(inout) :: vec(3)
     real(amrex_real) :: eps, sum
     parameter (eps=1.e-12)
     integer :: i
