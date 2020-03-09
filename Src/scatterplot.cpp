@@ -1,9 +1,9 @@
 /*
  * =====================================================================================
  *
- *       Filename:  mytest6.cpp
+ *       Filename:  scatterplot.cpp
  *
- *    Description:  Test file 6 (Outputs for data anaylsys)
+ *    Description:  Create an output file from a Plot file that can be used to generate plots
  *
  *        Version:  1.0
  *        Created:  02/12/2020 02:51:30 PM
@@ -11,10 +11,15 @@
  *       Compiler:  gcc
  *
  *         Author:  Victor H. Zendejas Lopez
- *   Organization:  
+ *   Organization:  CCSE
  *
  * =====================================================================================
  */
+
+
+/*This code works in series only. Running in Parrelel will cause
+Errors to accumulate in outputfiles */
+
 #include <iostream>
 #include <string>
 #include <fstream>
