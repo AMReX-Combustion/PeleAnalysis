@@ -41,6 +41,15 @@ write_ml_streamline_data(const std::string&       outfile,
                          const Vector<Vector<Vector<int> > >& inside_nodes);
 
 void
+dump_ml_streamline_data(const std::string&       outfile,
+                        const Vector<MultiFab*>& data,
+                        int                      sComp,
+                        const vector<string>&    names,
+                        const Vector<int>&       faceData,
+                        int                      nElts,
+                        const Vector<Vector<Vector<int> > >& inside_nodes);
+
+void
 sample_pathlines(Vector<MultiFab*>&       sampledata,
                  int                      sComp,
                  int                      dComp,
@@ -69,6 +78,7 @@ main (int   argc,
       char* argv[])
 {
     amrex::Initialize(argc,argv);
+    {
     strt_time = ParallelDescriptor::second();
     io_time = 0;
 
@@ -111,6 +121,8 @@ main (int   argc,
 
     std::string pathFile; pp.get("pathFile",pathFile);
     vector<string> infileTokens = Tokenize(pathFile,".");
+
+    
     string outfile = infileTokens[0];
     for (int i=1; i<infileTokens.size()-1; ++i)
         outfile += string(".") + infileTokens[i];
@@ -191,9 +203,40 @@ main (int   argc,
     inVarNames[BL_SPACEDIM] = "distance_from_seed";
     for (int n=0; n<nCompPlt; ++n)
         inVarNames[n+BL_SPACEDIM+1] = plotVarNames[comps[n]];
-    strt_io = ParallelDescriptor::second();
-    write_ml_streamline_data(outfile, sampledata, inVarNames, faceData, nElts, inside_nodes);
-    io_time += ParallelDescriptor::second() - strt_io;
+
+
+    if (pp.countval("streamSampleFile") > 0)
+    {
+      ParallelDescriptor::Barrier();
+      if (ParallelDescriptor::IOProcessor())
+        std::cerr << "Writing the streamline data " << std::endl;
+
+      // Get output filename
+      std::string streamFile; pp.get("streamSampleFile",streamFile);
+      if (!streamFile.empty() && streamFile[streamFile.length()-1] != '/')
+        streamFile += '/';
+    
+      strt_io = ParallelDescriptor::second();
+      write_ml_streamline_data(streamFile,sampledata,inVarNames,faceData,nElts,inside_nodes);
+      io_time += ParallelDescriptor::second() - strt_io;
+
+      if (ParallelDescriptor::IOProcessor())
+        std::cerr << "...done writing the streamline data " << std::endl;
+    }
+    else
+    {
+      std::string outFile;
+      if (pp.countval("outFile")==0) Abort("Must specify streamSampleFile or outFile");
+      pp.get("outFile",outFile);
+      dump_ml_streamline_data(outFile,sampledata,0,inVarNames,faceData,nElts,inside_nodes);
+    }
+    
+
+
+    
+    //strt_io = ParallelDescriptor::second();
+    //write_ml_streamline_data(outfile, sampledata, inVarNames, faceData, nElts, inside_nodes);
+    //io_time += ParallelDescriptor::second() - strt_io;
 
 
     long nInsideNodes = 0;
@@ -204,6 +247,7 @@ main (int   argc,
     }
 
     amrex::Finalize();
+    }
     return 0;
 }
 
@@ -212,11 +256,11 @@ FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms,
                 MultiFab& crseSrc, int sComp, int nComp, int nGrow, MultiFab& growScr)
 {
     int refRatio = amrd.RefRatio()[lev-1];
+    //const BoxArray cfBoxesCRSE = CFBoxes(BoxArray(fine_ba).coarsen(refRatio),nGrow,*geoms[lev-1]);
     const BoxArray cfBoxesCRSE = BoxArray(GetBndryCells(BoxArray(fine_ba).coarsen(refRatio),nGrow));
     const DistributionMapping dmScrCRSE(cfBoxesCRSE);
     MultiFab growScrCRSE(cfBoxesCRSE,dmScrCRSE,nComp,0);
 
-    //const bool do_corners = true;
     crseSrc.FillBoundary(sComp,nComp,geoms[lev-1]->periodicity());
     
     BoxArray gcba = BoxArray(crseSrc.boxArray()).grow(nGrow);
@@ -234,8 +278,7 @@ FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms,
     int idummy1=0, idummy2=0;
     for (MFIter mfi(growScrFC);mfi.isValid();++mfi) {
         pc_interp.interp(growScrCRSE[mfi],0,growScrFC[mfi],0,1,growScrFC[mfi].box(),
-                         refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2);
-        //PcInterp(growScrFC[mfi],growScrCRSE[mfi],mfi.validbox(),refRatio);
+                         refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2,RunOn::Cpu);
     }    
     // Finally, build correct c-f boxes and copy-on-intersect from interp data
     const BoxArray cfBoxesFINE = BoxArray(GetBndryCells(fine_ba,nGrow));
@@ -328,6 +371,63 @@ write_ml_streamline_data(const std::string&      outfile,
 
         VisMF::Write(*data[lev],FabDataFile);
     }
+}
+
+void
+dump_ml_streamline_data(const std::string&       outFile,
+                        const Vector<MultiFab*>& data,
+                        int                      sComp,
+                        const vector<string>&    names,
+                        const Vector<int>&       faceData,
+                        int                      nElts,
+                        const Vector<Vector<Vector<int> > >& inside_nodes)
+{
+  // Create a folder and have each processor write their own data, one file per streamline
+  auto myProc = ParallelDescriptor::MyProc();
+  auto nProcs = ParallelDescriptor::NProcs();
+  int cnt = 0;
+  
+  if (!amrex::UtilCreateDirectory(outFile, 0755))
+    amrex::CreateDirectoryFailed(outFile);
+  ParallelDescriptor::Barrier();
+  
+  const Box nullBox(IntVect::TheZeroVector(),IntVect::TheZeroVector());
+  for (int lev=0; lev<data.size(); ++lev)
+  {
+    const auto& ba = data[lev]->boxArray();
+    const auto& dm = data[lev]->DistributionMap();
+    int nComp = data[lev]->nComp();
+    for (int j=0; j<ba.size(); ++j)
+    {
+      if (dm[j] == myProc)
+      {
+        const auto& b = ba[j];
+        if (b!=nullBox)
+        {
+          std::string fileName = outFile + "/str_";
+          fileName = Concatenate(fileName,myProc) + "_";
+          fileName = Concatenate(fileName,cnt++);
+          std::ofstream ofs(fileName.c_str());
+
+          for (int i=0; i<names.size(); ++i) {
+            ofs << names[i] << " ";
+          }
+          ofs << '\n';
+          
+          for (auto iv=b.smallEnd(); iv<=b.bigEnd(); b.next(iv))
+          {
+            for (int i=sComp; i<nComp; ++i)
+            {
+              ofs << (*data[lev])[j](iv,i) << " ";
+            }
+            ofs << '\n';
+          }
+          ofs.close();
+        }
+      }
+      ParallelDescriptor::Barrier();
+    }
+  }
 }
 
 void
@@ -592,7 +692,7 @@ sample_pathlines(Vector<MultiFab*>&       sampledata,
 
         const Geometry& geom = *geoms[lev];
         const Box& pd = amrData.ProbDomain()[lev];
-        if (Geometry::isAnyPeriodic())
+        if (geom.isAnyPeriodic())
         {
             Vector<IntVect> shifts;
             BoxList sbl;

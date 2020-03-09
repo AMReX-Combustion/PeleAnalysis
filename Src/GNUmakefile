@@ -21,7 +21,6 @@ USE_OMP       = FALSE
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-EBASE         = scatterplot
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
@@ -46,6 +45,12 @@ CEXE_sources += AppendToPlotFile.cpp WritePlotFile.cpp
 CEXE_headers += AppendToPlotFile.H   WritePlotFile.cpp
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
+
+CEXE_sources += AMReX_Extrapolater.cpp
+CEXE_headers += AMReX_Extrapolater.H
+f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
+INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
+VPATH_LOCATIONS += $(AMREX_HOME)/Src/Amr
 
 SDF_LOC = ../Tools/SDFGen
 include $(SDF_LOC)/Make.package
