@@ -37,7 +37,7 @@ print_usage (int,
   std::cerr << "\t     writeSurf=<1,0> output surface in binary MEF format [DEF->1]\n";
   std::cerr << "\t     outfile=<s> name of tecplot output file [DEF->gen'd]\n";
   std::cerr << "\t     build_distance_function=<t,f> create cc signed distance function [DEF->f]\n";
-  std::cerr << "\t     rm_ext_elts=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
+  std::cerr << "\t     rm_external_elements=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
 exit(1);
 }
 
