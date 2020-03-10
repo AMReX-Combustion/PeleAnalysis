@@ -10,7 +10,8 @@ USE_OMP       = FALSE
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-EBASE         = sampleStreamlines
+EBASE         = stream2plt
+#EBASE         = sampleStreamlines
 #EBASE         = streamScatter
 #EBASE         = streamSub
 #EBASE         = streamTubeStats
@@ -21,8 +22,8 @@ EBASE         = sampleStreamlines
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-#NEEDS_f90_SRC = FALSE
-NEEDS_f90_SRC = TRUE
+NEEDS_f90_SRC = FALSE
+#NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
@@ -30,6 +31,8 @@ CEXE_sources += $(EBASE).cpp
 ifeq ($(NEEDS_f90_SRC),TRUE)
   f90EXE_sources += $(EBASE)_nd.f90
 endif
+CEXE_headers += StreamData.H
+CEXE_sources += StreamData.cpp
 
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
