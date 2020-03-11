@@ -765,8 +765,8 @@ main (int   argc,
 
         // Fill progress variable grow cells using interp over c-f boundaries
         {
-            state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
             Extrapolater::FirstOrderExtrap(*state[lev],*geoms[lev],isoCompSt,nCompSt);
+            state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
             
             if (lev>0)
             {
