@@ -476,6 +476,7 @@ main (int   argc,
     else
     {
       nSeedNodes = 1;
+      nCompSeedNodes = BL_SPACEDIM;
       nodes.resize(Box(IntVect::TheZeroVector(),IntVect::TheZeroVector()),BL_SPACEDIM);
       nodesPerElt = 1;
       nElts = 1;
