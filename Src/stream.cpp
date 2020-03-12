@@ -10,6 +10,12 @@
 #include <AMReX_Extrapolater.H>
 #include <AMReX_BLFort.H>
 
+#define USE_PF
+#ifdef USE_PF
+#include <AMReX_PlotFileUtil.H>
+#include <AMReX_FillPatchUtil.H>
+#endif
+
 using namespace amrex;
 
 extern "C" {
@@ -728,6 +734,26 @@ main (int   argc,
     Vector<Geometry*> geoms(Nlev);
     Vector<MultiFab*> streamlines(Nlev);
 
+#ifdef USE_PF
+    PlotFileData pf(plotfile);
+    Vector<Vector<MultiFab>> pfdata(Nlev);
+    int nComp = inVarNames.size();
+    for (int lev=0; lev<Nlev; ++lev) {
+      pfdata[lev].resize(nComp);
+      Print() << "Reading the plotfile data at level " << lev
+              << "... (nComp,nGrow) = (" << nComp
+              << "," << nGrow << ")"<< std::endl;
+      for (int n=0; n<nComp; ++n) {
+        Print() << "   var = " << inVarNames[n] << "..." << std::endl;
+        pfdata[lev][n] = pf.get(lev,inVarNames[n]);
+      }
+      Print() << "...done reading the plotfile data at level " << lev << "..." << std::endl;
+    }
+    PhysBCFunctNoOp f;
+    CellBilinear cbi;
+    //PCInterp cbi;
+#endif
+
     for (int lev=0; lev<Nlev; ++lev)
     {
         const BoxArray ba = amrData.boxArray(lev);
@@ -749,7 +775,11 @@ main (int   argc,
             std::cerr << '\n';
         }
 
+        geoms[lev] = new Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
+
         strt_io = ParallelDescriptor::second();
+
+#ifndef USE_PF
         amrData.FillVar(*state[lev],lev,inVarNames,destFillComps);
         
         for (int i=0; i<inVarNames.size(); ++i)
@@ -760,13 +790,11 @@ main (int   argc,
                 << destFillComps.size() << " components)" << std::endl;
 
         //const bool do_corners = true;
-        geoms[lev] = new Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
 
         MultiFab bigMF(BoxArray(ba).grow(nGrow),dm,nCompSt,0); // handy structure to simplify parallel copies
 
         // Fill progress variable grow cells using interp over c-f boundaries
         {
-            Extrapolater::FirstOrderExtrap(*state[lev],*geoms[lev],isoCompSt,nCompSt);
             state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
             
             if (lev>0)
@@ -786,8 +814,32 @@ main (int   argc,
             }
         }
 
-        // Fix up fine-fine and periodic for idSmProg
+        // Fix up fine-fine and periodic
         state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
+#else
+        MultiFab gstate(ba,dm,1,nGrow); gstate.setVal(-666);
+        Real time=0;
+        for (int n=0; n<nComp; ++n) {
+          if (lev==0) {
+            FillPatchSingleLevel(gstate,time,{&pfdata[lev][n]},{time},0,0,1,*geoms[0],f,0);
+          }
+          else
+          {
+            BCRec bc;
+            FillPatchTwoLevels(gstate,time,{&pfdata[lev-1][n]},{time},{&pfdata[lev][n]},{time},0,0,1,
+                               *geoms[lev-1],*geoms[lev],f,0,f,0,amrData.RefRatio()[lev-1]*IntVect::Unit,&cbi,{bc},0);
+          }
+          state[lev]->copy(gstate,0,n,1,nGrow,nGrow,geoms[lev]->periodicity());
+        }
+#endif
+        // Set everything outside the domain to zero
+        for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi) {
+          FArrayBox& fab = (*state[lev])[mfi];
+          BoxArray bac = boxComplement(fab.box(),geoms[lev]->Domain());
+          for (int j=0; j<bac.size(); ++j) {
+            fab.setVal(0,bac[j],0,fab.nComp());
+          }
+        }
 
         if (ParallelDescriptor::IOProcessor())
             std::cerr << "Progress variable grow cells filled on level " << lev << std::endl;
@@ -2160,7 +2212,7 @@ dump_ml_streamline_data(const std::string&       outFile,
         {
           std::string fileName = outFile + "/str_";
           fileName = Concatenate(fileName,myProc) + "_";
-          fileName = Concatenate(fileName,cnt++);
+          fileName = Concatenate(fileName,cnt++) + ".dat";
           std::ofstream ofs(fileName.c_str());
 
           for (int i=0; i<names.size(); ++i) {
