@@ -45,7 +45,7 @@ print_usage (int,
 {
     std::cerr << "usage:\n";
     std::cerr << argv[0] << " infile plotfile=<string> [options] \n\tOptions:\n";
-    std::cerr << " isoFile=<string>  OR  seedLoc=<real real [real]\n";
+    std::cerr << " isoFile=<string>  OR  seedLoc=<real real [real]  OR  seedRakeL=<real real [real]> seedRakeR=<real real [real] seedRakeNum=<int>>\n";
     std::cerr << " streamFile=<string>  OR  outFile=<string>\n"; 
     std::cerr << " is_per=<int int int> (DEF=1 1 1)\n";
     std::cerr << " finestLevel=<int> (DEF=finest level in plotfile)\n";
