@@ -35,6 +35,8 @@ public:
                            amrex::Real                           a_delta_t,
                            const amrex::Vector<amrex::MultiFab>& a_vectorField);
 
+  void WriteStreamAsTecplot(const std::string& outfile);
+
 protected:
   int Nlev;
 

@@ -80,6 +80,9 @@ main (int   argc,
     }
 
     spc.WritePlotFile("junkPlt", "particles");
+    //spc.WriteAsciiFile ("part");
+
+    spc.WriteStreamAsTecplot("tec.dat");
   }
   Finalize();
   return 0;

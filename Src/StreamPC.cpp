@@ -296,3 +296,72 @@ ComputeNextLocation(int                      a_fromLoc,
     }
   }
 }
+
+void
+StreamParticleContainer::
+WriteStreamAsTecplot(const std::string& outFile)
+{
+  // Create a folder and have each processor write their own data, one file per streamline
+  auto myProc = ParallelDescriptor::MyProc();
+  auto nProcs = ParallelDescriptor::NProcs();
+  int cnt = 0;
+  
+  if (!amrex::UtilCreateDirectory(outFile, 0755))
+    amrex::CreateDirectoryFailed(outFile);
+  ParallelDescriptor::Barrier();
+
+  bool will_write = false;
+  for (int lev = 0; lev < Nlev && !will_write; ++lev)
+  {
+    for (MyParIter pti(*this, lev); pti.isValid() && !will_write; ++pti)
+    {
+      auto& aos = pti.GetArrayOfStructs();
+      auto& soa = pti.GetStructOfArrays();
+
+      for (int pindex=0; pindex<aos.size() && !will_write; ++pindex)
+      {
+        ParticleType& p = aos[pindex];
+        will_write |= (p.id() > 0);
+      }
+    }
+  }
+
+  if (will_write)
+  {
+    std::string fileName = outFile + "/str_";
+    fileName = Concatenate(fileName,myProc) + ".dat";
+    std::ofstream ofs(fileName.c_str());
+    ofs << "VARIABLES = " << AMREX_D_TERM("X ", "Y ", "Z") << '\n';
+
+    for (int lev = 0; lev < Nlev; ++lev)
+    {
+      for (MyParIter pti(*this, lev); pti.isValid(); ++pti)
+      {
+        auto& aos = pti.GetArrayOfStructs();
+        auto& soa = pti.GetStructOfArrays();
+
+        for (int pindex=0; pindex<aos.size(); ++pindex)
+        {
+          ParticleType& p = aos[pindex];
+          if (p.id() > 0)
+          {
+            ofs << "ZONE I=1 J=" << RealData::nPointOnStream << " k=1 FORMAT=POINT\n";
+            for (int j=0; j<RealData::nPointOnStream; ++j)
+            {
+              int offset = j*RealData::ncomp;
+              dim3 vals = {AMREX_D_DECL(soa.GetRealData(offset + RealData::xloc)[pindex],
+                                        soa.GetRealData(offset + RealData::yloc)[pindex],
+                                        soa.GetRealData(offset + RealData::zloc)[pindex])};
+              for (int d=0; d<AMREX_SPACEDIM; ++d)
+              {
+                ofs << vals[d] << " ";
+              }
+              ofs << '\n';
+            }
+          }
+        }
+      }
+    }
+    ofs.close();
+  }
+}
