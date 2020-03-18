@@ -68,18 +68,21 @@ main (int   argc,
     spc.InitParticles();
 
     Real hRK = 0.3; pp.query("hRK",hRK);
-    int redist_int = (int)(1 / hRK);
-    int Nsteps = RealData::nPointOnStream;
+    int redist_int = (int)(nGrow / hRK);
+    int Nsteps = RealData::nPointOnStream-1;
 
+    Real dt = 1.e-6;
     for (int step=0; step<Nsteps; ++step)
     {
       Print() << "Step " << step << std::endl;
       
       if (step % redist_int == 0) spc.Redistribute();
+
+      spc.ComputeNextLocation(step,dt,vectorField);
     }
 
     spc.WritePlotFile("junkPlt", "particles");
-
+    //spc.WriteAsciiFile ("part");
   }
   Finalize();
   return 0;

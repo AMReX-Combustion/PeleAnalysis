@@ -105,6 +105,7 @@ SetParticleLocation(int a_streamLoc)
 {    
   BL_PROFILE("StreamParticleContainer::SetParticleLocation");
   
+  int offset = RealData::ncomp * a_streamLoc;
   for (int lev = 0; lev < Nlev; ++lev)
   {
     for (MyParIter pti(*this, lev); pti.isValid(); ++pti)
@@ -112,13 +113,51 @@ SetParticleLocation(int a_streamLoc)
       auto& aos = pti.GetArrayOfStructs();
       auto& soa = pti.GetStructOfArrays();
 
-      for (auto& p : aos)
+      for (int pindex=0; pindex<aos.size(); ++pindex)
       {
-        auto id = p.id();
-        int offset = RealData::ncomp * a_streamLoc;
-        AMREX_D_EXPR(p.pos(0) = soa.GetRealData(offset + RealData::xloc)[id],
-                     p.pos(1) = soa.GetRealData(offset + RealData::yloc)[id],
-                     p.pos(2) = soa.GetRealData(offset + RealData::zloc)[id]);
+        ParticleType& p = aos[pindex];
+        if (p.id() > 0)
+        {
+          AMREX_D_EXPR(p.pos(0) = soa.GetRealData(offset + RealData::xloc)[pindex],
+                       p.pos(1) = soa.GetRealData(offset + RealData::yloc)[pindex],
+                       p.pos(2) = soa.GetRealData(offset + RealData::zloc)[pindex]);
+        }
+      }
+    }
+  }
+}
+
+void
+StreamParticleContainer::
+ComputeNextLocation(int                      a_fromLoc,
+                    Real                     a_delta_t,
+                    const Vector<MultiFab> & a_vectorField)
+{    
+  BL_PROFILE("StreamParticleContainer::ComputeNextLocation");
+
+  SetParticleLocation(a_fromLoc);
+  
+  const int new_loc_id = a_fromLoc + 1;
+  int offset = RealData::ncomp * new_loc_id;
+  Array<Real, AMREX_SPACEDIM> v = {AMREX_D_DECL(1, 1, 1)};
+
+  for (int lev = 0; lev < Nlev; ++lev)
+  {
+    for (MyParIter pti(*this, lev); pti.isValid(); ++pti)
+    {
+      auto& aos = pti.GetArrayOfStructs();
+      auto& soa = pti.GetStructOfArrays();
+
+      for (int pindex=0; pindex<aos.size(); ++pindex)
+      {
+        ParticleType& p = aos[pindex];
+        if (p.id() > 0)
+        {
+          const int dir = p.idata(1);
+          AMREX_D_EXPR(soa.GetRealData(offset + RealData::xloc)[pindex] = p.pos(0) + dir*v[0]*a_delta_t,
+                       soa.GetRealData(offset + RealData::yloc)[pindex] = p.pos(1) + dir*v[1]*a_delta_t,
+                       soa.GetRealData(offset + RealData::zloc)[pindex] = p.pos(2) + dir*v[2]*a_delta_t);
+        }
       }
     }
   }

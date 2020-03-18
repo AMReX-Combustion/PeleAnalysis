@@ -28,7 +28,12 @@ public:
                            const amrex::Vector<int>                        & a_rrs);
 
   void InitParticles();
+  
   void SetParticleLocation(int a_streamPos);
+  
+  void ComputeNextLocation(int                                   a_fromLoc,
+                           amrex::Real                           a_delta_t,
+                           const amrex::Vector<amrex::MultiFab>& a_vectorField);
 
 protected:
   int Nlev;
