@@ -27,12 +27,20 @@ InitParticles()
   int num_ppc = 2;
   int streamLoc = 0;
   int offset = RealData::ncomp*streamLoc;
-  
+
+  int finestLevel = Nlev - 1;
+  std::vector< std::pair<int,Box> > isects;
+  FArrayBox mask;
   for (int lev=0; lev<Nlev; ++lev)
   {
-    const Geometry& geom = Geom(lev);
-    const Real* dx = geom.CellSize();
-    const Real* plo = geom.ProbLo();
+    const auto& geom = Geom(lev);
+    const auto& dx = geom.CellSize();
+    const auto& plo = geom.ProbLo();
+
+    BoxArray baf;
+    if (lev < finestLevel) {
+      baf = BoxArray(ParticleBoxArray(lev+1)).coarsen(this->GetParGDB()->refRatio(lev));
+    }
 
     for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
     {
@@ -43,36 +51,48 @@ InitParticles()
       const int tile_id = mfi.LocalTileIndex();
       auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
 
+      mask.resize(tile_box,1);
+      mask.setVal(1);
+      if (lev < finestLevel) {
+        isects = baf.intersections(tile_box);
+        for (const auto& p : isects) {
+          mask.setVal(0,p.second,0,1);
+        }
+      }
+
       for (IntVect iv = tile_box.smallEnd(); iv <= tile_box.bigEnd(); tile_box.next(iv))
       {
-        for (int i_part=0; i_part<num_ppc; i_part++)
+        if (mask(iv,0) > 0)
         {
-          Array<Real,BL_SPACEDIM> loc = {AMREX_D_DECL(plo[0] + (iv[0] + 0.5)*dx[0],
-                                                      plo[1] + (iv[1] + 0.5)*dx[1],
-                                                      plo[2] + (iv[2] + 0.5)*dx[2])};
+          for (int i_part=0; i_part<num_ppc; i_part++)
+          {
+            Array<Real,BL_SPACEDIM> loc = {AMREX_D_DECL(plo[0] + (iv[0] + 0.5)*dx[0],
+                                                        plo[1] + (iv[1] + 0.5)*dx[1],
+                                                        plo[2] + (iv[2] + 0.5)*dx[2])};
 
-          ParticleType p;
-          p.id()  = ParticleType::NextID();
-          p.cpu() = ParallelDescriptor::MyProc();
+            ParticleType p;
+            p.id()  = ParticleType::NextID();
+            p.cpu() = ParallelDescriptor::MyProc();
 
-          AMREX_D_EXPR(p.pos(0) = loc[0],
-                       p.pos(1) = loc[1],
-                       p.pos(2) = loc[2]);
+            AMREX_D_EXPR(p.pos(0) = loc[0],
+                         p.pos(1) = loc[1],
+                         p.pos(2) = loc[2]);
 
-          p.idata(0) = streamLoc;
-          p.idata(1) = i_part==0 ? +1 : -1;
+            p.idata(0) = streamLoc;
+            p.idata(1) = i_part==0 ? +1 : -1;
 
-          std::array<double, RealData::sizeOfRealStreamData> real_attribs;
-          for (int i=0; i<real_attribs.size(); ++i) real_attribs[i] = 0;
+            std::array<double, RealData::sizeOfRealStreamData> real_attribs;
+            for (int i=0; i<real_attribs.size(); ++i) real_attribs[i] = 0;
           
-          AMREX_D_EXPR(real_attribs[offset + RealData::xloc] = loc[0],
-                       real_attribs[offset + RealData::yloc] = loc[1],
-                       real_attribs[offset + RealData::zloc] = loc[2]);
+            AMREX_D_EXPR(real_attribs[offset + RealData::xloc] = loc[0],
+                         real_attribs[offset + RealData::yloc] = loc[1],
+                         real_attribs[offset + RealData::zloc] = loc[2]);
 
-          AMREX_ASSERT(this->Index(p, lev) == iv);
+            AMREX_ASSERT(this->Index(p, lev) == iv);
 
-          particle_tile.push_back(p);
-          particle_tile.push_back_real(real_attribs);
+            particle_tile.push_back(p);
+            particle_tile.push_back_real(real_attribs);
+          }
         }
       }}
     }
