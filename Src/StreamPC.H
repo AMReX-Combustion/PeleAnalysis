@@ -11,7 +11,7 @@ struct RealData
                  zloc),
     ncomp
   };
-  static const int nPointOnStream = 20;
+  static const int nPointOnStream = 100;
   static const int sizeOfRealStreamData = nPointOnStream * ncomp;
 };
 

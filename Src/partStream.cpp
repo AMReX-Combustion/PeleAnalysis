@@ -45,7 +45,7 @@ main (int   argc,
     PhysBCFunctNoOp f;
     PCInterp cbi;
     BCRec bc;
-    int nGrow = 1;
+    int nGrow = 2;
     int nComp = inVarNames.size();
     Vector<MultiFab> vectorField(Nlev);
     for (int lev=0; lev<Nlev; ++lev) {
@@ -70,19 +70,16 @@ main (int   argc,
     Real hRK = 0.3; pp.query("hRK",hRK);
     int redist_int = (int)(nGrow / hRK);
     int Nsteps = RealData::nPointOnStream-1;
-
-    Real dt = 1.e-6;
+    Real dt = hRK * geoms[finestLevel].CellSize()[0];
     for (int step=0; step<Nsteps; ++step)
     {
       Print() << "Step " << step << std::endl;
       
-      if (step % redist_int == 0) spc.Redistribute();
-
+      spc.Redistribute();
       spc.ComputeNextLocation(step,dt,vectorField);
     }
 
     spc.WritePlotFile("junkPlt", "particles");
-    //spc.WriteAsciiFile ("part");
   }
   Finalize();
   return 0;
