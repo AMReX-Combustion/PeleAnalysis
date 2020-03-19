@@ -30,7 +30,6 @@ InitParticles()
   int finestLevel = Nlev - 1;
   std::vector< std::pair<int,Box> > isects;
   FArrayBox mask;
-  long tot = 0;
   for (int lev=0; lev<Nlev; ++lev)
   {
     const auto& geom = Geom(lev);
@@ -102,15 +101,11 @@ InitParticles()
 
             particle_tile.push_back(p);
             particle_tile.push_back_real(real_attribs);
-
-            tot++;
           }
         }
       }}
     }
   }
-  ParallelDescriptor::ReduceLongSum(tot);
-  Print() << "N: " << tot << std::endl;
 }
 
 void
