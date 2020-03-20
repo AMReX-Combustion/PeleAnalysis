@@ -11,18 +11,17 @@ struct RealData
                  zloc),
     ncomp
   };
-  static const int nPointOnStream = 500;
-  static const int sizeOfRealStreamData = nPointOnStream * ncomp;
 };
 
 class StreamParticleContainer
-  : public amrex::ParticleContainer<0, 3, RealData::sizeOfRealStreamData, 0>
+  : public amrex::ParticleContainer<0, 3, 0, 0>
 {
 public:
 
-  using MyParIter = amrex::ParIter<0, 3, RealData::sizeOfRealStreamData, 0>;
-    
-  StreamParticleContainer (const amrex::Vector<amrex::Geometry>            & a_geoms,
+  using MyParIter = amrex::ParIter<0, 3, 0, 0>;
+
+  StreamParticleContainer (int                                               a_nPtsOnStrm,
+                           const amrex::Vector<amrex::Geometry>            & a_geoms,
                            const amrex::Vector<amrex::DistributionMapping> & a_dmaps,
                            const amrex::Vector<amrex::BoxArray>            & a_bas,
                            const amrex::Vector<int>                        & a_rrs);
@@ -39,6 +38,8 @@ public:
 
 protected:
   int Nlev;
+  int nPtsOnStrm;
+  int sizeOfRealStreamData;
 
 private:
   

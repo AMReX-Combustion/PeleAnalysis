@@ -158,7 +158,7 @@ main (int   argc,
     PhysBCFunctNoOp f;
     PCInterp cbi;
     BCRec bc;
-    int nGrow = 2;
+    int nGrow = 1;
     int nComp = inVarNames.size();
     Vector<MultiFab> vectorField(Nlev);
     for (int lev=0; lev<Nlev; ++lev) {
@@ -177,24 +177,30 @@ main (int   argc,
       Extrapolater::FirstOrderExtrap(vectorField[lev],geoms[lev],0,AMREX_SPACEDIM);
     }
 
-    StreamParticleContainer spc(geoms,dms,grids,ratios);
+    int Nsteps = 50;
+    pp.query("Nsteps",Nsteps);
+    StreamParticleContainer spc(Nsteps,geoms,dms,grids,ratios);
 
     auto locs = GetSeedLocations(spc);
 
     spc.InitParticles(locs);
-    spc.Redistribute();
 
-    Real hRK = 0.3; pp.query("hRK",hRK);
-    int Nsteps = RealData::nPointOnStream-1;
+    Real hRK = 0.1; pp.query("hRK",hRK);
+    AMREX_ALWAYS_ASSERT(hRK>=0 && hRK<=0.5);
     Real dt = hRK * geoms[finestLevel].CellSize()[0];
-    for (int step=0; step<Nsteps; ++step)
+    for (int step=0; step<Nsteps-1; ++step)
     {
-      spc.Redistribute();
+      //Print() << "step " << step << std::endl;
       spc.ComputeNextLocation(step,dt,vectorField);
     }
 
-    //spc.WritePlotFile("junkPlt", "particles");
-    spc.WriteStreamAsTecplot("tec.dat");
+    std::string outfile = "junkPlt";
+    Print() << "Writing paticles to " << outfile << std::endl;
+    spc.WritePlotFile(outfile, "particles");
+
+    std::string tecfile = "tec.dat";
+    Print() << "Writing streamlines in Tecplot ascii format to " << tecfile << std::endl;
+    spc.WriteStreamAsTecplot("tecfile");
   }
   Finalize();
   return 0;

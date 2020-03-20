@@ -8,14 +8,30 @@
 
 using namespace amrex;
 
+typedef Array<Real,AMREX_SPACEDIM> dim3;
+typedef Array<int,AMREX_SPACEDIM> int3;
+
 StreamParticleContainer::
-StreamParticleContainer(const Vector<Geometry>            & a_geoms,
+StreamParticleContainer(int                                 a_nPtsOnStrm,
+                        const Vector<Geometry>            & a_geoms,
                         const Vector<DistributionMapping> & a_dmaps,
                         const Vector<BoxArray>            & a_bas,
                         const Vector<int>                 & a_rrs)
-  : ParticleContainer<0, 3, RealData::sizeOfRealStreamData, 0> (a_geoms, a_dmaps, a_bas, a_rrs),
-  Nlev(a_geoms.size())
+  : ParticleContainer<0, 3, 0, 0> (a_geoms, a_dmaps, a_bas, a_rrs)
 {
+  Nlev = a_geoms.size();
+  nPtsOnStrm = a_nPtsOnStrm;
+  sizeOfRealStreamData = nPtsOnStrm * RealData::ncomp;
+  for (int i=0; i<sizeOfRealStreamData; ++i) {
+    AddRealComp(true);
+  }
+  for (int lev=0; lev<numLevels(); ++lev)
+  {
+    for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
+    {
+      auto& particle_tile = DefineAndReturnParticleTile(lev, mfi.index(), mfi.LocalTileIndex());
+    }
+  }
 }
 
 void
@@ -54,52 +70,73 @@ InitParticles (const Vector<Vector<Real>>& locs)
         p.idata(1) = i_part==0 ? +1 : -1;
         p.idata(2) = ppair[ i_part==0 ? 1 : 0];
 
-        std::array<double, RealData::sizeOfRealStreamData> real_attribs;
-        for (int i=0; i<real_attribs.size(); ++i) real_attribs[i] = 0;
-          
-        AMREX_D_EXPR(real_attribs[offset + RealData::xloc] = loc[0],
-                     real_attribs[offset + RealData::yloc] = loc[1],
-                     real_attribs[offset + RealData::zloc] = loc[2]);
-
-        AMREX_ASSERT(this->Index(p, lev) == iv);
-
         particle_tile.push_back(p);
-        particle_tile.push_back_real(real_attribs);
+
+        auto& soa = particle_tile.GetStructOfArrays();
+        for (int i=0; i<NumRuntimeRealComps(); ++i)
+        {
+          soa.GetRealData(i).push_back(i<AMREX_SPACEDIM ? loc[i] : 0);
+        }
       }
     }
   }
+  Redistribute();
 }
 
 void
 StreamParticleContainer::
 SetParticleLocation(int a_streamLoc)
-{    
+{
   BL_PROFILE("StreamParticleContainer::SetParticleLocation");
-  
+
+  bool redist = false;
   int offset = RealData::ncomp * a_streamLoc;
+  dim3 newpos, blo, bhi;
   for (int lev = 0; lev < Nlev; ++lev)
   {
+    const auto& geom = Geom(lev);
+    const auto& dx = geom.CellSize();
+    const auto& plo = geom.ProbLo();
+
     for (MyParIter pti(*this, lev); pti.isValid(); ++pti)
     {
       auto& aos = pti.GetArrayOfStructs();
       auto& soa = pti.GetStructOfArrays();
+      const auto& vbx = pti.validbox();
+      const auto& vse = vbx.smallEnd();
+      const auto& vbe = vbx.bigEnd();
+      blo = {AMREX_D_DECL(plo[0] + vse[0]*dx[0],
+                          plo[1] + vse[1]*dx[1],
+                          plo[2] + vse[2]*dx[2])};
+
+      bhi = {AMREX_D_DECL(plo[0] + (vbe[0]+1)*dx[0],
+                          plo[1] + (vbe[1]+1)*dx[1],
+                          plo[2] + (vbe[2]+1)*dx[2])};
 
       for (int pindex=0; pindex<aos.size(); ++pindex)
       {
         ParticleType& p = aos[pindex];
         if (p.id() > 0)
         {
-          AMREX_D_EXPR(p.pos(0) = soa.GetRealData(offset + RealData::xloc)[pindex],
-                       p.pos(1) = soa.GetRealData(offset + RealData::yloc)[pindex],
-                       p.pos(2) = soa.GetRealData(offset + RealData::zloc)[pindex]);
+          newpos = {AMREX_D_DECL(soa.GetRealData(offset + RealData::xloc)[pindex],
+                                 soa.GetRealData(offset + RealData::yloc)[pindex],
+                                 soa.GetRealData(offset + RealData::zloc)[pindex])};
+
+          AMREX_D_EXPR(p.pos(0) = newpos[0], p.pos(1) = newpos[1], p.pos(2) = newpos[2]);
+          
+          for (int d=0; d<AMREX_SPACEDIM; ++d)
+          {
+            redist |= (newpos[d]<blo[d] || newpos[d]>bhi[d]);
+          }  
         }
       }
     }
   }
+  ParallelDescriptor::ReduceBoolOr(redist);
+  if (redist) {
+    Redistribute();
+  }
 }
-
-typedef Array<Real,AMREX_SPACEDIM> dim3;
-typedef Array<int,AMREX_SPACEDIM> int3;
 
 static bool IsOK(const dim3& x, const Real* plo, const Real* phi)
 {
@@ -145,7 +182,10 @@ static bool ntrpv(const dim3& x,const FArrayBox& gfab,
   const auto& ghi = gbx.bigEnd();
   for (int d=0; d<AMREX_SPACEDIM; ++d) {
     if (b[d] < glo[d] ||  b[d] > ghi[d]-1) {
+      Print() << "dir: " << d << std::endl;
       Print() << "d,b,glo,ghi: " << d << " " << b[d] << " " << glo[d] << " " << ghi[d] << std::endl;
+      Print() << "x,plo,phi " << x[d] << " " << plo[d] << " " << phi[d] << std::endl;
+      Print() << "boxlo,boxhi " << plo[d]+glo[d]*dx[d] << " " << plo[d]+(ghi[d]+1)*dx[d] << std::endl;
       return false;
     }
   }
@@ -173,37 +213,33 @@ static bool ntrpv(const dim3& x,const FArrayBox& gfab,
   return true;
 }
 
-static void
-RK4(dim3 & x,Real dt,const FArrayBox& v,const Real* dx,const Real* plo,const Real* phi,int dir, bool& ok)
+static bool
+RK4(dim3 & x,Real dt,const FArrayBox& v,const Real* dx,const Real* plo,const Real* phi,int dir)
 {
   dim3 vec, k1, k2, k3, k4;
   dim3 xx = x;
-  ok = ntrpv(xx,v,dx,plo,phi,vec);
-  if ( !ok ) return;
+  if (!ntrpv(xx,v,dx,plo,phi,vec)) return false;
   vnrml(vec,dir);
 
   for (int d=0; d<AMREX_SPACEDIM; ++d) {
     k1[d] = vec[d] * dt;
     xx[d] = x[d] + k1[d] * 0.5;
   }
-  ok = ntrpv(xx,v,dx,plo,phi,vec);
-  if ( !ok ) return;
+  if (!ntrpv(xx,v,dx,plo,phi,vec)) return false;
   vnrml(vec,dir);
 
   for (int d=0; d<AMREX_SPACEDIM; ++d) {
     k2[d] = vec[d] * dt;
     xx[d] = x[d] + k2[d] * 0.5;
   }
-  ok = ntrpv(xx,v,dx,plo,phi,vec);
-  if ( !ok ) return;
+  if (!ntrpv(xx,v,dx,plo,phi,vec)) return false;
   vnrml(vec,dir);
 
   for (int d=0; d<AMREX_SPACEDIM; ++d) {
     k3[d] = vec[d] * dt;
     xx[d] = x[d] + k3[d];
   }
-  ok = ntrpv(xx,v,dx,plo,phi,vec);
-  if ( !ok ) return;
+  if (!ntrpv(xx,v,dx,plo,phi,vec)) return false;
   vnrml(vec,dir);
 
   const Real third = 1./3.;
@@ -226,9 +262,9 @@ RK4(dim3 & x,Real dt,const FArrayBox& v,const Real* dx,const Real* plo,const Rea
   }
   for (int d=0; d<AMREX_SPACEDIM; ++d) {
     x[d] += scale * delta[d];
-    x[d] = std::min(phi[d], std::max(plo[d], x[d]) ); // Deal with precision issues
+    x[d] = std::min(phi[d]-1.e-10, std::max(plo[d]+1.e-10, x[d]) ); // Deal with precision issues
   }
-
+  return true;
 }
 
 void
@@ -264,10 +300,8 @@ ComputeNextLocation(int                      a_fromLoc,
         dim3 x = {AMREX_D_DECL(p.pos(0), p.pos(1), p.pos(2))};
         if (p.id() > 0)
         {
-          bool ok = true;
-          RK4(x,a_delta_t,v,dx,plo,phi,dir,ok);
-          if (!ok) {
-            Print() << "pindex, pid " << pindex << " " << p.id() << std::endl; 
+          if (!RK4(x,a_delta_t,v,dx,plo,phi,dir))
+          {
             Abort("bad RK");
           }
         }
@@ -285,12 +319,10 @@ WriteStreamAsTecplot(const std::string& outFile)
 {
   // Set location to first point on stream to guarantee partner line is local
   SetParticleLocation(0);
-  Redistribute();
   
   // Create a folder and have each processor write their own data, one file per streamline
   auto myProc = ParallelDescriptor::MyProc();
   auto nProcs = ParallelDescriptor::NProcs();
-  int cnt = 0;
   
   if (!amrex::UtilCreateDirectory(outFile, 0755))
     amrex::CreateDirectoryFailed(outFile);
@@ -328,8 +360,8 @@ WriteStreamAsTecplot(const std::string& outFile)
 
         for (int pindex=0; pindex<aos.size(); ++pindex)
         {
-          ofs << "ZONE I=1 J=" << RealData::nPointOnStream << " k=1 FORMAT=POINT\n";
-          for (int j=0; j<RealData::nPointOnStream; ++j)
+          ofs << "ZONE I=1 J=" << nPtsOnStrm << " k=1 FORMAT=POINT\n";
+          for (int j=0; j<nPtsOnStrm; ++j)
           {
             int offset = j*RealData::ncomp;
             dim3 vals = {AMREX_D_DECL(soa.GetRealData(offset + RealData::xloc)[pindex],
