@@ -20,90 +20,52 @@ StreamParticleContainer(const Vector<Geometry>            & a_geoms,
 
 void
 StreamParticleContainer::
-InitParticles()
+InitParticles (const Vector<Vector<Real>>& locs)
 {
   BL_PROFILE("StreamParticleContainer::InitParticles");
 
   int streamLoc = 0;
   int offset = RealData::ncomp*streamLoc;
 
-  int finestLevel = Nlev - 1;
-  std::vector< std::pair<int,Box> > isects;
-  FArrayBox mask;
-  for (int lev=0; lev<Nlev; ++lev)
+  int lev = 0;
+  int grid_id = 0;
+  int tile_id = 0;
+  int owner = ParticleDistributionMap(lev)[0];
+  auto& particle_tile = GetParticles(0)[std::make_pair(grid_id,tile_id)];
+
+  if (ParallelDescriptor::MyProc() == owner)
   {
-    const auto& geom = Geom(lev);
-    const auto& dx = geom.CellSize();
-    const auto& plo = geom.ProbLo();
-
-    BoxArray baf;
-    if (lev < finestLevel) {
-      baf = BoxArray(ParticleBoxArray(lev+1)).coarsen(this->GetParGDB()->refRatio(lev));
-    }
-
-    for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
+    for (const auto& loc : locs)
     {
-      const Box& tile_box  = mfi.tilebox();
-      if (BL_SPACEDIM<3 || tile_box.contains(IntVect(D_DECL(0,50,107)))) {
-      const RealBox tile_realbox{tile_box, geom.CellSize(), geom.ProbLo()};
-      const int grid_id = mfi.index();
-      const int tile_id = mfi.LocalTileIndex();
-      auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
-
-      mask.resize(tile_box,1);
-      mask.setVal(1);
-      if (lev < finestLevel) {
-        isects = baf.intersections(tile_box);
-        for (const auto& p : isects) {
-          mask.setVal(0,p.second,0,1);
-        }
-      }
-      mask.setVal(0);
-
-      for (IntVect iv = tile_box.smallEnd(); iv <= tile_box.bigEnd(); tile_box.next(iv))
+      // Keep track of pairs of lines
+      Array<int,2> ppair = {ParticleType::NextID(), ParticleType::NextID()};
+          
+      for (int i_part=0; i_part<2; i_part++)
       {
-        Array<Real,BL_SPACEDIM> tloc = {AMREX_D_DECL(plo[0] + (iv[0] + 0.5)*dx[0],
-                                                     plo[1] + (iv[1] + 0.5)*dx[1],
-                                                     plo[2] + (iv[2] + 0.5)*dx[2])};
-        if (lev==finestLevel && tloc[1] > .003 && tloc[1] < .0031) mask(iv,0) = 1;
-        
-        if (mask(iv,0) > 0)
-        {
-          // Keep track of pairs of lines
-          Array<int,2> ppair = {ParticleType::NextID(), ParticleType::NextID()};
+        ParticleType p;
+        p.id()  = ppair[i_part];
+        p.cpu() = ParallelDescriptor::MyProc();
+
+        AMREX_D_EXPR(p.pos(0) = loc[0],
+                     p.pos(1) = loc[1],
+                     p.pos(2) = loc[2]);
+
+        p.idata(0) = streamLoc;
+        p.idata(1) = i_part==0 ? +1 : -1;
+        p.idata(2) = ppair[ i_part==0 ? 1 : 0];
+
+        std::array<double, RealData::sizeOfRealStreamData> real_attribs;
+        for (int i=0; i<real_attribs.size(); ++i) real_attribs[i] = 0;
           
-          for (int i_part=0; i_part<2; i_part++)
-          {
-            Array<Real,BL_SPACEDIM> loc = {AMREX_D_DECL(plo[0] + (iv[0] + 0.5)*dx[0],
-                                                        plo[1] + (iv[1] + 0.5)*dx[1],
-                                                        plo[2] + (iv[2] + 0.5)*dx[2])};
+        AMREX_D_EXPR(real_attribs[offset + RealData::xloc] = loc[0],
+                     real_attribs[offset + RealData::yloc] = loc[1],
+                     real_attribs[offset + RealData::zloc] = loc[2]);
 
-            ParticleType p;
-            p.id()  = ppair[i_part];
-            p.cpu() = ParallelDescriptor::MyProc();
+        AMREX_ASSERT(this->Index(p, lev) == iv);
 
-            AMREX_D_EXPR(p.pos(0) = loc[0],
-                         p.pos(1) = loc[1],
-                         p.pos(2) = loc[2]);
-
-            p.idata(0) = streamLoc;
-            p.idata(1) = i_part==0 ? +1 : -1;
-            p.idata(2) = ppair[ i_part==0 ? 1 : 0];
-
-            std::array<double, RealData::sizeOfRealStreamData> real_attribs;
-            for (int i=0; i<real_attribs.size(); ++i) real_attribs[i] = 0;
-          
-            AMREX_D_EXPR(real_attribs[offset + RealData::xloc] = loc[0],
-                         real_attribs[offset + RealData::yloc] = loc[1],
-                         real_attribs[offset + RealData::zloc] = loc[2]);
-
-            AMREX_ASSERT(this->Index(p, lev) == iv);
-
-            particle_tile.push_back(p);
-            particle_tile.push_back_real(real_attribs);
-          }
-        }
-      }}
+        particle_tile.push_back(p);
+        particle_tile.push_back_real(real_attribs);
+      }
     }
   }
 }

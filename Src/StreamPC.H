@@ -11,7 +11,7 @@ struct RealData
                  zloc),
     ncomp
   };
-  static const int nPointOnStream = 50;
+  static const int nPointOnStream = 500;
   static const int sizeOfRealStreamData = nPointOnStream * ncomp;
 };
 
@@ -27,7 +27,7 @@ public:
                            const amrex::Vector<amrex::BoxArray>            & a_bas,
                            const amrex::Vector<int>                        & a_rrs);
 
-  void InitParticles();
+  void InitParticles(const amrex::Vector<amrex::Vector<amrex::Real>>& a_locs);
   
   void SetParticleLocation(int a_streamPos);
   
@@ -36,6 +36,8 @@ public:
                            const amrex::Vector<amrex::MultiFab>& a_vectorField);
 
   void WriteStreamAsTecplot(const std::string& outfile);
+
+  int NumLevels () const {return Nlev;}
 
 protected:
   int Nlev;
