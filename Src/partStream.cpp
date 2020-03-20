@@ -21,7 +21,7 @@ GetSeedLocations (const StreamParticleContainer& spc)
   AMREX_ALWAYS_ASSERT(nc>0 ^ (ni>0 ^ (ns>0 ^ (nrL>0 && nrR>0))));
   if (nc>0)
   {
-    int finestLevel = spc.NumLevels() - 1;
+    int finestLevel = spc.numLevels() - 1;
     std::vector< std::pair<int,Box> > isects;
     FArrayBox mask;
     for (int lev=0; lev<=finestLevel; ++lev)
@@ -193,7 +193,7 @@ main (int   argc,
       spc.ComputeNextLocation(step,dt,vectorField);
     }
 
-    spc.WritePlotFile("junkPlt", "particles");
+    //spc.WritePlotFile("junkPlt", "particles");
     spc.WriteStreamAsTecplot("tec.dat");
   }
   Finalize();

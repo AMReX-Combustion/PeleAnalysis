@@ -31,13 +31,11 @@ public:
   
   void SetParticleLocation(int a_streamPos);
   
-  void ComputeNextLocation(int                                   a_fromLoc,
-                           amrex::Real                           a_delta_t,
-                           const amrex::Vector<amrex::MultiFab>& a_vectorField);
+  void ComputeNextLocation(int                                    a_fromLoc,
+                           amrex::Real                            a_delta_t,
+                           const amrex::Vector<amrex::MultiFab> & a_vectorField);
 
   void WriteStreamAsTecplot(const std::string& outfile);
-
-  int NumLevels () const {return Nlev;}
 
 protected:
   int Nlev;
