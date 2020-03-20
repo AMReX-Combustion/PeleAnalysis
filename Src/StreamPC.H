@@ -28,7 +28,7 @@ public:
 
   void InitParticles(const amrex::Vector<amrex::Vector<amrex::Real>>& a_locs);
   
-  void SetParticleLocation(int a_streamPos);
+  void SetParticleLocation(int a_streamPos, int a_nGrow);
   
   void ComputeNextLocation(int                                    a_fromLoc,
                            amrex::Real                            a_delta_t,

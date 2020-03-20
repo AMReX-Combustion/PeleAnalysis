@@ -85,10 +85,11 @@ InitParticles (const Vector<Vector<Real>>& locs)
 
 void
 StreamParticleContainer::
-SetParticleLocation(int a_streamLoc)
+SetParticleLocation(int a_streamLoc, int a_nGrow)
 {
   BL_PROFILE("StreamParticleContainer::SetParticleLocation");
 
+  AMREX_ALWAYS_ASSERT(a_nGrow > 0);
   bool redist = false;
   int offset = RealData::ncomp * a_streamLoc;
   dim3 newpos, blo, bhi;
@@ -102,7 +103,7 @@ SetParticleLocation(int a_streamLoc)
     {
       auto& aos = pti.GetArrayOfStructs();
       auto& soa = pti.GetStructOfArrays();
-      const auto& vbx = pti.validbox();
+      const auto vbx = grow(pti.validbox(),a_nGrow-1);
       const auto& vse = vbx.smallEnd();
       const auto& vbe = vbx.bigEnd();
       blo = {AMREX_D_DECL(plo[0] + vse[0]*dx[0],
@@ -134,6 +135,7 @@ SetParticleLocation(int a_streamLoc)
   }
   ParallelDescriptor::ReduceBoolOr(redist);
   if (redist) {
+    //Print() << "  redistributing" << std::endl;
     Redistribute();
   }
 }
@@ -275,7 +277,8 @@ ComputeNextLocation(int                      a_fromLoc,
 {    
   BL_PROFILE("StreamParticleContainer::ComputeNextLocation");
 
-  SetParticleLocation(a_fromLoc);
+  const int nGrow = a_vectorField[0].nGrow();
+  SetParticleLocation(a_fromLoc,nGrow);
   
   const int new_loc_id = a_fromLoc + 1;
   int offset = RealData::ncomp * new_loc_id;
@@ -318,7 +321,7 @@ StreamParticleContainer::
 WriteStreamAsTecplot(const std::string& outFile)
 {
   // Set location to first point on stream to guarantee partner line is local
-  SetParticleLocation(0);
+  SetParticleLocation(0,1);
   
   // Create a folder and have each processor write their own data, one file per streamline
   auto myProc = ParallelDescriptor::MyProc();

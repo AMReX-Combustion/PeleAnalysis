@@ -1,7 +1,6 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
-#include <AMReX_Extrapolater.H>
 #include <StreamPC.H>
 
 using namespace amrex;
@@ -158,7 +157,9 @@ main (int   argc,
     PhysBCFunctNoOp f;
     PCInterp cbi;
     BCRec bc;
-    int nGrow = 1;
+    int nGrow = 3;
+    pp.query("nGrow",nGrow);
+    AMREX_ALWAYS_ASSERT(nGrow>=1);
     int nComp = inVarNames.size();
     Vector<MultiFab> vectorField(Nlev);
     for (int lev=0; lev<Nlev; ++lev) {
@@ -174,7 +175,6 @@ main (int   argc,
         }
       }
       vectorField[lev].FillBoundary(geoms[lev].periodicity());
-      Extrapolater::FirstOrderExtrap(vectorField[lev],geoms[lev],0,AMREX_SPACEDIM);
     }
 
     int Nsteps = 50;
@@ -200,7 +200,7 @@ main (int   argc,
 
     std::string tecfile = "tec.dat";
     Print() << "Writing streamlines in Tecplot ascii format to " << tecfile << std::endl;
-    spc.WriteStreamAsTecplot("tecfile");
+    spc.WriteStreamAsTecplot(tecfile);
   }
   Finalize();
   return 0;
