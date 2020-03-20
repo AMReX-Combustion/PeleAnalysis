@@ -66,9 +66,9 @@ InitParticles (const Vector<Vector<Real>>& locs)
                      p.pos(1) = loc[1],
                      p.pos(2) = loc[2]);
 
-        p.idata(0) = streamLoc;
-        p.idata(1) = i_part==0 ? +1 : -1;
-        p.idata(2) = ppair[ i_part==0 ? 1 : 0];
+        p.idata(0) = streamLoc;                  // Current position
+        p.idata(1) = i_part==0 ? +1 : -1;        // Direction of integration
+        p.idata(2) = ppair[ i_part==0 ? 1 : 0];  // Other line from this seed
 
         particle_tile.push_back(p);
 
