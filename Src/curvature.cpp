@@ -57,7 +57,6 @@ main (int   argc,
     bool do_gaussCurv         = false; 
     bool getStrainTensor      = false;
     bool do_velnormal         = false; 
-    bool getProgGrad          = false;
     Real smooth_time          = 1.0e-7;
     int nAuxVar               = 0;  
     bool appendPlotFile       = false;
@@ -84,7 +83,6 @@ main (int   argc,
     pp.query("progMax",progMax);
     pp.query("floorIt",floorIt);
     pp.query("useFileMinMax",useFileMinMax);
-    pp.query("getProgGrad",getProgGrad);
 
     // Progress variable smoothing
     pp.query("do_smooth",do_smooth);
@@ -224,21 +222,14 @@ main (int   argc,
     int idROST=-1;
     if (getStrainTensor) {
         idROST = nCompOut;
-        nCompOut = idROST + 9; // Rate-of-strain, always return 3D set
+        nCompOut = idROST + AMREX_SPACEDIM*AMREX_SPACEDIM; // Rate-of-strain
     }
 
     int idVelNormal=-1;
     if ( do_velnormal ) {  
         idVelNormal = nCompOut; 
-        nCompOut += AMREX_SPACEDIM; 
+        nCompOut += 1; 
     }  
-
-    int idProgGrad=-1;
-    if (getProgGrad)
-    {
-        idProgGrad = nCompOut;
-        nCompOut = idProgGrad + 3; // Always return 3D set
-    }
 
     if (verbose) {  
        Print() << "Will read the following states: ";
@@ -740,9 +731,51 @@ main (int   argc,
                                                               - gradUy(i,j,k,2) * NyFab(i,j,k) * NzFab(i,j,k) ),
                                                 AMREX_D_TERM( - gradUz(i,j,k,0) * NzFab(i,j,k) * NxFab(i,j,k) ,
                                                               - gradUz(i,j,k,1) * NzFab(i,j,k) * NyFab(i,j,k) ,
-                                                              - gradUz(i,j,k,2) * NzFab(i,j,k) * NzFab(i,j,k) ) );
+                                                              - gradUz(i,j,k,2) * NzFab(i,j,k) * NzFab(i,j,k) ) );   //-nn:\nabla u
+                  srFab(i,j,k) = AMREX_D_TERM ( + gradUx(i,j,k,0) ,
+                                                + gradUy(i,j,k,1) ,
+                                                + gradUz(i,j,k,2) );    // + \nabla \cdot u
                });
            }
+
+           MultiFab::Copy(*state[lev], strainrate, 0, idSR, 1, 0);
+           if (verbose) Print() << "Tangential strain rate has been computed on level " << lev << "\n";
+            
+           // Store the strain rate tensor if required 
+           if ( getStrainTensor ) {
+              MultiFab::Copy(*state[lev], StrainT, 0, idROST, AMREX_SPACEDIM*AMREX_SPACEDIM, 0);
+           } 
+
+        }
+
+        if (do_velnormal) { 
+           // Velocity normal to the flame front
+           MultiFab velNormal(ba, dm, 1, 0);
+
+           for (MFIter mfi(velNormal); mfi.isValid(); ++mfi)
+           {
+               const Box& bx = mfi.validbox();
+               const auto& progvar    = ProgVar.array(mfi);
+               const auto& velNormFab = velNormal.array(mfi); 
+               AMREX_D_TERM(const auto& NxFab  = flame_normal[lev]->array(mfi,0); ,
+                            const auto& NyFab  = flame_normal[lev]->array(mfi,1); ,
+                            const auto& NzFab  = flame_normal[lev]->array(mfi,2); );
+               AMREX_D_TERM(const auto& Ux = state[lev]->array(mfi,idVst+0); ,
+                            const auto& Uy = state[lev]->array(mfi,idVst+1); ,
+                            const auto& Uz = state[lev]->array(mfi,idVst+2); ); 
+               AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+               {
+                  if ( progvar(i,j,k) > 0.01 && progvar(i,j,k) < 0.99 ) {
+                     velNormFab(i,j,k) = AMREX_D_TERM ( + Ux(i,j,k) * NxFab(i,j,k) ,
+                                                        + Uy(i,j,k) * NyFab(i,j,k) , 
+                                                        + Uz(i,j,k) * NzFab(i,j,k) ); 
+                  } else {
+                     velNormFab(i,j,k) = 0.0;
+                  }
+               });
+           }
+           MultiFab::Copy(*state[lev], velNormal, 0, idVelNormal, 1, 0);
+           if (verbose) Print() << "Flow velocity normal to the flame has been computed on level " << lev << "\n";
         }
 
     }
@@ -771,30 +804,18 @@ main (int   argc,
 
     if (getStrainTensor)
     {
-        for (int i=0; i<9; ++i)
+        std::string dirChar[3] = {"x","y","z"}; 
+        for (int i=0; i<AMREX_SPACEDIM*AMREX_SPACEDIM; ++i)
         {
-            int n=i%3;
-            int m=i/3;
-            char buf[40];
-            sprintf(buf,"ROST_%1d%1d",n+1,m+1);
-            nnames[idROST+i] = string(buf);
+            int n=i%AMREX_SPACEDIM;
+            int m=i/AMREX_SPACEDIM;
+            nnames[idROST+i] = "ROST_dU"+dirChar[m]+"d"+dirChar[n];
         }
     }
     
     if (do_velnormal)
     {
-        nnames[idVelNormal+0] = "VelFlameNormal_X";
-        nnames[idVelNormal+1] = "VelFlameNormal_Y";
-#if AMREX_SPACEDIM>2
-        nnames[idVelNormal+2] = "VelFlameNormal_Z";
-#endif
-    }
-
-    if (getProgGrad)
-    {
-        nnames[idProgGrad+0] = progressName + "_g1";
-        nnames[idProgGrad+1] = progressName + "_g2";
-        nnames[idProgGrad+2] = progressName + "_g3";
+        nnames[idVelNormal] = "VelFlameNormal";
     }
 
     // Write to plotfile
