@@ -106,10 +106,8 @@ main (int   argc,
 
     if (verbose>1) AmrData::SetVerbose(true);
     
-    if (ParallelDescriptor::IOProcessor()) {
-        std::cout << "infile = " << plotFileName << std::endl;
-        std::cout << "reading plt file = " << plotFileName << std::endl;
-    }
+    Print() << "infile = " << plotFileName << "\n";
+    Print() << "reading plt file = " << plotFileName << "\n";
     
     // Initialize DataService
     DataServices::SetBatchMode();
@@ -148,11 +146,9 @@ main (int   argc,
             ParallelDescriptor::ReduceRealMax(progMax);
         }
 
-        if (ParallelDescriptor::IOProcessor()) {
-            std::cout << "progressName = " << progressName << " at index: " << amrData.StateNumber(progressName) << std::endl;
-            std::cout << "useFileMinMax = " << useFileMinMax << std::endl;
-            std::cout << "Min/Max = " << progMin << " / " << progMax << std::endl;
-        }
+        Print() << "progressName = " << progressName << " at index: " << amrData.StateNumber(progressName) << "\n";
+        Print() << "useFileMinMax = " << useFileMinMax << "\n";
+        Print() << "Min/Max = " << progMin << " / " << progMax << "\n";
 
         ParallelDescriptor::Barrier();
 
@@ -273,7 +269,7 @@ main (int   argc,
     for (int i=0; i<AMREX_SPACEDIM; ++i) {
         Print() << is_per[i] << " ";
     }
-    Print() << std::endl;
+    Print() << "\n";
 
     int coord = 0;
 
@@ -309,11 +305,11 @@ main (int   argc,
            dxn[i] = delta[i];
         }
 
-        // Get input state data onto intersection ba
-        if (verbose) Print() << "Reading data for level " << lev << std::endl;
+        // Get input state data
+        if (verbose) Print() << "Reading data for level " << lev << "\n";
         amrData.FillVar(*state[lev],lev,inVarNames,destFillComps);
 
-        // Build progress variable from state at idCst, put into idCsc
+        // Build progress variable from state at idCst, put into idProg
         MultiFab StateVar(*state[lev], amrex::make_alias, idCst, 1);
         MultiFab ProgressVar(*state[lev], amrex::make_alias, idProg, 1);
         for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi)
@@ -329,7 +325,7 @@ main (int   argc,
         }
         ProgressVar.FillBoundary(geoms[lev]->periodicity());
 
-        if (verbose) Print() << "Progress variable computed for level " << lev << std::endl;
+        if (verbose) Print() << "Progress variable computed for level " << lev << "\n";
 
     }  // End lev loop
 
@@ -353,15 +349,15 @@ main (int   argc,
        const Real tol_abs = 1.e-12;
 
        // Problem with Periodic or Neumann BC 
-  		 std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
-  		 std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
-  		 for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
-  		    if (is_per[idim] == 1) {
-  		        lo_bc[idim] = hi_bc[idim] = LinOpBCType::Periodic;
-  		    } else {
-  		        lo_bc[idim] = hi_bc[idim] = LinOpBCType::Neumann;
-  		    }
-  		 }
+       std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
+       std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
+       for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
+          if (is_per[idim] == 1) {
+              lo_bc[idim] = hi_bc[idim] = LinOpBCType::Periodic;
+          } else {
+              lo_bc[idim] = hi_bc[idim] = LinOpBCType::Neumann;
+          }
+       }
        mlabec.setDomainBC(lo_bc,hi_bc);
 
        for (int lev = 0; lev < Nlev; ++lev)
@@ -411,11 +407,6 @@ main (int   argc,
           state[lev]->FillBoundary(idSmProg,1,geoms[lev]->periodicity()); 
        }  
        if (verbose) Print() << "Progress variable smoothed successfully \n";
-
-    //} else {
-    //   for (int lev = 0; lev < Nlev; ++lev) {
-    //      MultiFab::Copy(*state[lev], *state[lev],idProg,idSmProg, 1, nGrow);
-    //   }  
     }
 
     int idprogvar = do_smooth ? idSmProg : idProg;  
@@ -433,48 +424,48 @@ main (int   argc,
         const BoxArray ba = amrData.boxArray(lev);
         DistributionMapping dm(ba);
 
-        if (verbose) Print() << "Starting mean curvature on level " << lev << std::endl;
+        if (verbose) Print() << "Starting mean curvature on level " << lev << "\n";
 
         // Get face gradients of progress variable 
-  		  MLPoisson poisson({*geoms[lev]}, {ba}, {dm}, info);
-  		  poisson.setMaxOrder(4);
-  		  std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
-  		  std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
-  		  for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
-  		     if (is_per[idim] == 1) {
-  		        lo_bc[idim] = hi_bc[idim] = LinOpBCType::Periodic;
-  		     } else {
+        MLPoisson poisson({*geoms[lev]}, {ba}, {dm}, info);
+        poisson.setMaxOrder(4);
+        std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
+        std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
+        for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
+           if (is_per[idim] == 1) {
+              lo_bc[idim] = hi_bc[idim] = LinOpBCType::Periodic;
+           } else {
               if (sym_dir[idim] == 1) {
-  		           lo_bc[idim] = hi_bc[idim] = LinOpBCType::reflect_odd;
+                 lo_bc[idim] = hi_bc[idim] = LinOpBCType::reflect_odd;
               } else {
-  		           lo_bc[idim] = hi_bc[idim] = LinOpBCType::Neumann;
+                 lo_bc[idim] = hi_bc[idim] = LinOpBCType::Neumann;
               }
-  		     }
-  		  }
-  		  poisson.setDomainBC(lo_bc, hi_bc);
-		  if ( lev > 0 ) {
+           }
+        }
+        poisson.setDomainBC(lo_bc, hi_bc);
+        if ( lev > 0 ) {
            MultiFab* ProgVarCoarse = new MultiFab(state[lev-1]->boxArray(), state[lev-1]->DistributionMap(), 1, state[lev-1]->nGrow()); 
            MultiFab::Copy(*ProgVarCoarse, *state[lev-1], idprogvar, 0, 1, nGrow);
-		  	  poisson.setCoarseFineBC(ProgVarCoarse,2);
-		  }
+           poisson.setCoarseFineBC(ProgVarCoarse,2);
+        }
         MultiFab ProgVar(ba, dm, 1, nGrow); 
         MultiFab::Copy(ProgVar, *state[lev], idprogvar, 0, 1, nGrow);
-		  poisson.setLevelBC(0,&ProgVar);
+        poisson.setLevelBC(0,&ProgVar);
 
-  		  MLMG mlmg(poisson);
+        MLMG mlmg(poisson);
 
-  		  std::array<MultiFab,AMREX_SPACEDIM> face_gradient;
-  		  AMREX_D_TERM(face_gradient[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-  		               face_gradient[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-  		               face_gradient[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
-  		  mlmg.getFluxes({amrex::GetArrOfPtrs(face_gradient)},{&ProgVar});
-    
-  		  // Convert to cell avg gradient
+        std::array<MultiFab,AMREX_SPACEDIM> face_gradient;
+        AMREX_D_TERM(face_gradient[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
+                     face_gradient[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
+                     face_gradient[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+        mlmg.getFluxes({amrex::GetArrOfPtrs(face_gradient)},{&ProgVar});
+
+        // Convert to cell avg gradient
         MultiFab cellavg_gradient(ba, dm, AMREX_SPACEDIM, 0);
         average_face_to_cellcenter(cellavg_gradient, 0, amrex::GetArrOfConstPtrs(face_gradient));
         cellavg_gradient.mult(-1.0,0,AMREX_SPACEDIM);
 
-  		  // Compute ||\nabla c||
+        // Compute ||\nabla c||
         MultiFab cellnorm_gradient(ba, dm, 1, 1);
         cellnorm_gradient.setVal(0.0);
         for (MFIter mfi(cellnorm_gradient); mfi.isValid(); ++mfi)
@@ -487,12 +478,9 @@ main (int   argc,
             const auto& progvar   = ProgVar.array(mfi); 
             AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
             {
-                normgrad(i,j,k) = std::max(1e-6, std::sqrt(   std::pow(Cx(i,j,k),2.0)
-                                                            + std::pow(Cy(i,j,k),2.0) 
-#if AMREX_SPACEDIM == 3
-                                                            + std::pow(Cz(i,j,k),2.0)
-#endif
-                                           ) ) ;
+                normgrad(i,j,k) = std::max(1e-6, std::sqrt( AMREX_D_TERM (   std::pow(Cx(i,j,k),2.0),
+                                                                           + std::pow(Cy(i,j,k),2.0),
+                                                                           + std::pow(Cz(i,j,k),2.0)) ) ) ;
                 normgrad(i,j,k) = -normgrad(i,j,k);
             });
         }
@@ -502,7 +490,7 @@ main (int   argc,
         MultiFab::Copy(*cell_normal[lev],cellavg_gradient,0,0,AMREX_SPACEDIM,0);
         cell_normal[lev]->FillBoundary(0, AMREX_SPACEDIM, geoms[lev]->periodicity());
 
-        if (verbose) Print() << "Done with flame normal on level " << lev << std::endl;
+        if (verbose) Print() << "Done with flame normal on level " << lev << "\n";
 
 //      At this point, I got the flame normal from clean gradients provided by the MLMG
 //      Now try to compute the divergence of the flame normal using another linear solver:
@@ -522,28 +510,28 @@ main (int   argc,
 
         for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
 
-  		     MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
-  		     poisson2.setMaxOrder(4);
-  		     poisson2.setDomainBC(lo_bc, hi_bc);
-		     if ( lev > 0 ) {
+           MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
+           poisson2.setMaxOrder(4);
+           poisson2.setDomainBC(lo_bc, hi_bc);
+           if ( lev > 0 ) {
                MultiFab* FlameNormalIdimCoarse = new MultiFab(flame_normal[lev-1]->boxArray(),
                                                               flame_normal[lev-1]->DistributionMap(),
                                                               1, 0); 
                MultiFab::Copy(*FlameNormalIdimCoarse, *flame_normal[lev-1], idim, 0, 1, 0);
-		     	   poisson2.setCoarseFineBC(FlameNormalIdimCoarse,2);
-		     }
+               poisson2.setCoarseFineBC(FlameNormalIdimCoarse,2);
+           }
            MultiFab* FlameNormalIdim = new MultiFab(ba, dm, 1, 1); 
            MultiFab::Copy(*FlameNormalIdim, *flame_normal[lev], idim, 0, 1, 1);
-		     poisson2.setLevelBC(0,FlameNormalIdim);
+           poisson2.setLevelBC(0,FlameNormalIdim);
             
-  		     MLMG mlmg2(poisson2);
+           MLMG mlmg2(poisson2);
 
-  		     // Get the fluxes : d N_i / d x_j   , i = idim, j = 0, 1 (,2)
-  		     std::array<MultiFab,AMREX_SPACEDIM> faceg;
-  		     AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-  		                  faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-  		                  faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
-  		     mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{FlameNormalIdim});
+           // Get the fluxes : d N_i / d x_j   , i = idim, j = 0, 1 (,2)
+           std::array<MultiFab,AMREX_SPACEDIM> faceg;
+           AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
+                        faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
+                        faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+           mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{FlameNormalIdim});
 
            // Get cell centered d N_i / d x_y
            MultiFab cell_avgg(ba, dm, AMREX_SPACEDIM, 0);
@@ -583,7 +571,7 @@ main (int   argc,
         MultiFab::Copy(*state[lev], Curv, 0, idKm, 1, 0);
         MultiFab::Copy(*state[lev], *flame_normal[lev], 0, idN, AMREX_SPACEDIM, 0);
 
-        if (verbose) Print() << "Mean curvature has been computed on level " << lev << std::endl;
+        if (verbose) Print() << "Mean curvature has been computed on level " << lev << "\n";
 
         // Now work on the gaussian curvature: only if 3D and required
 #if AMREX_SPACEDIM == 3
@@ -595,27 +583,27 @@ main (int   argc,
            // Compute grad of grad in each dim and store in Hessian
            for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
 
-  		        MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
-  		        poisson2.setMaxOrder(4);
-  		        poisson2.setDomainBC(lo_bc, hi_bc);
-		        if ( lev > 0 ) {
+              MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
+              poisson2.setMaxOrder(4);
+              poisson2.setDomainBC(lo_bc, hi_bc);
+              if ( lev > 0 ) {
                   MultiFab* gradIdimCoarse = new MultiFab(cell_normal[lev-1]->boxArray(),
                                                           cell_normal[lev-1]->DistributionMap(),
                                                           1, 0); 
                   MultiFab::Copy(*gradIdimCoarse, *cell_normal[lev-1], idim, 0, 1, 0);
-		        	   poisson2.setCoarseFineBC(gradIdimCoarse,2);
-		        }
+                  poisson2.setCoarseFineBC(gradIdimCoarse,2);
+              }
               MultiFab* gradIdim = new MultiFab(ba, dm, 1, 1); 
-              MultiFab::Copy(*gradIdim, *cell_normal[lev], idim, 0, 1, 0);
-		        poisson2.setLevelBC(0,gradIdim);
-               
-  		        MLMG mlmg2(poisson2);
+              MultiFab::Copy(*gradIdim, *cell_normal[lev], idim, 0, 1, 1);
+              poisson2.setLevelBC(0,gradIdim);
 
-  		        std::array<MultiFab,AMREX_SPACEDIM> faceg;
-  		        AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-  		                     faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-  		                     faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
-  		        mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{gradIdim});
+              MLMG mlmg2(poisson2);
+
+              std::array<MultiFab,AMREX_SPACEDIM> faceg;
+              AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
+                           faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
+                           faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+              mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{gradIdim});
 
               // Get cell centered d C / d idim _x_y_z
               MultiFab cell_avgg(ba, dm, AMREX_SPACEDIM, 0);
@@ -685,8 +673,77 @@ main (int   argc,
            }
            MultiFab::Copy(*state[lev], gCurv, 0, idKg, 1, 0);
         }
-        if (verbose) Print() << "Gaussian curvature has been computed on level " << lev << std::endl;
+        if (verbose) Print() << "Gaussian curvature has been computed on level " << lev << "\n";
 #endif
+
+        if (do_strain) { 
+           // Strain rate -nn:\nabla u + \nabla \cdot u
+
+           // Start by building the strain tensor
+           MultiFab StrainT(ba, dm, AMREX_SPACEDIM * AMREX_SPACEDIM, 0);     
+
+           // Compute strain tensor with a MLMG in each direction
+           for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
+
+              MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
+              poisson2.setMaxOrder(4);
+              poisson2.setDomainBC(lo_bc, hi_bc);
+              if ( lev > 0 ) {
+                  MultiFab* velIdimCoarse = new MultiFab(state[lev-1]->boxArray(),
+                                                         state[lev-1]->DistributionMap(),
+                                                         1, 0); 
+                  MultiFab::Copy(*velIdimCoarse, *state[lev-1], idVst+idim, 0, 1, 0);
+                  poisson2.setCoarseFineBC(velIdimCoarse,2);
+              }
+              MultiFab* velIdim = new MultiFab(ba, dm, 1, 1); 
+              MultiFab::Copy(*velIdim, *state[lev], idVst+idim, 0, 1, 1);
+              poisson2.setLevelBC(0,velIdim);
+
+              MLMG mlmg2(poisson2);
+
+              std::array<MultiFab,AMREX_SPACEDIM> faceg;
+              AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
+                           faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
+                           faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+              mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{velIdim});
+
+              // Get cell centered d u_idim / d _x_y(_z)
+              MultiFab cell_avgg(ba, dm, AMREX_SPACEDIM, 0);
+              average_face_to_cellcenter(cell_avgg, 0, amrex::GetArrOfConstPtrs(faceg));
+              cell_avgg.mult(-1.0,0,AMREX_SPACEDIM);
+
+              // Copy in strain tensor
+              MultiFab::Copy(StrainT,cell_avgg,0,(idim)*AMREX_SPACEDIM,AMREX_SPACEDIM,0);
+           } 
+
+           // Gather the components of strain rate
+           MultiFab strainrate(ba, dm, 1, 0);
+
+           for (MFIter mfi(strainrate); mfi.isValid(); ++mfi)
+           {
+               const Box& bx = mfi.validbox();
+               const auto& progvar    = ProgVar.array(mfi);
+               const auto& srFab      = strainrate.array(mfi); 
+               AMREX_D_TERM(const auto& NxFab  = flame_normal[lev]->array(mfi,0); ,
+                            const auto& NyFab  = flame_normal[lev]->array(mfi,1); ,
+                            const auto& NzFab  = flame_normal[lev]->array(mfi,2); );
+               AMREX_D_TERM(const auto& gradUx = StrainT.array(mfi,0); ,
+                            const auto& gradUy = StrainT.array(mfi,AMREX_SPACEDIM); ,
+                            const auto& gradUz = StrainT.array(mfi,AMREX_SPACEDIM*2); ); 
+               AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+               {
+                  srFab(i,j,k) = AMREX_D_TERM ( AMREX_D_TERM( - gradUx(i,j,k,0) * NxFab(i,j,k) * NxFab(i,j,k) ,
+                                                              - gradUx(i,j,k,1) * NxFab(i,j,k) * NyFab(i,j,k) ,
+                                                              - gradUx(i,j,k,2) * NxFab(i,j,k) * NzFab(i,j,k) ),
+                                                AMREX_D_TERM( - gradUy(i,j,k,0) * NyFab(i,j,k) * NxFab(i,j,k) ,
+                                                              - gradUy(i,j,k,1) * NyFab(i,j,k) * NyFab(i,j,k) ,
+                                                              - gradUy(i,j,k,2) * NyFab(i,j,k) * NzFab(i,j,k) ),
+                                                AMREX_D_TERM( - gradUz(i,j,k,0) * NzFab(i,j,k) * NxFab(i,j,k) ,
+                                                              - gradUz(i,j,k,1) * NzFab(i,j,k) * NyFab(i,j,k) ,
+                                                              - gradUz(i,j,k,2) * NzFab(i,j,k) * NzFab(i,j,k) ) );
+               });
+           }
+        }
 
     }
 
@@ -701,14 +758,14 @@ main (int   argc,
     }
 
     // Computed variables
-    nnames[idProg] = "Progress";
+    nnames[idProg]   = "Progress";
     nnames[idSmProg] = "SmoothedProgress";
-    nnames[idKm] = "MeanCurvature_" + progressName;
-    nnames[idN] = "FlameNormalX_" + progressName;
-    nnames[idN+1] = "FlameNormalY_" + progressName;
-#if AMREX_SPACEDIM>2
-    nnames[idN+2] = "FlameNormalZ_" + progressName;
-    nnames[idKg] = "GaussianCurvature_" + progressName;
+    nnames[idKm]     = "MeanCurvature_" + progressName;
+    nnames[idN]      = "FlameNormalX_" + progressName;
+    nnames[idN+1]    = "FlameNormalY_" + progressName;
+#if AMREX_SPACEDIM == 3
+    nnames[idN+2]    = "FlameNormalZ_" + progressName;
+    nnames[idKg]     = "GaussianCurvature_" + progressName;
 #endif
     if (do_strain) nnames[idSR] = "StrainRate_" + progressName;
 
@@ -760,8 +817,8 @@ main (int   argc,
         std::string newMFBaseName = "NEWDAT"; pp.query("newMFBaseName",newMFBaseName);
         std::string newHeaderName = "NewHeader"; pp.query("newHeaderName",newHeaderName);
         AppendToPlotFile(amrData,ostate,plotFileName,namesOut,newMFBaseName,newHeaderName,verb);
-        Print() << "...finished.  Note: to see new data, you must rename NewHeader in the" << std::endl;
-        Print() << "              pltfile to Header (probably want to save the original first)" << std::endl;
+        Print() << "...finished.  Note: to see new data, you must rename NewHeader in the" << "\n";
+        Print() << "              pltfile to Header (probably want to save the original first)" << "\n";
     }
     else
     {
@@ -773,7 +830,7 @@ main (int   argc,
             ostate[lev] = new MultiFab(ba,DistributionMapping(ba),nCompOut,0);
             MultiFab::Copy(*ostate[lev],*state[lev],0,0,nCompOut,0);
         }
-        Print() << "Writing new data to " << outfile << std::endl;
+        Print() << "Writing new data to " << outfile << "\n";
         WritePlotFile(ostate,amrData,outfile,verb,nnames);
     }
 
