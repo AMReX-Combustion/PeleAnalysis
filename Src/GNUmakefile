@@ -1,7 +1,7 @@
 AMREX_HOME ?= ../../..
 
 DEBUG	      = FALSE
-DIM	      = 2
+DIM	      = 3
 COMP          = gcc
 PRECISION     = DOUBLE
 USE_MPI       = TRUE
@@ -10,12 +10,13 @@ USE_OMP       = FALSE
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-EBASE         = stream2plt
+#EBASE         = stream2plt
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
 #EBASE         = streamSub
 #EBASE         = streamTubeStats
-#EBASE         = curvature
+EBASE         = curvature
+#EBASE         = curvature_old
 #EBASE         = surfMEFtoDAT
 #EBASE         = surfDATtoMEF
 #EBASE         = buildPMF
@@ -31,13 +32,13 @@ CEXE_sources += $(EBASE).cpp
 ifeq ($(NEEDS_f90_SRC),TRUE)
   f90EXE_sources += $(EBASE)_nd.f90
 endif
-CEXE_headers += StreamData.H
-CEXE_sources += StreamData.cpp
+#CEXE_headers += StreamData.H
+#CEXE_sources += StreamData.cpp
 
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
 
-Pdirs   := Base Boundary AmrCore Extern/amrdata
+Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)
