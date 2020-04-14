@@ -10,7 +10,6 @@ USE_OMP       = FALSE
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-EBASE         = stream2plt
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
 #EBASE         = streamSub
