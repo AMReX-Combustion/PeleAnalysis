@@ -30,6 +30,8 @@ CEXE_sources += $(EBASE).cpp
 ifeq ($(NEEDS_f90_SRC),TRUE)
   f90EXE_sources += $(EBASE)_nd.f90
 endif
+CEXE_headers += StreamData.H
+CEXE_sources += StreamData.cpp
 
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .

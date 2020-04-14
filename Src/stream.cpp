@@ -10,6 +10,12 @@
 #include <AMReX_Extrapolater.H>
 #include <AMReX_BLFort.H>
 
+#undef USE_PF
+#ifdef USE_PF
+#include <AMReX_PlotFileUtil.H>
+#include <AMReX_FillPatchUtil.H>
+#endif
+
 using namespace amrex;
 
 extern "C" {
@@ -18,7 +24,7 @@ extern "C" {
               const int*  ids,  const int* n_ids,
               Real*       g,    const int* g_lo,    const int* g_hi,    const int* computeVec,
               Real*       strm, const int* strm_lo, const int* strm_hi, const int* ncs,
-              const Real* dx, const Real* plo, const Real* hRK, const int* errFlag);
+              const Real* dx, const Real* plo, const Real* phi, const Real* hRK, const int* errFlag);
 
 }
 static const Real eps = 1.e-4; // distance inside domain surface points are pushed if they fall outside
@@ -39,7 +45,7 @@ print_usage (int,
 {
     std::cerr << "usage:\n";
     std::cerr << argv[0] << " infile plotfile=<string> [options] \n\tOptions:\n";
-    std::cerr << " isoFile=<string>  OR  seedLoc=<real real [real]\n";
+    std::cerr << " isoFile=<string>  OR  seedLoc=<real real [real]  OR  seedRakeL=<real real [real]> seedRakeR=<real real [real] seedRakeNum=<int>>\n";
     std::cerr << " streamFile=<string>  OR  outFile=<string>\n"; 
     std::cerr << " is_per=<int int int> (DEF=1 1 1)\n";
     std::cerr << " finestLevel=<int> (DEF=finest level in plotfile)\n";
@@ -68,8 +74,9 @@ FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms,
     
     BoxArray gcba = BoxArray(crseSrc.boxArray()).grow(nGrow);
     MultiFab scrCRSE(gcba,crseSrc.DistributionMap(),nComp,0); // Build growLess mf to get f-f and p-f grow data through parallel copy
+    scrCRSE.setVal(0);
     for (MFIter mfi(scrCRSE); mfi.isValid(); ++mfi)
-        scrCRSE[mfi].copy(crseSrc[mfi],sComp,0,nComp);
+      scrCRSE[mfi].copy(crseSrc[mfi],sComp,0,nComp);
 
     // Now we have good grow data in scrCRSE, copy to fill interp source data
     growScrCRSE.copy(scrCRSE,0,0,nComp);
@@ -80,7 +87,7 @@ FillCFgrowCells(AmrData& amrd, const BoxArray& fine_ba,Vector<Geometry*>& geoms,
     Vector<BCRec> bc(1); // unused for pc_interp...
     int idummy1=0, idummy2=0;
     for (MFIter mfi(growScrFC);mfi.isValid();++mfi) {
-        pc_interp.interp(growScrCRSE[mfi],0,growScrFC[mfi],0,1,growScrFC[mfi].box(),
+        pc_interp.interp(growScrCRSE[mfi],0,growScrFC[mfi],0,nComp,growScrFC[mfi].box(),
                          refRatio*IntVect::TheUnitVector(),*geoms[lev-1],*geoms[lev],bc,idummy1,idummy2,RunOn::Cpu);
     }    
     // Finally, build correct c-f boxes and copy-on-intersect from interp data
@@ -373,6 +380,16 @@ std::string box_string(const Box& box) {
     return res;
 }
 
+void
+FixOOB(FArrayBox& fab,
+        const Box& domain)
+{
+  BoxArray bac = boxComplement(fab.box(),domain);
+  for (int j=0; j<bac.size(); ++j) {
+    fab.setVal(0,bac[j],0,fab.nComp());
+  }
+}
+
 int
 main (int   argc,
       char* argv[])
@@ -429,7 +446,13 @@ main (int   argc,
     int nodesPerElt;
     int nSeedNodes, nCompSeedNodes;
     std::vector<std::string> surfNames;
-    if (pp.countval("isoFile")>0)
+
+    int ni=pp.countval("isoFile");
+    int ns=pp.countval("seedLoc");
+    int nrL=pp.countval("seedRakeL");
+    int nrR=pp.countval("seedRakeR");
+    AMREX_ALWAYS_ASSERT(ni>0 ^ ns>0 ^ (nrL>0 && nrR>0));
+    if (ni>0)
     {
       // Read in isosurface
       std::string isoFile; pp.get("isoFile",isoFile);
@@ -473,9 +496,10 @@ main (int   argc,
       ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
       ifs.close();
     }
-    else
+    else if (pp.countval("seedLoc")>0)
     {
       nSeedNodes = 1;
+      nCompSeedNodes = BL_SPACEDIM;
       nodes.resize(Box(IntVect::TheZeroVector(),IntVect::TheZeroVector()),BL_SPACEDIM);
       nodesPerElt = 1;
       nElts = 1;
@@ -484,6 +508,27 @@ main (int   argc,
       Vector<Real> loc(BL_SPACEDIM); 
       pp.getarr("seedLoc",loc,0,BL_SPACEDIM);
       for (int i=0; i<BL_SPACEDIM; ++i) nodes(IntVect::TheZeroVector(),i) = loc[i];
+    }
+    else
+    {
+      nSeedNodes = 2;
+      pp.query("seedRakeNum",nSeedNodes);
+      nCompSeedNodes = BL_SPACEDIM;
+      nodesPerElt = 1;
+      nElts = 1;
+      faceData.resize(nElts*nodesPerElt,1);
+      Vector<Real> locL(BL_SPACEDIM), locR(BL_SPACEDIM);
+      pp.getarr("seedRakeL",locL,0,BL_SPACEDIM);
+      pp.getarr("seedRakeR",locR,0,BL_SPACEDIM);
+      Box nBox(IntVect::TheZeroVector(),(nSeedNodes-1)*BASISV(0));
+      nodes.resize(nBox,BL_SPACEDIM);
+      for (int i=0; i<nSeedNodes; ++i) {
+        for (int d=0; d<BL_SPACEDIM; ++d) {
+          nodes(i * BASISV(0),d) = locL[d] + (i/double(nSeedNodes-1))*(locR[d] - locL[d]);
+        }
+        //faceData[i] = i;
+      }
+      surfNames = {D_DECL("X", "Y", "Z")};
     }
     io_time += ParallelDescriptor::second() - strt_io;
     if (ParallelDescriptor::IOProcessor() && verbose>0)
@@ -664,7 +709,7 @@ main (int   argc,
     RealBox rb(&(amrData.ProbLo()[0]),
                &(amrData.ProbHi()[0]));
     int coord = 0;
-    Vector<int> is_per(BL_SPACEDIM,1);
+    Vector<int> is_per(BL_SPACEDIM,0);
     pp.queryarr("is_per",is_per,0,BL_SPACEDIM);
     Print() << "Periodicity assumed for this case: ";
     for (int i=0; i<BL_SPACEDIM; ++i) {
@@ -727,6 +772,28 @@ main (int   argc,
     Vector<Geometry*> geoms(Nlev);
     Vector<MultiFab*> streamlines(Nlev);
 
+#ifdef USE_PF
+    PlotFileData pf(plotfile);
+    Vector<Vector<MultiFab>> pfdata(Nlev);
+    int nComp = inVarNames.size();
+    for (int lev=0; lev<Nlev; ++lev) {
+      pfdata[lev].resize(nComp);
+      Print() << "Reading the plotfile data at level " << lev
+              << "... (nComp,nGrow) = (" << nComp
+              << "," << nGrow << ")"<< std::endl;
+      for (int n=0; n<nComp; ++n) {
+        Print() << "   var = " << inVarNames[n] << "..." << std::endl;
+        pfdata[lev][n] = pf.get(lev,inVarNames[n]);
+      }
+      Print() << "...done reading the plotfile data at level " << lev << "..." << std::endl;
+    }
+    PhysBCFunctNoOp f;
+    CellBilinear cbi;
+    //PCInterp cbi;
+#endif
+
+    bool linesCutShort_LO = false;
+    bool linesCutShort_HI = false;
     for (int lev=0; lev<Nlev; ++lev)
     {
         const BoxArray ba = amrData.boxArray(lev);
@@ -748,7 +815,12 @@ main (int   argc,
             std::cerr << '\n';
         }
 
+        geoms[lev] = new Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
+
         strt_io = ParallelDescriptor::second();
+
+#ifndef USE_PF
+        state[lev]->setVal(0,0,nCompSt,nGrow);
         amrData.FillVar(*state[lev],lev,inVarNames,destFillComps);
         
         for (int i=0; i<inVarNames.size(); ++i)
@@ -759,14 +831,12 @@ main (int   argc,
                 << destFillComps.size() << " components)" << std::endl;
 
         //const bool do_corners = true;
-        geoms[lev] = new Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
 
         MultiFab bigMF(BoxArray(ba).grow(nGrow),dm,nCompSt,0); // handy structure to simplify parallel copies
 
         // Fill progress variable grow cells using interp over c-f boundaries
         {
             state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
-            Extrapolater::FirstOrderExtrap(*state[lev],*geoms[lev],isoCompSt,nCompSt);
             
             if (lev>0)
             {
@@ -785,8 +855,29 @@ main (int   argc,
             }
         }
 
-        // Fix up fine-fine and periodic for idSmProg
+        // Fix up fine-fine and periodic
         state[lev]->FillBoundary(isoCompSt,nCompSt,geoms[lev]->periodicity());
+#else
+        MultiFab gstate(ba,dm,1,nGrow); gstate.setVal(-666);
+        Real time=0;
+        for (int n=0; n<nComp; ++n) {
+          if (lev==0) {
+            FillPatchSingleLevel(gstate,time,{&pfdata[lev][n]},{time},0,0,1,*geoms[0],f,0);
+          }
+          else
+          {
+            BCRec bc;
+            FillPatchTwoLevels(gstate,time,{&pfdata[lev-1][n]},{time},{&pfdata[lev][n]},{time},0,0,1,
+                               *geoms[lev-1],*geoms[lev],f,0,f,0,amrData.RefRatio()[lev-1]*IntVect::Unit,&cbi,{bc},0);
+          }
+          state[lev]->copy(gstate,0,n,1,nGrow,nGrow,geoms[lev]->periodicity());
+        }
+#endif
+        // Set everything outside the domain to zero
+        for (MFIter mfi(*state[lev]); mfi.isValid(); ++mfi) {
+          FArrayBox& fab = (*state[lev])[mfi];
+          FixOOB(fab,geoms[lev]->Domain());
+        }
 
         if (ParallelDescriptor::IOProcessor())
             std::cerr << "Progress variable grow cells filled on level " << lev << std::endl;
@@ -831,21 +922,28 @@ main (int   argc,
                        ids.dataPtr(), &n_ids,
                        BL_TO_FORTRAN_N_ANYD(*vec, vecComp),  &computeVec,
                        BL_TO_FORTRAN_N_ANYD(strm,       0),  &nCompStr,
-                       delta.dataPtr(), plo.dataPtr(), &hRK, &errFlag);
+                       delta.dataPtr(), plo.dataPtr(), phi.dataPtr(), &hRK, &errFlag);
                          
                 if (errFlag > 0) {
-                    amrex::Abort("Problem with interpolation");
+                  if (errFlag == 1) amrex::Abort("Problem with interpolation");
+                  if (errFlag == 2) linesCutShort_LO |= true;
+                  if (errFlag == 4) linesCutShort_HI |= true;
+
                 }
             }
         }
-        if (ParallelDescriptor::IOProcessor())
-            std::cerr << "Streamlines computed on level " << lev << std::endl;
 
-        if (ParallelDescriptor::IOProcessor())
-            std::cerr << "Derive finished for level " << lev << std::endl;
+        Print() << "Streamlines computed on level " << lev << std::endl;
     }
+    ParallelDescriptor::ReduceBoolOr(linesCutShort_LO);
+    ParallelDescriptor::ReduceBoolOr(linesCutShort_HI);
+    if (linesCutShort_LO) Warning("Lines cut short on low end");
+    if (linesCutShort_HI) Warning("Lines cut short on high end");
 
-    if (pp.countval("streamFile") > 0)
+    int nst = pp.countval("streamFile");
+    int no = pp.countval("outFile");
+    AMREX_ALWAYS_ASSERT(nst>0 ^ no>0);
+    if (nst > 0)
     {
       ParallelDescriptor::Barrier();
       if (ParallelDescriptor::IOProcessor())
@@ -864,7 +962,7 @@ main (int   argc,
       if (ParallelDescriptor::IOProcessor())
         std::cerr << "...done writing the streamline data " << std::endl;
     }
-    else
+    else if (no > 0)
     {
       std::string outFile;
       if (pp.countval("outFile")==0) Abort("Must specify streamFile or outFile");
@@ -2145,40 +2243,60 @@ dump_ml_streamline_data(const std::string&       outFile,
   ParallelDescriptor::Barrier();
   
   const Box nullBox(IntVect::TheZeroVector(),IntVect::TheZeroVector());
+
+  bool will_write = false;
   for (int lev=0; lev<data.size(); ++lev)
   {
     const auto& ba = data[lev]->boxArray();
     const auto& dm = data[lev]->DistributionMap();
-    int nComp = data[lev]->nComp();
     for (int j=0; j<ba.size(); ++j)
     {
       if (dm[j] == myProc)
       {
-        const auto& b = ba[j];
-        if (b!=nullBox)
+        will_write |= (ba[j] != nullBox);
+      }
+    }
+  }
+  if (will_write)
+  {
+    std::string fileName = outFile + "/str_";
+    fileName = Concatenate(fileName,myProc) + ".dat";
+    std::ofstream ofs(fileName.c_str());
+    ofs << "VARIABLES = ";
+    for (int i=0; i<names.size(); ++i) {
+      ofs << names[i] << " ";
+    }
+    ofs << '\n';
+    for (int lev=0; lev<data.size(); ++lev)
+    {
+      const auto& ba = data[lev]->boxArray();
+      const auto& dm = data[lev]->DistributionMap();
+      int nComp = data[lev]->nComp();
+      for (int j=0; j<ba.size(); ++j)
+      {
+        if (dm[j] == myProc)
         {
-          std::string fileName = outFile + "/str_";
-          fileName = Concatenate(fileName,myProc) + "_";
-          fileName = Concatenate(fileName,cnt++);
-          std::ofstream ofs(fileName.c_str());
-
-          for (int i=0; i<names.size(); ++i) {
-            ofs << names[i] << " ";
-          }
-          ofs << '\n';
-          
-          for (auto iv=b.smallEnd(); iv<=b.bigEnd(); b.next(iv))
+          const auto& b = ba[j];
+          if (b!=nullBox)
           {
-            for (int i=sComp; i<nComp; ++i)
+            for (int i=b.smallEnd()[0]; i<=b.bigEnd()[0]; ++i)
             {
-              ofs << (*data[lev])[j](iv,i) << " ";
+              ofs << "ZONE I=1 J=" << b.length(1) << " k=1 FORMAT=POINT\n";
+
+              for (int L=b.smallEnd()[1]; L<=b.bigEnd()[1]; ++L)
+              {
+                const IntVect iv(D_DECL(i,L,0));
+                for (int n=sComp; n<nComp; ++n)
+                {
+                  ofs << (*data[lev])[j](iv,n) << " ";
+                }
+                ofs << '\n';
+              }
             }
-            ofs << '\n';
           }
-          ofs.close();
         }
       }
-      ParallelDescriptor::Barrier();
     }
+    ofs.close();
   }
 }

@@ -17,7 +17,7 @@ contains
     real(amrex_real), intent(in) :: loc(loc_lo(1):loc_hi(1),loc_lo(2):loc_hi(2),loc_lo(3):loc_hi(3),nl)
     real(amrex_real), intent(in) :: fab(fab_lo(1):fab_hi(1),fab_lo(2):fab_hi(2),fab_lo(3):fab_hi(3),np)
     real(amrex_real), intent(inout) :: strm(strm_lo(1):strm_hi(1),strm_lo(2):strm_hi(2),strm_lo(3):strm_hi(3),np)
-    real(amrex_real), intent(in) :: dx(dim), plo(dim)
+    real(amrex_real), intent(in) :: dx(3), plo(3)
 
     integer :: i,j,k
     real(amrex_real) :: x(3),vtmp(3)
@@ -56,14 +56,14 @@ contains
   subroutine ntrpv(x,g,g_lo,g_hi,dx,plo,u,nc,ok)
     implicit none
     integer, intent(in) :: nc
-    real(amrex_real), intent(in) :: x(dim), dx(dim), plo(dim)
+    real(amrex_real), intent(in) :: x(3), dx(3), plo(3)
     real(amrex_real), intent(inout) :: u(nc)
-    integer, intent(in) :: g_lo(dim), g_hi(dim)
+    integer, intent(in) :: g_lo(3), g_hi(3)
     real(amrex_real), intent(in) :: g(g_lo(1):g_hi(1),g_lo(2):g_hi(2),g_lo(3):g_hi(3),nc)
     logical, intent(inout) :: ok
 
-    integer :: b(dim), i
-    real(amrex_real) :: n(dim), tmp
+    integer :: b(3), i
+    real(amrex_real) :: n(3), tmp
     do i=1,dim
        tmp = (x(i) - plo(i)) / dx(i) - 0.5d0
        b(i) = FLOOR( tmp )
@@ -106,7 +106,7 @@ contains
   subroutine set_distance(loc, loc_lo, loc_hi, res, res_lo, res_hi) bind(C, name='set_distance')
     implicit none
     integer, intent(in) :: loc_lo(3),loc_hi(3),res_lo(3),res_hi(3)
-    real(amrex_real), intent(inout) :: loc(loc_lo(1):loc_hi(1),loc_lo(2):loc_hi(2),loc_lo(3):loc_hi(3),dim)
+    real(amrex_real), intent(inout) :: loc(loc_lo(1):loc_hi(1),loc_lo(2):loc_hi(2),loc_lo(3):loc_hi(3),3)
     real(amrex_real), intent(inout) :: res(res_lo(1):res_hi(1),res_lo(2):res_hi(2),res_lo(3):res_hi(3))
 
     integer :: i,j,k

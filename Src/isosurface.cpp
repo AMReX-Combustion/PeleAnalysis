@@ -37,7 +37,7 @@ print_usage (int,
   std::cerr << "\t     writeSurf=<1,0> output surface in binary MEF format [DEF->1]\n";
   std::cerr << "\t     outfile=<s> name of tecplot output file [DEF->gen'd]\n";
   std::cerr << "\t     build_distance_function=<t,f> create cc signed distance function [DEF->f]\n";
-  std::cerr << "\t     rm_ext_elts=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
+  std::cerr << "\t     rm_external_elements=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
 exit(1);
 }
 
@@ -1082,8 +1082,8 @@ main (int   argc,
   int nodeCtr = 0;
 
   const int nodesPerElt = BL_SPACEDIM;
-  bool tm_ext_elts = true;
-  pp.query("tm_ext_elts",tm_ext_elts);
+  bool rm_external_elements = true;
+  pp.query("rm_external_elements",rm_external_elements);
   bool build_distance_function = false;
   pp.query("build_distance_function",build_distance_function);
   Vector<std::unique_ptr<MultiFab>> distance(Nlev);
@@ -1361,11 +1361,15 @@ main (int   argc,
         }
       }
 
-      if (tm_ext_elts)
+      if (rm_external_elements)
       {
         // If all nodes of element not in g1box, remove before merging set with master list
         std::set<PMapIt,PMapItCompare> ptsToRm;
+#if BL_SPACEDIM==2
+        list<Segment> eltsInside;
+#else
         list<Triangle> eltsInside;
+#endif
         for (const auto& it : elements) {
           bool eltValid = true;
           for (int i=0; i<nodesPerElt; ++i) {
