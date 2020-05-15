@@ -14,6 +14,8 @@ using namespace amrex;
 using std::list;
 using std::vector;
 using std::string;
+using std::endl;
+using std::cerr;
 
 static Real isoVal_DEF = 1090.;
 static string isoCompName_DEF = "temp";
@@ -1008,9 +1010,232 @@ public:
     {fab.resize(Box(IntVect::TheZeroVector(),
                     IntVect(D_DECL(i-1,0,0))),n);}
   Real& operator[](size_t i) {return fab.dataPtr()[i];}
+  const FArrayBox& getFab() const {return fab;}
   FArrayBox fab;
   size_t boxSize;
 };
+
+
+
+struct Seg
+{
+    Seg() : mL(-1), mR(-1) {}
+    Seg(int L, int R) : mL(L), mR(R) {}
+    int ID_l() const
+        { return mL; }
+    int ID_r() const
+        { return mR; }
+    void flip()
+        { int t=mL; mL=mR; mR=t;}
+    int mL, mR;
+};
+
+typedef list<Seg> Line;
+
+Line::iterator FindMySeg(Line& segs, int idx)
+{
+    for (Line::iterator it=segs.begin(); it!=segs.end(); ++it)
+    {
+        if ( ((*it).ID_l() == idx) || ((*it).ID_r() == idx) )
+            return it;
+    }
+    return segs.end();
+}
+
+bool operator==(const Seg& lhs, const Seg& rhs)
+{
+    return lhs.ID_l() == rhs.ID_l() && lhs.ID_r() == rhs.ID_r();
+}
+
+bool operator!=(const Seg& lhs, const Seg& rhs)
+{
+    return !operator==(lhs,rhs);
+}
+
+typedef Vector<Real> Point;
+
+std::pair<bool,Point>
+nodesAreClose(const FArrayBox& nodes,
+              int              lhs,
+              int              rhs,
+              Real             eps)
+{
+    Real sep = 0;
+    int nComp = nodes.nComp();
+    Point ret(nComp,0);
+    for (int i=0; i<ret.size(); ++i)
+    {
+        Real xL = nodes.dataPtr(i)[lhs];
+        Real xR = nodes.dataPtr(i)[rhs];
+        sep += (xL-xR)*(xL-xR);
+        ret[i] = 0.5*(xL+xR);
+    }
+    return std::pair<bool,Point>(std::sqrt(sep) <= eps, ret);
+}
+
+void
+join(Line&     l1,
+     Line&     l2,
+     FArrayBox&   nodes,
+     Point&       pt,
+     list<Point>& newPts,
+     list<int>&   deadPts)
+{
+    int newPtID = nodes.box().numPts() + newPts.size();
+    newPts.push_back(pt);
+
+    int rhs = l1.back().ID_l();
+    deadPts.push_back(l1.back().ID_r());
+    BL_ASSERT(l1.size()>0);
+    l1.pop_back();
+    l1.push_back(Seg(rhs,newPtID));
+
+    int lhs = l2.front().ID_r();
+    deadPts.push_back(l2.front().ID_l());
+    BL_ASSERT(l2.size()>0);
+    l2.pop_front();
+    l2.push_front(Seg(newPtID,lhs));
+
+    l1.splice(l1.end(),l2);
+}
+
+// Provides an ordering to uniquely sort segments
+struct SegLT
+{
+    bool operator()(const Seg& lhs,
+                    const Seg& rhs)
+        {
+            int smL = std::min(lhs.ID_l(),lhs.ID_r());
+            int smR = std::min(rhs.ID_l(),rhs.ID_r());
+            if (smL < smR)
+            {
+                return true;
+            }
+            else if (smL == smR)
+            {
+                int lgL = std::max(lhs.ID_l(),lhs.ID_r());
+                int lgR = std::max(rhs.ID_l(),rhs.ID_r());
+                return lgL < lgR;
+            }
+            return false;
+        }
+};
+
+using std::list;
+
+list<Line>
+MakeCLines(const FArrayBox&  nodes,
+           Vector<int>& faceData,
+           int         nodesPerElt)
+{
+    // We want to clean things up a little...the contour is now in a form
+    // of a huge list of itty-bitty segments.  We want to connect up the segments
+    // to form a minimal number of polylines.
+
+    // First build up a Line
+    int nElts = faceData.size() / nodesPerElt;
+    BL_ASSERT(nElts * nodesPerElt == faceData.size());
+    Line segList;
+    for (int i=0; i<nElts; ++i)
+    {
+        int offset = i*nodesPerElt;
+        segList.push_back(Seg(faceData[offset]-1,faceData[offset+1]-1)); // make 0-based
+    }
+
+    // Find a segment with the specified vertex as one of its endpoints,
+    // then assemble the list of segments to form the contour line.  If
+    // we finish, and segments remain, start a new line.
+    int idx = segList.front().ID_r();
+    segList.pop_front();
+    list<Line> cLines;
+    cLines.push_back(Line());
+
+    while (segList.begin() != segList.end())
+    {
+        Line::iterator segIt = FindMySeg(segList,idx);
+        if (segIt != segList.end())
+        {
+            int idx_l = (*segIt).ID_l();
+            int idx_r = (*segIt).ID_r();
+
+            if ( idx_l == idx )
+            {
+                idx = idx_r;
+                cLines.back().push_back(*segIt);
+            }
+            else
+            {
+                idx = idx_l;
+                Seg nseg(*segIt); nseg.flip();
+                cLines.back().push_back(nseg);
+            }
+
+            segList.erase(segIt);
+        }
+        else
+        {
+            cLines.push_back(Line());
+            idx = segList.front().ID_r();
+            segList.pop_front();
+        }
+    }
+
+    // Connect up the line fragments as much as possible
+    bool changed;
+    do
+    {
+        changed = false;
+        for (std::list<Line>::iterator it = cLines.begin(); it!=cLines.end(); ++it)
+        {
+            if (!(*it).empty())
+            {
+                const int idx_l = (*it).front().ID_l();
+                const int idx_r = (*it).back().ID_r();
+                for (std::list<Line>::iterator it1 = cLines.begin(); it1!=cLines.end(); ++it1)
+                {
+                    if (!(*it1).empty() && (*it).front()!=(*it1).front())
+                    {
+                        if (idx_r == (*it1).front().ID_l())
+                        {
+                            (*it).splice((*it).end(),*it1);
+                            changed = true;
+                        }
+                        else if (idx_r == (*it1).back().ID_r())
+                        {
+                            (*it1).reverse();
+                            for (Line::iterator it2=(*it1).begin(); it2!=(*it1).end(); ++it2)
+                                (*it2).flip();
+                            (*it).splice((*it).end(),*it1);
+                            changed = true;
+                        }
+                        else if (idx_l == (*it1).front().ID_l())
+                        {
+                            (*it1).reverse();
+                            for (Line::iterator it2=(*it1).begin(); it2!=(*it1).end(); ++it2)
+                                (*it2).flip();
+                            (*it).splice((*it).begin(),*it1);
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
+    } while(changed);
+
+    // Clear out empty placeholders for lines we connected up to others.
+    for (std::list<Line>::iterator it = cLines.begin(); it!=cLines.end();)
+    {
+        if (it->empty())
+            cLines.erase(it++);
+        else
+            it++;
+    }
+
+    // Dump out the final number of contours
+    cerr << "  number of contour lines: " << cLines.size() << endl;
+
+    return cLines;
+}
 
 int
 main (int   argc,
@@ -1163,7 +1388,7 @@ main (int   argc,
     {
       const auto& f = state.array(mfi);
       const Box& gbox = state[mfi].box();
-      const int ratio = pf.refRatio(lev-1);
+      const int ratio = (lev == 0 ? 1 : pf.refRatio(lev-1));
       Real loc[BL_SPACEDIM];
       if (lev!=0)
       {
@@ -1171,18 +1396,18 @@ main (int   argc,
 
         AMREX_PARALLEL_FOR_3D ( gbox, i, j, k,
         {
-          f(i,j,k,0) = ((i < 0 ? i*ri-1  : i*ri) + 0.5)*dxf[0]*ratio + plo[0];
-          f(i,j,k,1) = ((j < 0 ? j*ri-1  : j*ri) + 0.5)*dxf[1]*ratio + plo[1];
-          f(i,j,k,2) = ((k < 0 ? k*ri-1  : k*ri) + 0.5)*dxf[2]*ratio + plo[2];
+          AMREX_D_TERM(f(i,j,k,0) = (static_cast<int>(i < 0 ? i*ri-1  : i*ri) + 0.5)*dxf[0]*ratio + plo[0];,
+                       f(i,j,k,1) = (static_cast<int>(j < 0 ? j*ri-1  : j*ri) + 0.5)*dxf[1]*ratio + plo[1];,
+                       f(i,j,k,2) = (static_cast<int>(k < 0 ? k*ri-1  : k*ri) + 0.5)*dxf[2]*ratio + plo[2];);
         });
       }
 
       const Box& vbox = gridArray[lev][mfi.index()];
       AMREX_PARALLEL_FOR_3D ( vbox, i, j, k,
       {
-        f(i,j,k,0) = (i + 0.5)*dxf[0] + plo[0];
-        f(i,j,k,1) = (j + 0.5)*dxf[1] + plo[1];
-        f(i,j,k,2) = (k + 0.5)*dxf[2] + plo[2];
+        AMREX_D_TERM(f(i,j,k,0) = (i + 0.5)*dxf[0] + plo[0];,
+                     f(i,j,k,1) = (j + 0.5)*dxf[1] + plo[1];,
+                     f(i,j,k,2) = (k + 0.5)*dxf[2] + plo[2];);
       });
     }
 
@@ -1715,6 +1940,57 @@ main (int   argc,
       }
 
       const FABdata& tmpData = *tmpDataP;
+
+      /*
+        In 2D we can connect up the line segments in order to get a set of
+        lines.  We do this and hack in an output function that creates a
+        file that ParaView can read.  May need to split out one zone per
+        file...not sure.  Also, ParaView doesn't seem to like variables
+        with names like Y(XX), so we translate them to XX.
+       */
+#if AMREX_SPACEDIM==2
+      list<Line> contours = MakeCLines(tmpData.getFab(),eltRaw,nodesPerElt);
+
+      std::string fileName = "MARC.dat";
+      std::ofstream ofm(fileName.c_str());
+
+      // Build variable name string
+      std::string mvars;
+      for (int j=0; j<varnames.size(); ++j) {
+        mvars += " " + varnames[j];
+      }
+      mvars.erase(std::remove(mvars.begin(), mvars.end(), 'X'), mvars.end());
+      mvars.erase(std::remove(mvars.begin(), mvars.end(), 'Y'), mvars.end());
+      mvars.erase(std::remove(mvars.begin(), mvars.end(), '('), mvars.end());
+      mvars.erase(std::remove(mvars.begin(), mvars.end(), ')'), mvars.end());
+      mvars = "X Y Z" + mvars;
+      ofm << "VARIABLES = " << mvars << '\n';
+
+      for (std::list<Line>::iterator it = contours.begin(); it!=contours.end(); ++it)
+      {
+        const auto& iLine = *it;
+        ofm << "ZONE I=1 J=" << iLine.size()+1 << " k=1 FORMAT=POINT\n";
+        for (Line::const_iterator it1 = iLine.begin(); it1!=iLine.end(); ++it1)
+        {
+          int nodeIdx = it1->ID_l();
+          const Real* vec = sortedNodes[nodeIdx]->m_vec;
+          for (int n=0; n<nNodeSize; ++n)
+          {
+            ofm << vec[n] << " ";
+            if (n==1) ofm << "0 ";
+          }
+          ofm << '\n';
+        }
+        const Real* vec = sortedNodes[iLine.back().ID_r()]->m_vec;
+        for (int n=0; n<nNodeSize; ++n)
+        {
+          ofm << vec[n] << " ";
+          if (n==1) ofm << "0 ";
+        }
+        ofm << '\n';
+      }
+#endif
+
 
       // Build variable name string
       std::string vars = "X Y";
