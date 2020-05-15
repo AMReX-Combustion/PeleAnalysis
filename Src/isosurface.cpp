@@ -1951,6 +1951,7 @@ main (int   argc,
 #if AMREX_SPACEDIM==2
       list<Line> contours = MakeCLines(tmpData.getFab(),eltRaw,nodesPerElt);
 
+#if 0
       std::string fileName = "MARC.dat";
       std::ofstream ofm(fileName.c_str());
 
@@ -1989,6 +1990,8 @@ main (int   argc,
         }
         ofm << '\n';
       }
+#endif
+
 #endif
 
 
