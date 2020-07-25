@@ -27,9 +27,9 @@ public:
                            const amrex::Vector<int>                        & a_rrs);
 
   void InitParticles(const amrex::Vector<amrex::Vector<amrex::Real>>& a_locs);
-  
+
   void SetParticleLocation(int a_streamPos, int a_nGrow);
-  
+
   void ComputeNextLocation(int                                    a_fromLoc,
                            amrex::Real                            a_delta_t,
                            const amrex::Vector<amrex::MultiFab> & a_vectorField);
@@ -42,7 +42,7 @@ protected:
   int sizeOfRealStreamData;
 
 private:
-  
+
 };
 
 #endif

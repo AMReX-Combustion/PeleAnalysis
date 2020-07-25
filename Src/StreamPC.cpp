@@ -55,7 +55,7 @@ InitParticles (const Vector<Vector<Real>>& locs)
     {
       // Keep track of pairs of lines
       Array<int,2> ppair = {ParticleType::NextID(), ParticleType::NextID()};
-          
+
       for (int i_part=0; i_part<2; i_part++)
       {
         ParticleType p;
@@ -124,11 +124,11 @@ SetParticleLocation(int a_streamLoc, int a_nGrow)
                                  soa.GetRealData(offset + RealData::zloc)[pindex])};
 
           AMREX_D_EXPR(p.pos(0) = newpos[0], p.pos(1) = newpos[1], p.pos(2) = newpos[2]);
-          
+
           for (int d=0; d<AMREX_SPACEDIM; ++d)
           {
             redist |= (newpos[d]<blo[d] || newpos[d]>bhi[d]);
-          }  
+          }
         }
       }
     }
@@ -138,15 +138,6 @@ SetParticleLocation(int a_streamLoc, int a_nGrow)
     //Print() << "  redistributing" << std::endl;
     Redistribute();
   }
-}
-
-static bool IsOK(const dim3& x, const Real* plo, const Real* phi)
-{
-  bool ok = true;
-  for (int i=0; i<AMREX_SPACEDIM; ++i) {
-    ok |= x[i] < plo[i] || x[i] > phi[i];
-  }
-  return ok;
 }
 
 static void vnrml(dim3& vec, int dir)
@@ -171,10 +162,8 @@ static bool ntrpv(const dim3& x,const FArrayBox& gfab,
   int3 b;
   dim3 n;
 
-  if (!IsOK(x,plo,phi)) return false;
-
   for (int d=0; d<AMREX_SPACEDIM; ++d) {
-    b[d] = int( (x[d] - plo[d]) / dx[d] - 0.5 );
+    b[d] = std::floor( (x[d] - plo[d]) / dx[d] - 0.5 );
     n[d] = ( x[d] - ( (b[d] + 0.5 ) * dx[d] + plo[d] ) )/dx[d];
     n[d] = std::max(0., std::min(1.,n[d]));
   }
@@ -274,12 +263,12 @@ StreamParticleContainer::
 ComputeNextLocation(int                      a_fromLoc,
                     Real                     a_delta_t,
                     const Vector<MultiFab> & a_vectorField)
-{    
+{
   BL_PROFILE("StreamParticleContainer::ComputeNextLocation");
 
   const int nGrow = a_vectorField[0].nGrow();
   SetParticleLocation(a_fromLoc,nGrow);
-  
+
   const int new_loc_id = a_fromLoc + 1;
   int offset = RealData::ncomp * new_loc_id;
 
@@ -322,11 +311,11 @@ WriteStreamAsTecplot(const std::string& outFile)
 {
   // Set location to first point on stream to guarantee partner line is local
   SetParticleLocation(0,1);
-  
+
   // Create a folder and have each processor write their own data, one file per streamline
   auto myProc = ParallelDescriptor::MyProc();
   auto nProcs = ParallelDescriptor::NProcs();
-  
+
   if (!amrex::UtilCreateDirectory(outFile, 0755))
     amrex::CreateDirectoryFailed(outFile);
   ParallelDescriptor::Barrier();

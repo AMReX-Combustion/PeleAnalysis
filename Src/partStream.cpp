@@ -17,7 +17,7 @@ GetSeedLocations (const StreamParticleContainer& spc)
   int ns=pp.countval("seedLoc");
   int nrL=pp.countval("seedRakeL");
   int nrR=pp.countval("seedRakeR");
-  AMREX_ALWAYS_ASSERT(nc>0 ^ (ni>0 ^ (ns>0 ^ (nrL>0 && nrR>0))));
+  AMREX_ALWAYS_ASSERT((nc>0) ^ ((ni>0) ^ ((ns>0) ^ ((nrL>0) && nrR>0))));
   if (nc>0)
   {
     int finestLevel = spc.numLevels() - 1;
