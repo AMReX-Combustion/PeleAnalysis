@@ -72,7 +72,7 @@ contains
     halfDxInv(1:dim) = 0.5_amrex_real * dxInv(1:dim)
 
     if (dim.eq.2) then
-       do k = lo(3),hi(3)+1
+       do k = lo(3),hi(3)
           do j = lo(2),hi(2)+1
              do i = lo(1),hi(1)+1
                 gT(1) = (T(i,j,k) + T(i,j-1,k) - T(i-1,j,k) - T(i-1,j-1,k)) * halfDxInv(1)
@@ -80,7 +80,7 @@ contains
                 mag = SQRT(gT(1)*gT(1) + gT(2)*gT(2))
 
                 if (mag.eq.0._amrex_real) then
-                   wrk(i,j,k,1:k) = 0._amrex_real
+                   wrk(i,j,k,1:dim) = 0._amrex_real
                 else
                    wrk(i,j,k,1:dim) = -gT(1:dim)/mag ! Normal points into fuel
                 endif
