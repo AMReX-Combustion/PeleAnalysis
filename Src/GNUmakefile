@@ -1,4 +1,4 @@
-AMREX_HOME ?= ../../..
+AMREX_HOME ?= ../../../amrex
 
 DEBUG	      = FALSE
 DIM	      = 2
@@ -10,7 +10,8 @@ USE_OMP       = FALSE
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-EBASE         = stream2plt
+EBASE         = partStream
+#EBASE         = stream2plt
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
 #EBASE         = streamSub
@@ -31,13 +32,13 @@ CEXE_sources += $(EBASE).cpp
 ifeq ($(NEEDS_f90_SRC),TRUE)
   f90EXE_sources += $(EBASE)_nd.f90
 endif
-CEXE_headers += StreamData.H
-CEXE_sources += StreamData.cpp
+CEXE_headers += StreamData.H    StreamPC.H
+CEXE_sources += StreamData.cpp  StreamPC.cpp
 
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
 
-Pdirs   := Base Boundary AmrCore Extern/amrdata
+Pdirs   := Base Boundary AmrCore Extern/amrdata Particle
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)
