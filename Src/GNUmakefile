@@ -1,16 +1,19 @@
-AMREX_HOME ?= ../../../amrex
+AMREX_HOME ?= ${AMREX_HOME}
+#../../../amrex
 
 DEBUG	      = FALSE
-DIM	      = 2
-COMP          = gcc
+DIM	      = 3
+COMP          = intel
 PRECISION     = DOUBLE
+USE_ASSERTION = TRUE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
+USE_EB        = TRUE
 #EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-EBASE         = partStream
+#EBASE         = partStream
 #EBASE         = stream2plt
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
@@ -23,6 +26,7 @@ EBASE         = partStream
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
+EBASE          = buildDistance
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
@@ -38,7 +42,7 @@ CEXE_sources += StreamData.cpp  StreamPC.cpp
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
 
-Pdirs   := Base Boundary AmrCore Extern/amrdata Particle
+Pdirs   := Base Boundary AmrCore Extern/amrdata Particle EB
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)

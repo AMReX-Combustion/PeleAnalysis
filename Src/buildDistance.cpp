@@ -1,6 +1,10 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include <AMReX.H>
+#include <AMReX_EB2.H>
+#include <AMReX_EB2_IF.H>
+//#include <AMReX_EB2_IF.H>
 
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
@@ -16,6 +20,17 @@ using std::string;
 using std::endl;
 using std::cerr;
 
+Vec3f normal(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2)
+{
+    Vec3f x12(x1-x0),x23(x2-x1);
+    Vec3f normal;
+
+    normal[0] = x12[1]*x23[2]-x12[2]*x23[1];
+    normal[1] = x12[2]*x23[0]-x12[0]*x23[2];
+    normal[2] = x12[0]*x23[1]-x12[1]*x23[0];
+
+    return normal;
+}
 
 static
 std::vector<std::string> parseVarNames(std::istream& is)
@@ -48,7 +63,8 @@ main (int   argc,
     ParmParse pp;
 
     // Read in isosurface
-    std::string isoFile; pp.get("isoFile",isoFile);
+  //  std::string isoFile; pp.get("isoFile",isoFile);
+    std::string isoFile="isoFile";
     if (ParallelDescriptor::IOProcessor())
       std::cerr << "Reading isoFile... " << isoFile << std::endl;
     
@@ -105,12 +121,13 @@ main (int   argc,
     int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
     Box domain(IntVect(D_DECL(0,0,0)),
                //IntVect(D_DECL(nCell-1,nCell-1,nCell-1)));
-               IntVect(D_DECL(64-1,64-1,192-1)));
+               IntVect(D_DECL(96-1,96-1,128-1)));
     BoxArray grids(domain);
     grids.maxSize(max_grid_size);
     //RealBox probDomain({D_DECL(0,0,0)},{D_DECL(1,1,1)});
-    RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
-    
+//    RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
+    RealBox probDomain({D_DECL(0.001,0.001,0.0001)},{D_DECL(0.033,0.033,.049)});  
+  
     Array<int,AMREX_SPACEDIM> is_periodic = {D_DECL(0,0,0)};
     Geometry geom(domain,probDomain,0,is_periodic);
     const Real* dx = geom.CellSize();
@@ -123,6 +140,8 @@ main (int   argc,
 
       std::vector<Vec3f> vertList;
       std::vector<Vec3ui> faceList;
+      std::vector<Vec3f> normalList;
+      Vec3f ni;
 
       for (int node=0; node<nNodes; ++node) {
         const IntVect iv(D_DECL(node,0,0));
@@ -131,6 +150,8 @@ main (int   argc,
       for (int elt=0; elt<nElts; ++elt) {
         int offset = elt * nodesPerElt;
         faceList.push_back(Vec3ui(D_DECL(faceData[offset],faceData[offset+1],faceData[offset+2])));
+        ni = normal(vertList[faceData[offset]],vertList[faceData[offset+1]],vertList[faceData[offset+2]]);
+         normalList.push_back(ni);
       }
 
       const Box& vbox = grids[mfi.index()];
@@ -140,7 +161,7 @@ main (int   argc,
       Array3f phi_grid;
       float dx1 = float(dx[0]);
       
-      make_level_set3(faceList, vertList, local_origin, dx1,
+      make_level_set3(faceList, vertList, normalList,local_origin, dx1,
                       vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
 
       vertList.clear();
@@ -163,8 +184,13 @@ main (int   argc,
         }
       }
     }
+    //amrex::EB_WriteSingleLevelPlotfile("plt", distance, {"den"}, geom, 0.0, 0);
+    //VisMF::Write(distance,"distance");
+    
+    
+    WriteSingleLevelPlotfile("Distance.out",distance,{"distance"},geom,0.0,0);
 
-    VisMF::Write(distance,"distance");
+
   }
   amrex::Finalize();
   return 0;

@@ -4,7 +4,7 @@
 //This code is public domain. Feel free to mess with it, let me know if you like it.
 
 #include "makelevelset3.h"
-#include "config.h"
+//#include "config.h"
 
 #ifdef HAVE_VTK
   #include <vtkImageData.h>
@@ -14,6 +14,16 @@
   #include <vtkSmartPointer.h>
 #endif
 
+#include "makelevelset3.cpp"
+//#include "makelevelset3.h"
+/*#include "array1.h"
+#include "array2.h"
+#include "array3.h"
+#include "hashgrid.h"
+#include "hashtable.h"
+#include "util.h"
+#include "vec.h"
+*/
 
 #include <fstream>
 #include <iostream>
@@ -77,6 +87,9 @@ int main(int argc, char* argv[]) {
   std::string line;
   std::vector<Vec3f> vertList;
   std::vector<Vec3ui> faceList;
+//Shufan added a line
+  std::vector<Vec3f> normalList;
+
   while(!infile.eof()) {
     std::getline(infile, line);
 
@@ -95,6 +108,7 @@ int main(int argc, char* argv[]) {
       int v0,v1,v2;
       data >> c >> v0 >> v1 >> v2;
       faceList.push_back(Vec3ui(v0-1,v1-1,v2-1));
+      normalList.push_back(normal(vertList[v0-1],vertList[v1-1],vertList[v2-1]));
     }
     else if( line.substr(0,2) == std::string("vn") ){
       std::cerr << "Obj-loader is not able to parse vertex normals, please strip them from the input file. \n";
@@ -121,7 +135,27 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Computing signed distance field.\n";
   Array3f phi_grid;
-  make_level_set3(faceList, vertList, min_box, dx, sizes[0], sizes[1], sizes[2], phi_grid);
+  
+  for(int i_it=0;i_it<normalList.size();++i_it)
+  {
+      for(int j_it=0;j_it<3;++j_it)
+      {
+          std::cout<<normalList[i_it][j_it]<<"   ";
+          std::cout<<faceList[i_it][j_it]<<"   ";
+      }
+      std::cout<<std::endl;
+  }  
+  std::cout<<"================================================"<<std::endl;
+  for(int i_it=0;i_it<vertList.size();++i_it)
+  {
+      for(int j_it=0;j_it<3;++j_it)
+      {
+          std::cout<<vertList[i_it][j_it]<<"   ";
+      }
+      std::cout<<std::endl;
+  }
+
+  make_level_set3(faceList, vertList,normalList, min_box, dx, sizes[0], sizes[1], sizes[2], phi_grid);
 
   std::string outname;
 
