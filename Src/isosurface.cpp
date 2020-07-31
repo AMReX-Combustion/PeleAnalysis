@@ -1237,6 +1237,11 @@ MakeCLines(const FArrayBox&  nodes,
     return cLines;
 }
 
+static
+void CheckSurfaceNormal(const Vector<Triangle>& eltTris,const FArrayBox& sfab,const IntVect& iv)
+{
+}
+
 int
 main (int   argc,
       char* argv[])
@@ -1381,7 +1386,7 @@ main (int   argc,
     MultiFab state(gridArray[lev],dm,nComp+BL_SPACEDIM,nGrow[lev]);
     if (build_distance_function)
     {
-      distance[lev].reset(new MultiFab(gridArray[lev],dm,1,0));
+      distance[lev].reset(new MultiFab(gridArray[lev],dm,1,nGrow[lev]));
     }
 
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
@@ -1442,6 +1447,7 @@ main (int   argc,
     // Use FillPatch rather than Copy in order to get grow cells filled correctly
     Print() << "FillPatching the grown structures at level " << lev << "..." << std::endl;
     MultiFab gstate(gridArray[lev],dm,1,nGrow[lev]); gstate.setVal(-666);
+#if 1
     for (int n=0; n<nComp; ++n)
     {
       if (lev==0) {
@@ -1456,25 +1462,38 @@ main (int   argc,
       state.copy(gstate,0,BL_SPACEDIM+n,1,nGrow[lev],nGrow[lev],geoms[lev].periodicity());
     }
     Print() << "...done FillPatching the grown structures at level " << lev << "..." << std::endl;
-
+#else
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
     {
-      const FArrayBox& sfab = state[mfi];
+      auto& sfab = state[mfi];
+      for (IntVect iv=sfab.box().smallEnd(); iv<=sfab.box().bigEnd(); sfab.box().next(iv)) {
+        const Real* dx = geoms[lev].CellSize();
+        const Real* plo = geoms[lev].ProbLo();
+        Real x = plo[0] + (iv[0]+0.5)*dx[0];
+        Real y = plo[1] + (iv[1]+0.5)*dx[1];
+        Real z = plo[2] + (iv[2]+0.5)*dx[2];
+        sfab(iv,isoComp) = z;
+      }
+    }
+#endif
+    for (MFIter mfi(state); mfi.isValid(); ++mfi)
+    {
+      const auto& sfab = state[mfi];
 
       // Build a mask using gstate
-      FArrayBox& mask = gstate[mfi];
-      const Box& gbox = mask.box();
-      const Box g1box = grow(mfi.validbox(),1);
+      auto& mask = gstate[mfi];
+      const auto& gbox = mask.box();
+      const auto g1box = grow(mfi.validbox(),1);
 
       mask.setVal(1.0);
 
       if (lev<finestLevel && !build_distance_function)
       {
-        const int ratio = pf.refRatio(lev);
-        const BoxArray& fineBoxes = gridArray[lev+1];
+        const auto ratio = pf.refRatio(lev);
+        const auto& fineBoxes = gridArray[lev+1];
         for (int i=0; i<fineBoxes.size(); ++i) {
-          const Box cgFineBox = Box(fineBoxes[i]).coarsen(ratio);
-          const Box isect = gbox & cgFineBox;
+          const auto cgFineBox = Box(fineBoxes[i]).coarsen(ratio);
+          const auto isect = gbox & cgFineBox;
           if (isect.ok()) {
             mask.setVal(-1.0,isect,0);
           }
@@ -1482,8 +1501,8 @@ main (int   argc,
             Vector<IntVect> pshifts(27);
             geoms[lev].periodicShift(gbox,cgFineBox,pshifts);
             for (const auto& iv : pshifts) {
-              Box shbox = cgFineBox + iv;
-              const Box pisect = gbox & shbox;
+              auto shbox = cgFineBox + iv;
+              const auto pisect = gbox & shbox;
               if (pisect.ok()) {
                 mask.setVal(-1.0,pisect,0);
               }
@@ -1514,9 +1533,11 @@ main (int   argc,
       list<Triangle> elements;
       for (IntVect iv=loopBox.smallEnd(); iv<=loopBox.bigEnd(); loopBox.next(iv))
       {
-        Vector<Triangle> eltTris = Polygonise(sfab,mask,vertCache,iv,isoVal,isoComp);
-        for (int i = 0; i < eltTris.size(); i++)
+        auto eltTris = Polygonise(sfab,mask,vertCache,iv,isoVal,isoComp);
+        for (int i = 0; i < eltTris.size(); i++) {
           elements.push_back(eltTris[i]);
+        }
+        CheckSurfaceNormal(eltTris,sfab,iv);
       }
 #endif
 
@@ -1544,7 +1565,8 @@ main (int   argc,
             faceList.push_back(Vec3ui(ptID[elt[0]],ptID[elt[1]],ptID[elt[2]]));
           }
 
-          const Box& vbox = gridArray[lev][mfi.index()];
+          //const Box& vbox = gridArray[lev][mfi.index()];
+          const Box& vbox = (*distance[lev])[mfi].box();
           Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dxf[0],
                              plo[1] + vbox.smallEnd()[1]*dxf[1],
                              plo[2] + vbox.smallEnd()[2]*dxf[2]);
@@ -1561,6 +1583,7 @@ main (int   argc,
           const auto& sfaba = state.array(mfi);
           const int* lo = vbox.loVect();
           const int* hi = vbox.hiVect();
+
           for (int k=lo[2]; k<=hi[2]; ++k)
           {
             int kL=k-lo[2];
