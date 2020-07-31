@@ -117,11 +117,14 @@ main (int   argc,
     const Real* dx = geom.CellSize();
     const Real* plo = geom.ProbLo();
 
-    MultiFab distance(grids,DistributionMapping(grids),1,0);
-    for (MFIter mfi(distance); mfi.isValid(); ++mfi) {
+    Real dmax = dx[0];
+    pp.query("dmax",dmax);
+    Print() << "dmax: " << dmax << std::endl;
+    int nGrow = int(dmax*(1.0000001) / dx[0]);
+    MultiFab distance(grids,DistributionMapping(grids),1,nGrow);
 
-      // TODO: Prune surface
-
+    for (MFIter mfi(distance); mfi.isValid(); ++mfi)
+    {
       std::vector<Vec3f> vertList;
       std::vector<Vec3ui> faceList;
 
@@ -134,7 +137,7 @@ main (int   argc,
         faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
       }
 
-      const Box& vbox = grids[mfi.index()];
+      const Box& vbox = distance[mfi].box();
       Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
                          plo[1] + vbox.smallEnd()[1]*dx[1],
                          plo[2] + vbox.smallEnd()[2]*dx[2]);
