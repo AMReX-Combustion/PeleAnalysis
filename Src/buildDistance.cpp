@@ -109,7 +109,8 @@ main (int   argc,
     BoxArray grids(domain);
     grids.maxSize(max_grid_size);
     //RealBox probDomain({D_DECL(0,0,0)},{D_DECL(1,1,1)});
-    RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
+    //RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
+    RealBox probDomain({D_DECL(0,0,0)},{D_DECL(0.03,0.03,.09)});
     
     Array<int,AMREX_SPACEDIM> is_periodic = {D_DECL(0,0,0)};
     Geometry geom(domain,probDomain,0,is_periodic);
@@ -130,7 +131,7 @@ main (int   argc,
       }
       for (int elt=0; elt<nElts; ++elt) {
         int offset = elt * nodesPerElt;
-        faceList.push_back(Vec3ui(D_DECL(faceData[offset],faceData[offset+1],faceData[offset+2])));
+        faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
       }
 
       const Box& vbox = grids[mfi.index()];
