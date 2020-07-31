@@ -53,12 +53,14 @@ main (int   argc,
     int floorIt               = 0;
     int useFileMinMax         = 1;
     bool do_strain            = false;
-    bool do_smooth            = false; 
-    bool do_gaussCurv         = false; 
+    bool do_gaussCurv         = false;
     bool getStrainTensor      = false;
-    bool do_velnormal         = false; 
+    bool do_velnormal         = false;
+    bool do_threshold         = false;
+    Real threshold            = 0.0001;
+    bool do_smooth            = false;
     Real smooth_time          = 1.0e-7;
-    int nAuxVar               = 0;  
+    int nAuxVar               = 0;
     bool appendPlotFile       = false;
 
     
@@ -84,16 +86,20 @@ main (int   argc,
     pp.query("floorIt",floorIt);
     pp.query("useFileMinMax",useFileMinMax);
 
+    // Clip results outside the flame front ? ( C ~ 0 or C ~ 1)
+    pp.query("threshold_prog",do_threshold);
+    pp.query("threshold_value",threshold);
+
     // Progress variable smoothing
     pp.query("do_smooth",do_smooth);
     pp.query("smoothing_time",smooth_time);
-    
+
     // Pertaining to the velocity computation
     pp.query("do_strain",do_strain);
     if (do_strain) {
        pp.query("getStrainTensor",getStrainTensor);
     }
-    pp.query("do_velnormal",do_velnormal);  
+    pp.query("do_velnormal",do_velnormal);
 
     // Auxiliary variables
     nAuxVar = pp.countval("Aux_Variables");
@@ -469,9 +475,9 @@ main (int   argc,
             const auto& progvar   = ProgVar.array(mfi); 
             AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
             {
-                normgrad(i,j,k) = std::max(1e-6, std::sqrt( AMREX_D_TERM (   std::pow(Cx(i,j,k),2.0),
-                                                                           + std::pow(Cy(i,j,k),2.0),
-                                                                           + std::pow(Cz(i,j,k),2.0)) ) ) ;
+                normgrad(i,j,k) = std::max(1e-14, std::sqrt( AMREX_D_TERM (   std::pow(Cx(i,j,k),2.0),
+                                                                            + std::pow(Cy(i,j,k),2.0),
+                                                                            + std::pow(Cz(i,j,k),2.0)) ) ) ;
                 normgrad(i,j,k) = -normgrad(i,j,k);
             });
         }
@@ -539,7 +545,7 @@ main (int   argc,
         Curv.mult(0.5,0,1);  
 #endif
 
-        // Clip curvature & flame normal for c < 0.01
+        // Clip curvature & flame normal for c < threshold or c > 1.0-threshold
         for (MFIter mfi(Curv); mfi.isValid(); ++mfi)
         {
             const Box& bx = mfi.validbox();
@@ -550,7 +556,7 @@ main (int   argc,
             const auto& progvar   = ProgVar.array(mfi); 
             AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
             {
-                if ( progvar(i,j,k) < 0.01 || progvar(i,j,k) > 0.99 ) {
+                if ( do_threshold && ( progvar(i,j,k) < threshold || progvar(i,j,k) > 1.0-threshold ) ) {
                    CurvFab(i,j,k) = 0.0;
                    AMREX_D_TERM( FnormXFab(i,j,k) = 0.0; ,
                                  FnormYFab(i,j,k) = 0.0; ,
@@ -657,7 +663,7 @@ main (int   argc,
                                                        AdjHziFab(i,j,k,1) * CyFab(i,j,k) +
                                                        AdjHziFab(i,j,k,2) * CzFab(i,j,k) ) 
                                     ) / std::pow(CgradNorm(i,j,k),4.0);
-                   if ( progvar(i,j,k) < 0.01 || progvar(i,j,k) > 0.99 ) {
+                   if ( do_threshold && (progvar(i,j,k) < threshold || progvar(i,j,k) > 1.0-threshold) ) {
                       gCurvFab(i,j,k) = 0.0;
                    }
                });
@@ -765,11 +771,10 @@ main (int   argc,
                             const auto& Uz = state[lev]->array(mfi,idVst+2); ); 
                AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
                {
-                  if ( progvar(i,j,k) > 0.01 && progvar(i,j,k) < 0.99 ) {
-                     velNormFab(i,j,k) = AMREX_D_TERM ( + Ux(i,j,k) * NxFab(i,j,k) ,
-                                                        + Uy(i,j,k) * NyFab(i,j,k) , 
-                                                        + Uz(i,j,k) * NzFab(i,j,k) ); 
-                  } else {
+                  velNormFab(i,j,k) = AMREX_D_TERM ( + Ux(i,j,k) * NxFab(i,j,k) ,
+                                                     + Uy(i,j,k) * NyFab(i,j,k) , 
+                                                     + Uz(i,j,k) * NzFab(i,j,k) ); 
+                  if ( do_threshold && (progvar(i,j,k) < threshold || progvar(i,j,k) > 1.0-threshold) ) {
                      velNormFab(i,j,k) = 0.0;
                   }
                });
