@@ -20,7 +20,7 @@ distanceFunctionInterpolation(MultiFab& dfab, Geometry& geom)
 
 //----------------------------------- member function-------------------------------- //
 
-Real distance(XDim3 location)
+Real distance(Real* location)
 {
    // boxArray ba=distanceFab.bxs;
     Real distance;
@@ -30,25 +30,25 @@ Real distance(XDim3 location)
 
     const Real* dx = geom_.CellSize(); 
 
-    for(int i=0;i<AMREX_DIM;i++)
+    for(int i=0;i<BL_SPACEDIM;i++)
     {
         iv[i]=floor(location[i]/dx[i]);
     }
 
     
 
-    for(MFIter mfi(distanceFab_);mfi.isValid();++mfi)
+    for(MFIter mfi(distanceFab_.boxarray,distanceFab_.distributionMap);mfi.isValid();++mfi)
     {
         if(mfi.contains(iv))
         {
             
             const auto& d=distanceFab_.array(mfi);
 
-            const Box& vbox = distanceFab_.bxs[mfi.index()];
+            const Box& vbox = distanceFab_.boxarray[mfi.index()];
 
-            const long* lowIndex  = vbox.loVect();
+            const int* lowIndex  = vbox.loVect();
 
-            const long* highIndex = vbox.hiVect(); 
+            const int* highIndex = vbox.hiVect(); 
 
             Real ksai,yita,zita;
             
@@ -91,6 +91,6 @@ protected:
 MultiFab& distanceFab_;
 
 Geometry& geom_;
-}
+};
 
-}};
+}}

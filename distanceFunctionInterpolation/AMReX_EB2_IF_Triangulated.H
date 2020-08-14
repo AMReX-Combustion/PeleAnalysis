@@ -161,7 +161,7 @@ public:
 
 //Distance Function building
 
-    void buildDistance(char *isoFild);
+    void buildDistance(char* IsoFile);
     
     
     //---------Variables-----------------------------
@@ -181,7 +181,7 @@ public:
  
     Geometry geom;
     
-    amrex::distanceFunctionInterpolation distanceInterpolation; 
+    distanceFunctionInterpolation distanceInterpolation; 
 };
    
 

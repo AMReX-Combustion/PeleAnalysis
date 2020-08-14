@@ -39,7 +39,9 @@ namespace amrex { namespace EB2 {
 
          std::vector<std::vector<Real> > vertList; 
 
-
+     //    Geometry geom;
+  
+     //    MultiFab Dfab;
 
          TriangulatedIF::buildDistance(isoFile);
          distanceInterpolation(Dfab,geom);      

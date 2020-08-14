@@ -59,15 +59,16 @@ getFileRoot(const std::string& infile)
   return tokens[tokens.size()-1];
 }
 
-void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char *isoFile)
+void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char* IsoFile)
 {
-  amrex::Initialize(/*argc,argv*/);
-  {
-   // ParmParse pp;
+//  amrex::Initialize(/*argc,argv*/);
+//  {
+      ParmParse pp;
 
     // Read in isosurface
- //    std::string isoFile; pp.get("isoFile",isoFile);
- //   std::string isoFile="flatplain";
+      //std::string isoFile; 
+    //  pp.get("isoFile",isoFile);
+    std::string isoFile = IsoFile;
     
     if (ParallelDescriptor::IOProcessor())
       std::cerr << "Reading isoFile... " << isoFile << std::endl;
@@ -127,21 +128,21 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char *isoFile
     Box domain(IntVect(D_DECL(0,0,0)),
                //IntVect(D_DECL(nCell-1,nCell-1,nCell-1)));
                IntVect(D_DECL(3-1,3-1,9-1)));
-//    BoxArray grids(domain);
-    grids(domain);
-      grids.maxSize(max_grid_size);
+    BoxArray grids(domain);
+   // grids(domain);
+     grids.maxSize(max_grid_size);
     //RealBox probDomain({D_DECL(0,0,0)},{D_DECL(1,1,1)});
 //    RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
     RealBox probDomain({D_DECL(0.000,0.000,0.0000)},{D_DECL(0.03,0.03,.09)});  
   
     Array<int,AMREX_SPACEDIM> is_periodic = {D_DECL(0,0,0)};
-  //  Geometry geom(domain,probDomain,0,is_periodic);
-    geom(domain,probDomain,0,is_periodic);
+    Geometry geom(domain,probDomain,0,is_periodic);
+  //  this->geom(domain,probDomain,0,is_periodic);
     const Real* dx = geom.CellSize();
     const Real* plo = geom.ProbLo();
 
-   // MultiFab distance(grids,DistributionMapping(grids),1,0);
-    Dfab(grids,DistributionMapping(grids),1,0);
+    MultiFab distance(grids,DistributionMapping(grids),1,0);
+  //  this->Dfab(grids,DistributionMapping(grids),1,0);
 
     for (MFIter mfi(Dfab); mfi.isValid(); ++mfi) {
 
@@ -204,7 +205,7 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char *isoFile
   //  WriteSingleLevelPlotfile("Distance.out",distance,{"distance"},geom,0.0,0);
 
   //  TriangulatedIF::distanceInterpolation(distance);
-  }
-  amrex::Finalize();
+//  }
+//  amrex::Finalize();
 //  return 0;
 }
