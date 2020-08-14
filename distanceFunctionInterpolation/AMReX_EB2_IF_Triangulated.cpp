@@ -17,7 +17,7 @@ namespace amrex { namespace EB2 {
 
 //----------Constructors--------------------------
     
-       //----Construct from file----------- 
+/*       //----Construct from file----------- 
     TriangulatedIF::TriangulatedIF(const char* nameOfFile, const char* type)
     {
          std::vector<std::vector<Real> > temp_surface;
@@ -30,11 +30,11 @@ namespace amrex { namespace EB2 {
          
          
     }
-
+*/
     TriangulatedIF::TriangulatedIF(const char* isoFile)
     {
          TriangulatedIF::buildDistance(isoFile);
-         distanceInterpolation(Dfab);      
+         distanceInterpolation(Dfab,geom);      
     }
     //---------Protected Member Functions-----------------------
     void TriangulatedIF::loadData
@@ -42,7 +42,7 @@ namespace amrex { namespace EB2 {
           const char* nameOfFile,
           std::vector<std::vector<Real> >& temp_surface 
           
-    )const 
+    ) 
     {
           //designed for stl file, if needed, use factory for more extensions
           
@@ -103,7 +103,7 @@ namespace amrex { namespace EB2 {
     void TriangulatedIF::reOrganize
     (
           const std::vector<std::vector<Real> >& temp_surface
-    )const
+    )
     {
   
         std::vector< pointToElement > temp_ptlist;

@@ -1,3 +1,7 @@
+#include <>
+
+
+
 class distanceFunctionInterpolation
 {
 public:
@@ -17,33 +21,42 @@ Real distance(XDim3 location)
 
     IntVect iv;
 
-    dx = geom.CellSize(); 
+    const dx = geom.CellSize(); 
 
     for(i=0;i<AMREX_DIM;i++)
     {
         iv[i]=floor(location[i]/dx[i]);
     }
 
-    for(MFIter mfi(distanceFab_.bxs,distanceFab_.dm, true);mfi.isValid();++mfi)
-    {
-        if(mfi.contains(location))
-        {
-            IntVect small(mfi.smallend),big(mfi.bigend);
-            Real ksai,yita,zita,side;
-            
-            side = (Real)big[2] - (Real)small[2];
-            ksai = ( location[0]-(Real)small[0] )/side;
-            yita = ( location[1]-(Real)small[1] )/side;
-            zita = ( location[2]-(Real)small[2] )/side;
+    
 
-            distance =/*0 0 0*/ a1 * (1 - ksai) * (1 - yita) * (1 - zita)
-                     +/*1 0 0*/ a2 * ksai       * (1 - yita) * (1 - zita)
-                     +/*0 1 0*/ a3 * (1 - ksai) * yita       * (1 - zita)
-                     +/*0 0 1*/ a4 * (1 - ksai) * (1 - yita) * zita
-                     +/*1 1 0*/ a5 * ksai       *     yita   * (1 - zita)
-                     +/*1 0 1*/ a6 * ksai       * (1 - yita) * zita
-                     +/*0 1 1*/ a7 * (1 - ksai) * yita       * zita
-                     +/*1 1 1*/ a8 * ksai       * yita       * zita;
+    for(MFIter mfi(distanceFab_);mfi.isValid();++mfi)
+    {
+        if(mfi.contains(iv))
+        {
+            
+            const auto& d=distanceFab_.array(mfi);
+
+            const Box& vbox = distanceFab_.bxs[mfi.index()];
+
+            const long* lowIndex  = vbox.loVect();
+
+            const long* highIndex = vbox.hiVect(); 
+
+            Real ksai,yita,zita;
+            
+            ksai = location[0]/dx[0]-iv[0];
+            yita = location[1]/dx[1]-iv[1];
+            zita = location[2]/dx[2]-iv[2];
+
+            distance =/*0 0 0*/ d(iv[0]  ,iv[1]  ,iv[2]  ) * (1 - ksai) * (1 - yita) * (1 - zita)
+                     +/*1 0 0*/ d(iv[0]+1,iv[1]  ,iv[2]  ) * ksai       * (1 - yita) * (1 - zita)
+                     +/*0 1 0*/ d(iv[0]  ,iv[1]+1,iv[2]  ) * (1 - ksai) * yita       * (1 - zita)
+                     +/*0 0 1*/ d(iv[0]  ,iv[1]  ,iv[2]+1) * (1 - ksai) * (1 - yita) * zita
+                     +/*1 1 0*/ d(iv[0]+1,iv[1]+1,iv[2]  ) * ksai       *     yita   * (1 - zita)
+                     +/*1 0 1*/ d(iv[0]+1,iv[1]  ,iv[2]+1) * ksai       * (1 - yita) * zita
+                     +/*0 1 1*/ d(iv[0]  ,iv[1]+1,iv[2]+1) * (1 - ksai) * yita       * zita
+                     +/*1 1 1*/ d(iv[0]+1,iv[1]+1,iv[2]+1) * ksai       * yita       * zita;
            
 
             break;               

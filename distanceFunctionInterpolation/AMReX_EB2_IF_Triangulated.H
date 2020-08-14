@@ -8,6 +8,7 @@
 #include <vector>
 #include <string.h>
 #include "distanceFunctionInterpolation.H"
+#include <AMReX_MultiFab.H>
 // For all implicit functions, >0: body; =0: boundary; <0: fluid
 
 namespace amrex { namespace EB2 {
@@ -126,7 +127,7 @@ public:
     //----------Constructors--------------------------
     
        //----Construct from file----------- 
-    TriangulatedIF(const char* nameOfFile, const char* type);
+   // TriangulatedIF(const char* nameOfFile, const char* type);
 
     TriangulatedIF(const char* isoFile);
 
@@ -142,13 +143,13 @@ public:
 //Data loading 
 
        //load data from non-watertight format
-    void loadData (const char* nameOfFile , std::vector<std::vector<Real> >& temp_surface) const;              
+    void loadData (const char* nameOfFile , std::vector<std::vector<Real> >& temp_surface);              
        
        //re-organize and make it water-tight
     void reOrganize
     (
-          const std::vector<std::vector<Real> > temp_surface
-    ) const;
+          const std::vector<std::vector<Real> >& temp_surface
+    );
 
     void mergeVertex ( std::vector<pointToElement>& temp_ptlist );
     

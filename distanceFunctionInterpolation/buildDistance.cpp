@@ -121,11 +121,12 @@ void amrex::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char *isoFi
 
     Print() << "Read " << nElts << " elements and " << nNodes << " nodes" << std::endl;
 
-    int nCell = 64; pp.query("nCell",nCell);
-    int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
+    int nCell = 64; 
+    pp.query("nCell",nCell);
+    int max_grid_size = 1; pp.query("max_grid_size",max_grid_size);
     Box domain(IntVect(D_DECL(0,0,0)),
                //IntVect(D_DECL(nCell-1,nCell-1,nCell-1)));
-               IntVect(D_DECL(64-1,64-1,192-1)));
+               IntVect(D_DECL(3-1,3-1,9-1)));
 //    BoxArray grids(domain);
     grids(domain);
       grids.maxSize(max_grid_size);
