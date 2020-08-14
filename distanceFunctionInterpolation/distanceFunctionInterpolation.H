@@ -1,3 +1,6 @@
+#ifndef AMREX_EB2_IF_DISTANCEINTERPOLATION_H_
+#define AMREX_EB2_IF_DISTANCEINTERPOLATION_H_
+
 #include <AMReX_EB2_IF_Triangulated.H>
 #include <AMReX.H>
 #include <AMReX_EB2.H>
@@ -17,8 +20,9 @@ public:
 distanceFunctionInterpolation(MultiFab& dfab, Geometry& geom)
 : distanceFab_(dfab),geom_(geom){}
 
-
 //----------------------------------- member function-------------------------------- //
+
+
 
 Real distance(Real* location)
 {
@@ -94,3 +98,4 @@ Geometry& geom_;
 };
 
 }}
+#endif

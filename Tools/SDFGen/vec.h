@@ -175,6 +175,7 @@ typedef Vec<3,short>          Vec3s;
 typedef Vec<3,unsigned short> Vec3us;
 typedef Vec<3,char>           Vec3c;
 typedef Vec<3,unsigned char>  Vec3uc;
+//typedef Vec<3,unsigned long>  Vec3ul;
 
 typedef Vec<4,double>         Vec4d;
 typedef Vec<4,float>          Vec4f;

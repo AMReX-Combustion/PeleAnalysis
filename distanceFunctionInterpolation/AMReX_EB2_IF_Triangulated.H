@@ -132,7 +132,7 @@ public:
     TriangulatedIF(const char* isoFile);
 
     //---------Destructors----------------------------
-    ~TriangulatedIF(){};
+    ~TriangulatedIF();
 
 //protected:
     
@@ -158,10 +158,16 @@ public:
         const Real (&p1)[BL_SPACEDIM],
         const Real (&p2)[BL_SPACEDIM] 
     )const;
-
+/*
+    distanceFunctionInterpolation& distanceInterpolation()
+    {
+        return *distanceInterpolation_;
+    }
+*/
+    
 //Distance Function building
 
-    void buildDistance(char* IsoFile);
+    void buildDistance(const char* IsoFile);
     
     
     //---------Variables-----------------------------
@@ -180,8 +186,9 @@ public:
     MultiFab Dfab;
  
     Geometry geom;
-    
-    distanceFunctionInterpolation distanceInterpolation; 
+//protected:
+     
+    distanceFunctionInterpolation* distanceInterpolation_; 
 };
    
 

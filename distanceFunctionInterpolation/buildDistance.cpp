@@ -21,10 +21,10 @@ using std::string;
 using std::endl;
 using std::cerr;
 
-Vec3f normal(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2)
+Vec3d normal(const Vec3d &x0, const Vec3d &x1, const Vec3d &x2)
 {
-    Vec3f x12(x1-x0),x23(x2-x1);
-    Vec3f normal;
+    Vec3d x12(x1-x0),x23(x2-x1);
+    Vec3d normal;
 
     normal[0] = x12[1]*x23[2]-x12[2]*x23[1];
     normal[1] = x12[2]*x23[0]-x12[0]*x23[2];
@@ -59,7 +59,7 @@ getFileRoot(const std::string& infile)
   return tokens[tokens.size()-1];
 }
 
-void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char* IsoFile)
+void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* IsoFile)
 {
 //  amrex::Initialize(/*argc,argv*/);
 //  {
@@ -153,29 +153,56 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char* IsoFile
       std::vector<Vec3f> normalList;
       Vec3f ni;
 */
+     std::vector<Vec3d> pointList;
+     std::vector<Vec3ui> triList;
+     std::vector<Vec3d> nList;
+
+      Vec3d ni;
+
       for (long node=0; node<nNodes; ++node) {
         const IntVect iv(D_DECL(node,0,0));
-        vertList.push_back(Vec3f(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
+        pointList.push_back(Vec3d(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
       }
       for (long elt=0; elt<nElts; ++elt) {
         int offset = elt * nodesPerElt;
-        faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
-        ni = normal(vertList[faceData[offset]-1],vertList[faceData[offset+1]-1],vertList[faceData[offset+2]-1]);
+        triList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
+        ni = normal(pointList[faceData[offset]-1],pointList[faceData[offset+1]-1],pointList[faceData[offset+2]-1]);
          
-         normalList.push_back(ni);
+         nList.push_back(ni);
         
    /*       Print()<<"===========================Element No  "<<elt<<std::endl; 
          Print()<<"normal"<<std::endl;*/
       }
+     
+      for (long node=0; node<nNodes; ++node) 
+      {
+        vertList.push_back(std::vector<Real>() );
+        for(int j=0;j<3;j++)
+        {
+            vertList[node].push_back(pointList[node][j]);
+        }
+      }
+      for (long elt=0; elt<nElts; ++elt) 
+      {
+        faceList.push_back(std::vector<long>() );
+        normalList.push_back(std::vector<Real>() );
+        for(int j=0;j<3;j++)
+        {
+            faceList[elt].push_back(triList[elt][j]);
+            normalList[elt].push_back(nList[elt][j]);
+        }
+      }
+
+
 
       const Box& vbox = grids[mfi.index()];
-      Vec3f local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
+      Vec3d local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
                          plo[1] + vbox.smallEnd()[1]*dx[1],
                          plo[2] + vbox.smallEnd()[2]*dx[2]);
-      Array3f phi_grid;
-      float dx1 = float(dx[0]);
+      Array3d phi_grid;
+      double dx1 = double(dx[0]);
 
-      make_level_set3(faceList, vertList, normalList,local_origin, dx1,
+      make_level_set3(triList, pointList, nList,local_origin, dx1,
                       vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
 
    //   vertList.clear();

@@ -1,12 +1,12 @@
 #include "makelevelset3.h"
 #include <cmath>
 // find distance x0 is from segment x1-x2
-static float point_segment_distance(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2)
+static double point_segment_distance(const Vec3d &x0, const Vec3d &x1, const Vec3d &x2)
 {
-    Vec3f dx(x2-x1);
+    Vec3d dx(x2-x1);
     double m2=mag2(dx);
    // find parameter value of closest point on segment
-    float s12=(float)(dot(x2-x0, dx)/m2);
+    double s12=(double)(dot(x2-x0, dx)/m2);
     if(s12<0){
         s12=0;
     }else if(s12>1){
@@ -17,19 +17,19 @@ static float point_segment_distance(const Vec3f &x0, const Vec3f &x1, const Vec3
 }
 
 // find distance x0 is from triangle x1-x2-x3
-static float point_triangle_distance(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2, const Vec3f &x3, const Vec3f &normal)
+static double point_triangle_distance(const Vec3d &x0, const Vec3d &x1, const Vec3d &x2, const Vec3d &x3, const Vec3d &normal)
 {
    // first find barycentric coordinates of closest point on infinite plane
-   Vec3f x13(x1-x3), x23(x2-x3), x03(x0-x3);
-   float m13=mag2(x13), m23=mag2(x23), d=dot(x13,x23);
-   float invdet=1.f/max(m13*m23-d*d,1e-30f);
-   float a=dot(x13,x03), b=dot(x23,x03);
+   Vec3d x13(x1-x3), x23(x2-x3), x03(x0-x3);
+   double m13=mag2(x13), m23=mag2(x23), d=dot(x13,x23);
+   double invdet=1.f/max(m13*m23-d*d,1e-30);
+   double a=dot(x13,x03), b=dot(x23,x03);
    // the barycentric coordinates themselves
-   float w23=invdet*(m23*a-d*b);
-   float w31=invdet*(m13*b-d*a);
-   float w12=1-w23-w31;
+   double w23=invdet*(m23*a-d*b);
+   double w31=invdet*(m13*b-d*a);
+   double w12=1-w23-w31;
     
-   Vec3f center;
+   Vec3d center;
    //Vec3f localdirection(x0-center);
    for(int i=0;i<3;i++)
    {
@@ -38,9 +38,23 @@ static float point_triangle_distance(const Vec3f &x0, const Vec3f &x1, const Vec
    }
    
    
-   float dotProduct = ( x0[0]-center[0])*normal[0]+( x0[1]-center[1])*normal[1]+( x0[2]-center[2])*normal[2];
+   double dotProduct = ( x0[0]-center[0])*normal[0]+( x0[1]-center[1])*normal[1]+( x0[2]-center[2])*normal[2];
   // float dotProduct =  (localdirection, normal);
-   float sign = dotProduct/std::abs(dotProduct);
+   double sign;
+   
+   double eps = 0.00000000000001;
+   if(dotProduct>0 && std::abs(dotProduct)>eps)
+   {
+       sign =1.0;
+   }
+   else if( dotProduct<0 && std::abs(dotProduct)>eps)
+   {
+       sign = -1.0;
+   }
+   else
+   {
+       sign = 0.0;
+   }
 
    if(w23>=0 && w31>=0 && w12>=0){ // if we're inside the triangle
       return sign * dist(x0, w23*x1+w31*x2+w12*x3); 
@@ -71,14 +85,14 @@ Vec3f normal(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2)
 
 
 
-static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Vec3f> &x,
-                            Array3f &phi, Array3i &closest_tri,
-                            const Vec3f &gx, long i0, long j0, long k0, long i1, long j1, long k1, const std::vector<Vec3f> &normal)
+static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x,
+                            Array3d &phi, Array3i &closest_tri,
+                            const Vec3d &gx, int i0, int j0, int k0, int i1, int j1, int k1, const std::vector<Vec3d> &normal)
 {
    if(closest_tri(i1,j1,k1)>=0){
-      long s = closest_tri(i1,j1,k1);
-      unsigned long p, q, r; assign(tri[s], p, q, r);
-      float d=point_triangle_distance(gx, x[p], x[q], x[r],normal[s]);
+      int s = closest_tri(i1,j1,k1);
+      unsigned int p, q, r; assign(tri[s], p, q, r);
+      double d=point_triangle_distance(gx, x[p], x[q], x[r],normal[s]);
       if(std::abs(d)<std::abs(phi(i0,j0,k0))){
          phi(i0,j0,k0)=d;
          closest_tri(i0,j0,k0)=closest_tri(i1,j1,k1);
@@ -86,9 +100,9 @@ static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Ve
    }
 }
 
-static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3f> &x,
-                  Array3f &phi, Array3i &closest_tri, const Vec3f &origin, float dx,
-                  long di, long dj, long dk,const std::vector<Vec3f> &normal)
+static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x,
+                  Array3d &phi, Array3i &closest_tri, const Vec3d &origin, double dx,
+                  int di, int dj, int dk,const std::vector<Vec3d> &normal)
 {
    int i0, i1;
    if(di>0){ i0=1; i1=phi.ni; }
@@ -100,7 +114,7 @@ static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3f> &x,
    if(dk>0){ k0=1; k1=phi.nk; }
    else{ k0=phi.nk-2; k1=-1; }
    for(int k=k0; k!=k1; k+=dk) for(int j=j0; j!=j1; j+=dj) for(int i=i0; i!=i1; i+=di){
-      Vec3f gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
+      Vec3d gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
       check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j,    k,normal);
       check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j-dj, k,normal);
       check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j-dj, k,normal);
@@ -147,16 +161,16 @@ static bool point_in_triangle_2d(double x0, double y0,
    return true;
 }
 
-void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3f> &x, const std::vector<Vec3f> &normal,
-                     const Vec3f &origin, float dx, long ni, long nj, long nk,
-                     Array3f &phi, const int exact_band)
+void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x, const std::vector<Vec3d> &normal,
+                     const Vec3d &origin, double dx, int ni, int nj, int nk,
+                     Array3d &phi, const int exact_band)
 {
    phi.resize(ni, nj, nk);
    phi.assign((ni+nj+nk)*dx); // upper bound on distance
    Array3i closest_tri(ni, nj, nk, -1);
    Array3i intersection_count(ni, nj, nk, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
    // we begin by initializing distances near the mesh, and figuring out intersection counts
-   Vec3f ijkmin, ijkmax;
+   Vec3d ijkmin, ijkmax;
    for(unsigned int t=0; t<tri.size(); ++t){
      unsigned int p, q, r; assign(tri[t], p, q, r);
      // coordinates in grid to high precision
@@ -168,23 +182,23 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3f> &x
       int j0=clamp(int(min(fjp,fjq,fjr))-exact_band, 0, nj-1), j1=clamp(int(max(fjp,fjq,fjr))+exact_band+1, 0, nj-1);
       int k0=clamp(int(min(fkp,fkq,fkr))-exact_band, 0, nk-1), k1=clamp(int(max(fkp,fkq,fkr))+exact_band+1, 0, nk-1);
       for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j) for(int i=i0; i<=i1; ++i){
-         Vec3f gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
-         float d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t]);
+         Vec3d gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
+         double d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t]);
          if(std::abs(d)<std::abs(phi(i,j,k))){
             phi(i,j,k)=d;
             closest_tri(i,j,k)=t;
          }
       }
       // and do intersection counts
-      j0=clamp((long)std::ceil(min(fjp,fjq,fjr)), 0, nj-1);
-      j1=clamp((long)std::floor(max(fjp,fjq,fjr)), 0, nj-1);
-      k0=clamp((long)std::ceil(min(fkp,fkq,fkr)), 0, nk-1);
-      k1=clamp((long)std::floor(max(fkp,fkq,fkr)), 0, nk-1);
-      for(long k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j){
+      j0=clamp((int)std::ceil(min(fjp,fjq,fjr)), 0, nj-1);
+      j1=clamp((int)std::floor(max(fjp,fjq,fjr)), 0, nj-1);
+      k0=clamp((int)std::ceil(min(fkp,fkq,fkr)), 0, nk-1);
+      k1=clamp((int)std::floor(max(fkp,fkq,fkr)), 0, nk-1);
+      for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j){
          double a, b, c;
          if(point_in_triangle_2d(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)){
             double fi=a*fip+b*fiq+c*fir; // intersection i coordinate
-            long i_interval=int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
+            int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
             if(i_interval<0) ++intersection_count(0, j, k); // we enlarge the first interval to include everything to the -x direction
             else if(i_interval<ni) ++intersection_count(i_interval,j,k);
             // we ignore intersections that are beyond the +x side of the grid

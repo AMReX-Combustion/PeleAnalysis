@@ -33,18 +33,24 @@ namespace amrex { namespace EB2 {
 */
     TriangulatedIF::TriangulatedIF(const char* isoFile)
     {
-         std::vector<std::vector<Real> > normalList;
+    //     std::vector<std::vector<Real> > normalList;
 
-         std::vector<std::vector<long> > faceList;
+    //     std::vector<std::vector<long> > faceList;
 
-         std::vector<std::vector<Real> > vertList; 
+    //     std::vector<std::vector<Real> > vertList; 
 
      //    Geometry geom;
   
      //    MultiFab Dfab;
 
          TriangulatedIF::buildDistance(isoFile);
-         distanceInterpolation(Dfab,geom);      
+         
+         distanceInterpolation_=new distanceFunctionInterpolation(Dfab,geom);      
+    }
+
+    TriangulatedIF::~TriangulatedIF()
+    {
+        delete distanceInterpolation_;
     }
     //---------Protected Member Functions-----------------------
     void TriangulatedIF::loadData
@@ -138,10 +144,15 @@ namespace amrex { namespace EB2 {
     void TriangulatedIF::mergeVertex(std::vector<pointToElement>& temp_ptlist)
     {
         long i=0,j=0,indexCounter=0,stepCounter;
+        
+        long mergeNumber=0;
+        
         for(i=0;i<temp_ptlist.size();++i)
         {
             stepCounter=0;
 
+            mergeNumber=0;
+      
             vertList.push_back(std::vector<Real>());
             
             vertList[indexCounter].push_back(temp_ptlist[i].physLocation[0]);
