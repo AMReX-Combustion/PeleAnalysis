@@ -56,6 +56,16 @@ VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 
 CEXE_sources += AMReX_Extrapolater.cpp
 CEXE_headers += AMReX_Extrapolater.H
+
+CEXE_headers += AMReX_EB2_IF_Triangulated.H
+CEXE_sources += AMReX_EB2_IF_Triangulated.cpp
+
+CEXE_headers += distanceFunctionInterpolation.H
+
+CEXE_sources += buildDistance.cpp
+
+CEXE_sources += main.cpp
+
 f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
 VPATH_LOCATIONS += $(AMREX_HOME)/Src/Amr

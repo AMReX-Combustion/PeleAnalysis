@@ -1,6 +1,6 @@
 //#ifndef AMREX_EB2_IF_SPHERE_H_
 //#define AMREX_EB2_IF_SPHERE_H_
-#include <AMReX_EB2_IF_TriangulatedIF.H>
+#include <AMReX_EB2_IF_Triangulated.H>
 #include <stdio.h>
 #include <vector>
 #include <string.h>
@@ -33,6 +33,14 @@ namespace amrex { namespace EB2 {
 */
     TriangulatedIF::TriangulatedIF(const char* isoFile)
     {
+         std::vector<std::vector<Real> > normalList;
+
+         std::vector<std::vector<long> > faceList;
+
+         std::vector<std::vector<Real> > vertList; 
+
+
+
          TriangulatedIF::buildDistance(isoFile);
          distanceInterpolation(Dfab,geom);      
     }

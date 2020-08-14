@@ -13,7 +13,7 @@
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
 #include "makelevelset3.h"
-
+#include "AMReX_EB2_IF_Triangulated.H"
 using namespace amrex;
 using std::list;
 using std::vector;
@@ -59,7 +59,7 @@ getFileRoot(const std::string& infile)
   return tokens[tokens.size()-1];
 }
 
-void amrex::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char *isoFile)
+void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/char *isoFile)
 {
   amrex::Initialize(/*argc,argv*/);
   {

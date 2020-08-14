@@ -1,7 +1,14 @@
-#include <>
+#include <AMReX_EB2_IF_Triangulated.H>
+#include <AMReX.H>
+#include <AMReX_EB2.H>
+#include <AMReX_EB2_IF.H>
 
 
+#include <AMReX_ParmParse.H>
 
+#include <AMReX_MultiFab.H>
+
+namespace amrex{ namespace EB2 {
 class distanceFunctionInterpolation
 {
 public:
@@ -21,9 +28,9 @@ Real distance(XDim3 location)
 
     IntVect iv;
 
-    const dx = geom.CellSize(); 
+    const Real* dx = geom_.CellSize(); 
 
-    for(i=0;i<AMREX_DIM;i++)
+    for(int i=0;i<AMREX_DIM;i++)
     {
         iv[i]=floor(location[i]/dx[i]);
     }
@@ -85,3 +92,5 @@ MultiFab& distanceFab_;
 
 Geometry& geom_;
 }
+
+}};
