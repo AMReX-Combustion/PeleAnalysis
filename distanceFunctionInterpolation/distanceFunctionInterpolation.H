@@ -39,7 +39,7 @@ Real distance(Real* location)
 
     for(MFIter mfi(distanceFab_.boxarray,distanceFab_.distributionMap);mfi.isValid();++mfi)
     {
-        if(mfi.contains(iv))
+        if(mfi.validbox().contains(iv))
         {
             
             const auto& d=distanceFab_.array(mfi);
