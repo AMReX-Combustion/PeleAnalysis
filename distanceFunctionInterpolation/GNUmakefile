@@ -26,7 +26,7 @@ USE_EB        = TRUE
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-EBASE          = buildDistance
+EBASE          = main
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
@@ -63,8 +63,6 @@ CEXE_sources += AMReX_EB2_IF_Triangulated.cpp
 CEXE_headers += distanceFunctionInterpolation.H
 
 CEXE_sources += buildDistance.cpp
-
-CEXE_sources += main.cpp
 
 f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
