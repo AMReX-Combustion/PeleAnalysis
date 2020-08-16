@@ -7,21 +7,19 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_EB2_IF_Triangulated.H>
 
+using namespace amrex;
+
 int
 main (int   argc,
       char* argv[])
 {
-  std::string isoFile("flatplain");
-
-   amrex::EB2::TriangulatedIF Tri(isoFile);
-
-   double A[3];
-   A[0]=0;
-   A[1]=0;
-   A[2]=0;
-
-   double distance=(Tri.distanceInterpolation_->distance(A));
-
-   
-
+  Initialize(argc,argv);
+  {
+    std::string isoFile("flatplain");
+    EB2::TriangulatedIF Tri(isoFile);    
+    Real A[3] = {0,0,0};
+    Real distance=(Tri.distanceInterpolation_->distance(A));
+    Print() << "Distance is " << distance << std::endl;
+  }
+  Finalize();
 }

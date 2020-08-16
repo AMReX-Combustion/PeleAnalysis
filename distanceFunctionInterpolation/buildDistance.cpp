@@ -70,20 +70,20 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::st
     //  pp.get("isoFile",isoFile);
     std::string isoFile = IsoFile;
     
-    if (ParallelDescriptor::IOProcessor())
+    if (ParallelDescriptor::IOProcessor()) {
       std::cerr << "Reading isoFile... " << isoFile << std::endl;
+    }
     
-    Real strt_io = ParallelDescriptor::second();
-
     FArrayBox nodes;
-    Vector<long> faceData;
-    long nElts;
-    long nodesPerElt;
-    long nNodes, nCompNodes;
+    Vector<int> faceData;
+    int nElts;
+    int nodesPerElt;
+    int nNodes, nCompNodes;
     std::vector<std::string> surfNames;
   
     std::ifstream ifs;
     ifs.open(isoFile.c_str(),std::ios::in|std::ios::binary);
+
     const std::string title = parseTitle(ifs);
     surfNames = parseVarNames(ifs);
     nCompNodes = surfNames.size();
@@ -101,13 +101,13 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::st
     // transpose the data so that the components are 'in the right spot for fab data'
     nodes.resize(tnodes.box(),nCompNodes);
     Real** np = new Real*[nCompNodes];
-    for (long j=0; j<nCompNodes; ++j)
+    for (int j=0; j<nCompNodes; ++j)
       np[j] = nodes.dataPtr(j);
 
     Real* ndat = tnodes.dataPtr();
-    for (long i=0; i<nNodes; ++i)
+    for (int i=0; i<nNodes; ++i)
     {
-      for (long j=0; j<nCompNodes; ++j)
+      for (int j=0; j<nCompNodes; ++j)
       {
         np[j][i] = ndat[j];
       }
@@ -129,62 +129,43 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::st
                //IntVect(D_DECL(nCell-1,nCell-1,nCell-1)));
                IntVect(D_DECL(3-1,3-1,9-1)));
     BoxArray grids(domain);
-   // grids(domain);
-     grids.maxSize(max_grid_size);
-    //RealBox probDomain({D_DECL(0,0,0)},{D_DECL(1,1,1)});
-//    RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
+    grids.maxSize(max_grid_size);
     RealBox probDomain({D_DECL(0.000,0.000,0.0000)},{D_DECL(0.03,0.03,.09)});  
   
     Array<int,AMREX_SPACEDIM> is_periodic = {D_DECL(0,0,0)};
-    Geometry geom(domain,probDomain,0,is_periodic);
-  //  this->geom(domain,probDomain,0,is_periodic);
+    geom.define(domain,probDomain,0,is_periodic);
     const Real* dx = geom.CellSize();
     const Real* plo = geom.ProbLo();
 
-    MultiFab distance(grids,DistributionMapping(grids),1,0);
-  //  this->Dfab(grids,DistributionMapping(grids),1,0);
-
-    for (MFIter mfi(Dfab); mfi.isValid(); ++mfi) {
-
-      // TODO: Prune surface
-
- /*     std::vector<Vec3f> vertList;
-      std::vector<Vec3ui> faceList;
-      std::vector<Vec3f> normalList;
-      Vec3f ni;
-*/
-     std::vector<Vec3d> pointList;
-     std::vector<Vec3ui> triList;
-     std::vector<Vec3d> nList;
-
+    distanceMF.define(grids,DistributionMapping(grids),1,0);
+    for (MFIter mfi(distanceMF); mfi.isValid(); ++mfi)
+    {
+      std::vector<Vec3d> pointList;
+      std::vector<Vec3ui> triList;
+      std::vector<Vec3d> nList;
       Vec3d ni;
 
-      for (long node=0; node<nNodes; ++node) {
+      for (int node=0; node<nNodes; ++node) {
         const IntVect iv(D_DECL(node,0,0));
         pointList.push_back(Vec3d(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
       }
-      for (long elt=0; elt<nElts; ++elt) {
+      for (int elt=0; elt<nElts; ++elt) {
         int offset = elt * nodesPerElt;
         triList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
-        ni = normal(pointList[faceData[offset]-1],pointList[faceData[offset+1]-1],pointList[faceData[offset+2]-1]);
-         
-         nList.push_back(ni);
-        
-   /*       Print()<<"===========================Element No  "<<elt<<std::endl; 
-         Print()<<"normal"<<std::endl;*/
+        nList.push_back(normal(pointList[faceData[offset]-1],pointList[faceData[offset+1]-1],pointList[faceData[offset+2]-1]));
       }
-     
-      for (long node=0; node<nNodes; ++node) 
+
+      // Copy into member data
+      for (int node=0; node<nNodes; ++node) 
       {
         vertList.push_back(std::vector<Real>() );
-        for(int j=0;j<3;j++)
-        {
-            vertList[node].push_back(pointList[node][j]);
+        for(int j=0;j<3;j++) {
+          vertList[node].push_back(pointList[node][j]);
         }
       }
-      for (long elt=0; elt<nElts; ++elt) 
+      for (int elt=0; elt<nElts; ++elt) 
       {
-        faceList.push_back(std::vector<long>() );
+        faceList.push_back(std::vector<int>() );
         normalList.push_back(std::vector<Real>() );
         for(int j=0;j<3;j++)
         {
@@ -192,8 +173,6 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::st
             normalList[elt].push_back(nList[elt][j]);
         }
       }
-
-
 
       const Box& vbox = grids[mfi.index()];
       Vec3d local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
@@ -205,10 +184,7 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::st
       make_level_set3(triList, pointList, nList,local_origin, dx1,
                       vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
 
-   //   vertList.clear();
-   //   faceList.clear();
-
-      const auto& d = Dfab.array(mfi);
+      const auto& d = distanceMF.array(mfi);
       const int* lo = vbox.loVect();
       const int* hi = vbox.hiVect();
       for (int k=lo[2]; k<=hi[2]; ++k)
@@ -225,14 +201,6 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::st
         }
       }
     }
-    //amrex::EB_WriteSingleLevelPlotfile("plt", distance, {"den"}, geom, 0.0, 0);
-    //VisMF::Write(distance,"distance");
-    
-    
-  //  WriteSingleLevelPlotfile("Distance.out",distance,{"distance"},geom,0.0,0);
-
-  //  TriangulatedIF::distanceInterpolation(distance);
-//  }
-//  amrex::Finalize();
-//  return 0;
+    //amrex::WriteSingleLevelPlotfile("plt", distanceMF, {"den"}, geom, 0.0, 0);
+    //VisMF::Write(distance,"distance");    
 }

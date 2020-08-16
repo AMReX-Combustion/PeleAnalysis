@@ -45,7 +45,7 @@ namespace amrex { namespace EB2 {
 
          TriangulatedIF::buildDistance(isoFile);
          
-         distanceInterpolation_=new distanceFunctionInterpolation(Dfab,geom);      
+         distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,geom);
     }
 
     TriangulatedIF::~TriangulatedIF()
@@ -122,7 +122,7 @@ namespace amrex { namespace EB2 {
 
         for(long i=0;i<this->normalList.size();++i)
         {
-            faceList.push_back(std::vector<long>() );           
+            faceList.push_back(std::vector<int>() );           
             for(int j=0;j<3;++j)
             {
                 faceList[i].push_back(3*i+j);
@@ -154,32 +154,17 @@ namespace amrex { namespace EB2 {
             vertList[indexCounter].push_back(temp_ptlist[i].physLocation[0]);
             vertList[indexCounter].push_back(temp_ptlist[i].physLocation[1]);
 #if BL_SPACEDIM==3    
-          
             vertList[indexCounter].push_back(temp_ptlist[i].physLocation[2]);
-
 #endif            
             faceList[temp_ptlist[i].elementIndex][temp_ptlist[i].pointIndex] = indexCounter;
            
             for(j=i+1;j<temp_ptlist.size();++j)
             {
-                //try to reduce the amount of point should go through, if xj>xi+eps and yj>yi+eps, distance(i,j)>eps
-       /*         if(temp_ptlist[j].physLocation[0]>temp_ptlist[i].physLocation[0]+eps && temp_ptlist[j].physLocation[1]>temp_ptlist[i].physLocation[1]+eps)
-                {
-                    if(j==i+1)
-                    {
-                        std::cout<<"give stepCounter a value"<<std::endl;
-                        stepCounter=1;
-                        indexCounter++;
-                    }
-                    break;
-                }*/
                 if(distance(temp_ptlist[i].physLocation,temp_ptlist[j].physLocation)<eps)
                 {
                     //merge vertex
-                    faceList[temp_ptlist[j].elementIndex][temp_ptlist[j].pointIndex] = indexCounter;
-                    
-                    temp_ptlist[j].mergeTag=1;
-                    
+                    faceList[temp_ptlist[j].elementIndex][temp_ptlist[j].pointIndex] = indexCounter;                    
+                    temp_ptlist[j].mergeTag=1;                    
                 }
                 else
                 { 
@@ -192,48 +177,18 @@ namespace amrex { namespace EB2 {
                             mergeNumber++;
                         }
                     }
-                    else
-                    {}
                 }
-            i=stepCounter-1;
+                i=stepCounter-1;
             }
-            
-        }
-          
+        }          
     }    
     
     
     //return distance between point p1 and point p2
-    Real TriangulatedIF::distance
-    (
-        const Real (&p1)[BL_SPACEDIM],
-        const Real (&p2)[BL_SPACEDIM]     
-    )const
+    Real TriangulatedIF::distance (const Array<Real,AMREX_SPACEDIM> &p1,
+                                   const Array<Real,AMREX_SPACEDIM> &p2) const
     {
-        return std::sqrt(pow((p1[0]-p2[0]),2)+pow((p1[1]-p2[1]),2)
-        
-#if BL_SPACEDIM==3     
-       
-                +pow((p1[2]-p2[2]),2)
-
-#endif
-
-                   );
+      return std::sqrt(D_TERM(pow((p1[0]-p2[0]),2),+pow((p1[1]-p2[1]),2),+pow((p1[2]-p2[2]),2)));
     }
     
-/*    std::vector<std::vector<Real> >& TriangulatedIF::normal()
-    {
-        return &normal;
-    } 
-
-    std::vector<std::vector<long> >& TriangulatedIF::surface()
-    {
-        return &surface;
-    }
-
-    std::vector<std::vector<Real> >& TriangulatedIF::pointList()
-    {
-        return &pointList;
-    }
-*/ 
 }}//endnamespace EB2 & amrex
