@@ -59,7 +59,7 @@ getFileRoot(const std::string& infile)
   return tokens[tokens.size()-1];
 }
 
-void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* IsoFile)
+void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const std::string& IsoFile)
 {
 //  amrex::Initialize(/*argc,argv*/);
 //  {

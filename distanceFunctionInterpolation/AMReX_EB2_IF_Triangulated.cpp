@@ -31,7 +31,7 @@ namespace amrex { namespace EB2 {
          
     }
 */
-    TriangulatedIF::TriangulatedIF(const char* isoFile)
+    TriangulatedIF::TriangulatedIF(const std::string& isoFile)
     {
     //     std::vector<std::vector<Real> > normalList;
 
@@ -53,19 +53,15 @@ namespace amrex { namespace EB2 {
         delete distanceInterpolation_;
     }
     //---------Protected Member Functions-----------------------
-    void TriangulatedIF::loadData
-    (
-          const char* nameOfFile,
-          std::vector<std::vector<Real> >& temp_surface 
-          
-    ) 
+    void TriangulatedIF::loadData (const std::string&               nameOfFile,
+                                   std::vector<std::vector<Real> >& temp_surface) 
     {
           //designed for stl file, if needed, use factory for more extensions
           
           //load data
           FILE *fp=NULL;
           
-          fp=fopen(nameOfFile,"r");
+          fp=fopen(nameOfFile.c_str(),"r");
          
           double num1,num2,num3;
           
@@ -182,7 +178,7 @@ namespace amrex { namespace EB2 {
                     //merge vertex
                     faceList[temp_ptlist[j].elementIndex][temp_ptlist[j].pointIndex] = indexCounter;
                     
-                    temp_ptlist[j].mergeTag==1;
+                    temp_ptlist[j].mergeTag=1;
                     
                 }
                 else

@@ -129,7 +129,7 @@ public:
        //----Construct from file----------- 
    // TriangulatedIF(const char* nameOfFile, const char* type);
 
-    TriangulatedIF(const char* isoFile);
+  TriangulatedIF(const std::string& isoFile);
 
     //---------Destructors----------------------------
     ~TriangulatedIF();
@@ -143,7 +143,7 @@ public:
 //Data loading 
 
        //load data from non-watertight format
-    void loadData (const char* nameOfFile , std::vector<std::vector<Real> >& temp_surface);              
+  void loadData (const std::string& nameOfFile , std::vector<std::vector<Real> >& temp_surface);              
        
        //re-organize and make it water-tight
     void reOrganize
@@ -167,7 +167,7 @@ public:
     
 //Distance Function building
 
-    void buildDistance(const char* IsoFile);
+  void buildDistance(const std::string& IsoFile);
     
     
     //---------Variables-----------------------------

@@ -6,9 +6,12 @@
 #include <string.h>
 #include <AMReX_MultiFab.H>
 #include <AMReX_EB2_IF_Triangulated.H>
-void main()
+
+int
+main (int   argc,
+      char* argv[])
 {
-   char* isoFile="flatplain";
+  std::string isoFile("flatplain");
 
    amrex::EB2::TriangulatedIF Tri(isoFile);
 
