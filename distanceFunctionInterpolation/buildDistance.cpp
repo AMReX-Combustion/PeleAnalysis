@@ -66,20 +66,21 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
       ParmParse pp;
 
     // Read in isosurface
-      //std::string isoFile; 
-    //  pp.get("isoFile",isoFile);
+   //   std::string isoFile; 
+   //   pp.get("isoFile",IsoFile);
     std::string isoFile = IsoFile;
     
     if (ParallelDescriptor::IOProcessor())
+    {
       std::cerr << "Reading isoFile... " << isoFile << std::endl;
-    
+    }
     Real strt_io = ParallelDescriptor::second();
 
     FArrayBox nodes;
-    Vector<long> faceData;
-    long nElts;
-    long nodesPerElt;
-    long nNodes, nCompNodes;
+    Vector<int> faceData;
+    int nElts;
+    int nodesPerElt;
+    int nNodes, nCompNodes;
     std::vector<std::string> surfNames;
   
     std::ifstream ifs;
@@ -101,13 +102,13 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
     // transpose the data so that the components are 'in the right spot for fab data'
     nodes.resize(tnodes.box(),nCompNodes);
     Real** np = new Real*[nCompNodes];
-    for (long j=0; j<nCompNodes; ++j)
+    for (int j=0; j<nCompNodes; ++j)
       np[j] = nodes.dataPtr(j);
 
     Real* ndat = tnodes.dataPtr();
-    for (long i=0; i<nNodes; ++i)
+    for (int i=0; i<nNodes; ++i)
     {
-      for (long j=0; j<nCompNodes; ++j)
+      for (int j=0; j<nCompNodes; ++j)
       {
         np[j][i] = ndat[j];
       }
@@ -127,7 +128,7 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
     int max_grid_size = 1; pp.query("max_grid_size",max_grid_size);
     Box domain(IntVect(D_DECL(0,0,0)),
                //IntVect(D_DECL(nCell-1,nCell-1,nCell-1)));
-               IntVect(D_DECL(3-1,3-1,9-1)));
+               IntVect(D_DECL(64-1,64-1,192-1)));
     BoxArray grids(domain);
    // grids(domain);
      grids.maxSize(max_grid_size);
@@ -156,14 +157,13 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
      std::vector<Vec3d> pointList;
      std::vector<Vec3ui> triList;
      std::vector<Vec3d> nList;
+        Vec3d ni;
 
-      Vec3d ni;
-
-      for (long node=0; node<nNodes; ++node) {
+      for (int node=0; node<nNodes; ++node) {
         const IntVect iv(D_DECL(node,0,0));
         pointList.push_back(Vec3d(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
       }
-      for (long elt=0; elt<nElts; ++elt) {
+      for (int elt=0; elt<nElts; ++elt) {
         int offset = elt * nodesPerElt;
         triList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
         ni = normal(pointList[faceData[offset]-1],pointList[faceData[offset+1]-1],pointList[faceData[offset+2]-1]);
@@ -174,7 +174,7 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
          Print()<<"normal"<<std::endl;*/
       }
      
-      for (long node=0; node<nNodes; ++node) 
+      for (int node=0; node<nNodes; ++node) 
       {
         vertList.push_back(std::vector<Real>() );
         for(int j=0;j<3;j++)
@@ -182,9 +182,9 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
             vertList[node].push_back(pointList[node][j]);
         }
       }
-      for (long elt=0; elt<nElts; ++elt) 
+      for (int elt=0; elt<nElts; ++elt) 
       {
-        faceList.push_back(std::vector<long>() );
+        faceList.push_back(std::vector<int>() );
         normalList.push_back(std::vector<Real>() );
         for(int j=0;j<3;j++)
         {
@@ -232,7 +232,7 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]*/const char* I
   //  WriteSingleLevelPlotfile("Distance.out",distance,{"distance"},geom,0.0,0);
 
   //  TriangulatedIF::distanceInterpolation(distance);
-//  }
-//  amrex::Finalize();
+ // }
+ // amrex::Finalize();
 //  return 0;
 }

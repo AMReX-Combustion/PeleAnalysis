@@ -6,19 +6,22 @@
 #include <string.h>
 #include <AMReX_MultiFab.H>
 #include <AMReX_EB2_IF_Triangulated.H>
-void main()
+void main(int argc, char* argv[])
 {
-   char* isoFile="flatplain";
+   amrex::Initialize(argc,argv);
+   {
 
-   amrex::EB2::TriangulatedIF Tri(isoFile);
+       char* isoFile="flatplain";
 
-   double A[3];
-   A[0]=0;
-   A[1]=0;
-   A[2]=0;
+       amrex::EB2::TriangulatedIF Tri(isoFile);
 
-   double distance=(Tri.distanceInterpolation_->distance(A));
+       double A[3];
+       A[0]=0;
+       A[1]=0;
+       A[2]=0;
 
-   
+       double distance=(Tri.distanceInterpolation_->distance(A));
 
+   }
+   amrex::Finalize();
 }

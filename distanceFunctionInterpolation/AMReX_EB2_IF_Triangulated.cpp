@@ -75,7 +75,7 @@ namespace amrex { namespace EB2 {
           //Title line, discarded
           fgets(dump,max_line,(FILE*)fp);
           
-          for(long i=0;;++i)
+          for(int i=0;;++i)
           {
                
                fscanf(fp,"%s",dump);
@@ -124,9 +124,9 @@ namespace amrex { namespace EB2 {
   
         std::vector< pointToElement > temp_ptlist;
 
-        for(long i=0;i<this->normalList.size();++i)
+        for(int i=0;i<this->normalList.size();++i)
         {
-            faceList.push_back(std::vector<long>() );           
+            faceList.push_back(std::vector<int>() );           
             for(int j=0;j<3;++j)
             {
                 faceList[i].push_back(3*i+j);
@@ -143,9 +143,9 @@ namespace amrex { namespace EB2 {
     
     void TriangulatedIF::mergeVertex(std::vector<pointToElement>& temp_ptlist)
     {
-        long i=0,j=0,indexCounter=0,stepCounter;
+        int i=0,j=0,indexCounter=0,stepCounter;
         
-        long mergeNumber=0;
+        int mergeNumber=0;
         
         for(i=0;i<temp_ptlist.size();++i)
         {

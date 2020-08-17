@@ -17,12 +17,12 @@ struct pointToElement
     {
     public: 
         Real physLocation[BL_SPACEDIM];
-        long elementIndex;
+        int elementIndex;
         int pointIndex;    
         
         int mergeTag;
 
-        pointToElement(std::vector<Real> pt,long ei, int pi):
+        pointToElement(std::vector<Real> pt,int ei, int pi):
         elementIndex(ei),pointIndex(pi),mergeTag(0)
         {
             physLocation[0]=pt[0];
@@ -176,7 +176,7 @@ public:
     std::vector<std::vector<Real> > normalList;
   
     //--------point index
-    std::vector<std::vector<long> > faceList; 
+    std::vector<std::vector<int> > faceList; 
 
    //--------Point Locations
     std::vector<std::vector<Real> > vertList; 
