@@ -86,7 +86,7 @@ namespace amrex { namespace EB2 {
          
     }
 */
-    TriangulatedIF::TriangulatedIF(const Geometry& geom,const BoxArray& grids, const std::string& isoFile):geom_(geom),grids_(grids)
+    TriangulatedIF::TriangulatedIF(/*const Geometry& geom,const BoxArray& grids,*/ const std::string& isoFile)//:geom_(geom),grids_(grids)
     {
     //     std::vector<std::vector<Real> > normalList;
 
@@ -99,10 +99,11 @@ namespace amrex { namespace EB2 {
      //    MultiFab Dfab;
   
          TriangulatedIF::loadData_mef(isoFile);
-
+     /*
          TriangulatedIF::buildDistance();
          
          distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,geom_);
+     */
     }
 
     TriangulatedIF::~TriangulatedIF()
@@ -110,6 +111,23 @@ namespace amrex { namespace EB2 {
         delete distanceInterpolation_;
     }
     //---------Protected Member Functions-----------------------
+    void TriangulatedIF::finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm)//:geom_(geom),grids_(grids),dm_(dm) 
+    {
+        geom_ = &geom;  
+        
+        grids_ = &grids;
+ 
+        dm_ = &dm; 
+
+        distanceMF.define(this->grids(),/*DistributionMapping(this->grids_)*/this->dm(),1,0);
+
+        TriangulatedIF::buildDistance();
+   
+        distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,this->geom() );
+    }  
+
+   
+
     void TriangulatedIF::loadData_mef(const std::string& isoFile)
     {
         if (ParallelDescriptor::IOProcessor()) 
@@ -168,8 +186,7 @@ namespace amrex { namespace EB2 {
 
         Print() << "Read " << nElts << " elements and " << nNodes << " nodes" << std::endl;
 
-               distanceMF.define(this->grids_,DistributionMapping(this->grids_),1,0);
-    
+          
 
 
         for (int node=0; node<nNodes; ++node) 

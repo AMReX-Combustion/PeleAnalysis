@@ -56,7 +56,7 @@ namespace amrex
     {
     public:
       //----Construct from file----------- 
-      TriangulatedIF(const Geometry& geom, const BoxArray& grids, const std::string& isoFile);
+      TriangulatedIF(/*const Geometry& geom, const BoxArray& grids,*/ const std::string& isoFile);
 
       ~TriangulatedIF();
 
@@ -76,7 +76,29 @@ namespace amrex
 
       void buildDistance(/*const std::string& isoFile*/);
     
-      std::vector<Vec3r> normalList;
+      void finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm);     
+ 
+      const distanceFunctionInterpolation& distanceInterpolation()
+      {
+          return *distanceInterpolation_;
+      }
+      
+      const DistributionMapping& dm()
+      {
+          return *dm_;
+      }
+    
+      const Geometry& geom()
+      {
+          return *geom_; 
+      }
+
+      const BoxArray& grids()
+      {
+          return *grids_;
+      }
+//-------------members--------------------------
+       std::vector<Vec3r> normalList;
    
       std::vector<Vec3ui> faceList; 
    
@@ -86,11 +108,16 @@ namespace amrex
 
       MultiFab distanceMF; 
 
-      const Geometry& geom_;
+      const DistributionMapping* dm_; 
 
-      const BoxArray& grids_;
+      const Geometry* geom_;
 
-      distanceFunctionInterpolation* distanceInterpolation_; 
+      const BoxArray* grids_;
+
+      distanceFunctionInterpolation* distanceInterpolation_;
+
+
+      
     };
   }
 }

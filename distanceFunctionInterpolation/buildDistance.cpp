@@ -72,11 +72,11 @@ void EB2::TriangulatedIF::buildDistance(/*int   argc,char* argv[]const std::stri
         }
       }
 */
-      const Real* dx = this->geom_.CellSize();
-      const Real* plo = this->geom_.ProbLo();
+      const Real* dx = this->geom().CellSize();
+      const Real* plo = this->geom().ProbLo();
 
 
-      const Box& vbox = this->grids_[mfi.index()];
+      const Box& vbox = this->grids()[mfi.index()];
       Vec3r local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
                          plo[1] + vbox.smallEnd()[1]*dx[1],
                          plo[2] + vbox.smallEnd()[2]*dx[2]);

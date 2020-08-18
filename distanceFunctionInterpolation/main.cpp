@@ -32,7 +32,12 @@ main (int   argc,
 
 
     std::string isoFile("flatplain");
-    EB2::TriangulatedIF Tri(geom,grids,isoFile);    
+    
+    DistributionMapping dm = DistributionMapping(grids);
+    EB2::TriangulatedIF Tri(isoFile);    
+    Tri.finalize(geom,grids,dm);   
+
+
     Real A[3] = {0,0,0};
     Real distance=(Tri.distanceInterpolation_->distance(A));
     Print() << "Distance is " << distance << std::endl;
