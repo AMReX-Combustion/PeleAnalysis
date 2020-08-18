@@ -3,10 +3,65 @@
 #include <AMReX_EB2_IF_Triangulated.H>
 #include <stdio.h>
 #include <vector>
+#include <string>
 #include <string.h>
 #include <cmath>
 #include <algorithm>
+#include <set>
+#include <AMReX.H>
+#include <AMReX_EB2.H>
+#include <AMReX_EB2_IF.H>
+
+#include <AMReX_ParmParse.H>
+#include <AMReX_MultiFab.H>
+
+#include <AMReX_PlotFileUtil.H>
+#include <AMReX_FillPatchUtil.H>
+#include "makelevelset3.h"
+
+
+
 // For all implicit functions, >0: body; =0: boundary; <0: fluid
+
+Vec3r normal(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2)
+{
+    Vec3r x12(x1-x0),x23(x2-x1);
+    Vec3r normal;
+
+    normal[0] = x12[1]*x23[2]-x12[2]*x23[1];
+    normal[1] = x12[2]*x23[0]-x12[0]*x23[2];
+    normal[2] = x12[0]*x23[1]-x12[1]*x23[0];
+
+    float r = std::sqrt(normal[0]*normal[0]+normal[1]*normal[1]+normal[2]*normal[2]);
+    normal[0] /= r;
+    normal[1] /= r;
+    normal[2] /= r;
+    return normal;
+}
+
+static
+std::vector<std::string> parseVarNames(std::istream& is)
+{
+  std::string line;
+  std::getline(is,line);
+  return amrex::Tokenize(line,std::string(", "));
+}
+
+static std::string parseTitle(std::istream& is)
+{
+  std::string line;
+  std::getline(is,line);
+  return line;
+}
+
+std::string
+getFileRoot(const std::string& infile)
+{
+  std::vector<std::string> tokens = amrex::Tokenize(infile,std::string("/"));
+  return tokens[tokens.size()-1];
+}
+
+
 
 namespace amrex { namespace EB2 {
 
@@ -22,7 +77,7 @@ namespace amrex { namespace EB2 {
     {
          std::vector<std::vector<Real> > temp_surface;
 
-         TriangulatedIF::loadData(nameOfFile,temp_surface);
+         TriangulatedIF::loadData_stl_ascii(nameOfFile,temp_surface);
           
          TriangulatedIF::reOrganize(temp_surface); 
      
@@ -31,7 +86,7 @@ namespace amrex { namespace EB2 {
          
     }
 */
-    TriangulatedIF::TriangulatedIF(const std::string& isoFile)
+    TriangulatedIF::TriangulatedIF(const Geometry& geom,const BoxArray& grids, const std::string& isoFile):geom_(geom),grids_(grids)
     {
     //     std::vector<std::vector<Real> > normalList;
 
@@ -42,10 +97,12 @@ namespace amrex { namespace EB2 {
      //    Geometry geom;
   
      //    MultiFab Dfab;
+  
+         TriangulatedIF::loadData_mef(isoFile);
 
-         TriangulatedIF::buildDistance(isoFile);
+         TriangulatedIF::buildDistance();
          
-         distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,geom);
+         distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,geom_);
     }
 
     TriangulatedIF::~TriangulatedIF()
@@ -53,7 +110,87 @@ namespace amrex { namespace EB2 {
         delete distanceInterpolation_;
     }
     //---------Protected Member Functions-----------------------
-    void TriangulatedIF::loadData (const std::string&               nameOfFile,
+    void TriangulatedIF::loadData_mef(const std::string& isoFile)
+    {
+        if (ParallelDescriptor::IOProcessor()) 
+        {
+            std::cerr << "Reading isoFile... " << isoFile << std::endl;
+        }
+    
+        FArrayBox nodes;
+        Vector<int> faceData;
+        int nElts;
+        int nodesPerElt;
+        int nNodes, nCompNodes;
+        std::vector<std::string> surfNames;
+  
+        std::ifstream ifs;
+        ifs.open(isoFile.c_str(),std::ios::in|std::ios::binary);
+
+        const std::string title = parseTitle(ifs);
+        surfNames = parseVarNames(ifs);
+        nCompNodes = surfNames.size();
+
+        ifs >> nElts;
+        ifs >> nodesPerElt;
+
+        Print() << "nelts: " << nElts << std::endl;
+        Print() << "nodesperelt: " << nodesPerElt << std::endl;
+
+        FArrayBox tnodes;
+        tnodes.readFrom(ifs);
+        nNodes = tnodes.box().numPts();
+
+    // transpose the data so that the components are 'in the right spot for fab data'
+        nodes.resize(tnodes.box(),nCompNodes);
+        Real** np = new Real*[nCompNodes];
+        for (int j=0; j<nCompNodes; ++j)
+        {
+            np[j] = nodes.dataPtr(j);
+        }
+    
+        Real* ndat = tnodes.dataPtr();
+    
+        for (int i=0; i<nNodes; ++i)
+        {
+            for (int j=0; j<nCompNodes; ++j)
+            {
+                np[j][i] = ndat[j];
+            }
+            ndat += nCompNodes;
+        }
+        delete [] np;
+        tnodes.clear();
+
+        faceData.resize(nElts*nodesPerElt,0);
+        ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
+        ifs.close();
+
+        Print() << "Read " << nElts << " elements and " << nNodes << " nodes" << std::endl;
+
+               distanceMF.define(this->grids_,DistributionMapping(this->grids_),1,0);
+    
+
+
+        for (int node=0; node<nNodes; ++node) 
+        {
+            const IntVect iv(D_DECL(node,0,0));
+            vertList.push_back(Vec3r(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
+        }
+        for (int elt=0; elt<nElts; ++elt) 
+        {
+            int offset = elt * nodesPerElt;
+            faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
+            normalList.push_back(normal(vertList[faceData[offset]-1],vertList[faceData[offset+1]-1],vertList[faceData[offset+2]-1]));
+        } 
+        std::cout<<"loaded data"<<std::endl;
+
+    }
+
+
+
+
+    void TriangulatedIF::loadData_stl_ascii (const std::string&               nameOfFile,
                                    std::vector<std::vector<Real> >& temp_surface) 
     {
           //designed for stl file, if needed, use factory for more extensions
@@ -82,14 +219,16 @@ namespace amrex { namespace EB2 {
                }
                fscanf(fp,"%s",dump); 
               
-               this->normalList.push_back(std::vector<Real>());
+           //    this->normalList.push_back(std::vector<Real>());
  
                fscanf(fp,"%lf %lf %lf\n",&num1,&num2,&num3);
                 
-               this->normalList[i].push_back( (Real)num1 );
+          /*     this->normalList[i].push_back( (Real)num1 );
                this->normalList[i].push_back( (Real)num2 );
                this->normalList[i].push_back( (Real)num3 );         
-              
+          */
+               this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) );
+    
                fgets(dump,max_line,(FILE*)fp);
                
                for(int j=0;j<3;++j)
@@ -122,13 +261,15 @@ namespace amrex { namespace EB2 {
 
         for(long i=0;i<this->normalList.size();++i)
         {
-            faceList.push_back(std::vector<int>() );           
+            faceList.push_back(Vec3ui(3*i, 3*i+1,3*i+2) );           
+         
             for(int j=0;j<3;++j)
             {
-                faceList[i].push_back(3*i+j);
+          //      faceList[i].push_back(3*i+j);
 
                 temp_ptlist.push_back(pointToElement(temp_surface[3*i+j],i,j) );                        
             }
+          
         }
         std::sort(temp_ptlist.begin(),temp_ptlist.end());
      
@@ -149,21 +290,22 @@ namespace amrex { namespace EB2 {
 
             mergeNumber=0;
       
-            vertList.push_back(std::vector<Real>());
+           // vertList.push_back(std::vector<Real>());
             
-            vertList[indexCounter].push_back(temp_ptlist[i].physLocation[0]);
+           /* vertList[indexCounter].push_back(temp_ptlist[i].physLocation[0]);
             vertList[indexCounter].push_back(temp_ptlist[i].physLocation[1]);
-#if BL_SPACEDIM==3    
             vertList[indexCounter].push_back(temp_ptlist[i].physLocation[2]);
-#endif            
-            faceList[temp_ptlist[i].elementIndex][temp_ptlist[i].pointIndex] = indexCounter;
+           */
+            vertList.push_back(Vec3r(temp_ptlist[i].physLocation[0],temp_ptlist[i].physLocation[1],temp_ptlist[i].physLocation[2])); 
+            
+            faceList[temp_ptlist[i].elementIndex].v[temp_ptlist[i].pointIndex] = indexCounter;
            
             for(j=i+1;j<temp_ptlist.size();++j)
             {
                 if(distance(temp_ptlist[i].physLocation,temp_ptlist[j].physLocation)<eps)
                 {
                     //merge vertex
-                    faceList[temp_ptlist[j].elementIndex][temp_ptlist[j].pointIndex] = indexCounter;                    
+                    faceList[temp_ptlist[j].elementIndex].v[temp_ptlist[j].pointIndex] = indexCounter;                    
                     temp_ptlist[j].mergeTag=1;                    
                 }
                 else

@@ -3,7 +3,7 @@ AMREX_HOME ?= ${AMREX_HOME}
 
 DEBUG	      = FALSE
 DIM	      = 3
-COMP          = gcc
+COMP          = intel
 PRECISION     = DOUBLE
 USE_ASSERTION = TRUE
 USE_MPI       = TRUE

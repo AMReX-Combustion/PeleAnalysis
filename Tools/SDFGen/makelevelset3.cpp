@@ -1,12 +1,16 @@
 #include "makelevelset3.h"
 #include <cmath>
+#include <AMReX_REAL.H>
 // find distance x0 is from segment x1-x2
-static double point_segment_distance(const Vec3d &x0, const Vec3d &x1, const Vec3d &x2)
+
+//using namespace amrex;
+
+static amrex::Real point_segment_distance(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2)
 {
-    Vec3d dx(x2-x1);
-    double m2=mag2(dx);
+    Vec3r dx(x2-x1);
+    amrex::Real m2=mag2(dx);
    // find parameter value of closest point on segment
-    double s12=(double)(dot(x2-x0, dx)/m2);
+    amrex::Real s12=(amrex::Real)(dot(x2-x0, dx)/m2);
     if(s12<0){
         s12=0;
     }else if(s12>1){
@@ -17,19 +21,19 @@ static double point_segment_distance(const Vec3d &x0, const Vec3d &x1, const Vec
 }
 
 // find distance x0 is from triangle x1-x2-x3
-static double point_triangle_distance(const Vec3d &x0, const Vec3d &x1, const Vec3d &x2, const Vec3d &x3, const Vec3d &normal)
+static amrex::Real point_triangle_distance(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2, const Vec3r &x3, const Vec3r &normal)
 {
    // first find barycentric coordinates of closest point on infinite plane
-   Vec3d x13(x1-x3), x23(x2-x3), x03(x0-x3);
-   double m13=mag2(x13), m23=mag2(x23), d=dot(x13,x23);
-   double invdet=1.f/max(m13*m23-d*d,1e-30);
-   double a=dot(x13,x03), b=dot(x23,x03);
+   Vec3r x13(x1-x3), x23(x2-x3), x03(x0-x3);
+   amrex::Real m13=mag2(x13), m23=mag2(x23), d=dot(x13,x23);
+   amrex::Real invdet=1.f/max(m13*m23-d*d,1e-30);
+   amrex::Real a=dot(x13,x03), b=dot(x23,x03);
    // the barycentric coordinates themselves
-   double w23=invdet*(m23*a-d*b);
-   double w31=invdet*(m13*b-d*a);
-   double w12=1-w23-w31;
+   amrex::Real w23=invdet*(m23*a-d*b);
+   amrex::Real w31=invdet*(m13*b-d*a);
+   amrex::Real w12=1-w23-w31;
     
-   Vec3d center;
+   Vec3r center;
    //Vec3f localdirection(x0-center);
    for(int i=0;i<3;i++)
    {
@@ -38,11 +42,11 @@ static double point_triangle_distance(const Vec3d &x0, const Vec3d &x1, const Ve
    }
    
    
-   double dotProduct = ( x0[0]-center[0])*normal[0]+( x0[1]-center[1])*normal[1]+( x0[2]-center[2])*normal[2];
+   amrex::Real dotProduct = ( x0[0]-center[0])*normal[0]+( x0[1]-center[1])*normal[1]+( x0[2]-center[2])*normal[2];
   // float dotProduct =  (localdirection, normal);
-   double sign;
+   amrex::Real sign;
    
-   double eps = 0.00000000000001;
+   amrex::Real eps = 0.00000000000001;
    if(dotProduct>0 && std::abs(dotProduct)>eps)
    {
        sign =1.0;
@@ -85,14 +89,14 @@ Vec3f normal(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2)
 
 
 
-static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x,
-                            Array3d &phi, Array3i &closest_tri,
-                            const Vec3d &gx, int i0, int j0, int k0, int i1, int j1, int k1, const std::vector<Vec3d> &normal)
+static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x,
+                            Array3r &phi, Array3i &closest_tri,
+                            const Vec3r &gx, int i0, int j0, int k0, int i1, int j1, int k1, const std::vector<Vec3r> &normal)
 {
    if(closest_tri(i1,j1,k1)>=0){
       int s = closest_tri(i1,j1,k1);
       unsigned int p, q, r; assign(tri[s], p, q, r);
-      double d=point_triangle_distance(gx, x[p], x[q], x[r],normal[s]);
+      amrex::Real d=point_triangle_distance(gx, x[p], x[q], x[r],normal[s]);
       if(std::abs(d)<std::abs(phi(i0,j0,k0))){
          phi(i0,j0,k0)=d;
          closest_tri(i0,j0,k0)=closest_tri(i1,j1,k1);
@@ -100,9 +104,9 @@ static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Ve
    }
 }
 
-static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x,
-                  Array3d &phi, Array3i &closest_tri, const Vec3d &origin, double dx,
-                  int di, int dj, int dk,const std::vector<Vec3d> &normal)
+static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x,
+                  Array3r &phi, Array3i &closest_tri, const Vec3r &origin, amrex::Real dx,
+                  int di, int dj, int dk,const std::vector<Vec3r> &normal)
 {
    int i0, i1;
    if(di>0){ i0=1; i1=phi.ni; }
@@ -114,7 +118,7 @@ static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x,
    if(dk>0){ k0=1; k1=phi.nk; }
    else{ k0=phi.nk-2; k1=-1; }
    for(int k=k0; k!=k1; k+=dk) for(int j=j0; j!=j1; j+=dj) for(int i=i0; i!=i1; i+=di){
-      Vec3d gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
+      Vec3r gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
       check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j,    k,normal);
       check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j-dj, k,normal);
       check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j-dj, k,normal);
@@ -127,7 +131,7 @@ static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x,
 
 // calculate twice signed area of triangle (0,0)-(x1,y1)-(x2,y2)
 // return an SOS-determined sign (-1, +1, or 0 only if it's a truly degenerate triangle)
-static int orientation(double x1, double y1, double x2, double y2, double &twice_signed_area)
+static int orientation(amrex::Real x1, amrex::Real y1, amrex::Real x2, amrex::Real y2, amrex::Real &twice_signed_area)
 {
    twice_signed_area=y1*x2-x1*y2;
    if(twice_signed_area>0) return 1;
@@ -141,9 +145,9 @@ static int orientation(double x1, double y1, double x2, double y2, double &twice
 
 // robust test of (x0,y0) in the triangle (x1,y1)-(x2,y2)-(x3,y3)
 // if true is returned, the barycentric coordinates are set in a,b,c.
-static bool point_in_triangle_2d(double x0, double y0, 
-                                 double x1, double y1, double x2, double y2, double x3, double y3,
-                                 double& a, double& b, double& c)
+static bool point_in_triangle_2d(amrex::Real x0, amrex::Real y0, 
+                                 amrex::Real x1, amrex::Real y1, amrex::Real x2, amrex::Real y2, amrex::Real x3, amrex::Real y3,
+                                 amrex::Real& a, amrex::Real& b, amrex::Real& c)
 {
    x1-=x0; x2-=x0; x3-=x0;
    y1-=y0; y2-=y0; y3-=y0;
@@ -153,7 +157,7 @@ static bool point_in_triangle_2d(double x0, double y0,
    if(signb!=signa) return false;
    int signc=orientation(x1, y1, x2, y2, c);
    if(signc!=signa) return false;
-   double sum=a+b+c;
+   amrex::Real sum=a+b+c;
    assert(sum!=0); // if the SOS signs match and are nonkero, there's no way all of a, b, and c are zero.
    a/=sum;
    b/=sum;
@@ -161,29 +165,29 @@ static bool point_in_triangle_2d(double x0, double y0,
    return true;
 }
 
-void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x, const std::vector<Vec3d> &normal,
-                     const Vec3d &origin, double dx, int ni, int nj, int nk,
-                     Array3d &phi, const int exact_band)
+void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x, const std::vector<Vec3r> &normal,
+                     const Vec3r &origin, amrex::Real dx, int ni, int nj, int nk,
+                     Array3r &phi, const int exact_band)
 {
    phi.resize(ni, nj, nk);
    phi.assign((ni+nj+nk)*dx); // upper bound on distance
    Array3i closest_tri(ni, nj, nk, -1);
    Array3i intersection_count(ni, nj, nk, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
    // we begin by initializing distances near the mesh, and figuring out intersection counts
-   Vec3d ijkmin, ijkmax;
+   Vec3r ijkmin, ijkmax;
    for(unsigned int t=0; t<tri.size(); ++t){
      unsigned int p, q, r; assign(tri[t], p, q, r);
      // coordinates in grid to high precision
-      double fip=((double)x[p][0]-origin[0])/dx, fjp=((double)x[p][1]-origin[1])/dx, fkp=((double)x[p][2]-origin[2])/dx;
-      double fiq=((double)x[q][0]-origin[0])/dx, fjq=((double)x[q][1]-origin[1])/dx, fkq=((double)x[q][2]-origin[2])/dx;
-      double fir=((double)x[r][0]-origin[0])/dx, fjr=((double)x[r][1]-origin[1])/dx, fkr=((double)x[r][2]-origin[2])/dx;
+      amrex::Real fip=((amrex::Real)x[p][0]-origin[0])/dx, fjp=((amrex::Real)x[p][1]-origin[1])/dx, fkp=((amrex::Real)x[p][2]-origin[2])/dx;
+      amrex::Real fiq=((amrex::Real)x[q][0]-origin[0])/dx, fjq=((amrex::Real)x[q][1]-origin[1])/dx, fkq=((amrex::Real)x[q][2]-origin[2])/dx;
+      amrex::Real fir=((amrex::Real)x[r][0]-origin[0])/dx, fjr=((amrex::Real)x[r][1]-origin[1])/dx, fkr=((amrex::Real)x[r][2]-origin[2])/dx;
       // do distances nearby
       int i0=clamp(int(min(fip,fiq,fir))-exact_band, 0, ni-1), i1=clamp(int(max(fip,fiq,fir))+exact_band+1, 0, ni-1);
       int j0=clamp(int(min(fjp,fjq,fjr))-exact_band, 0, nj-1), j1=clamp(int(max(fjp,fjq,fjr))+exact_band+1, 0, nj-1);
       int k0=clamp(int(min(fkp,fkq,fkr))-exact_band, 0, nk-1), k1=clamp(int(max(fkp,fkq,fkr))+exact_band+1, 0, nk-1);
       for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j) for(int i=i0; i<=i1; ++i){
-         Vec3d gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
-         double d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t]);
+         Vec3r gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
+         amrex::Real d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t]);
          if(std::abs(d)<std::abs(phi(i,j,k))){
             phi(i,j,k)=d;
             closest_tri(i,j,k)=t;
@@ -195,9 +199,9 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3d> &x
       k0=clamp((int)std::ceil(min(fkp,fkq,fkr)), 0, nk-1);
       k1=clamp((int)std::floor(max(fkp,fkq,fkr)), 0, nk-1);
       for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j){
-         double a, b, c;
+         amrex::Real a, b, c;
          if(point_in_triangle_2d(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)){
-            double fi=a*fip+b*fiq+c*fir; // intersection i coordinate
+            amrex::Real fi=a*fip+b*fiq+c*fir; // intersection i coordinate
             int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
             if(i_interval<0) ++intersection_count(0, j, k); // we enlarge the first interval to include everything to the -x direction
             else if(i_interval<ni) ++intersection_count(i_interval,j,k);

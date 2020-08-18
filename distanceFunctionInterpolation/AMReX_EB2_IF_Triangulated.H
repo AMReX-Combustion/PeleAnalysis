@@ -9,6 +9,8 @@
 #include <string.h>
 #include "distanceFunctionInterpolation.H"
 #include <AMReX_MultiFab.H>
+#include <vec.h>
+
 // For all implicit functions, >0: body; =0: boundary; <0: fluid
 
 namespace amrex
@@ -54,14 +56,16 @@ namespace amrex
     {
     public:
       //----Construct from file----------- 
-      TriangulatedIF(const std::string& isoFile);
+      TriangulatedIF(const Geometry& geom, const BoxArray& grids, const std::string& isoFile);
 
       ~TriangulatedIF();
 
       //load data from non-watertight format
-      void loadData (const std::string&               nameOfFile,
-                     std::vector<std::vector<Real> >& temp_surface);              
-       
+      void loadData_stl_ascii (const std::string&               nameOfFile,
+                     std::vector<std::vector<Real> >& temp_surface);
+              
+      void loadData_mef(const std::string& isoFile); 
+     
       //re-organize and make it water-tight
       void reOrganize (const std::vector<std::vector<Real> >& temp_surface);
 
@@ -70,14 +74,22 @@ namespace amrex
       Real distance (const Array<Real,AMREX_SPACEDIM> &p1,
                      const Array<Real,AMREX_SPACEDIM> &p2 )const;
 
-      void buildDistance(const std::string& IsoFile);
+      void buildDistance(/*const std::string& isoFile*/);
     
-      std::vector<std::vector<Real> > normalList;
-      std::vector<std::vector<int> > faceList; 
-      std::vector<std::vector<Real> > vertList; 
+      std::vector<Vec3r> normalList;
+   
+      std::vector<Vec3ui> faceList; 
+   
+      std::vector<Vec3r> vertList; 
+   
       double eps;
+
       MultiFab distanceMF; 
-      Geometry geom;
+
+      const Geometry& geom_;
+
+      const BoxArray& grids_;
+
       distanceFunctionInterpolation* distanceInterpolation_; 
     };
   }

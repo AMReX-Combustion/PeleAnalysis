@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cassert>
 #include <vector>
+#include "AMReX_REAL.H"
 
 template<class T, class ArrayT=std::vector<T> >
 struct Array3
@@ -263,7 +264,7 @@ typedef Array3<float, Array1<float> > Array3f;
 typedef Array3<long long, Array1<long long> > Array3ll;
 typedef Array3<unsigned long long, Array1<unsigned long long> > Array3ull;
 typedef Array3<int, Array1<int> > Array3i;
-//typedef Array3<long, Array1<long> > Array3l;
+typedef Array3<amrex::Real, Array1<amrex::Real> > Array3r;
 typedef Array3<unsigned int, Array1<unsigned int> > Array3ui;
 typedef Array3<short, Array1<short> > Array3s;
 typedef Array3<unsigned short, Array1<unsigned short> > Array3us;

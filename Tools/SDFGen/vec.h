@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include "util.h"
+#include "AMReX_REAL.H"
 
 // Defines a thin wrapper around fixed size C-style arrays, using template parameters,
 // which is useful for dealing with vectors of different dimensions.
@@ -175,7 +176,7 @@ typedef Vec<3,short>          Vec3s;
 typedef Vec<3,unsigned short> Vec3us;
 typedef Vec<3,char>           Vec3c;
 typedef Vec<3,unsigned char>  Vec3uc;
-//typedef Vec<3,unsigned long>  Vec3ul;
+typedef Vec<3,amrex::Real>           Vec3r;
 
 typedef Vec<4,double>         Vec4d;
 typedef Vec<4,float>          Vec4f;

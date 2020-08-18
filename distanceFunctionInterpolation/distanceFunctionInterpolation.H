@@ -17,7 +17,7 @@ class distanceFunctionInterpolation
 public:
 
 //--------------------------------------constructor-----------------------------------//
-distanceFunctionInterpolation(MultiFab& dfab, Geometry& geom)
+distanceFunctionInterpolation(MultiFab& dfab, const Geometry& geom)
 : distanceFab_(dfab),geom_(geom){}
 
 //----------------------------------- member function-------------------------------- //
@@ -81,20 +81,20 @@ Real distance(Real* location)
 
 
 //----------------------------------- protected member function --------------------- //
-MultiFab& distanceMap()
+const MultiFab& distanceMap()
 {
     return distanceFab_;
 }
-Geometry& geom()
+const Geometry& geom()
 {
     return geom_;
 }
 
 protected:
 
-MultiFab& distanceFab_;
+const MultiFab& distanceFab_;
 
-Geometry& geom_;
+const Geometry& geom_;
 };
 
 }}
