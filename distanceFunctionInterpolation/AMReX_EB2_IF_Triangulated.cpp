@@ -72,16 +72,17 @@ namespace amrex
 
     namespace EB2
     {
-        //this class is designed to call std::sort to sort the generated pointlist
-        //once sorted, merge vertices 
-
-        TriangulatedIF::TriangulatedIF(const std::string& isoFile, const std::string& fileType)
+        TriangulatedIF::TriangulatedIF(const std::string& isoFile,
+                                       const std::string& fileType)
         {
             TriangulatedIF::loadData(isoFile,fileType); 
         }
 
         //---------Protected Member Functions-----------------------
-        void TriangulatedIF::finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm)
+        void
+        TriangulatedIF::finalize(const Geometry&            geom,
+                                 const BoxArray&            grids,
+                                 const DistributionMapping& dm) noexcept
         {
             geom_  = geom;  
             grids_ = grids;
@@ -93,7 +94,9 @@ namespace amrex
             buildDistance();
         }
     
-        void TriangulatedIF::loadData(const std::string& isoFile, const std::string& fileType) noexcept
+        void
+        TriangulatedIF::loadData (const std::string& isoFile,
+                                  const std::string& fileType) noexcept
         {
             switch(typeMap[fileType])
             {
@@ -116,7 +119,8 @@ namespace amrex
             }
         }
         
-        void TriangulatedIF::loadData_mef(const std::string& isoFile) noexcept
+        void
+        TriangulatedIF::loadData_mef (const std::string& isoFile) noexcept
         {
             if (ParallelDescriptor::IOProcessor()) 
             {
@@ -186,7 +190,8 @@ namespace amrex
             Print() << "Isosurface [format: mef] contains " << nElts << " elements and " << nNodes << " nodes" << std::endl;
         }
         
-        void TriangulatedIF::loadData_stl_ascii (const std::string& isoFile) noexcept
+        void
+        TriangulatedIF::loadData_stl_ascii (const std::string& isoFile) noexcept
         {
             std::vector<std::vector<Real> > temp_surface;
 
@@ -282,6 +287,7 @@ namespace amrex
             makeWatertight(temp_surface);
         }
              
+        // sort the generated pointlist, then merge vertices 
         void
         TriangulatedIF::makeWatertight( const std::vector<std::vector<Real> >& temp_surface) noexcept
         {
@@ -302,7 +308,8 @@ namespace amrex
         }
     
         // use a stupid algorithm here to merge vertices, acceleration may applied    
-        void TriangulatedIF::mergeVertex(std::vector<pointToElement>& temp_ptlist) noexcept
+        void
+        TriangulatedIF::mergeVertex(std::vector<pointToElement>& temp_ptlist) noexcept
         {
             long i=0,j=0,indexCounter=0,stepCounter;
         

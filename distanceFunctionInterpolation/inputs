@@ -1,5 +1,5 @@
 max_grid_size = 32
-isoFileName = flatplain
+isoFileName = flatplane
 isoFileType = mef
 
 nCell = 64 64 192

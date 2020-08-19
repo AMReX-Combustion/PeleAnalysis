@@ -65,7 +65,7 @@ namespace amrex
         return this->operator()(AMREX_D_DECL(p[0],p[1],p[2]));
       }  
 
-      void finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm);     
+      void finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm) noexcept;
  
       const DistributionMapping& dm()
       {
