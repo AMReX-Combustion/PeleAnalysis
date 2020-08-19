@@ -1,9 +1,6 @@
-AMREX_HOME ?= ${AMREX_HOME}
-#../../../amrex
-
 DEBUG	      = FALSE
 DIM	      = 3
-COMP          = intel
+COMP          = gcc
 PRECISION     = DOUBLE
 USE_ASSERTION = TRUE
 USE_MPI       = TRUE
@@ -15,7 +12,7 @@ include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
 CEXE_sources += $(EBASE).cpp
 
-CEXE_sources += AMReX_EB2_IF_Triangulated.cpp buildDistance.cpp
+CEXE_sources += AMReX_EB2_IF_Triangulated.cpp
 CEXE_headers += AMReX_EB2_IF_Triangulated.H
 
 INCLUDE_LOCATIONS += .

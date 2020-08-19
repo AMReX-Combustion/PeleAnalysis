@@ -7,7 +7,6 @@
 #include <AMReX_EB2_IF_Base.H>
 #include <vector>
 #include <string.h>
-#include "distanceFunctionInterpolation.H"
 #include <AMReX_MultiFab.H>
 #include <vec.h>
 
@@ -55,53 +54,90 @@ namespace amrex
     class TriangulatedIF
     {
     public:
-      //----Construct from file----------- 
-      TriangulatedIF(/*const Geometry& geom, const BoxArray& grids,*/ const std::string& isoFile, const std::string& fileType);
+      TriangulatedIF(const std::string& isoFile, const std::string& fileType);
+        
+      AMREX_GPU_HOST_DEVICE inline
+      Real operator() (AMREX_D_DECL(Real x, Real y, Real z)) const noexcept {
+        return Distance(AMREX_D_DECL(x,y,z));
+      }
 
-      ~TriangulatedIF();
+      inline Real operator() (const RealArray& p) const noexcept {
+        return this->operator()(AMREX_D_DECL(p[0],p[1],p[2]));
+      }  
 
-      //load data from non-watertight format
-      void loadData(const std::string& isoFile, const std::string& fileType);
-
-      void loadData_stl_ascii (const std::string& isoFile);
-              
-      void loadData_mef(const std::string& isoFile); 
-     
-      void loadData_stl_binary(const std::string& isoFile);
-
-      //re-organize and make it water-tight
-      void reOrganize (const std::vector<std::vector<Real> >& temp_surface);
-
-      void mergeVertex (std::vector<pointToElement>& temp_ptlist);
-    
-      Real distance (const Array<Real,AMREX_SPACEDIM> &p1,
-                     const Array<Real,AMREX_SPACEDIM> &p2 )const;
-
-      void buildDistance(/*const std::string& isoFile*/);
-    
       void finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm);     
  
-      const distanceFunctionInterpolation& distanceInterpolation()
-      {
-          return *distanceInterpolation_;
-      }
-      
       const DistributionMapping& dm()
       {
-          return *dm_;
+          return dm_;
       }
     
       const Geometry& geom()
       {
-          return *geom_; 
+          return geom_; 
       }
 
       const BoxArray& grids()
       {
-          return *grids_;
+          return grids_;
       }
-//-------------members--------------------------
-       std::vector<Vec3r> normalList;
+
+    protected:
+      //load data from non-watertight format
+      void loadData(const std::string& isoFile, const std::string& fileType) noexcept;              
+      void loadData_mef(const std::string& isoFile) noexcept;      
+      void loadData_stl_ascii (const std::string& isoFile) noexcept;
+      void loadData_stl_binary(const std::string& isoFile) noexcept;
+
+      void makeWatertight (const std::vector<std::vector<Real> >& temp_surface) noexcept;
+
+      void mergeVertex (std::vector<pointToElement>& temp_ptlist) noexcept;
+    
+      void buildDistance() noexcept;
+
+      Real Distance(AMREX_D_DECL(Real x, Real y, Real z)) const noexcept
+        {
+          const Real* dxInv = geom_.InvCellSize(); 
+          IntVect iv(AMREX_D_DECL(floor(x * dxInv[0]),
+                                  floor(y * dxInv[1]),
+                                  floor(z * dxInv[2])));
+
+          Real distance;
+          for (MFIter mfi(distanceMF_); mfi.isValid(); ++mfi)
+          {
+            if (mfi.validbox().contains(iv))
+            {            
+              const auto& d=distanceMF_.array(mfi);
+              const Box& vbox = mfi.tilebox();
+
+              const Real n[AMREX_SPACEDIM] = {AMREX_D_DECL(x*dxInv[0] - iv[0],
+                                                           y*dxInv[1] - iv[1],
+                                                           z*dxInv[2] - iv[2])};
+
+#if AMREX_SPACEDIM==2
+              distance =/*0 0*/ d(iv[0]  ,iv[1]  ,iv[2]  ) * (1 - n[0]) * (1 - n[1]) 
+                       +/*1 0*/ d(iv[0]+1,iv[1]  ,iv[2]  ) * n[0]       * (1 - n[1]) 
+                       +/*0 1*/ d(iv[0]  ,iv[1]+1,iv[2]  ) * (1 - n[0]) * n[1]
+                       +/*1 1*/ d(iv[0]  ,iv[1]  ,iv[2]+1) * n[0]       * n[1];
+#else
+              distance =/*0 0 0*/ d(iv[0]  ,iv[1]  ,iv[2]  ) * (1 - n[0]) * (1 - n[1]) * (1 - n[2])
+                       +/*1 0 0*/ d(iv[0]+1,iv[1]  ,iv[2]  ) * n[0]       * (1 - n[1]) * (1 - n[2])
+                       +/*0 1 0*/ d(iv[0]  ,iv[1]+1,iv[2]  ) * (1 - n[0]) * n[1]       * (1 - n[2])
+                       +/*0 0 1*/ d(iv[0]  ,iv[1]  ,iv[2]+1) * (1 - n[0]) * (1 - n[1]) * n[2]
+                       +/*1 1 0*/ d(iv[0]+1,iv[1]+1,iv[2]  ) * n[0]       *     n[1]   * (1 - n[2])
+                       +/*1 0 1*/ d(iv[0]+1,iv[1]  ,iv[2]+1) * n[0]       * (1 - n[1]) * n[2]
+                       +/*0 1 1*/ d(iv[0]  ,iv[1]+1,iv[2]+1) * (1 - n[0]) * n[1]       * n[2]
+                       +/*1 1 1*/ d(iv[0]+1,iv[1]+1,iv[2]+1) * n[0]       * n[1]       * n[2];
+#endif
+              break;               
+            }        
+          }
+          return distance;
+        }
+      
+      
+      //-------------members--------------------------
+      std::vector<Vec3r> normalList;
    
       std::vector<Vec3ui> faceList; 
    
@@ -109,18 +145,13 @@ namespace amrex
    
       double eps;
 
-      MultiFab distanceMF; 
+      MultiFab distanceMF_; 
 
-      const DistributionMapping* dm_; 
+      DistributionMapping dm_; 
 
-      const Geometry* geom_;
+      Geometry geom_;
 
-      const BoxArray* grids_;
-
-      distanceFunctionInterpolation* distanceInterpolation_;
-
-
-      
+      BoxArray grids_;
     };
   }
 }

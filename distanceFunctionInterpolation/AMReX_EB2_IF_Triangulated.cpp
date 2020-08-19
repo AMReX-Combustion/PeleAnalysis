@@ -19,147 +19,84 @@
 #include <AMReX_FillPatchUtil.H>
 #include "makelevelset3.h"
 
-//file type table,extendable 
-enum extensionList
-{
-    mef,
-    stl_ascii,
-    stl_binary
-};
-
 // For all implicit functions, >0: body; =0: boundary; <0: fluid
 
-Vec3r normal(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2)
+namespace amrex
 {
-    Vec3r x12(x1-x0),x23(x2-x1);
-    Vec3r normal;
-
-    normal[0] = x12[1]*x23[2]-x12[2]*x23[1];
-    normal[1] = x12[2]*x23[0]-x12[0]*x23[2];
-    normal[2] = x12[0]*x23[1]-x12[1]*x23[0];
-
-    float r = std::sqrt(normal[0]*normal[0]+normal[1]*normal[1]+normal[2]*normal[2]);
-    normal[0] /= r;
-    normal[1] /= r;
-    normal[2] /= r;
-    return normal;
-}
-
-static
-std::vector<std::string> parseVarNames(std::istream& is)
-{
-  std::string line;
-  std::getline(is,line);
-  return amrex::Tokenize(line,std::string(", "));
-}
-
-static std::string parseTitle(std::istream& is)
-{
-  std::string line;
-  std::getline(is,line);
-  return line;
-}
-
-std::string
-getFileRoot(const std::string& infile)
-{
-  std::vector<std::string> tokens = amrex::Tokenize(infile,std::string("/"));
-  return tokens[tokens.size()-1];
-}
-
-std::map<int,std::string> buildTypeList()
-{
-    std::map<int,std::string> typelist;
-    
-    typelist.insert(std::pair<int,std::string>(0,"mef"));
-    typelist.insert(std::pair<int,std::string>(1,"stl_ascii"));
-    typelist.insert(std::pair<int,std::string>(2,"stl_binary"));
-  
-    return typelist;
-}
-
-namespace amrex { namespace EB2 {
-
-//this class is designed to call std::sort to sort the generated pointlist
-//once sorted, merge vertices 
-
-
-
-//----------Constructors--------------------------
-    
-/*       //----Construct from file----------- 
-    TriangulatedIF::TriangulatedIF(const char* nameOfFile, const char* type)
+    //file type table,extendable 
+    enum FILETYPE
     {
-         std::vector<std::vector<Real> > temp_surface;
+        unknown    = 0,
+        mef        = 1,
+        stl_ascii  = 2,
+        stl_binary = 3
+    };
+    static std::map<std::string,FILETYPE> typeMap = {{"mef", mef}, {"stl_ascii", stl_ascii}, {"stl_binary", stl_binary}};
 
-         TriangulatedIF::loadData_stl_ascii(nameOfFile,temp_surface);
-          
-         TriangulatedIF::reOrganize(temp_surface); 
-     
-     //  call makelevelset3.cpp and return is as a multifab
-         
-         
-    }
-*/
-    TriangulatedIF::TriangulatedIF(/*const Geometry& geom,const BoxArray& grids,*/ const std::string& isoFile ,const std::string& fileType)//:geom_(geom),grids_(grids)
-
+    Vec3r normal(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2)
     {
-    //     std::vector<std::vector<Real> > normalList;
+        Vec3r x12(x1-x0),x23(x2-x1);
+        Vec3r normal;
 
-    //     std::vector<std::vector<long> > faceList;
+        normal[0] = x12[1]*x23[2]-x12[2]*x23[1];
+        normal[1] = x12[2]*x23[0]-x12[0]*x23[2];
+        normal[2] = x12[0]*x23[1]-x12[1]*x23[0];
 
-    //     std::vector<std::vector<Real> > vertList; 
-
-     //    Geometry geom;
-  
-     //    MultiFab Dfab;
-  
-     //    TriangulatedIF::loadData_mef(isoFile);
-         TriangulatedIF::loadData(isoFile,fileType); 
-
-    /*
-         TriangulatedIF::buildDistance();
-         
-         distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,geom_);
-     */
+        float r = std::sqrt(normal[0]*normal[0]+normal[1]*normal[1]+normal[2]*normal[2]);
+        normal[0] /= r;
+        normal[1] /= r;
+        normal[2] /= r;
+        return normal;
     }
 
-    TriangulatedIF::~TriangulatedIF()
+    static amrex::Real distance (const Array<amrex::Real,AMREX_SPACEDIM> &p1,
+                                 const Array<amrex::Real,AMREX_SPACEDIM> &p2)
     {
-          delete distanceInterpolation_;
+        return std::sqrt(AMREX_D_TERM(pow((p1[0]-p2[0]),2),+pow((p1[1]-p2[1]),2),+pow((p1[2]-p2[2]),2)));
     }
-    //---------Protected Member Functions-----------------------
-    void TriangulatedIF::finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm)//:geom_(geom),grids_(grids),dm_(dm) 
+
+    static
+    std::vector<std::string> parseVarNames(std::istream& is)
     {
-        geom_ = &geom;  
-        
-        grids_ = &grids;
- 
-        dm_ = &dm; 
+        std::string line;
+        std::getline(is,line);
+        return amrex::Tokenize(line,std::string(", "));
+    }
 
-        distanceMF.define(this->grids(),/*DistributionMapping(this->grids_)*/this->dm(),1,0);
-
-        TriangulatedIF::buildDistance();
-   
-        distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,this->geom() );
-    }  
-    
-
-    void TriangulatedIF::loadData(const std::string& isoFile,const std::string& fileType)
+    static std::string parseTitle(std::istream& is)
     {
-        std::map<int,std::string> typeList = buildTypeList();
+        std::string line;
+        std::getline(is,line);
+        return line;
+    }
 
-        extensionList fileTypeList;
+    namespace EB2
+    {
+        //this class is designed to call std::sort to sort the generated pointlist
+        //once sorted, merge vertices 
 
-        for(std::map<int,std::string>::iterator it = typeList.begin();it!=typeList.end();++it)
+        TriangulatedIF::TriangulatedIF(const std::string& isoFile, const std::string& fileType)
         {
-            if(it->second == fileType)
-            {
-                fileTypeList =  extensionList(it->first);
-            }
+            TriangulatedIF::loadData(isoFile,fileType); 
         }
-        switch(fileTypeList)
+
+        //---------Protected Member Functions-----------------------
+        void TriangulatedIF::finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm)
         {
+            geom_  = geom;  
+            grids_ = grids;
+            dm_    = dm; 
+
+            int nGrow = 1; // nGrow must equal narrowband half-width
+            distanceMF_.define(this->grids(), this->dm(), 1, 1);
+
+            buildDistance();
+        }
+    
+        void TriangulatedIF::loadData(const std::string& isoFile, const std::string& fileType) noexcept
+        {
+            switch(typeMap[fileType])
+            {
             case mef:
  
                 loadData_mef(isoFile);
@@ -175,294 +112,271 @@ namespace amrex { namespace EB2 {
                 break;
             
             default:
-                //add a abort needed
+                Abort("Unknown surface file format");
+            }
         }
-        //get the corresponding type rank;
-    }
-    
-    void TriangulatedIF::loadData_mef(const std::string& isoFile)
-    {
-        if (ParallelDescriptor::IOProcessor()) 
+        
+        void TriangulatedIF::loadData_mef(const std::string& isoFile) noexcept
         {
-            std::cerr << "Reading isoFile... " << isoFile << std::endl;
-        }
+            if (ParallelDescriptor::IOProcessor()) 
+            {
+                std::cerr << "Reading isoFile... " << isoFile << std::endl;
+            }
     
-        FArrayBox nodes;
-        Vector<int> faceData;
-        int nElts;
-        int nodesPerElt;
-        int nNodes, nCompNodes;
-        std::vector<std::string> surfNames;
+            FArrayBox nodes;
+            Vector<int> faceData;
+            int nElts;
+            int nodesPerElt;
+            int nNodes, nCompNodes;
+            std::vector<std::string> surfNames;
   
-        std::ifstream ifs;
-        ifs.open(isoFile.c_str(),std::ios::in|std::ios::binary);
+            std::ifstream ifs;
+            ifs.open(isoFile.c_str(),std::ios::in|std::ios::binary);
 
-        const std::string title = parseTitle(ifs);
-        surfNames = parseVarNames(ifs);
-        nCompNodes = surfNames.size();
+            const std::string title = parseTitle(ifs);
+            surfNames = parseVarNames(ifs);
+            nCompNodes = surfNames.size();
 
-        ifs >> nElts;
-        ifs >> nodesPerElt;
+            ifs >> nElts;
+            ifs >> nodesPerElt;
 
-        Print() << "nelts: " << nElts << std::endl;
-        Print() << "nodesperelt: " << nodesPerElt << std::endl;
+            FArrayBox tnodes;
+            tnodes.readFrom(ifs);
+            nNodes = tnodes.box().numPts();
 
-        FArrayBox tnodes;
-        tnodes.readFrom(ifs);
-        nNodes = tnodes.box().numPts();
-
-    // transpose the data so that the components are 'in the right spot for fab data'
-        nodes.resize(tnodes.box(),nCompNodes);
-        Real** np = new Real*[nCompNodes];
-        for (int j=0; j<nCompNodes; ++j)
-        {
-            np[j] = nodes.dataPtr(j);
-        }
-    
-        Real* ndat = tnodes.dataPtr();
-    
-        for (int i=0; i<nNodes; ++i)
-        {
+            // transpose the data so that the components are 'in the right spot for fab data'
+            // NOTE: This is unnecessary, but eases conversion below
+            nodes.resize(tnodes.box(),nCompNodes);
+            Real** np = new Real*[nCompNodes];
             for (int j=0; j<nCompNodes; ++j)
             {
-                np[j][i] = ndat[j];
+                np[j] = nodes.dataPtr(j);
             }
-            ndat += nCompNodes;
-        }
-        delete [] np;
-        tnodes.clear();
-
-        faceData.resize(nElts*nodesPerElt,0);
-        ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
-        ifs.close();
-
-        Print() << "Read " << nElts << " elements and " << nNodes << " nodes" << std::endl;
-
-          
-
-
-        for (int node=0; node<nNodes; ++node) 
-        {
-            const IntVect iv(D_DECL(node,0,0));
-            vertList.push_back(Vec3r(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
-        }
-        for (int elt=0; elt<nElts; ++elt) 
-        {
-            int offset = elt * nodesPerElt;
-            faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
-            normalList.push_back(normal(vertList[faceData[offset]-1],vertList[faceData[offset+1]-1],vertList[faceData[offset+2]-1]));
-        } 
-        std::cout<<"loaded data"<<std::endl;
-
-    }
-
-    void TriangulatedIF::loadData_stl_ascii (const std::string& isoFile) 
-    {
-          //designed for stl file, if needed, use factory for more extensions
-          
-          std::vector<std::vector<Real> > temp_surface;
-
-          //load data
-          FILE *fp=NULL;
-          
-          fp=fopen(isoFile.c_str(),"r");
-         
-          double num1,num2,num3;
-          
-          int max_line=512;
-
-          char dump[max_line];
-          //Title line, discarded
-          fgets(dump,max_line,(FILE*)fp);
-          
-          for(long i=0;;++i)
-          {
-               
-               fscanf(fp,"%s",dump);
-               
-               if(strcmp(dump,"facet")!=0)
-               {
-                   break;    
-               }
-               fscanf(fp,"%s",dump); 
-              
-           //    this->normalList.push_back(std::vector<Real>());
- 
-               fscanf(fp,"%lf %lf %lf\n",&num1,&num2,&num3);
-                
-          /*     this->normalList[i].push_back( (Real)num1 );
-               this->normalList[i].push_back( (Real)num2 );
-               this->normalList[i].push_back( (Real)num3 );         
-          */
-               this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) );
     
-               fgets(dump,max_line,(FILE*)fp);
-               
-               for(int j=0;j<3;++j)
-               {
-                   fscanf(fp,"%s %lf %lf %lf\n",dump,&num1,&num2,&num3);
-                  
-                   temp_surface.push_back(std::vector<Real>());
-           
-
-                   temp_surface[3*i+j].push_back( (Real)num1 );
-                   temp_surface[3*i+j].push_back( (Real)num2 );
-                   temp_surface[3*i+j].push_back( (Real)num3 );
-               }
-
-               fgets(dump,max_line,(FILE*)fp);
-               fgets(dump,max_line,(FILE*)fp);
-          }
-          fclose(fp);
-          
-          reOrganize(temp_surface);
-         
-          
-    }
-   
-
-    void TriangulatedIF::loadData_stl_binary (const std::string& isoFile) 
-    {
-          //designed for stl file, if needed, use factory for more extensions
-          
-          std::vector<std::vector<Real> > temp_surface;
-
-          //load data
-          FILE *fp=NULL;
-          
-          fp = fopen(isoFile.c_str(),"rb");
-          
-          char dump[80];
-
-          fread(dump,80,1,fp);          
- 
-          uint32_t faceCount;
-       
-          fread(&faceCount, sizeof(uint32_t), 1, fp);
-               
-          float num1,num2,num3;
-
-          char c[2];
-          for (unsigned int i = 0; i < faceCount; i++)
-          {
-              fread(&num1,sizeof(float),1,fp);
-              fread(&num2,sizeof(float),1,fp);
-              fread(&num3,sizeof(float),1,fp);
-
-              this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) ); 
-
-              for(int j=0;j<3;++j)
-               {
-                   
-                   fread(&num1,sizeof(float),1,fp);
-                   fread(&num2,sizeof(float),1,fp);
-                   fread(&num3,sizeof(float),1,fp); 
-
-                   temp_surface.push_back(std::vector<Real>());
-
-
-                   temp_surface[3*i+j].push_back( (Real)num1 );
-                   temp_surface[3*i+j].push_back( (Real)num2 );
-                   temp_surface[3*i+j].push_back( (Real)num3 );
-               }          
-             
-               fread(c,2,1,fp);
-          /* if (fread(buffer, 50, 1, fStl) != 1)
-          {
-               fclose(fStl);
-               return false;
-          }*/
-
-            
-          }
-
-           fclose(fp);
-          
-          reOrganize(temp_surface);
-     }
-
-             
-// do simplification and make data water-tight             
-    void TriangulatedIF::reOrganize
-    (
-          const std::vector<std::vector<Real> >& temp_surface
-    )
-    {
-  
-        std::vector< pointToElement > temp_ptlist;
-
-        for(long i=0;i<this->normalList.size();++i)
-        {
-            faceList.push_back(Vec3ui(3*i, 3*i+1,3*i+2) );           
-         
-            for(int j=0;j<3;++j)
+            Real* ndat = tnodes.dataPtr();
+    
+            for (int i=0; i<nNodes; ++i)
             {
-          //      faceList[i].push_back(3*i+j);
-
-                temp_ptlist.push_back(pointToElement(temp_surface[3*i+j],i,j) );                        
-            }
-          
-        }
-        std::sort(temp_ptlist.begin(),temp_ptlist.end());
-     
-        mergeVertex(temp_ptlist);
-    }
-    
-    // use a stupid algorithm here to merge vertices, acceleration may applied
-    
-    void TriangulatedIF::mergeVertex(std::vector<pointToElement>& temp_ptlist)
-    {
-        long i=0,j=0,indexCounter=0,stepCounter;
-        
-        long mergeNumber=0;
-        
-        for(i=0;i<temp_ptlist.size();++i)
-        {
-            stepCounter=0;
-
-            mergeNumber=0;
-      
-           // vertList.push_back(std::vector<Real>());
-            
-           /* vertList[indexCounter].push_back(temp_ptlist[i].physLocation[0]);
-            vertList[indexCounter].push_back(temp_ptlist[i].physLocation[1]);
-            vertList[indexCounter].push_back(temp_ptlist[i].physLocation[2]);
-           */
-            vertList.push_back(Vec3r(temp_ptlist[i].physLocation[0],temp_ptlist[i].physLocation[1],temp_ptlist[i].physLocation[2])); 
-            
-            faceList[temp_ptlist[i].elementIndex].v[temp_ptlist[i].pointIndex] = indexCounter;
-           
-            for(j=i+1;j<temp_ptlist.size();++j)
-            {
-                if(distance(temp_ptlist[i].physLocation,temp_ptlist[j].physLocation)<eps)
+                for (int j=0; j<nCompNodes; ++j)
                 {
-                    //merge vertex
-                    faceList[temp_ptlist[j].elementIndex].v[temp_ptlist[j].pointIndex] = indexCounter;                    
-                    temp_ptlist[j].mergeTag=1;                    
+                    np[j][i] = ndat[j];
                 }
-                else
-                { 
-                    if(temp_ptlist[j].mergeTag==0)
+                ndat += nCompNodes;
+            }
+            delete [] np;
+            tnodes.clear();
+
+            faceData.resize(nElts*nodesPerElt,0);
+            ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
+            ifs.close();
+
+            // Convert surface data into form required for distance function computation
+            for (int node=0; node<nNodes; ++node) 
+            {
+                const IntVect iv(D_DECL(node,0,0));
+                vertList.push_back(Vec3r(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
+            }
+            for (int elt=0; elt<nElts; ++elt) 
+            {
+                int offset = elt * nodesPerElt;
+                faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
+                normalList.push_back(normal(vertList[faceData[offset]-1],vertList[faceData[offset+1]-1],vertList[faceData[offset+2]-1]));
+            }
+
+            Print() << "Isosurface [format: mef] contains " << nElts << " elements and " << nNodes << " nodes" << std::endl;
+        }
+        
+        void TriangulatedIF::loadData_stl_ascii (const std::string& isoFile) noexcept
+        {
+            std::vector<std::vector<Real> > temp_surface;
+
+            FILE *fp= fopen(isoFile.c_str(),"r");
+
+            double num1,num2,num3;
+
+            int max_line=512;
+
+            char dump[max_line];
+            //Title line, discarded
+            fgets(dump,max_line,(FILE*)fp);
+
+            for(long i=0;;++i)
+            {
+                fscanf(fp,"%s",dump);
+
+                if(strcmp(dump,"facet")!=0)
+                {
+                    break;    
+                }
+                fscanf(fp,"%s",dump); 
+
+                fscanf(fp,"%lf %lf %lf\n",&num1,&num2,&num3);
+
+                this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) );
+
+                fgets(dump,max_line,(FILE*)fp);
+
+                for(int j=0;j<3;++j)
+                {
+                    fscanf(fp,"%s %lf %lf %lf\n",dump,&num1,&num2,&num3);
+
+                    temp_surface.push_back(std::vector<Real>());
+
+                    temp_surface[3*i+j].push_back( (Real)num1 );
+                    temp_surface[3*i+j].push_back( (Real)num2 );
+                    temp_surface[3*i+j].push_back( (Real)num3 );
+                }
+
+                fgets(dump,max_line,(FILE*)fp);
+                fgets(dump,max_line,(FILE*)fp);
+            }
+            fclose(fp);
+
+            makeWatertight(temp_surface);
+        }
+   
+        void
+        TriangulatedIF::loadData_stl_binary (const std::string& isoFile) noexcept
+        {
+            std::vector<std::vector<Real> > temp_surface;
+
+            FILE *fp = fopen(isoFile.c_str(),"rb");
+          
+            char dump[80];
+
+            fread(dump,80,1,fp);          
+ 
+            uint32_t faceCount;
+       
+            fread(&faceCount, sizeof(uint32_t), 1, fp);
+               
+            float num1,num2,num3;
+
+            char c[2];
+            for (unsigned int i = 0; i < faceCount; i++)
+            {
+                fread(&num1,sizeof(float),1,fp);
+                fread(&num2,sizeof(float),1,fp);
+                fread(&num3,sizeof(float),1,fp);
+
+                this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) ); 
+
+                for(int j=0;j<3;++j)
+                {                   
+                    fread(&num1,sizeof(float),1,fp);
+                    fread(&num2,sizeof(float),1,fp);
+                    fread(&num3,sizeof(float),1,fp); 
+
+                    temp_surface.push_back(std::vector<Real>());
+
+                    temp_surface[3*i+j].push_back( (Real)num1 );
+                    temp_surface[3*i+j].push_back( (Real)num2 );
+                    temp_surface[3*i+j].push_back( (Real)num3 );
+                }
+
+                fread(c,2,1,fp);
+            }
+
+            fclose(fp);
+          
+            makeWatertight(temp_surface);
+        }
+             
+        void
+        TriangulatedIF::makeWatertight( const std::vector<std::vector<Real> >& temp_surface) noexcept
+        {
+            std::vector< pointToElement > temp_ptlist;
+
+            for(long i=0;i<this->normalList.size();++i)
+            {
+                faceList.push_back(Vec3ui(3*i, 3*i+1,3*i+2) );           
+
+                for(int j=0;j<3;++j)
+                {
+                    temp_ptlist.push_back(pointToElement(temp_surface[3*i+j],i,j) );                        
+                }
+            }
+            std::sort(temp_ptlist.begin(),temp_ptlist.end());
+
+            mergeVertex(temp_ptlist);
+        }
+    
+        // use a stupid algorithm here to merge vertices, acceleration may applied    
+        void TriangulatedIF::mergeVertex(std::vector<pointToElement>& temp_ptlist) noexcept
+        {
+            long i=0,j=0,indexCounter=0,stepCounter;
+        
+            long mergeNumber=0;
+        
+            for(i=0;i<temp_ptlist.size();++i)
+            {
+                stepCounter=0;
+
+                mergeNumber=0;
+      
+                vertList.push_back(Vec3r(temp_ptlist[i].physLocation[0],temp_ptlist[i].physLocation[1],temp_ptlist[i].physLocation[2])); 
+            
+                faceList[temp_ptlist[i].elementIndex].v[temp_ptlist[i].pointIndex] = indexCounter;
+           
+                for(j=i+1;j<temp_ptlist.size();++j)
+                {
+                    if(distance(temp_ptlist[i].physLocation,temp_ptlist[j].physLocation)<eps)
                     {
-                        if(mergeNumber==0)
+                        //merge vertex
+                        faceList[temp_ptlist[j].elementIndex].v[temp_ptlist[j].pointIndex] = indexCounter;                    
+                        temp_ptlist[j].mergeTag=1;                    
+                    }
+                    else
+                    { 
+                        if(temp_ptlist[j].mergeTag==0)
                         {
-                            stepCounter=j-i;
-                            indexCounter++;
-                            mergeNumber++;
+                            if(mergeNumber==0)
+                            {
+                                stepCounter=j-i;
+                                indexCounter++;
+                                mergeNumber++;
+                            }
+                        }
+                    }
+                    i=stepCounter-1;
+                }
+            }          
+        }    
+        
+        void
+        TriangulatedIF::buildDistance () noexcept
+        {
+            const Real* dx = geom().CellSize();
+            const Real* plo = geom().ProbLo();
+            for (MFIter mfi(distanceMF_); mfi.isValid(); ++mfi)
+            {
+                const Box& vbox = this->grids()[mfi.index()];
+                Vec3r local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
+                                   plo[1] + vbox.smallEnd()[1]*dx[1],
+                                   plo[2] + vbox.smallEnd()[2]*dx[2]);
+                Array3r phi_grid;
+                double dx1 = double(dx[0]);
+
+                make_level_set3(faceList, vertList, normalList,local_origin, dx1,
+                                vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
+
+                const auto& d = distanceMF_.array(mfi);
+                const int* lo = vbox.loVect();
+                const int* hi = vbox.hiVect();
+                for (int k=lo[2]; k<=hi[2]; ++k)
+                {
+                    int kL=k-lo[2];
+                    for (int j=lo[1]; j<=hi[1]; ++j)
+                    {
+                        int jL=j-lo[1];
+                        for (int i=lo[0]; i<=hi[0]; ++i)
+                        {
+                            int iL=i-lo[0];
+                            d(i,j,k) = phi_grid(iL,jL,kL);
                         }
                     }
                 }
-                i=stepCounter-1;
             }
-        }          
-    }    
-    
-    
-    //return distance between point p1 and point p2
-    Real TriangulatedIF::distance (const Array<Real,AMREX_SPACEDIM> &p1,
-                                   const Array<Real,AMREX_SPACEDIM> &p2) const
-    {
-      return std::sqrt(D_TERM(pow((p1[0]-p2[0]),2),+pow((p1[1]-p2[1]),2),+pow((p1[2]-p2[2]),2)));
-    }
-    
-}}//endnamespace EB2 & amrex
+        }
+    }//endnamespace EB2
+}//endnamespace amrex

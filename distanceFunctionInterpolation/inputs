@@ -1,0 +1,9 @@
+max_grid_size = 32
+isoFileName = flatplain
+isoFileType = mef
+
+nCell = 64 64 192
+probLo = 0 0 0
+probHi = .03 .03 .09
+
+point = 0 0 0
