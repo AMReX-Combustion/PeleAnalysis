@@ -20,6 +20,10 @@ public:
 distanceFunctionInterpolation(MultiFab& dfab, const Geometry& geom)
 : distanceFab_(dfab),geom_(geom){}
 
+
+~distanceFunctionInterpolation()
+{}
+
 //----------------------------------- member function-------------------------------- //
 
 

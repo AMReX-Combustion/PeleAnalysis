@@ -108,6 +108,9 @@ namespace amrex { namespace EB2 {
 
     TriangulatedIF::~TriangulatedIF()
     {
+   //     delete geom_;
+   //     delete grids_;
+   //     delete dm_;
         delete distanceInterpolation_;
     }
     //---------Protected Member Functions-----------------------
