@@ -56,16 +56,19 @@ namespace amrex
     {
     public:
       //----Construct from file----------- 
-      TriangulatedIF(/*const Geometry& geom, const BoxArray& grids,*/ const std::string& isoFile);
+      TriangulatedIF(/*const Geometry& geom, const BoxArray& grids,*/ const std::string& isoFile, const std::string& fileType);
 
       ~TriangulatedIF();
 
       //load data from non-watertight format
-      void loadData_stl_ascii (const std::string&               nameOfFile,
-                     std::vector<std::vector<Real> >& temp_surface);
+      void loadData(const std::string& isoFile, const std::string& fileType);
+
+      void loadData_stl_ascii (const std::string& isoFile);
               
       void loadData_mef(const std::string& isoFile); 
      
+      void loadData_stl_binary(const std::string& isoFile);
+
       //re-organize and make it water-tight
       void reOrganize (const std::vector<std::vector<Real> >& temp_surface);
 

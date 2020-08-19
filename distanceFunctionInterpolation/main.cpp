@@ -32,9 +32,10 @@ main (int   argc,
 
 
     std::string isoFile("flatplain");
-    
+    std::string typeName("mef");    
+
     DistributionMapping dm = DistributionMapping(grids);
-    EB2::TriangulatedIF Tri(isoFile);    
+    EB2::TriangulatedIF Tri(isoFile,typeName);    
     Tri.finalize(geom,grids,dm);   
 
 

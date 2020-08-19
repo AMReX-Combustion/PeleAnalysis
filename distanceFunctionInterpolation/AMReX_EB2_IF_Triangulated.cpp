@@ -19,7 +19,13 @@
 #include <AMReX_FillPatchUtil.H>
 #include "makelevelset3.h"
 
-
+//file type table,extendable 
+enum extensionList
+{
+    mef,
+    stl_ascii,
+    stl_binary
+};
 
 // For all implicit functions, >0: body; =0: boundary; <0: fluid
 
@@ -61,7 +67,16 @@ getFileRoot(const std::string& infile)
   return tokens[tokens.size()-1];
 }
 
-
+std::map<int,std::string> buildTypeList()
+{
+    std::map<int,std::string> typelist;
+    
+    typelist.insert(std::pair<int,std::string>(0,"mef"));
+    typelist.insert(std::pair<int,std::string>(1,"stl_ascii"));
+    typelist.insert(std::pair<int,std::string>(2,"stl_binary"));
+  
+    return typelist;
+}
 
 namespace amrex { namespace EB2 {
 
@@ -86,7 +101,8 @@ namespace amrex { namespace EB2 {
          
     }
 */
-    TriangulatedIF::TriangulatedIF(/*const Geometry& geom,const BoxArray& grids,*/ const std::string& isoFile)//:geom_(geom),grids_(grids)
+    TriangulatedIF::TriangulatedIF(/*const Geometry& geom,const BoxArray& grids,*/ const std::string& isoFile ,const std::string& fileType)//:geom_(geom),grids_(grids)
+
     {
     //     std::vector<std::vector<Real> > normalList;
 
@@ -98,8 +114,10 @@ namespace amrex { namespace EB2 {
   
      //    MultiFab Dfab;
   
-         TriangulatedIF::loadData_mef(isoFile);
-     /*
+     //    TriangulatedIF::loadData_mef(isoFile);
+         TriangulatedIF::loadData(isoFile,fileType); 
+
+    /*
          TriangulatedIF::buildDistance();
          
          distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,geom_);
@@ -108,10 +126,7 @@ namespace amrex { namespace EB2 {
 
     TriangulatedIF::~TriangulatedIF()
     {
-   //     delete geom_;
-   //     delete grids_;
-   //     delete dm_;
-        delete distanceInterpolation_;
+          delete distanceInterpolation_;
     }
     //---------Protected Member Functions-----------------------
     void TriangulatedIF::finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm)//:geom_(geom),grids_(grids),dm_(dm) 
@@ -128,9 +143,43 @@ namespace amrex { namespace EB2 {
    
         distanceInterpolation_=new distanceFunctionInterpolation(distanceMF,this->geom() );
     }  
+    
 
-   
+    void TriangulatedIF::loadData(const std::string& isoFile,const std::string& fileType)
+    {
+        std::map<int,std::string> typeList = buildTypeList();
 
+        extensionList fileTypeList;
+
+        for(std::map<int,std::string>::iterator it = typeList.begin();it!=typeList.end();++it)
+        {
+            if(it->second == fileType)
+            {
+                fileTypeList =  extensionList(it->first);
+            }
+        }
+        switch(fileTypeList)
+        {
+            case mef:
+ 
+                loadData_mef(isoFile);
+                break;
+ 
+            case stl_ascii:
+                
+                loadData_stl_ascii(isoFile);
+                break;
+
+            case stl_binary:       
+                loadData_stl_binary(isoFile);
+                break;
+            
+            default:
+                //add a abort needed
+        }
+        //get the corresponding type rank;
+    }
+    
     void TriangulatedIF::loadData_mef(const std::string& isoFile)
     {
         if (ParallelDescriptor::IOProcessor()) 
@@ -207,18 +256,16 @@ namespace amrex { namespace EB2 {
 
     }
 
-
-
-
-    void TriangulatedIF::loadData_stl_ascii (const std::string&               nameOfFile,
-                                   std::vector<std::vector<Real> >& temp_surface) 
+    void TriangulatedIF::loadData_stl_ascii (const std::string& isoFile) 
     {
           //designed for stl file, if needed, use factory for more extensions
           
+          std::vector<std::vector<Real> > temp_surface;
+
           //load data
           FILE *fp=NULL;
           
-          fp=fopen(nameOfFile.c_str(),"r");
+          fp=fopen(isoFile.c_str(),"r");
          
           double num1,num2,num3;
           
@@ -266,10 +313,75 @@ namespace amrex { namespace EB2 {
                fgets(dump,max_line,(FILE*)fp);
                fgets(dump,max_line,(FILE*)fp);
           }
-          fclose(fp); 
+          fclose(fp);
+          
+          reOrganize(temp_surface);
+         
           
     }
-                
+   
+
+    void TriangulatedIF::loadData_stl_binary (const std::string& isoFile) 
+    {
+          //designed for stl file, if needed, use factory for more extensions
+          
+          std::vector<std::vector<Real> > temp_surface;
+
+          //load data
+          FILE *fp=NULL;
+          
+          fp = fopen(isoFile.c_str(),"rb");
+          
+          char dump[80];
+
+          fread(dump,80,1,fp);          
+ 
+          uint32_t faceCount;
+       
+          fread(&faceCount, sizeof(uint32_t), 1, fp);
+               
+          float num1,num2,num3;
+
+          char c[2];
+          for (unsigned int i = 0; i < faceCount; i++)
+          {
+              fread(&num1,sizeof(float),1,fp);
+              fread(&num2,sizeof(float),1,fp);
+              fread(&num3,sizeof(float),1,fp);
+
+              this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) ); 
+
+              for(int j=0;j<3;++j)
+               {
+                   
+                   fread(&num1,sizeof(float),1,fp);
+                   fread(&num2,sizeof(float),1,fp);
+                   fread(&num3,sizeof(float),1,fp); 
+
+                   temp_surface.push_back(std::vector<Real>());
+
+
+                   temp_surface[3*i+j].push_back( (Real)num1 );
+                   temp_surface[3*i+j].push_back( (Real)num2 );
+                   temp_surface[3*i+j].push_back( (Real)num3 );
+               }          
+             
+               fread(c,2,1,fp);
+          /* if (fread(buffer, 50, 1, fStl) != 1)
+          {
+               fclose(fStl);
+               return false;
+          }*/
+
+            
+          }
+
+           fclose(fp);
+          
+          reOrganize(temp_surface);
+     }
+
+             
 // do simplification and make data water-tight             
     void TriangulatedIF::reOrganize
     (
