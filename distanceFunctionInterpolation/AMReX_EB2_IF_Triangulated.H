@@ -58,6 +58,7 @@ namespace amrex
         
       AMREX_GPU_HOST_DEVICE inline
       Real operator() (AMREX_D_DECL(Real x, Real y, Real z)) const noexcept {
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(distanceMF_.ok(),"Must call TriangulatedIF::finalize prior to operator()");
         return Distance(AMREX_D_DECL(x,y,z));
       }
 
@@ -143,7 +144,7 @@ namespace amrex
    
       std::vector<Vec3r> vertList; 
    
-      double eps;
+      static double eps;
 
       MultiFab distanceMF_; 
 

@@ -72,6 +72,8 @@ namespace amrex
 
     namespace EB2
     {
+        Real TriangulatedIF::eps = 0; // What should this be?
+        
         TriangulatedIF::TriangulatedIF(const std::string& isoFile,
                                        const std::string& fileType)
         {
