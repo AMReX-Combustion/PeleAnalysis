@@ -72,7 +72,7 @@ namespace amrex
 
     namespace EB2
     {
-        Real TriangulatedIF::eps = 0; // What should this be?
+        Real TriangulatedIF::eps = 1e-50; // What should this be?
         
         TriangulatedIF::TriangulatedIF(const std::string& isoFile,
                                        const std::string& fileType)
@@ -100,6 +100,7 @@ namespace amrex
         TriangulatedIF::loadData (const std::string& isoFile,
                                   const std::string& fileType) noexcept
         {
+            std::cout<<"fileType="<<typeMap[fileType]<<std::endl;
             switch(typeMap[fileType])
             {
             case mef:
@@ -108,7 +109,6 @@ namespace amrex
                 break;
  
             case stl_ascii:
-                
                 loadData_stl_ascii(isoFile);
                 break;
 
@@ -197,19 +197,24 @@ namespace amrex
         {
             std::vector<std::vector<Real> > temp_surface;
 
-            FILE *fp= fopen(isoFile.c_str(),"r");
-
+            FILE *fp=NULL;
+            
+            fp = fopen(isoFile.c_str(),"r");
+            
             double num1,num2,num3;
 
             int max_line=512;
 
             char dump[max_line];
             //Title line, discarded
+            //
             fgets(dump,max_line,(FILE*)fp);
 
-            for(long i=0;;++i)
+            for(int i=0;;++i)
             {
                 fscanf(fp,"%s",dump);
+
+                std::cout<<"dump="<<dump<<std::endl;
 
                 if(strcmp(dump,"facet")!=0)
                 {
@@ -218,6 +223,8 @@ namespace amrex
                 fscanf(fp,"%s",dump); 
 
                 fscanf(fp,"%lf %lf %lf\n",&num1,&num2,&num3);
+
+                std::cout<<"normal="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
 
                 this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) );
 
@@ -347,9 +354,13 @@ namespace amrex
                             }
                         }
                     }
-                    i=stepCounter-1;
                 }
-            }          
+                i+=stepCounter-1;
+                if(stepCounter==0)
+                {
+                    break;
+                }
+            }
         }    
         
         void

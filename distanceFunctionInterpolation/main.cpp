@@ -18,11 +18,15 @@ main (int   argc,
     ParmParse pp;
 
     std::string isoFileName, isoFileType;
-    pp.get("isoFileName",isoFileName);
-    pp.get("isoFileType",isoFileType);
+//    pp.get("isoFileName",isoFileName);
+//    pp.get("isoFileType",isoFileType);
+    isoFileName="Stldirtdum.stl";
+    isoFileType="stl_binary";
+
     EB2::TriangulatedIF Tri(isoFileName, isoFileType);     
-    
-    Vector<int> nCell(AMREX_SPACEDIM);
+   
+    std::cout<<"finish loading"<<std::endl; 
+/*    Vector<int> nCell(AMREX_SPACEDIM);
     pp.getarr("nCell",nCell,0,AMREX_SPACEDIM);
     Box domain(IntVect(D_DECL(0,0,0)),
                IntVect(D_DECL(nCell[0]-1, nCell[1]-1, nCell[2]-1)));
@@ -45,7 +49,7 @@ main (int   argc,
     Vector<Real> pt(AMREX_SPACEDIM);
     pp.getarr("point",pt,0,AMREX_SPACEDIM);
 
-    Print() << "Distance is " << Tri(AMREX_D_DECL(pt[0],pt[1],pt[2])) << std::endl;
+    Print() << "Distance is " << Tri(AMREX_D_DECL(pt[0],pt[1],pt[2])) << std::endl;*/
   }
   Finalize();
 }
