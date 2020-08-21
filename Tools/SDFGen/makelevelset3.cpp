@@ -171,6 +171,8 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x
 {
    phi.resize(ni, nj, nk);
    phi.assign((ni+nj+nk)*dx); // upper bound on distance
+   std::cout<<"d0="<<((ni+nj+nk)*dx)<<std::endl;
+
    Array3i closest_tri(ni, nj, nk, -1);
    Array3i intersection_count(ni, nj, nk, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
    // we begin by initializing distances near the mesh, and figuring out intersection counts
@@ -188,10 +190,11 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x
       for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j) for(int i=i0; i<=i1; ++i){
          Vec3r gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
          amrex::Real d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t]);
-         if(std::abs(d)<std::abs(phi(i,j,k))){
-            phi(i,j,k)=d;
-            closest_tri(i,j,k)=t;
-         }
+	 if(std::abs(d)<std::abs(phi(i,j,k))){
+                 //std::cout<<"d="<<d<<std::endl;
+		 phi(i,j,k)=d;
+		 closest_tri(i,j,k)=t;
+	 }
       }
       // and do intersection counts
       j0=clamp((int)std::ceil(min(fjp,fjq,fjr)), 0, nj-1);
@@ -199,14 +202,14 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x
       k0=clamp((int)std::ceil(min(fkp,fkq,fkr)), 0, nk-1);
       k1=clamp((int)std::floor(max(fkp,fkq,fkr)), 0, nk-1);
       for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j){
-         amrex::Real a, b, c;
-         if(point_in_triangle_2d(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)){
-            amrex::Real fi=a*fip+b*fiq+c*fir; // intersection i coordinate
-            int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
-            if(i_interval<0) ++intersection_count(0, j, k); // we enlarge the first interval to include everything to the -x direction
-            else if(i_interval<ni) ++intersection_count(i_interval,j,k);
-            // we ignore intersections that are beyond the +x side of the grid
-         }
+	      amrex::Real a, b, c;
+	      if(point_in_triangle_2d(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)){
+		      amrex::Real fi=a*fip+b*fiq+c*fir; // intersection i coordinate
+		      int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
+		      if(i_interval<0) ++intersection_count(0, j, k); // we enlarge the first interval to include everything to the -x direction
+		      else if(i_interval<ni) ++intersection_count(i_interval,j,k);
+		      // we ignore intersections that are beyond the +x side of the grid
+	      }
       }
    }
    // and now we fill in the rest of the distances with fast sweeping

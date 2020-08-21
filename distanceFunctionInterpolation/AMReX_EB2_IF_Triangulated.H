@@ -98,12 +98,15 @@ namespace amrex
 
       Real Distance(AMREX_D_DECL(Real x, Real y, Real z)) const noexcept
         {
-          const Real* dxInv = geom_.InvCellSize(); 
-          IntVect iv(AMREX_D_DECL(floor(x * dxInv[0]),
-                                  floor(y * dxInv[1]),
-                                  floor(z * dxInv[2])));
+          const Real* dxInv = geom_.InvCellSize();
+ 
+          const Real* plo = geom_.ProbLo(); 
+          IntVect iv(AMREX_D_DECL(floor((x - plo[0]) * dxInv[0]),
+                                  floor((y - plo[1]) * dxInv[1]),
+                                  floor((z - plo[2]) * dxInv[2])));
 
           Real distance;
+          
           for (MFIter mfi(distanceMF_); mfi.isValid(); ++mfi)
           {
             if (mfi.validbox().contains(iv))
@@ -130,7 +133,7 @@ namespace amrex
                        +/*0 1 1*/ d(iv[0]  ,iv[1]+1,iv[2]+1) * (1 - n[0]) * n[1]       * n[2]
                        +/*1 1 1*/ d(iv[0]+1,iv[1]+1,iv[2]+1) * n[0]       * n[1]       * n[2];
 #endif
-              break;               
+               break;               
             }        
           }
           return distance;

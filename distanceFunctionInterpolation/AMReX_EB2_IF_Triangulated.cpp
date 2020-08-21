@@ -92,6 +92,8 @@ namespace amrex
 
             int nGrow = 1; // nGrow must equal narrowband half-width
             distanceMF_.define(this->grids(), this->dm(), 1, 1);
+           
+            Print()<<"start build distance"<<std::endl;
 
             buildDistance();
         }
@@ -214,7 +216,7 @@ namespace amrex
             {
                 fscanf(fp,"%s",dump);
 
-                std::cout<<"dump="<<dump<<std::endl;
+    //            std::cout<<"dump="<<dump<<std::endl;
 
                 if(strcmp(dump,"facet")!=0)
                 {
@@ -224,7 +226,7 @@ namespace amrex
 
                 fscanf(fp,"%lf %lf %lf\n",&num1,&num2,&num3);
 
-                std::cout<<"normal="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
+  //              std::cout<<"normal="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
 
                 this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) );
 
@@ -239,6 +241,7 @@ namespace amrex
                     temp_surface[3*i+j].push_back( (Real)num1 );
                     temp_surface[3*i+j].push_back( (Real)num2 );
                     temp_surface[3*i+j].push_back( (Real)num3 );
+//                std::cout<<"p"<<j+1<<"="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
                 }
 
                 fgets(dump,max_line,(FILE*)fp);
@@ -376,7 +379,7 @@ namespace amrex
                                    plo[2] + vbox.smallEnd()[2]*dx[2]);
                 Array3r phi_grid;
                 double dx1 = double(dx[0]);
-
+             
                 make_level_set3(faceList, vertList, normalList,local_origin, dx1,
                                 vbox.length(0),vbox.length(1),vbox.length(2), phi_grid);
 
@@ -397,6 +400,7 @@ namespace amrex
                     }
                 }
             }
+            WriteSingleLevelPlotfile("Distance.out",distanceMF_,{"distance"},geom_,0.0,0);
         }
     }//endnamespace EB2
 }//endnamespace amrex
