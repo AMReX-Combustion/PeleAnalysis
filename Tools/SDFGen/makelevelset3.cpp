@@ -1,6 +1,7 @@
 #include "makelevelset3.h"
 #include <cmath>
 #include <AMReX_REAL.H>
+#include <utility>
 // find distance x0 is from segment x1-x2
 
 //using namespace amrex;
@@ -21,7 +22,8 @@ static amrex::Real point_segment_distance(const Vec3r &x0, const Vec3r &x1, cons
 }
 
 // find distance x0 is from triangle x1-x2-x3
-static amrex::Real point_triangle_distance(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2, const Vec3r &x3, const Vec3r &normal)
+//static amrex::Real point_triangle_distance(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2, const Vec3r &x3, const Vec3r &normal)
+static std::pair<bool,amrex::Real> point_triangle_distance(const Vec3r &x0, const Vec3r &x1, const Vec3r &x2, const Vec3r &x3, const Vec3r &normal,const amrex::Real dx)
 {
    // first find barycentric coordinates of closest point on infinite plane
    Vec3r x13(x1-x3), x23(x2-x3), x03(x0-x3);
@@ -32,44 +34,85 @@ static amrex::Real point_triangle_distance(const Vec3r &x0, const Vec3r &x1, con
    amrex::Real w23=invdet*(m23*a-d*b);
    amrex::Real w31=invdet*(m13*b-d*a);
    amrex::Real w12=1-w23-w31;
-    
+   
+   bool judge=true;
+   
+   amrex::Real D;
+  
+ 
    Vec3r center;
    //Vec3f localdirection(x0-center);
    for(int i=0;i<3;i++)
    {
        center[i]=(x1[i]+x2[i]+x3[i])/3;
-
    }
    
    
    amrex::Real dotProduct = ( x0[0]-center[0])*normal[0]+( x0[1]-center[1])*normal[1]+( x0[2]-center[2])*normal[2];
-  // float dotProduct =  (localdirection, normal);
    amrex::Real sign;
-   
-   amrex::Real eps = 0.00000000000001;
-   if(dotProduct>0 && std::abs(dotProduct)>eps)
+  
+   //std::cout<<" normal square = "<< normal[0]*normal[0]+normal[1]*normal[1]+normal[2]*normal[2]<<std::endl;
+    
+   if(dotProduct>0)
    {
        sign =1.0;
    }
-   else if( dotProduct<0 && std::abs(dotProduct)>eps)
+   else
    {
        sign = -1.0;
    }
-   else
-   {
-       sign = 0.0;
-   }
 
-   if(w23>=0 && w31>=0 && w12>=0){ // if we're inside the triangle
-      return sign * dist(x0, w23*x1+w31*x2+w12*x3); 
+
+   if(w23>=0 && w31>=0 && w12>=0)
+   { // if we're inside the triangle
+      
+       D =  dist(x0, w23*x1+w31*x2+w12*x3); 
+       return std::make_pair(judge, sign * D); 
+        
    }else{ // we have to clamp to one of the edges
-      if(w23>0) // this rules out edge 2-3 for us
-         return sign * min(point_segment_distance(x0,x1,x2), point_segment_distance(x0,x1,x3));
-      else if(w31>0) // this rules out edge 1-3
-         return sign * min(point_segment_distance(x0,x1,x2), point_segment_distance(x0,x2,x3));
-      else // w12 must be >0, ruling out edge 1-2
-         return sign * min(point_segment_distance(x0,x1,x3), point_segment_distance(x0,x2,x3));
+      
+      if(w23>0)
+      { // this rules out edge 2-3 for us
+          D =  min(point_segment_distance(x0,x1,x2), point_segment_distance(x0,x1,x3));
+        
+      }
+      else if(w31>0)
+      { // this rules out edge 1-3
+          D =  min(point_segment_distance(x0,x1,x2), point_segment_distance(x0,x2,x3));
+      }
+      else
+      { // w12 must be >0, ruling out edge 1-2
+          D =  min(point_segment_distance(x0,x1,x3), point_segment_distance(x0,x2,x3));
+      }
+      
+
+      if(D > 0.5*dx && std::abs(dotProduct) <  (1.0+1e-6)*dx)
+      {
+           judge = false;
+           /*std::cout<<" ========================================"<<std::endl;           
+           std::cout<<"parallel points = "<<x0[0]<<"  "<<x0[1]<<"  "<<x0[2]<<"  "<<std::endl;
+
+           std::cout<<"triangle points = "<<x1[0]<<"  "<<x1[1]<<"  "<<x1[2]<<"  "<<std::endl;
+           std::cout<<"triangle points = "<<x2[0]<<"  "<<x2[1]<<"  "<<x2[2]<<"  "<<std::endl;
+           std::cout<<"triangle points = "<<x3[0]<<"  "<<x3[1]<<"  "<<x3[2]<<"  "<<std::endl;
+
+           
+           std::cout<<"dotProduct = "<<dotProduct/dx<<std::endl;
+           std::cout<<"dx = "<<dx<<std::endl;
+           std::cout<<" ========================================"<<std::endl;
+           */
+
+
+           std::pair<bool,amrex::Real> pd = std::make_pair(judge, sign * D);
+           return pd;
+      }
+      else
+      {
+           std::pair<bool,amrex::Real> pd = std::make_pair(judge ,sign * D);
+           return pd;
+      }
    }
+   
 }
 
 /*//compute normal direction 
@@ -91,14 +134,16 @@ Vec3f normal(const Vec3f &x0, const Vec3f &x1, const Vec3f &x2)
 
 static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x,
                             Array3r &phi, Array3i &closest_tri,
-                            const Vec3r &gx, int i0, int j0, int k0, int i1, int j1, int k1, const std::vector<Vec3r> &normal)
+                            const Vec3r &gx, int i0, int j0, int k0, int i1, int j1, int k1, const std::vector<Vec3r> &normal,const amrex::Real dx)
 {
    if(closest_tri(i1,j1,k1)>=0){
       int s = closest_tri(i1,j1,k1);
       unsigned int p, q, r; assign(tri[s], p, q, r);
-      amrex::Real d=point_triangle_distance(gx, x[p], x[q], x[r],normal[s]);
-      if(std::abs(d)<std::abs(phi(i0,j0,k0))){
-         phi(i0,j0,k0)=d;
+      
+      std::pair<bool,amrex::Real> d = point_triangle_distance(gx, x[p], x[q], x[r],normal[s],dx);
+      
+      if(std::abs(d.second)<std::abs(phi(i0,j0,k0)) && d.first == true){
+         phi(i0,j0,k0)=d.second;
          closest_tri(i0,j0,k0)=closest_tri(i1,j1,k1);
       }
    }
@@ -119,13 +164,13 @@ static void sweep(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x,
    else{ k0=phi.nk-2; k1=-1; }
    for(int k=k0; k!=k1; k+=dk) for(int j=j0; j!=j1; j+=dj) for(int i=i0; i!=i1; i+=di){
       Vec3r gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j,    k,normal);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j-dj, k,normal);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j-dj, k,normal);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j,    k-dk,normal);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j,    k-dk,normal);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j-dj, k-dk,normal);
-      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j-dj, k-dk,normal);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j,    k,normal,dx);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j-dj, k,normal,dx);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j-dj, k,normal,dx);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j,    k-dk,normal,dx);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j,    k-dk,normal,dx);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i,    j-dj, k-dk,normal,dx);
+      check_neighbour(tri, x, phi, closest_tri, gx, i, j, k, i-di, j-dj, k-dk,normal,dx);
    }
 }
 
@@ -177,6 +222,8 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x
    Array3i intersection_count(ni, nj, nk, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
    // we begin by initializing distances near the mesh, and figuring out intersection counts
    Vec3r ijkmin, ijkmax;
+    std::cout<<"dx="<<dx<<std::endl;
+   
    for(unsigned int t=0; t<tri.size(); ++t){
      unsigned int p, q, r; assign(tri[t], p, q, r);
      // coordinates in grid to high precision
@@ -189,10 +236,15 @@ void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x
       int k0=clamp(int(min(fkp,fkq,fkr))-exact_band, 0, nk-1), k1=clamp(int(max(fkp,fkq,fkr))+exact_band+1, 0, nk-1);
       for(int k=k0; k<=k1; ++k) for(int j=j0; j<=j1; ++j) for(int i=i0; i<=i1; ++i){
          Vec3r gx(i*dx+origin[0], j*dx+origin[1], k*dx+origin[2]);
-         amrex::Real d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t]);
-	 if(std::abs(d)<std::abs(phi(i,j,k))){
-                 //std::cout<<"d="<<d<<std::endl;
-		 phi(i,j,k)=d;
+         std::pair<bool,amrex::Real> d=point_triangle_distance(gx, x[p], x[q], x[r], normal[t],dx);
+	 //std::cout<<"d="<<d<<std::endl;
+         //std::cout<<"dx="<<dx<<std::endl;
+         if(std::abs(d.second)<std::abs(phi(i,j,k)) && d.first == true){
+   //              if(d==0)
+   //              {
+   //                   std::cout<<"d="<<d<<std::endl;
+   //		 }
+                 phi(i,j,k)=d.second;
 		 closest_tri(i,j,k)=t;
 	 }
       }

@@ -1,7 +1,7 @@
-isoFileName = Stldirtdum.stl
-#isoFileName = brief.stl
-#isoFileType = stl_ascii
-isoFileType = stl_binary
+#isoFileName = Stldirtdum.stl
+isoFileName = brief.stl
+isoFileType = stl_ascii
+#isoFileType = stl_binary
 
 
 #isoFileName = flatplane
@@ -25,16 +25,16 @@ isoFileType = stl_binary
 #isoFileType = stl_ascii
 
 
+nCell = 64 64 64
+probLo = 0 0 0
+probHi = 1.6 1.6 1.6
+point =   1.5 0.39 1.5
+
+
+
 #nCell = 32 32 32
-#probLo = 1.4 1.4 0.20
-#probHi = 1.6 1.6 0.40
-#point =   1.5 1.5 0.38
+#probLo = -0.001 -0.002 0.012
+#probHi =  0      -0.001     0.013
+#point = 0.0005 -0.001 0.0125
 
-
-
-nCell = 32 128 32
-probLo = -0.001 -0.004 0.012
-probHi =  0      0     0.013
-point = 0.0005 -0.001 0.0125
-
-max_grid_size = 16
+max_grid_size = 32

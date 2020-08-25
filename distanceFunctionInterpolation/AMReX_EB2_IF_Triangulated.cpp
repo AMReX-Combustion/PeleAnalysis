@@ -212,6 +212,8 @@ namespace amrex
             //
             fgets(dump,max_line,(FILE*)fp);
 
+            double r=0;           
+ 
             for(int i=0;;++i)
             {
                 fscanf(fp,"%s",dump);
@@ -226,9 +228,10 @@ namespace amrex
 
                 fscanf(fp,"%lf %lf %lf\n",&num1,&num2,&num3);
 
-  //              std::cout<<"normal="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
+                r = std::sqrt(num1*num1+num2*num2+num3*num3);
+  //            std::cout<<"normal="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
 
-                this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) );
+                this->normalList.push_back(Vec3r((Real)num1/r,(Real)num2/r,(Real)num3/r) );
 
                 fgets(dump,max_line,(FILE*)fp);
 
@@ -238,9 +241,9 @@ namespace amrex
 
                     temp_surface.push_back(std::vector<Real>());
 
-                    temp_surface[3*i+j].push_back( (Real)num1 );
+                    temp_surface[3*i+j].push_back( (Real)(num1) );
                     temp_surface[3*i+j].push_back( (Real)num2 );
-                    temp_surface[3*i+j].push_back( (Real)num3 );
+                    temp_surface[3*i+j].push_back( (Real)(num3) );
 //                std::cout<<"p"<<j+1<<"="<<num1<<"    "<<num2<<"    "<<num3<<std::endl;
                 }
 
@@ -269,14 +272,18 @@ namespace amrex
                
             float num1,num2,num3;
 
+            float r;
+
             char c[2];
             for (unsigned int i = 0; i < faceCount; i++)
             {
                 fread(&num1,sizeof(float),1,fp);
                 fread(&num2,sizeof(float),1,fp);
                 fread(&num3,sizeof(float),1,fp);
+                
+                r = std::sqrt(num1*num1+num2*num2+num3*num3);
 
-                this->normalList.push_back(Vec3r((Real)num1,(Real)num2,(Real)num3) ); 
+                this->normalList.push_back(Vec3r((Real)num1/r,(Real)num2/r,(Real)num3/r) ); 
 
                 for(int j=0;j<3;++j)
                 {                   
@@ -377,6 +384,8 @@ namespace amrex
                 Vec3r local_origin(plo[0] + vbox.smallEnd()[0]*dx[0],
                                    plo[1] + vbox.smallEnd()[1]*dx[1],
                                    plo[2] + vbox.smallEnd()[2]*dx[2]);
+
+                std::cout<<"origin = "<<local_origin[0]<<"      "<<local_origin[1]<<"    "<<local_origin[2]<<std::endl;
                 Array3r phi_grid;
                 double dx1 = double(dx[0]);
              
