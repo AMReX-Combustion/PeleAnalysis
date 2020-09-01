@@ -102,7 +102,6 @@ namespace amrex
         TriangulatedIF::loadData (const std::string& isoFile,
                                   const std::string& fileType) noexcept
         {
-            std::cout<<"fileType="<<typeMap[fileType]<<std::endl;
             switch(typeMap[fileType])
             {
             case mef:
@@ -292,6 +291,10 @@ namespace amrex
                     fread(&num3,sizeof(float),1,fp); 
 
                     temp_surface.push_back(std::vector<Real>());
+                     
+//                    num1 = num1 + 0.001;
+//                    num2 = num2 + 0.002;
+//                    num3 = num3 - 0.012;
 
                     temp_surface[3*i+j].push_back( (Real)num1 );
                     temp_surface[3*i+j].push_back( (Real)num2 );
@@ -385,7 +388,6 @@ namespace amrex
                                    plo[1] + vbox.smallEnd()[1]*dx[1],
                                    plo[2] + vbox.smallEnd()[2]*dx[2]);
 
-                std::cout<<"origin = "<<local_origin[0]<<"      "<<local_origin[1]<<"    "<<local_origin[2]<<std::endl;
                 Array3r phi_grid;
                 double dx1 = double(dx[0]);
              

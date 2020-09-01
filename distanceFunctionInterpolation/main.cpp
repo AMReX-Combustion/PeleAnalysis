@@ -25,8 +25,11 @@ main (int   argc,
 
     EB2::TriangulatedIF Tri(isoFileName, isoFileType);     
    
-    std::cout<<"finish loading"<<std::endl; 
+    Print()<<"finish loading"<<std::endl; 
   
+    Real timer_init=0.,timer_end=0.;
+ 
+    timer_init = amrex::second();
 
     Vector<int> nCell(AMREX_SPACEDIM);
     pp.getarr("nCell",nCell,0,AMREX_SPACEDIM);
@@ -66,7 +69,9 @@ main (int   argc,
     pp.getarr("point",pt,0,AMREX_SPACEDIM);
 
     Print() << "Distance is " << Tri(AMREX_D_DECL(pt[0],pt[1],pt[2])) << std::endl;
-  
+    timer_end = amrex::second();
+
+    Print()<<"time cost"<<(timer_end - timer_init)<< std::endl;
   }
   Finalize();
 }

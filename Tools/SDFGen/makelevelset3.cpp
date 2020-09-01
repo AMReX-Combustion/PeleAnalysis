@@ -86,7 +86,7 @@ static std::pair<bool,amrex::Real> point_triangle_distance(const Vec3r &x0, cons
       }
       
 
-      if(D > 0.05 * dx && std::abs(dotProduct) < 0.05 * dx)
+      if(D > 0.005 * dx && std::abs(dotProduct) < 0.005 * dx)
       {
            judge = false;
            /*std::cout<<" ========================================"<<std::endl;           
@@ -142,7 +142,7 @@ static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Ve
       
       std::pair<bool,amrex::Real> d = point_triangle_distance(gx, x[p], x[q], x[r],normal[s],dx);
       
-      if(std::abs(d.second)<std::abs(phi(i0,j0,k0)) && d.first == true){
+      if(std::abs(d.second)<std::abs(phi(i0,j0,k0))/* && d.first == true*/){
          phi(i0,j0,k0)=d.second;
          closest_tri(i0,j0,k0)=closest_tri(i1,j1,k1);
       }
@@ -212,17 +212,15 @@ static bool point_in_triangle_2d(amrex::Real x0, amrex::Real y0,
 
 void make_level_set3(const std::vector<Vec3ui> &tri, const std::vector<Vec3r> &x, const std::vector<Vec3r> &normal,
                      const Vec3r &origin, amrex::Real dx, int ni, int nj, int nk,
-                     Array3r &phi, const int exact_band)
+                     Array3r &phi, amrex::Real dmax, const int exact_band)
 {
    phi.resize(ni, nj, nk);
-   phi.assign((ni+nj+nk)*dx); // upper bound on distance
-   std::cout<<"d0="<<((ni+nj+nk)*dx)<<std::endl;
+   phi.assign(dmax); // upper bound on distance
 
    Array3i closest_tri(ni, nj, nk, -1);
    Array3i intersection_count(ni, nj, nk, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
    // we begin by initializing distances near the mesh, and figuring out intersection counts
    Vec3r ijkmin, ijkmax;
-    std::cout<<"dx="<<dx<<std::endl;
    
    for(unsigned int t=0; t<tri.size(); ++t){
      unsigned int p, q, r; assign(tri[t], p, q, r);
