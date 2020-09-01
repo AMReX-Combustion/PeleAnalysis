@@ -1,0 +1,2386 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C++ Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi -I/share/apps/opt/HWLOC/2.1.0/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -std=c++14 -pthread -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_FluxRegister.o -pthread
+
+Begin optimization report for: MPI::Datatype::Get_contents(const MPI::Datatype *, int, int, int, int *, MPI::Aint *, MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+   remark #15388: vectorization support: reference c_datatypes[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,22) ]
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <array_of_datatypes->mpi_datatype[i]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,7) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.667
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.640 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Comm::Alltoallw(const MPI::Comm *, const void *, const int *, const int *, const MPI::Datatype *, void *, const int *, const int *, const MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+   remark #15388: vectorization support: reference data_type_tbl[i_rank] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(426,9) ]
+   remark #15388: vectorization support: reference data_type_tbl[i_rank+comm_size] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(427,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <sendtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <recvtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.400
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 2 
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 1.770 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Create_cart(MPI::Cartcomm *, const MPI::Intracomm *, int, const int *, const bool *, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int, int *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Get_topo(const MPI::Cartcomm *, int, int *, bool *, int *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.778
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15389: vectorization support: reference int_periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.867
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Sub(MPI::Cartcomm *, const MPI::Cartcomm *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15388: vectorization support: reference remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15389: vectorization support: reference remain_dims[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Map(const MPI::Cartcomm *, int, const int *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::define(amrex::FluxRegister *, const amrex::BoxArray &, const amrex::DistributionMapping &, const amrex::IntVect &, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(80,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::SumReg(const amrex::FluxRegister *, int) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(148,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(148,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(148,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_ (148:17) and sum (148:17)
+         remark #15346: vector dependence: assumed FLOW dependence between sum (148:17) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_ (148:17)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(148,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(154,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(154,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(154,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_ (154:17) and sum (154:17)
+         remark #15346: vector dependence: assumed FLOW dependence between sum (154:17) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_ (154:17)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(154,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(107,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(144,46)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::CrseAdd(amrex::FluxRegister *, const amrex::MultiFab &, const amrex::MultiFab &, int, int, int, int, amrex::Real, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(270,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(n+srccomp)*Uf6_V.Uf6_V] has unaligned access
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V] has aligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.475
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15450: unmasked unaligned unit stride loads: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 45 
+            remark #15477: vector cost: 5.000 
+            remark #15478: estimated potential speedup: 8.040 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(n+srccomp)*Uf6_V.Uf6_V] has unaligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V] has unaligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 1.059
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15450: unmasked unaligned unit stride loads: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 45 
+            remark #15477: vector cost: 5.000 
+            remark #15478: estimated potential speedup: 8.040 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(276,49)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(288,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(291,21) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::CrseAdd(amrex::FluxRegister *, const amrex::MultiFab &, int, int, int, int, amrex::Real, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(307,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.833
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.230 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+      <Remainder loop for vectorization>
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 2.000
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.230 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(n+srccomp)*Uf6_V.Uf6_V] has unaligned access
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V] has aligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.475
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15450: unmasked unaligned unit stride loads: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 45 
+            remark #15477: vector cost: 5.000 
+            remark #15478: estimated potential speedup: 8.040 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(n+srccomp)*Uf6_V.Uf6_V] has unaligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V] has unaligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 1.059
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15450: unmasked unaligned unit stride loads: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 45 
+            remark #15477: vector cost: 5.000 
+            remark #15478: estimated potential speedup: 8.040 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(282,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(310,10)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(276,49) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(288,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(312,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(291,21) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::MFInfo::~MFInfo(amrex::MFInfo *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(114,8)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::FineAdd(amrex::FluxRegister *, const amrex::MultiFab &, int, int, int, int, amrex::Real)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(326,32)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::FineAdd(amrex::FluxRegister *, const amrex::FArrayBox &, int, int, int, int, int, amrex::Real, amrex::RunOn)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(38,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(39,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(40,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(42,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(43,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(43,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(57,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(58,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(59,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(61,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(62,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(62,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(76,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(77,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(78,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(80,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(81,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(81,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(392,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(38,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(39,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(40,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(42,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(43,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (45:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(43,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(57,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(58,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(59,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(61,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(62,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (64:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(62,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(76,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(77,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(78,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(80,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(81,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (83:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(81,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(394,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(960,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(365,64)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(960,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(366,65)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::FineAdd(amrex::FluxRegister *, const amrex::MultiFab &, const amrex::MultiFab &, int, int, int, int, amrex::Real)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(345,32)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::FineAdd(amrex::FluxRegister *, const amrex::FArrayBox &, const amrex::FArrayBox &, int, int, int, int, int, amrex::Real, amrex::RunOn)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(125,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(126,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(127,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(129,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(130,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(130,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(145,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(146,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(147,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(149,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(150,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(150,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(165,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(166,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(167,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(169,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(170,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(170,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(443,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(125,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(126,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(127,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(129,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(130,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32) and p[Uee_V.Uee_V-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (132:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(130,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(145,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(146,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(147,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(149,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(150,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32) and p[ic-Uf0_V.Uf0_V+(Uee_V.Uee_V-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(kc-Uf0_V (152:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(150,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(165,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(166,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(167,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(169,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(170,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32)
+               remark #15346: vector dependence: assumed ANTI dependence between p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32) and p[ic-Uf0_V.Uf0_V+(jc-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(Uee_V.Uee_V-Uf0_V (172:32)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(170,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(446,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(960,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(413,64)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(960,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(414,65)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::FineSetVal(amrex::FluxRegister *, int, int, int, int, amrex::Real, amrex::RunOn)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(204,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.000
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.400
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(468,11)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(204,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.000
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.400
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(472,11)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(960,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(466,64)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(960,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(470,65)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::Reflux(amrex::FluxRegister *, amrex::MultiFab &, const amrex::MultiFab &, amrex::Real, int, int, int, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(484,30)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::Reflux(amrex::FluxRegister *, amrex::MultiFab &, const amrex::MultiFab &, amrex::Orientation, amrex::Real, int, int, int, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(554,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.833
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.000
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(196,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk1>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(197,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk3>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(197,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk3>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(196,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk2>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(198,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(198,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(196,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk3>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(197,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(198,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+         <Distributed chunk1>
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(199,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (200:30) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (200:30)
+               remark #15346: vector dependence: assumed ANTI dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (200:30) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (200:30)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(199,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(209,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk1>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(210,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk3>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(210,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk3>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(209,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk2>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(211,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(211,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(209,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk3>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(210,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(211,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+         <Distributed chunk1>
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(212,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (213:30) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (213:30)
+               remark #15346: vector dependence: assumed ANTI dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (213:30) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (213:30)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(212,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(222,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk1>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(223,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk3>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(223,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk3>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(222,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk2>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(224,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(224,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(222,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk3>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(223,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(224,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+         <Distributed chunk1>
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(225,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (226:30) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (226:30)
+               remark #15346: vector dependence: assumed ANTI dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (226:30) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (226:30)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(225,25) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(234,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk1>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(235,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk3>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(235,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk3>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(234,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk2>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(236,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(236,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Remainder, Distributed chunk2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(234,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+   <Distributed chunk3>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(235,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+      <Distributed chunk2>
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(236,17) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+         <Distributed chunk1>
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(237,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed FLOW dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (238:26) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (238:26)
+               remark #15346: vector dependence: assumed ANTI dependence between p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (238:26) and p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_ (238:26)
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxReg_3D_C.H(237,21) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(569,9)
+            <Remainder>
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(556,10)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(563,47)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::Reflux(amrex::FluxRegister *, amrex::MultiFab &, const amrex::MultiFab &, int, amrex::Real, int, int, int, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(501,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::Reflux(amrex::FluxRegister *, amrex::MultiFab &, amrex::Real, int, int, int, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(519,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 1.000
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.200 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+      <Remainder loop for vectorization>
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 2.400
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.200 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(522,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(484,30) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(524,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::Reflux(amrex::FluxRegister *, amrex::MultiFab &, int, amrex::Real, int, int, int, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(538,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 1.000
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.200 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+      <Remainder loop for vectorization>
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 2.400
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.200 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(501,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(543,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(541,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::OverwriteFlux(amrex::FluxRegister *, const amrex::Array<amrex::MultiFab *, 3UL> &, amrex::Real, int, int, int, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(650,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(656,15)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(670,21)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(670,21)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(670,21)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(670,21)
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Ufa_V.Ufa_V+(k-Uf0_V.Uf0_V)*Ufa_V.Ufa_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+         remark #15305: vectorization support: vector length 4
+         remark #15309: vectorization support: normalized vectorization overhead 3.333
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 12 
+         remark #15477: vector cost: 0.750 
+         remark #15478: estimated potential speedup: 12.850 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(670,21)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(688,18)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(666,43)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3553,30) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(670,21)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(673,39)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(675,27) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(676,43)
+         remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(685,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(689,37) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(701,46)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FabArray<amrex::FArrayBox>::setVal<amrex::FArrayBox, 0>(amrex::FabArray<amrex::FArrayBox> *, amrex::FabArray<amrex::FArrayBox>::value_type, int, int, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+comp)*Uf2_V.Uf2_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.000
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+comp)*Uf2_V.Uf2_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.400
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BaseFab<int>::setVal<amrex::RunOn::Host>(amrex::BaseFab<int> *, const int &, const amrex::Box &, amrex::DestComp, amrex::NumComps)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(204,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Ufa_V.Ufa_V+(k-Uf0_V.Uf0_V)*Ufa_V.Ufa_V+(n+dcomp.i)*Ufa_V.Ufa_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 4.333
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 0.750 
+            remark #15478: estimated potential speedup: 16.050 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::ClearInternalBorders(amrex::FluxRegister *, const amrex::Geometry &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(599,19)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(599,19)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(617,19)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(617,19)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(204,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.833
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.000
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(620,17)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(204,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.833
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.000
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(628,18)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(584,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(598,37)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(599,19)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(599,19)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(601,49)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(608,51)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(616,37)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(617,19)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(617,19)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(619,49)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(626,51)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BaseFab<amrex::Real>::setVal<amrex::RunOn::Host>(amrex::BaseFab<amrex::Real> *, const amrex::Real &, const amrex::Box &, amrex::DestComp, amrex::NumComps)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(204,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+dcomp.i)*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.000
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+dcomp.i)*Uf2_V.Uf2_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.400
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 17 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.730 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3484,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::CrseInit(amrex::FluxRegister *, const amrex::MultiFab &, int, int, int, int, amrex::Real, amrex::FluxRegister::FrOp)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(246,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.833
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.230 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+      <Remainder loop for vectorization>
+         remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V] has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 2.000
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 14 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 8.230 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(249,10)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FluxRegister::CrseInit(amrex::FluxRegister *, const amrex::MultiFab &, const amrex::MultiFab &, int, int, int, int, amrex::Real, amrex::FluxRegister::FrOp)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(183,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(n+srccomp)*Uf6_V.Uf6_V] has unaligned access
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V] has aligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.475
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15450: unmasked unaligned unit stride loads: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 45 
+            remark #15477: vector cost: 5.000 
+            remark #15478: estimated potential speedup: 8.040 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+n*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(n+srccomp)*Uf6_V.Uf6_V] has unaligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V] has unaligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 1.059
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15450: unmasked unaligned unit stride loads: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 45 
+            remark #15477: vector cost: 5.000 
+            remark #15478: estimated potential speedup: 8.040 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(195,9)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(222,33)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(222,33)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+n*Uf6_V.Uf6_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.700
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 47 
+            remark #15477: vector cost: 2.500 
+            remark #15478: estimated potential speedup: 14.960 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access
+            remark #15388: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(k-Uf0_V.Uf0_V)*Uf2_V.Uf2_V+(n+destcomp)*Uf2_V.Uf2_V] has aligned access
+            remark #15389: vectorization support: reference p[i-Uf0_V.Uf0_V+(j-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+(k-Uf0_V.Uf0_V)*Uf6_V.Uf6_V+n*Uf6_V.Uf6_V] has unaligned access
+            remark #15381: vectorization support: unaligned access used inside loop body
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 1.083
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 47 
+            remark #15477: vector cost: 2.500 
+            remark #15478: estimated potential speedup: 14.960 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(225,17)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(189,49)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(201,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(211,76) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(220,42)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(222,33)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FluxRegister.cpp(222,33)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================

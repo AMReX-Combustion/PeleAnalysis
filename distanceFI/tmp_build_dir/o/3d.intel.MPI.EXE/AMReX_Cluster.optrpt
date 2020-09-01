@@ -1,0 +1,1446 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C++ Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi -I/share/apps/opt/HWLOC/2.1.0/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -std=c++14 -pthread -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_Cluster.o -pthread
+
+Begin optimization report for: amrex::Cluster::Cluster(amrex::Cluster *, amrex::IntVect *, amrex::Long)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(23,5)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(a+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(a+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(a+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(a+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(421,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(a+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(421,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(a+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(421,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 6 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 40 
+   remark #15477: vector cost: 77.000 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 2 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(23,5)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::Cluster(amrex::Cluster *const, amrex::IntVect *, amrex::Long)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(18,10)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(18,10)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(18,10)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::Cluster(amrex::Cluster *const, amrex::Cluster &, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1762,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+   remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1770,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(46,10)
+      remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::numTag(const amrex::Cluster *, const amrex::Box &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(126,5)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+?)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(313,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+?+4)>, masked, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(313,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+?+8)>, masked, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(313,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+?+4)>, masked, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(295,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+?+8)>, masked, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(295,16) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.064
+   remark #15452: unmasked strided loads: 1 
+   remark #15460: masked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 86 
+   remark #15477: vector cost: 196.250 
+   remark #15478: estimated potential speedup: 0.430 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::distribute(amrex::Cluster *, amrex::ClusterList &, const amrex::BoxDomain &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_iterator_base_funcs.h(80,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(107,5)
+   remark #15523: loop was not vectorized: loop control variable __n was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(110,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(113,41) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::minBox(amrex::Cluster *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::ClusterList(amrex::ClusterList *, amrex::IntVect *, amrex::Long)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(448,35)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(pts+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(pts+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(pts+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(448,35)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(448,35)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::_List_base<amrex::Cluster *, std::allocator<amrex::Cluster *>>::~_List_base(std::_List_base<amrex::Cluster *, std::allocator<amrex::Cluster *>> *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/list.tcc(70,7) inlined into /usr/include/c++/4.8.5/bits/stl_list.h(379,9)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::ClusterList(amrex::ClusterList *const, amrex::IntVect *, amrex::Long)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(446,14)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__p2+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(446,14)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(446,14)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::~ClusterList(amrex::ClusterList *const)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(454,14) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(451,14)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/list.tcc(70,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(451,14)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::boxArray(amrex::BoxArray *, const amrex::ClusterList *) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_iterator_base_funcs.h(80,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(464,21)
+   remark #15523: loop was not vectorized: loop control variable __n was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(469,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(472,12) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::boxArray(const amrex::ClusterList *, amrex::BoxArray &) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_iterator_base_funcs.h(80,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(483,19)
+   remark #15523: loop was not vectorized: loop control variable __n was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(488,14)
+   remark #15523: loop was not vectorized: loop control variable i was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::boxList(amrex::BoxList *, const amrex::ClusterList *) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_iterator_base_funcs.h(80,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(499,22)
+   remark #15523: loop was not vectorized: loop control variable __n was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(499,10)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(501,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(504,14)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::boxList(const amrex::ClusterList *, amrex::BoxList &) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_iterator_base_funcs.h(80,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(513,22)
+   remark #15523: loop was not vectorized: loop control variable __n was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(513,10)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(515,14)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(518,14)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::chop(amrex::ClusterList *, amrex::Real)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(526,63)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::chop(amrex::Cluster *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(271,39)
+   remark #15382: vectorization support: call to function std::vector<int, std::allocator<int>>::vector(std::vector<int, std::allocator<int>> *const) cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Vector.H(22,7) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+      remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(693,3) ]
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 3.333
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 2 
+      remark #15477: vector cost: 0.750 
+      remark #15478: estimated potential speedup: 1.450 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+      remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 3.333
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 2 
+      remark #15477: vector cost: 0.750 
+      remark #15478: estimated potential speedup: 1.450 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+      remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(693,3) ]
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 3.333
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 2 
+      remark #15477: vector cost: 0.750 
+      remark #15478: estimated potential speedup: 1.450 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+      remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 3.333
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 2 
+      remark #15477: vector cost: 0.750 
+      remark #15478: estimated potential speedup: 1.450 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(272,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(173,33) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(290,30)
+   remark #26015: Exception can be thrown by the call to amrex::FindCut(const int *, int, int, amrex::<unnamed>::CutStatus &)   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(290,18) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(290,18) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(330,5)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(330,5)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(330,5)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(332,32)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__first+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__first+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__first+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(332,32)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(332,32)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(332,5)
+   remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(275,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(301,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(316,34)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1762,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(324,23)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1770,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(324,23)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FindCut(const int *, int, int, amrex::<unnamed>::CutStatus &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(180,5)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(188,17) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(200,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(204,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<int, std::allocator<int>>::vector(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::size_type, const std::vector<int, std::allocator<int>>::value_type &, const std::vector<int, std::allocator<int>>::allocator_type &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/stl_vector.h(285,9)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/stl_vector.h(285,9)
+   remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 4.333
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.460 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/stl_vector.h(285,9)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::array<amrex::Vector<int, std::allocator<int>>, 3UL>::~array(std::array<amrex::Vector<int, std::allocator<int>>, 3UL> *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12)
+   remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between U2d_V->_M_start (160:9) and call:operator delete(void *) (110:9)
+   remark #15346: vector dependence: assumed FLOW dependence between call:operator delete(void *) (110:9) and U2d_V->_M_start (160:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::new_chop(amrex::ClusterList *, amrex::Real)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(543,63)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::new_chop(amrex::Cluster *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(347,39)
+   remark #15382: vectorization support: call to function std::vector<int, std::allocator<int>>::vector(std::vector<int, std::allocator<int>> *const) cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Vector.H(22,7) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(368,8)
+   remark #26015: Exception can be thrown by the call to amrex::FindCut(const int *, int, int, amrex::<unnamed>::CutStatus &)   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(372,24) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(372,24) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(417,60)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__first+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__first+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(__first+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(417,60)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(417,60)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(422,8)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(422,8)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(422,8)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(432,11)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(432,11)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(432,11)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(438,5)
+   remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(426,11)
+   remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/array(81,12) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(403,38)
+   remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(351,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(360,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(372,24) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(384,8)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(399,37)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1762,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(407,26)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1770,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(407,26)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<int, std::allocator<int>>::_M_fill_insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, std::vector<int, std::allocator<int>>::size_type, const std::vector<int, std::allocator<int>>::value_type &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(462,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(462,5)
+   remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(693,3) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 4.333
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.460 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(462,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(467,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(467,5)
+   remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 4.333
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.460 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(467,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(476,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(476,5)
+   remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(693,3) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 4.333
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.460 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(476,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(489,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(489,5)
+   remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 4.333
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.460 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(489,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::intersect(amrex::ClusterList *, const amrex::BoxDomain &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(565,63)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(570,19) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_iterator_base_funcs.h(80,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(583,20)
+      remark #15523: loop was not vectorized: loop control variable __n was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(110,14) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(583,20)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(113,18) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(454,14) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(585,13)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/list.tcc(70,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(585,13)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::Cluster::Cluster(amrex::Cluster *, amrex::Cluster &, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(95,13)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(95,13)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(95,13)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(96,15)
+<Distributed chunk1>
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(c->m_ar+i*12)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(c->m_ar+i*12+4)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(c->m_ar+i*12+8)>, stride is 3   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(430,9) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.792
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 20 
+   remark #15477: vector cost: 38.500 
+   remark #15478: estimated potential speedup: 0.510 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(96,15)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(144,9) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(96,15)
+<Distributed chunk2>
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+   remark #15346: vector dependence: assumed FLOW dependence between lo.vect[2] (421:9) and lo.vect[2] (421:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1762,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(66,27)
+   remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1770,10) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(66,27)
+      remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::ClusterList::~ClusterList(amrex::ClusterList *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(454,14)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/list.tcc(70,7) inlined into /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_Cluster.cpp(459,1)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Datatype::Get_contents(const MPI::Datatype *, int, int, int, int *, MPI::Aint *, MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+   remark #15388: vectorization support: reference c_datatypes[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,22) ]
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <array_of_datatypes->mpi_datatype[i]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,7) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.667
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.640 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Comm::Alltoallw(const MPI::Comm *, const void *, const int *, const int *, const MPI::Datatype *, void *, const int *, const int *, const MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+   remark #15388: vectorization support: reference data_type_tbl[i_rank] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(426,9) ]
+   remark #15388: vectorization support: reference data_type_tbl[i_rank+comm_size] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(427,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <sendtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <recvtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.400
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 2 
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 1.770 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Create_cart(MPI::Cartcomm *, const MPI::Intracomm *, int, const int *, const bool *, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int, int *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Get_topo(const MPI::Cartcomm *, int, int *, bool *, int *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.778
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15389: vectorization support: reference int_periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.867
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Sub(MPI::Cartcomm *, const MPI::Cartcomm *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15388: vectorization support: reference remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15389: vectorization support: reference remain_dims[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Map(const MPI::Cartcomm *, int, const int *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================

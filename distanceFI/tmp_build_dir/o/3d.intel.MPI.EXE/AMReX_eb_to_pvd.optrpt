@@ -1,0 +1,1674 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -Itmp_build_dir/o/3d.intel.MPI.EXE -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/lib -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -implicitnone -module tmp_build_dir/o/3d.intel.MPI.EXE -DBL_LANG_FORT -DAMREX_LANG_FORT -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_eb_to_pvd.o
+
+Begin optimization report for: AMREX_EB_TO_VTK::AMREX_EB_TO_POLYGON
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(96,15)
+   remark #15388: vectorization support: reference at (96:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(96,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(97,15)
+   remark #15388: vectorization support: reference at (97:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(2,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(97,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(98,15)
+   remark #15388: vectorization support: reference at (98:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(3,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(98,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(99,15)
+   remark #15388: vectorization support: reference at (99:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(4,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(99,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(100,15)
+   remark #15388: vectorization support: reference at (100:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(5,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(100,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(101,15)
+   remark #15388: vectorization support: reference at (101:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(6,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(101,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(102,15)
+   remark #15388: vectorization support: reference at (102:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(7,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(102,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(103,15)
+   remark #15388: vectorization support: reference at (103:15) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <vertex(8,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.200 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(103,15)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(320,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(114,23)
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15388: vectorization support: reference centroid(:) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.375
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,30) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(114,23)
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.375
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(114,23)
+   remark #15388: vectorization support: reference n0(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,10) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.105
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 33 
+   remark #15477: vector cost: 19.000 
+   remark #15478: estimated potential speedup: 1.320 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(114,23)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(381,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(116,23)
+   remark #15388: vectorization support: reference alpha_intersect(:) has aligned access
+   remark #15305: vectorization support: vector length 4
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 3
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.660 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(389,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(116,23)
+   remark #15388: vectorization support: reference alpha(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(385,22) ]
+   remark #15388: vectorization support: reference alpha_intersect(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15388: vectorization support: reference alpha_intersect(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.471
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 61 
+   remark #15477: vector cost: 17.500 
+   remark #15478: estimated potential speedup: 3.010 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,26)
+   remark #15388: vectorization support: reference at (126:75) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,75) ]
+   remark #15388: vectorization support: reference centroid(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.250
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 1.420 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,26)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(320,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,26)
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15388: vectorization support: reference at (320:17) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.375
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,30) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,26)
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.375
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,26)
+   remark #15388: vectorization support: reference n0_d(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,10) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.105
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 33 
+   remark #15477: vector cost: 19.000 
+   remark #15478: estimated potential speedup: 1.320 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(126,26)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(381,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(128,26)
+   remark #15388: vectorization support: reference alpha_d_intersect(:) has aligned access
+   remark #15305: vectorization support: vector length 4
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 3
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.660 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(389,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(128,26)
+   remark #15388: vectorization support: reference alpha_d(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(385,22) ]
+   remark #15388: vectorization support: reference alpha_d_intersect(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15388: vectorization support: reference alpha_d_intersect(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.471
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 61 
+   remark #15477: vector cost: 17.500 
+   remark #15478: estimated potential speedup: 3.010 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(131,25)
+   remark #15388: vectorization support: reference alpha_intersect(:) has aligned access
+   remark #15388: vectorization support: reference alpha_d_intersect(:) has aligned access
+   remark #15305: vectorization support: vector length 4
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 3
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 5.330 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,26)
+   remark #15388: vectorization support: reference at (134:75) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,75) ]
+   remark #15388: vectorization support: reference centroid(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.250
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 1.420 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,26)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(320,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,26)
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15388: vectorization support: reference at (320:17) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.375
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,30) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,26)
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.375
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,26)
+   remark #15388: vectorization support: reference n0_d(:) has aligned access
+   remark #15388: vectorization support: reference normal(:) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,10) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.105
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 33 
+   remark #15477: vector cost: 19.000 
+   remark #15478: estimated potential speedup: 1.320 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(134,26)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(381,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(136,26)
+   remark #15388: vectorization support: reference alpha_d_intersect(:) has aligned access
+   remark #15305: vectorization support: vector length 4
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 3
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 2.660 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(389,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(136,26)
+   remark #15388: vectorization support: reference alpha_d(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(385,22) ]
+   remark #15388: vectorization support: reference alpha_d_intersect(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15388: vectorization support: reference alpha_d_intersect(lc1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.471
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 61 
+   remark #15477: vector cost: 17.500 
+   remark #15478: estimated potential speedup: 3.010 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(139,25)
+   remark #15388: vectorization support: reference alpha_intersect(:) has aligned access
+   remark #15388: vectorization support: reference alpha_d_intersect(:) has aligned access
+   remark #15305: vectorization support: vector length 4
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 3
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 0.750 
+   remark #15478: estimated potential speedup: 5.330 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+         remark #15388: vectorization support: reference ITMP(:,:) has aligned access
+         remark #15388: vectorization support: reference connectivity_(:,:) has aligned access
+         remark #15305: vectorization support: vector length 4
+         remark #15309: vectorization support: normalized vectorization overhead 4.667
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 4 
+         remark #15477: vector cost: 0.750 
+         remark #15478: estimated potential speedup: 2.130 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+      remark #15388: vectorization support: reference connectivity_(:,0) has aligned access
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 3.333
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 2 
+      remark #15477: vector cost: 0.750 
+      remark #15478: estimated potential speedup: 1.450 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(450,8) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(148,26)
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(152,21)
+   remark #15388: vectorization support: reference ihat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(1,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(152,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(153,21)
+   remark #15388: vectorization support: reference jhat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(2,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(2,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(153,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(154,21)
+   remark #15388: vectorization support: reference ihat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(3,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(3,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(154,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(155,21)
+   remark #15388: vectorization support: reference jhat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(4,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(155,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(156,21)
+   remark #15388: vectorization support: reference khat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(5,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(156,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(157,21)
+   remark #15388: vectorization support: reference khat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(6,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(2,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(157,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(158,21)
+   remark #15388: vectorization support: reference khat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(7,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(4,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(158,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(159,21)
+   remark #15388: vectorization support: reference khat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(8,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(3,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(159,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(160,21)
+   remark #15388: vectorization support: reference ihat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(9,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(5,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(160,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(161,21)
+   remark #15388: vectorization support: reference jhat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(10,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(6,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(161,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(162,21)
+   remark #15388: vectorization support: reference ihat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(11,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(7,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(162,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(163,21)
+   remark #15388: vectorization support: reference jhat(:) has aligned access
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <apoints(12,:)>, stride is 12
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(5,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.154
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(163,21)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(168,32)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(168,32)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(168,32)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(168,32)
+         remark #15388: vectorization support: reference RTMP(:,:) has aligned access
+         remark #15388: vectorization support: reference points_(:,:) has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 4.667
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 4 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 1.290 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(168,32)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(168,32)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(169,27)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <points_(np,:)>, stride is unknown to compiler
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <apoints(lc1,:)>, stride is 12
+   remark #15305: vectorization support: vector length 2
+   remark #15452: unmasked strided loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 4.000 
+   remark #15478: estimated potential speedup: 1.000 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15388: vectorization support: reference at (177:50) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,50) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <connectivity_(nc,:)>, stride is unknown to compiler   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,50) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 8.750 
+   remark #15478: estimated potential speedup: 0.450 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(490,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15388: vectorization support: reference center(:) has aligned access
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 1.500 
+   remark #15478: estimated potential speedup: 1.710 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(490,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(491,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+      remark #15389: vectorization support: reference at (492:8) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15328: vectorization support: irregularly indexed load was emulated for the variable <points_(:,:)>, part of index is read from memory   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) ]
+      remark #15305: vectorization support: vector length 2
+      remark #15399: vectorization support: unroll factor set to 4
+      remark #15309: vectorization support: normalized vectorization overhead 0.075
+      remark #15301: PERMUTED LOOP WAS VECTORIZED
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15462: unmasked indexed (or gather) loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 8 
+      remark #15477: vector cost: 5.000 
+      remark #15478: estimated potential speedup: 1.580 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(491,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   <Remainder loop for vectorization>
+      remark #15389: vectorization support: reference at (492:8) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15305: vectorization support: vector length 2
+      remark #15309: vectorization support: normalized vectorization overhead 2.667
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15462: unmasked indexed (or gather) loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 8 
+      remark #15477: vector cost: 5.000 
+      remark #15478: estimated potential speedup: 1.580 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(494,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15388: vectorization support: reference center(:) has aligned access
+   remark #15388: vectorization support: reference center(:) has aligned access
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.057
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 31 
+   remark #15477: vector cost: 17.500 
+   remark #15478: estimated potential speedup: 1.360 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(494,5) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(497,8) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(501,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between pi (507:17) and pi (509:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (509:17) and pi (507:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (509:17) and pi (507:17)
+      remark #15346: vector dependence: assumed ANTI dependence between pi (507:17) and pi (509:17)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(515,8) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(519,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between pi (525:17) and pi (527:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (527:17) and pi (525:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (527:17) and pi (525:17)
+      remark #15346: vector dependence: assumed ANTI dependence between pi (525:17) and pi (527:17)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(533,8) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(537,11) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,26)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between pi (543:17) and pi (545:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (545:17) and pi (543:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (545:17) and pi (543:17)
+      remark #15346: vector dependence: assumed ANTI dependence between pi (543:17) and pi (545:17)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,50)
+   remark #15388: vectorization support: reference at (177:50) has aligned access
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <connectivity_(nc,:)>, stride is unknown to compiler
+   remark #15305: vectorization support: vector length 4
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 8.750 
+   remark #15478: estimated potential speedup: 0.450 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(177,50)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(186,3)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(185,6)
+      remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(184,9)
+         remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(174,21)
+            remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::CALC_ALPHA
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(341,5)
+   remark #15389: vectorization support: reference alpha(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 2
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 6
+   remark #15309: vectorization support: normalized vectorization overhead 0.100
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15451: unmasked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.450 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(345,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(346,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(3,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(347,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(5,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(348,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(7,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(353,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(2,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(354,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(355,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(6,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(356,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(5,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(361,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(1,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(362,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(2,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(363,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(4,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(364,25)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <vertex(3,:)>, stride is 8
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.580 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::AMREX_WRITE_EB_VTP
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(222,3)
+   remark #15382: vectorization support: call to function for_write_seq_fmt cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(223,6) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between points_(lc1,:) (223:6) and at (223:6)
+   remark #15346: vector dependence: assumed FLOW dependence between at (223:6) and points_(lc1,:) (223:6)
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(223,6)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(230,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(231,6)
+      remark #15382: vectorization support: call to function for_write_seq_fmt cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(232,9) ]
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed OUTPUT dependence between at (232:9) and at (232:9)
+      remark #15346: vector dependence: assumed OUTPUT dependence between at (232:9) and at (232:9)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(242,3)
+   remark #15382: vectorization support: call to function for_write_seq_fmt cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(244,6) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between connectivity_(lc1,0) (243:6) and at (244:6)
+   remark #15346: vector dependence: assumed FLOW dependence between at (244:6) and connectivity_(lc1,0) (243:6)
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::AMREX_WRITE_PVTP
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(294,3)
+   remark #15382: vectorization support: call to function for_write_int_fmt cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(295,6) ]
+   remark #15382: vectorization support: call to function for_concat cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(296,52) ]
+   remark #15382: vectorization support: call to function for_write_seq_fmt cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(296,6) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between at (295:6) and at (296:6)
+   remark #15346: vector dependence: assumed OUTPUT dependence between at (296:6) and at (295:6)
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::CALC_HESSE
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(320,17)
+   remark #15389: vectorization support: reference normal(:) has unaligned access
+   remark #15389: vectorization support: reference centroid(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.500
+   remark #15450: unmasked unaligned unit stride loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 0.550 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,30)
+   remark #15389: vectorization support: reference normal(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 6.000 
+   remark #15478: estimated potential speedup: 0.700 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5)
+   remark #15389: vectorization support: reference n0(:) has unaligned access
+   remark #15389: vectorization support: reference normal(:) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,10) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.244
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15451: unmasked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 33 
+   remark #15477: vector cost: 20.500 
+   remark #15478: estimated potential speedup: 1.170 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(326,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::CALC_INTERCECTS
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(381,5)
+   remark #15389: vectorization support: reference intersect_flags(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15427: loop was completely unrolled
+   remark #15399: vectorization support: unroll factor set to 3
+   remark #15309: vectorization support: normalized vectorization overhead 0.167
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15451: unmasked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 2 
+   remark #15477: vector cost: 1.500 
+   remark #15478: estimated potential speedup: 1.140 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(389,5)
+   remark #15389: vectorization support: reference intersect_flags(lc1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(387,11) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.286
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 58 
+   remark #15477: vector cost: 29.750 
+   remark #15478: estimated potential speedup: 1.780 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::GROW_POINTS
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11)
+         remark #15388: vectorization support: reference RTMP(:,:) has aligned access
+         remark #15388: vectorization support: reference lpoints(:,:) has aligned access
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 4.667
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 4 
+         remark #15477: vector cost: 1.500 
+         remark #15478: estimated potential speedup: 1.290 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(424,11)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::GROW_CONNECTIVITY
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11)
+         remark #15388: vectorization support: reference ITMP(:,:) has aligned access
+         remark #15388: vectorization support: reference lconnectivity(:,:) has aligned access
+         remark #15305: vectorization support: vector length 4
+         remark #15309: vectorization support: normalized vectorization overhead 4.667
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 4 
+         remark #15477: vector cost: 0.750 
+         remark #15478: estimated potential speedup: 2.130 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(455,11)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11)
+      remark #15388: vectorization support: reference lconnectivity(:,0) has aligned access
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 3.333
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 2 
+      remark #15477: vector cost: 0.750 
+      remark #15478: estimated potential speedup: 1.450 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(457,11)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(450,8)
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::REORDER_POLYGON
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(490,5)
+   remark #15388: vectorization support: reference center(:) has aligned access
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 1.500 
+   remark #15478: estimated potential speedup: 1.710 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(490,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(491,5)
+      remark #15389: vectorization support: reference lconnect(i) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15328: vectorization support: irregularly indexed load was emulated for the variable <points_(lconnect(i),:)>, part of index is read from memory   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) ]
+      remark #15305: vectorization support: vector length 2
+      remark #15399: vectorization support: unroll factor set to 4
+      remark #15309: vectorization support: normalized vectorization overhead 0.075
+      remark #15301: PERMUTED LOOP WAS VECTORIZED
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15462: unmasked indexed (or gather) loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 8 
+      remark #15477: vector cost: 5.000 
+      remark #15478: estimated potential speedup: 1.580 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(491,5)
+   <Remainder loop for vectorization>
+      remark #15389: vectorization support: reference lconnect(i) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(492,8) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15305: vectorization support: vector length 2
+      remark #15309: vectorization support: normalized vectorization overhead 2.667
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15462: unmasked indexed (or gather) loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 8 
+      remark #15477: vector cost: 5.000 
+      remark #15478: estimated potential speedup: 1.580 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(494,5)
+   remark #15388: vectorization support: reference center(:) has aligned access
+   remark #15388: vectorization support: reference center(:) has aligned access
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.057
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 31 
+   remark #15477: vector cost: 17.500 
+   remark #15478: estimated potential speedup: 1.360 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(494,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(497,8)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(501,11)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between pi (507:17) and pi (509:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (509:17) and pi (507:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (509:17) and pi (507:17)
+      remark #15346: vector dependence: assumed ANTI dependence between pi (507:17) and pi (509:17)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(515,8)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(519,11)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between pi (525:17) and pi (527:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (527:17) and pi (525:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (527:17) and pi (525:17)
+      remark #15346: vector dependence: assumed ANTI dependence between pi (525:17) and pi (527:17)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(533,8)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(537,11)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between pi (543:17) and pi (545:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (545:17) and pi (543:17)
+      remark #15346: vector dependence: assumed FLOW dependence between pi (545:17) and pi (543:17)
+      remark #15346: vector dependence: assumed ANTI dependence between pi (543:17) and pi (545:17)
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::AMREX_EB_GRID_COVERAGE
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(582,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(583,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(584,9)
+         remark #15305: vectorization support: vector length 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.007
+         remark #15525: call to function 'IS_REGULAR_CELL' is serialized   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(588,14) ]
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 122 
+         remark #15477: vector cost: 115.250 
+         remark #15478: estimated potential speedup: 1.050 
+         remark #15485: serialized function calls: 1
+         remark #15488: --- end vector cost summary ---
+         remark #15489: --- begin vector function matching report ---
+         remark #15490: Function call: IS_REGULAR_CELL with simdlen=4, actual parameter types: (vector)   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(588,14) ]
+         remark #15545: SIMD annotation was not seen, consider adding 'declare simd' directives at function declaration 
+         remark #15493: --- end vector function matching report ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(584,9)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(601,3)
+   remark #15388: vectorization support: reference nodes(:) has aligned access
+   remark #15389: vectorization support: reference hi(:) has unaligned access
+   remark #15389: vectorization support: reference lo(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.545
+   remark #15450: unmasked unaligned unit stride loads: 2 
+   remark #15451: unmasked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 7 
+   remark #15477: vector cost: 5.500 
+   remark #15478: estimated potential speedup: 0.870 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_EB_TO_VTK::AMREX_EB_GRID_COVERAGE:DATA_ARRAY
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(646,5)
+   remark #15388: vectorization support: reference LINES(llc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(647,8) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.111
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 4.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(646,5)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference LINES(llc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(647,8) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.273
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 4.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_eb_to_pvd.F90(646,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================

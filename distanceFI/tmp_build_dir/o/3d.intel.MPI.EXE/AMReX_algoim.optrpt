@@ -1,0 +1,1234 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C++ Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi -I/share/apps/opt/HWLOC/2.1.0/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -std=c++14 -pthread -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_algoim.o -pthread
+
+Begin optimization report for: MPI::Datatype::Get_contents(const MPI::Datatype *, int, int, int, int *, MPI::Aint *, MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+   remark #15388: vectorization support: reference c_datatypes[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,22) ]
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <array_of_datatypes->mpi_datatype[i]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,7) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.667
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.640 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Comm::Alltoallw(const MPI::Comm *, const void *, const int *, const int *, const MPI::Datatype *, void *, const int *, const int *, const MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+   remark #15388: vectorization support: reference data_type_tbl[i_rank] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(426,9) ]
+   remark #15388: vectorization support: reference data_type_tbl[i_rank+comm_size] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(427,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <sendtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <recvtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.400
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 2 
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 1.770 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Create_cart(MPI::Cartcomm *, const MPI::Intracomm *, int, const int *, const bool *, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int, int *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Get_topo(const MPI::Cartcomm *, int, int *, bool *, int *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.778
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15389: vectorization support: reference int_periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.867
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Sub(MPI::Cartcomm *, const MPI::Cartcomm *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15388: vectorization support: reference remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15389: vectorization support: reference remain_dims[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Map(const MPI::Cartcomm *, int, const int *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::algoim::compute_integrals(amrex::MultiFab &, amrex::IntVect)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+            remark #15388: vectorization support: reference p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+n*Uc5_V.Uc5_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.833
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+         <Remainder loop for vectorization>
+            remark #15388: vectorization support: reference p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+n*Uc5_V.Uc5_V] has aligned access
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 2.000
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 16 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 9.260 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(47,13)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(54,13)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(54,13)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(54,13)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_ (557:9) and p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_ (575:9)
+         remark #15346: vector dependence: assumed OUTPUT dependence between p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_ (575:9) and p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_ (557:9)
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(135,25)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <p[i-Ubf_V.Ubf_V+(j-Ubf_V.Ubf_V)*Uc5_V.Uc5_V+(k-Ubf_V.Ubf_V)*Uc5_>, stride is unknown to compiler   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(135,64) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 9
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 16 
+   remark #15477: vector cost: 16.000 
+   remark #15478: estimated potential speedup: 1.000 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(135,25)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(167,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.524
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 19 
+   remark #15477: vector cost: 21.000 
+   remark #15478: estimated potential speedup: 0.680 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(456,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(456,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15388: vectorization support: reference Ubb_V.Ubb_V.Ubb_V.Ubb_V[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.231
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 23 
+   remark #15477: vector cost: 6.500 
+   remark #15478: estimated potential speedup: 1.760 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(272,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15389: vectorization support: reference Ubb_V.Ubb_V->arr[dim] has unaligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15388: vectorization support: reference mid.arr[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.164
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15456: masked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 32 
+   remark #15477: vector cost: 82.500 
+   remark #15478: estimated potential speedup: 0.420 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(492,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between gmax (493:68) and gmax (494:21)
+   remark #15346: vector dependence: assumed FLOW dependence between gmax (494:21) and gmax (493:68)
+   remark #15346: vector dependence: assumed ANTI dependence between gmax (493:68) and gmax (494:21)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(507,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15389: vectorization support: reference Ubb_V.Ubb_V.Ubb_V.Ubb_V[dim] has unaligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.075
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 22 
+   remark #15477: vector cost: 53.500 
+   remark #15478: estimated potential speedup: 0.480 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(316,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.714
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 1 
+   remark #15477: vector cost: 3.500 
+   remark #15478: estimated potential speedup: 0.110 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(320,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(333,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+      remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(338,22) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(324,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between k (326:22) and k (328:23)
+      remark #15346: vector dependence: assumed FLOW dependence between k (328:23) and k (326:22)
+      remark #15346: vector dependence: assumed ANTI dependence between k (326:22) and k (328:23)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(142,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.396
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 6.000 
+   remark #15478: estimated potential speedup: 1.310 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(142,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(144,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.396
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 6.000 
+   remark #15478: estimated potential speedup: 1.310 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(144,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(146,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.396
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 8 
+   remark #15477: vector cost: 6.000 
+   remark #15478: estimated potential speedup: 1.310 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(146,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(148,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.279
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 8.500 
+   remark #15478: estimated potential speedup: 1.280 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(148,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(150,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.279
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 8.500 
+   remark #15478: estimated potential speedup: 1.280 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(150,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(152,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.279
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 8.500 
+   remark #15478: estimated potential speedup: 1.280 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(152,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(154,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.279
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 8.500 
+   remark #15478: estimated potential speedup: 1.280 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(154,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(156,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.279
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 8.500 
+   remark #15478: estimated potential speedup: 1.280 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(156,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(158,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.279
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 3 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 11 
+   remark #15477: vector cost: 8.500 
+   remark #15478: estimated potential speedup: 1.280 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(158,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(160,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(160,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(162,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(162,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(164,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(164,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(166,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(166,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(168,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(168,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(170,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(170,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(172,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.176
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 5 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 16 
+   remark #15477: vector cost: 13.500 
+   remark #15478: estimated potential speedup: 1.170 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(172,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(174,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.176
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 5 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 16 
+   remark #15477: vector cost: 13.500 
+   remark #15478: estimated potential speedup: 1.170 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(174,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(176,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.176
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 5 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 16 
+   remark #15477: vector cost: 13.500 
+   remark #15478: estimated potential speedup: 1.170 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(176,51)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(178,51)
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <q.nodes.nodes.nodes[i]>, stride is 4   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.216
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15452: unmasked strided loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 14 
+   remark #15477: vector cost: 11.000 
+   remark #15478: estimated potential speedup: 1.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(88,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(178,51)
+<Remainder loop for vectorization>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(37,43)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(127,17)
+      remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(128,17)
+         remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(129,17)
+            remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(268,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+               remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+            LOOP END
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(504,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim.cpp(140,58)
+               remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::algoim::ImplicitIntegral<2, 3, amrex::algoim::EBPlane, amrex::algoim::ImplicitIntegral<3, 3, amrex::algoim::EBPlane, amrex::algoim::QuadratureRule>>::ImplicitIntegral(amrex::algoim::ImplicitIntegral<2, 3, amrex::algoim::EBPlane, amrex::algoim::ImplicitIntegral<3, 3, amrex::algoim::EBPlane, amrex::algoim::QuadratureRule>> *, const amrex::algoim::EBPlane &, amrex::algoim::ImplicitIntegral<3, 3, amrex::algoim::EBPlane, amrex::algoim::QuadratureRule> &, const amrex::GpuArray<bool, 3UL> &, const amrex::GpuArray<amrex::algoim::PsiCode<3>, 4UL> &, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(456,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between this->xint->arr[dim]->alpha (460:21) and this->xint->arr[dim]->alpha (464:21)
+   remark #15346: vector dependence: assumed OUTPUT dependence between this->xint->arr[dim]->alpha (464:21) and this->xint->arr[dim]->alpha (460:21)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(272,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(471,14)
+   remark #15389: vectorization support: reference this->phi->arr[dim] has unaligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(36,62) ]
+   remark #15388: vectorization support: reference mid.arr[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.164
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15456: masked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 34 
+   remark #15477: vector cost: 82.500 
+   remark #15478: estimated potential speedup: 0.450 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(316,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15427: loop was completely unrolled
+   remark #15309: vectorization support: normalized vectorization overhead 2.714
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 1 
+   remark #15477: vector cost: 3.500 
+   remark #15478: estimated potential speedup: 0.070 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(324,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between k (326:22) and k (328:23)
+   remark #15346: vector dependence: assumed FLOW dependence between k (328:23) and k (326:22)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(374,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x.arr[dim] (378:26) and x.arr[this->e0] (384:51)
+   remark #15346: vector dependence: assumed ANTI dependence between x.arr[this->e0] (384:51) and x.arr[dim] (378:26)
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(376,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(414,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15388: vectorization support: reference x.arr[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.075
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 23 
+   remark #15477: vector cost: 53.500 
+   remark #15478: estimated potential speedup: 0.500 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(424,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x.arr[this->e0] (426:18) and x.arr[2] (102:14)
+   remark #15346: vector dependence: assumed ANTI dependence between x.arr[2] (102:14) and x.arr[this->e0] (426:18)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(333,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(338,22) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(492,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between gmax (493:68) and gmax (494:21)
+   remark #15346: vector dependence: assumed FLOW dependence between gmax (494:21) and gmax (493:68)
+   remark #15346: vector dependence: assumed ANTI dependence between gmax (493:68) and gmax (494:21)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(507,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between this->psi->arr[i]->bits (229:25) and this->xint->arr[dim]->alpha (509:25)
+   remark #15346: vector dependence: assumed FLOW dependence between this->xint->arr[dim]->alpha (509:25) and this->psi->arr[i]->bits (229:25)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(446,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.096
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 19 
+   remark #15477: vector cost: 47.000 
+   remark #15478: estimated potential speedup: 0.260 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(374,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x.arr[dim] (378:26) and x.arr[Uaf_V.Uaf_V] (384:51)
+   remark #15346: vector dependence: assumed ANTI dependence between x.arr[Uaf_V.Uaf_V] (384:51) and x.arr[dim] (378:26)
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(376,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(414,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15388: vectorization support: reference x.arr[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.075
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 22 
+   remark #15477: vector cost: 53.500 
+   remark #15478: estimated potential speedup: 0.480 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(374,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x.arr[dim] (378:26) and x.arr[Uaf_V.Uaf_V->e0] (384:51)
+   remark #15346: vector dependence: assumed ANTI dependence between x.arr[Uaf_V.Uaf_V->e0] (384:51) and x.arr[dim] (378:26)
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(376,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(414,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15388: vectorization support: reference x.arr[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.075
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 23 
+   remark #15477: vector cost: 53.500 
+   remark #15478: estimated potential speedup: 0.500 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(374,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x.arr[dim] (378:26) and x.arr[this->e0] (384:51)
+   remark #15346: vector dependence: assumed ANTI dependence between x.arr[this->e0] (384:51) and x.arr[dim] (378:26)
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(376,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(414,17) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15388: vectorization support: reference x.arr[dim] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Array.H(39,50) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.075
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15457: masked unaligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 23 
+   remark #15477: vector cost: 53.500 
+   remark #15478: estimated potential speedup: 0.500 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(424,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x.arr[this->e0] (426:18) and x.arr[2] (102:14)
+   remark #15346: vector dependence: assumed ANTI dependence between x.arr[2] (102:14) and x.arr[this->e0] (426:18)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(268,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(471,14)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(320,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(405,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+      remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(412,13) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(412,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(479,13)
+         remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(504,9)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(405,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(412,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+      remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(424,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(405,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(412,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+            remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(424,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+            remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(405,9) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+               remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.   [ /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(412,13) ]
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(412,13) inlined into /home/zou00066/peleLM/amrex/Src/EB/AMReX_algoim_K.H(527,44)
+                  remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================

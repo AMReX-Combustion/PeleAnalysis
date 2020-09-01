@@ -1,0 +1,17 @@
+Directory is /home/zou00066/peleLM/PeleAnalysis/distanceFI
+Time is Tue Sep 1 15:43:56 CDT 2020
+
+This job runs on the following processors:
+epyc-compute-1-13
+This job has allocated 1 nodes with 48 cores per node.
+
+MPI initialized with 48 MPI processes
+MPI initialized with thread support level 0
+AMReX (20.06-82-gdf3e65beac99-dirty) initialized
+finish loading
+start finalizing
+start build distance
+finish finalizing
+Distance is 0
+time cost50.90449026
+AMReX (20.06-82-gdf3e65beac99-dirty) finalized

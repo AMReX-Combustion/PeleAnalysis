@@ -1,0 +1,16 @@
+solid Stldirtdum_ascii.stl
+facet normal -0.001108 -0.999987 -0.005074
+  outer loop
+    vertex 0.001623 -0.002460 0.000717
+    vertex 0.001687 -0.002460 0.000717
+    vertex 0.001678 -0.002460 0.000779
+  endloop
+endfacet
+facet normal 0.001166 -0.999974 -0.007083
+  outer loop
+    vertex 0.001678 -0.002460 0.000779
+    vertex 0.001615 -0.002461 0.000780
+    vertex 0.001623 -0.002460 0.000717
+  endloop
+endfacet
+endsolid Stldirtdum_ascii.stl

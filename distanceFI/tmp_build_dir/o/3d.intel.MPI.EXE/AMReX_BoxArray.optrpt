@@ -1,0 +1,2577 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C++ Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi -I/share/apps/opt/HWLOC/2.1.0/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -std=c++14 -pthread -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_BoxArray.o -pthread
+
+Begin optimization report for: std::_Sp_counted_ptr_inplace<amrex::BARef, std::allocator<std::remove_const<std::remove_volatile<amrex::BARef>::type>::type>, __gnu_cxx::_S_atomic>::_M_dispose(std::_Sp_counted_ptr_inplace<amrex::BARef, std::allocator<std::remove_const<std::remove_volatile<amrex::BARef>::type>::type>, __gnu_cxx::_S_atomic> *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /usr/include/c++/4.8.5/bits/shared_ptr_base.h(408,9)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::_Sp_counted_ptr<amrex::BARef *, __gnu_cxx::_S_atomic>::_M_dispose(std::_Sp_counted_ptr<amrex::BARef *, __gnu_cxx::_S_atomic> *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /usr/include/c++/4.8.5/bits/shared_ptr_base.h(291,9)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Datatype::Get_contents(const MPI::Datatype *, int, int, int, int *, MPI::Aint *, MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+   remark #15388: vectorization support: reference c_datatypes[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,22) ]
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <array_of_datatypes->mpi_datatype[i]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,7) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.667
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.640 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Comm::Alltoallw(const MPI::Comm *, const void *, const int *, const int *, const MPI::Datatype *, void *, const int *, const int *, const MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+   remark #15388: vectorization support: reference data_type_tbl[i_rank] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(426,9) ]
+   remark #15388: vectorization support: reference data_type_tbl[i_rank+comm_size] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(427,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <sendtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <recvtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.400
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 2 
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 1.770 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Create_cart(MPI::Cartcomm *, const MPI::Intracomm *, int, const int *, const bool *, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int, int *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Get_topo(const MPI::Cartcomm *, int, int *, bool *, int *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.778
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15389: vectorization support: reference int_periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.867
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Sub(MPI::Cartcomm *, const MPI::Cartcomm *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15388: vectorization support: reference remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15389: vectorization support: reference remain_dims[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Map(const MPI::Cartcomm *, int, const int *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::BARef(amrex::BARef *, size_t)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(42,14)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(42,14)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::BARef(amrex::BARef *const, size_t)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(42,8)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(42,8)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::BARef(amrex::BARef *const, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(50,8)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::unordered_map<amrex::IntVect, std::vector<int, std::allocator<int>>, amrex::IntVect::shift_hasher, std::equal_to<amrex::IntVect>, std::allocator<std::pair<const amrex::IntVect, std::vector<int, std::allocator<int>>>>>::~unordered_map(std::unordered_map<amrex::IntVect, std::vector<int, std::allocator<int>>, amrex::IntVect::shift_hasher, std::equal_to<amrex::IntVect>, std::allocator<std::pair<const amrex::IntVect, std::vector<int, std::allocator<int>>>>> *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /usr/include/c++/4.8.5/bits/unordered_map.h(98,11)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<amrex::Box, std::allocator<amrex::Box>>::vector(std::vector<amrex::Box, std::allocator<amrex::Box>> *, const std::vector<amrex::Box, std::allocator<amrex::Box>> &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /usr/include/c++/4.8.5/bits/stl_vector.h(315,4)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::define(amrex::BARef *, std::istream &, int &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(103,5)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(103,5)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(103,5)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(103,5)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(103,5)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(103,5)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(132,76)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::~BARef(amrex::BARef *const)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(85,8)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::define(amrex::BARef *, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(146,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::define(amrex::BARef *, const amrex::BoxList &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between *__result (335:21) and *__first (335:21)
+   remark #15346: vector dependence: assumed ANTI dependence between *__first (335:21) and *__result (335:21)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between *__result (335:21) and *__first (335:21)
+   remark #15346: vector dependence: assumed ANTI dependence between *__first (335:21) and *__result (335:21)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between *__cur (75:42) and *__first (75:42)
+   remark #15346: vector dependence: assumed ANTI dependence between *__first (75:42) and *__cur (75:42)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(158,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::resize(amrex::BARef *, amrex::Long)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(182,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(182,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(182,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(182,12)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(182,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(183,10)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(280,56)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::BARef(amrex::BARef *, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(52,5)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *const, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(280,11)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *, size_t)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(302,11)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(302,11)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *const, size_t)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(302,11)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(302,11)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *, const amrex::Box *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(308,11)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(308,11)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(314,50)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(313,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *const, const amrex::Box *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(308,11)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(308,11)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(308,11)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(313,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(308,11)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *, const amrex::BoxList &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(291,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(291,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *const, const amrex::BoxList &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(286,11)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(286,11)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *, amrex::BoxList &&)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(299,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(299,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::BoxArray(amrex::BoxArray *const, amrex::BoxList &&)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(294,11)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(294,11)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::define(amrex::BoxArray *, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(338,40)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(338,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BARef::~BARef(amrex::BARef *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(91,1)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::define(amrex::BoxArray *, const amrex::BoxList &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between *__result (335:21) and *__first (335:21)
+   remark #15346: vector dependence: assumed ANTI dependence between *__first (335:21) and *__result (335:21)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between *__result (335:21) and *__first (335:21)
+   remark #15346: vector dependence: assumed ANTI dependence between *__first (335:21) and *__result (335:21)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(333,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between *__cur (75:42) and *__first (75:42)
+   remark #15346: vector dependence: assumed ANTI dependence between *__first (75:42) and *__cur (75:42)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(347,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(346,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(347,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::define(amrex::BoxArray *, amrex::BoxList &&)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(356,5)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(356,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::resize(amrex::BoxArray *, amrex::Long)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(370,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(370,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(370,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(370,12)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(370,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(370,12)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::uniqify(amrex::BoxArray *)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1540,9)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1551,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1552,30)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::numPts(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(395,64)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(383,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(393,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(395,60)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(401,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::d_numPts(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(432,64)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(420,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(430,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(432,60)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(438,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::readFrom(amrex::BoxArray *, std::istream &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(456,9)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(456,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::writeOn(const amrex::BoxArray *, std::ostream &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(479,60)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(472,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(478,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(479,56)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(482,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::operator==(const amrex::BoxArray *, const amrex::BoxArray &) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(796,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(499,46)
+   remark #15523: loop was not vectorized: loop control variable __first2 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::operator!=(const amrex::BoxArray *, const amrex::BoxArray &) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(796,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(505,13)
+   remark #15523: loop was not vectorized: loop control variable __first2 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::operator==(const amrex::BoxArray *, const amrex::Vector<amrex::Box, std::allocator<amrex::Box>> &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(513,30)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(513,30)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(512,26)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(513,30)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(513,30)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::operator!=(const amrex::BoxArray *, const amrex::Vector<amrex::Box, std::allocator<amrex::Box>> &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(521,13)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(521,13)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(512,26) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(521,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(521,13)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(521,13)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::CellEqual(const amrex::BoxArray *, const amrex::BoxArray &) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(796,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(528,49)
+   remark #15523: loop was not vectorized: loop control variable __first2 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::maxSize(amrex::BoxArray *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(534,12)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(534,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::maxSize(amrex::BoxArray *, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(547,9)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(547,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::refine(amrex::BoxArray *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(567,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(555,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::refine(amrex::BoxArray *, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(567,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::coarsenable(const amrex::BoxArray *, const amrex::IntVect &, int) const
+
+    Report from: Offload optimizations [offload]
+
+Optimization 'PRE-STAR' reduced: function size or variable count limit exceeded: use -override_limits / -Qoverride_limits to override
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(586,32)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(586,32)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(608,78)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(586,32)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(586,32)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(587,22)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(595,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(598,34)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(606,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(608,74)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(609,34)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(615,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(618,34)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::growcoarsen(amrex::BoxArray *, int, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(653,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(641,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(641,12)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::growcoarsen(amrex::BoxArray *, const amrex::IntVect &, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(653,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(654,38)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::grow(amrex::BoxArray *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(668,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::grow(amrex::BoxArray *, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(683,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::grow(amrex::BoxArray *, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(699,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::growLo(amrex::BoxArray *, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(715,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::growHi(amrex::BoxArray *, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(731,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::convert(amrex::BoxArray *, amrex::Box (*)(const amrex::Box &))
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(794,30)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(794,30)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(794,13)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(793,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(794,30)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(794,30)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::shift(amrex::BoxArray *, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(810,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::shift(amrex::BoxArray *, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(825,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::set(amrex::BoxArray *, int, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(838,45)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::operator[](const amrex::BoxArray *, const amrex::MFIter &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(844,24)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(844,24)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(844,24)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(844,24)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::contains(const amrex::BoxArray *, const amrex::Box &, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(960,3)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: indirect load was emulated for the variable <this->bigend->vect[0]>, 64-bit indexed, part of address is nonlinearly computed   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(186,98) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <at (150:56)>, 64-bit indexed, part of address is read from memory   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(150,56) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*this>, stride is 8   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(300,16) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <this->vect[1]>, 64-bit indexed, part of address is nonlinearly computed   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(186,98) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <at (150:56)>, 64-bit indexed, part of address is read from memory   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(150,56) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(this+4)>, stride is 8   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(300,16) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <this->vect[2]>, 64-bit indexed, part of address is nonlinearly computed   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(186,98) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <this->vect[2]>, 64-bit indexed, part of address is nonlinearly computed   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(186,98) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <at (150:56)>, 64-bit indexed, part of address is read from memory   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(150,56) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <*Ucb_V>, 64-bit indexed, part of address is read from memory   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(150,72) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.073
+   remark #15452: unmasked strided loads: 2 
+   remark #15462: unmasked indexed (or gather) loads: 8 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 54 
+   remark #15477: vector cost: 158.000 
+   remark #15478: estimated potential speedup: 0.340 
+   remark #15487: type converts: 4 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(967,17)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+   <Distributed chunk1>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+      <Distributed chunk2>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+      <Remainder, Distributed chunk2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+   <Distributed chunk2>
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+      <Distributed chunk1>
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+            remark #15388: vectorization support: reference *(vflag.__b_St6vectorIcSaIcEE.__b_St6vectorIcSaIcEE.__b_St6vectorIcSaIcEE.__b_St6vectorIcSaIcEE+i-fabflag.domain.domain.domain[0]+(j-fabflag.domain.domain.domain[1])*U1c3_V.U1c3_V+(k-fabflag.domain.domain.domain[2])*U1c3_V.U1c3_V) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 16
+            remark #15309: vectorization support: normalized vectorization overhead 6.667
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 12 
+            remark #15477: vector cost: 0.180 
+            remark #15478: estimated potential speedup: 8.840 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+   <Distributed chunk3>
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15305: vectorization support: vector length 4
+      remark #15399: vectorization support: unroll factor set to 2
+      remark #15309: vectorization support: normalized vectorization overhead 3.100
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 1 
+      remark #15477: vector cost: 1.250 
+      remark #15478: estimated potential speedup: 0.740 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(968,29)
+   <Remainder, Distributed chunk3>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(970,38)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(971,40) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::contains(const amrex::BoxArray *, const amrex::BoxArray &, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,26)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,26)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(960,3) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <this->bigend>, stride is 8   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(300,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <this->smallend>, stride is 8   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(300,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(&this->bigend+4)>, stride is 8   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(300,16) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <*(&this->smallend+4)>, stride is 8   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(300,16) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <this->bigend->vect[2]>, 64-bit indexed, part of address is nonlinearly computed   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(186,98) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <this->smallend->vect[2]>, 64-bit indexed, part of address is nonlinearly computed   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_IntVect.H(186,98) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <at (150:56)>, 64-bit indexed, part of address is read from memory   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(150,56) ]
+   remark #15328: vectorization support: indirect load was emulated for the variable <*Ucb_V>, 64-bit indexed, part of address is read from memory   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(150,72) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.122
+   remark #15452: unmasked strided loads: 4 
+   remark #15462: unmasked indexed (or gather) loads: 4 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 33 
+   remark #15477: vector cost: 94.500 
+   remark #15478: estimated potential speedup: 0.340 
+   remark #15487: type converts: 4 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(960,3) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(967,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   <Distributed chunk1>
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+      <Distributed chunk2>
+         remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 4
+         remark #15399: vectorization support: unroll factor set to 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.100
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 1 
+         remark #15477: vector cost: 1.250 
+         remark #15478: estimated potential speedup: 0.740 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+      <Remainder, Distributed chunk2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   <Distributed chunk2>
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(206,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+      <Distributed chunk1>
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+            remark #15388: vectorization support: reference *(vflag.__b_St6vectorIcSaIcEE.__b_St6vectorIcSaIcEE.__b_St6vectorIcSaIcEE.__b_St6vectorIcSaIcEE+i-fabflag.domain.domain.domain+(j-fabflag.domain.domain.domain)*U1c3_V.U1c3_V+(k-fabflag.domain.domain.domain)*U1c3_V.U1c3_V) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BaseFab.H(3483,5) ]
+            remark #15305: vectorization support: vector length 16
+            remark #15309: vectorization support: normalized vectorization overhead 6.667
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 12 
+            remark #15477: vector cost: 0.180 
+            remark #15478: estimated potential speedup: 8.840 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(208,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   <Distributed chunk3>
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15305: vectorization support: vector length 4
+      remark #15399: vectorization support: unroll factor set to 2
+      remark #15309: vectorization support: normalized vectorization overhead 3.100
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 1 
+      remark #15477: vector cost: 1.250 
+      remark #15478: estimated potential speedup: 0.740 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Loop.H(205,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   <Remainder, Distributed chunk3>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(970,38) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,14)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(971,21) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(988,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,26)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(989,26)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::isDisjoint(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(891,68)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(883,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(890,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(891,64)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(895,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::intersections(const amrex::BoxArray *, const amrex::Box &, std::vector<std::pair<int, amrex::Box>, std::allocator<std::pair<int, amrex::Box>>> &, bool, const amrex::IntVect &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1170,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1170,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1170,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1170,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1221,89)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1170,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1184,33)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(690,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1190,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1198,66)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(1163,15) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1200,39)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1205,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1212,36)
+         remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1219,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1221,85)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1231,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<std::pair<int, amrex::Box>, std::allocator<std::pair<int, amrex::Box>>>::_M_emplace_back_aux<std::move_iterator<std::_Vector_base<std::pair<int, amrex::Box>, std::allocator<std::pair<int, amrex::Box>>>::pointer>::value_type>(std::vector<std::pair<int, amrex::Box>, std::allocator<std::pair<int, amrex::Box>>> *, std::move_iterator<std::_Vector_base<std::pair<int, amrex::Box>, std::allocator<std::pair<int, amrex::Box>>>::pointer>::value_type &&)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(414,10)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::getHashMap(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1502,6)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(690,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1505,20)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1510,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(1163,15) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1514,27)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(1705,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1514,27)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1518,39)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(690,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1519,25)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::minimalBox(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1042,33)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1015,6)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1042,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::minimalBox(const amrex::BoxArray *, amrex::Long &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1097,24)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1066,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1097,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::complementIn(const amrex::BoxArray *, amrex::BoxList &, const amrex::Box &) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1324,89)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1277,33)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(690,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1283,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1296,10)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(1163,15) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1299,39)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1304,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1312,49)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1313,33) ]
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1322,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1324,85)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1330,49)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1331,33) ]
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1338,44)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1346,49)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1347,33) ]
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<amrex::Box, std::allocator<amrex::Box>>::reserve(std::vector<amrex::Box, std::allocator<amrex::Box>> *, std::vector<amrex::Box, std::allocator<amrex::Box>>::size_type)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(74,20)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::clear_hash_bin(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1367,21)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::removeOverlap(amrex::BoxArray *, bool)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1404,25)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1410,13)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1420,37)
+         remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/bits/stl_vector.h(911,4) ]
+
+         LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(1163,15) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1423,31)
+            remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+         LOOP END
+
+         LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(1705,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1423,31)
+            remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1435,26)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<amrex::Box, std::allocator<amrex::Box>>::_M_emplace_back_aux<const std::vector<amrex::Box, std::allocator<amrex::Box>>::value_type &>(std::vector<amrex::Box, std::allocator<amrex::Box>> *, const std::vector<amrex::Box, std::allocator<amrex::Box>>::value_type &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /usr/include/c++/4.8.5/bits/vector.tcc(414,10)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::type_update(amrex::BoxArray *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1464,6)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::operator<<(std::ostream &, const amrex::BoxArray &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1572,18)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1572,18)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1571,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1572,18)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1572,18)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::boxComplement(amrex::BoxArray *, const amrex::Box &, const amrex::Box &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1586,21)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1586,21)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::complementIn(amrex::BoxArray *, const amrex::Box &, const amrex::BoxArray &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1593,23)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1593,23)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::intersect(amrex::BoxArray *, const amrex::BoxArray &, const amrex::Box &, const amrex::IntVect &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1633,16)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1633,16)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1641,15)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1639,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::intersect(amrex::BoxArray *, const amrex::BoxArray &, const amrex::BoxArray &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1652,20)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1652,20)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1655,56)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1655,56)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1658,21)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1652,20)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1652,20)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1653,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1655,56)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1655,56)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1658,21)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::boxList(amrex::BoxList *, const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(921,73)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(909,17)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(914,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(915,22)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(920,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(921,69)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(921,22)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(924,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(925,22)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::intersect(amrex::BoxArray *, const amrex::BoxArray &, const amrex::Box &, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1607,16)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1607,16)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1615,15)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1613,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::intersect(amrex::BoxList *, const amrex::BoxArray &, const amrex::BoxList &)
+
+    Report from: Vector optimizations [vec]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1665,26)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1667,33) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::GetBndryCells(amrex::BoxList *, const amrex::BoxArray &, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1719,18)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1725,22)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1725,22)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1719,18)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1723,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1725,22)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1725,22)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1738,27)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1148,5) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1748,37)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::BoxArray::ok(const amrex::BoxArray *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(862,66)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(855,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(861,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(862,62)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(865,13)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::readBoxArray(amrex::BoxArray &, std::istream &, bool)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1770,12)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1778,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1778,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1778,12)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,7) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(494,8) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1778,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(837,5) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1783,16)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1463,29) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1770,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1778,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/hashtable.h(759,7) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1778,12)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1779,9)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::match(const amrex::BoxArray &, const amrex::BoxArray &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,12)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,12)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,20)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,20)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(796,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1795,11)
+   remark #15523: loop was not vectorized: loop control variable __first2 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1799,2)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,12)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,12)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,20)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_BoxArray.cpp(1800,20)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+===========================================================================

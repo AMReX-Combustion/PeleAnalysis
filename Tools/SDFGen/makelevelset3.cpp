@@ -142,7 +142,7 @@ static void check_neighbour(const std::vector<Vec3ui> &tri, const std::vector<Ve
       
       std::pair<bool,amrex::Real> d = point_triangle_distance(gx, x[p], x[q], x[r],normal[s],dx);
       
-      if(std::abs(d.second)<std::abs(phi(i0,j0,k0))/* && d.first == true*/){
+      if(std::abs(d.second)<std::abs(phi(i0,j0,k0)) && d.first == true){
          phi(i0,j0,k0)=d.second;
          closest_tri(i0,j0,k0)=closest_tri(i1,j1,k1);
       }

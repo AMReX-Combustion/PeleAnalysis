@@ -1,0 +1,2426 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C++ Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi -I/share/apps/opt/HWLOC/2.1.0/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -std=c++14 -pthread -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_iMultiFab.o -pthread
+
+Begin optimization report for: MPI::Datatype::Get_contents(const MPI::Datatype *, int, int, int, int *, MPI::Aint *, MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+   remark #15388: vectorization support: reference c_datatypes[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,22) ]
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <array_of_datatypes->mpi_datatype[i]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,7) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.667
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.640 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Comm::Alltoallw(const MPI::Comm *, const void *, const int *, const int *, const MPI::Datatype *, void *, const int *, const int *, const MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+   remark #15388: vectorization support: reference data_type_tbl[i_rank] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(426,9) ]
+   remark #15388: vectorization support: reference data_type_tbl[i_rank+comm_size] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(427,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <sendtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <recvtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.400
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 2 
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 1.770 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Create_cart(MPI::Cartcomm *, const MPI::Intracomm *, int, const int *, const bool *, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int, int *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Get_topo(const MPI::Cartcomm *, int, int *, bool *, int *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.778
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15389: vectorization support: reference int_periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.867
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Sub(MPI::Cartcomm *, const MPI::Cartcomm *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15388: vectorization support: reference remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15389: vectorization support: reference remain_dims[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Map(const MPI::Cartcomm *, int, const int *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FabArray<amrex::IArrayBox>::~FabArray(amrex::FabArray<amrex::IArrayBox> *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1211,5)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1212,1)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1211,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1211,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::vector<std::string, std::allocator<std::string>>::~vector(std::vector<std::string, std::allocator<std::string>> *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /usr/include/c++/4.8.5/bits/stl_vector.h(416,9)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FabArray<amrex::IArrayBox>::~FabArray(amrex::FabArray<amrex::IArrayBox> *const)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1208,16)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1208,16)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1208,16)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1208,16)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FabArray<amrex::IArrayBox>::define(amrex::FabArray<amrex::IArrayBox> *, const amrex::BoxArray &, const amrex::DistributionMapping &, int, const amrex::IntVect &, const amrex::MFInfo &, const amrex::FabFactory<amrex::IArrayBox> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1263,5)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1263,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1263,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::FabArray<amrex::IArrayBox>::AllocFabs(amrex::FabArray<amrex::IArrayBox> *, const amrex::FabFactory<amrex::IArrayBox> &, amrex::Arena *, const amrex::Vector<std::string, std::allocator<std::string>> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1310,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1311,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1313,16)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1316,16)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1301,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1311,12)
+   remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1311,26)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/ext/new_allocator.h(120,27) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1313,16)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1314,26)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/ext/new_allocator.h(120,27) ]
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1316,16)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1317,25)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::_Destroy_aux<false>::__destroy<std::_Vector_base<std::string, std::allocator<std::string>>::pointer>(std::_Vector_base<std::string, std::allocator<std::string>>::pointer, std::_Vector_base<std::string, std::allocator<std::string>>::pointer)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::iMultiFab(amrex::iMultiFab *, const amrex::BoxArray &, const amrex::DistributionMapping &, int, int, const amrex::MFInfo &, const amrex::FabFactory<amrex::IArrayBox> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(160,50)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(160,50)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(160,50)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::iMultiFab(amrex::iMultiFab *const, const amrex::BoxArray &, const amrex::DistributionMapping &, int, int, const amrex::MFInfo &, const amrex::FabFactory<amrex::IArrayBox> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(153,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(153,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(153,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::iMultiFab(amrex::iMultiFab *, const amrex::BoxArray &, const amrex::DistributionMapping &, int, const amrex::IntVect &, const amrex::MFInfo &, const amrex::FabFactory<amrex::IArrayBox> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(163,49)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(163,49)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(163,49)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::iMultiFab(amrex::iMultiFab *const, const amrex::BoxArray &, const amrex::DistributionMapping &, int, const amrex::IntVect &, const amrex::MFInfo &, const amrex::FabFactory<amrex::IArrayBox> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(163,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(163,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(163,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::iMultiFab(amrex::iMultiFab *, const amrex::iMultiFab &, amrex::MakeType, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,47)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,47)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,47)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,47)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1154,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,47)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1156,71) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::MFInfo::~MFInfo(amrex::MFInfo *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(114,8)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::iMultiFab(amrex::iMultiFab *const, const amrex::iMultiFab &, amrex::MakeType, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1154,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(174,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1156,71) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::~iMultiFab(amrex::iMultiFab *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(182,1)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(182,1)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(182,1)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(182,1)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::~iMultiFab(amrex::iMultiFab *const)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::~iMultiFab(amrex::iMultiFab *const)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(180,12)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::operator=(amrex::iMultiFab *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 4.333
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 15 
+            remark #15477: vector cost: 0.750 
+            remark #15478: estimated potential speedup: 15.250 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1593,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1589,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(187,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::min(const amrex::iMultiFab *, int, int, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(217,14)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(217,14)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(217,14)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between *U121_V (225:9) and r (225:9)
+         remark #15346: vector dependence: assumed FLOW dependence between r (225:9) and *U121_V (225:9)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(217,14)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(353,35) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(217,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::min(const amrex::iMultiFab *, const amrex::Box &, int, int, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(252,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(243,14)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(252,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(243,14)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(252,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(243,14)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between *U121_V (252:9) and r (252:9)
+         remark #15346: vector dependence: assumed FLOW dependence between r (252:9) and *U121_V (252:9)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(252,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(243,14)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(353,35) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(243,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::max(const amrex::iMultiFab *, int, int, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(272,14)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(272,14)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(272,14)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between *U122_V (280:9) and r (280:9)
+         remark #15346: vector dependence: assumed FLOW dependence between r (280:9) and *U122_V (280:9)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(272,14)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(680,35) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(272,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::max(const amrex::iMultiFab *, const amrex::Box &, int, int, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(307,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(298,14)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(307,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(298,14)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(307,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(298,14)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between *U122_V (307:9) and r (307:9)
+         remark #15346: vector dependence: assumed FLOW dependence between r (307:9) and *U122_V (307:9)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(307,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(298,14)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(680,35) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(298,14)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::sum(const amrex::iMultiFab *, int, int, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(358,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(358,13)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(358,13)
+         remark #15389: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+comp*U137_V.U137_V] has unaligned access
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.786
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 16 
+         remark #15477: vector cost: 3.500 
+         remark #15478: estimated potential speedup: 4.270 
+         remark #15487: type converts: 1 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(358,13)
+      <Remainder loop for vectorization>
+         remark #15389: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+comp*U137_V.U137_V] has unaligned access
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 3.556
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 16 
+         remark #15477: vector cost: 3.500 
+         remark #15478: estimated potential speedup: 4.270 
+         remark #15487: type converts: 1 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(358,13)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(354,42)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::plus(amrex::iMultiFab *, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.600
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 32 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 18.780 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1681,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(443,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::plus(amrex::iMultiFab *, int, const amrex::Box &, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.600
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 32 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 18.780 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1700,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(457,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::plus(amrex::iMultiFab *, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.600
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 30 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 17.890 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1685,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1681,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(102,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::plus(amrex::iMultiFab *, int, const amrex::Box &, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.600
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 30 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 17.890 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1705,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1700,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(108,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::mult(amrex::iMultiFab *, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.857
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 33 
+            remark #15477: vector cost: 1.750 
+            remark #15478: estimated potential speedup: 14.930 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1721,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(485,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::mult(amrex::iMultiFab *, int, const amrex::Box &, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.857
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 33 
+            remark #15477: vector cost: 1.750 
+            remark #15478: estimated potential speedup: 14.930 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1740,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(499,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::mult(amrex::iMultiFab *, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.857
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 31 
+            remark #15477: vector cost: 1.750 
+            remark #15478: estimated potential speedup: 14.190 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1721,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(114,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::mult(amrex::iMultiFab *, int, const amrex::Box &, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 1.857
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 31 
+            remark #15477: vector cost: 1.750 
+            remark #15478: estimated potential speedup: 14.190 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1740,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(120,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::negate(amrex::iMultiFab *, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.500
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 32 
+            remark #15477: vector cost: 1.000 
+            remark #15478: estimated potential speedup: 22.110 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1721,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(510,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::negate(amrex::iMultiFab *, const amrex::Box &, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+comp)*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.500
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 32 
+            remark #15477: vector cost: 1.000 
+            remark #15478: estimated potential speedup: 22.110 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1740,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(522,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::negate(amrex::iMultiFab *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.500
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 30 
+            remark #15477: vector cost: 1.000 
+            remark #15478: estimated potential speedup: 21.120 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1725,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1721,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(126,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::negate(amrex::iMultiFab *, const amrex::Box &, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+n*U13b_V.U13b_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.500
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 30 
+            remark #15477: vector cost: 1.000 
+            remark #15478: estimated potential speedup: 21.120 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1745,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1740,50) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(132,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::minIndex(const amrex::iMultiFab *, int, int) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(403,20)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(403,20)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(403,20)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between *U121_V (225:9) and r (225:9)
+         remark #15346: vector dependence: assumed FLOW dependence between r (225:9) and *U121_V (225:9)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(225,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(403,20)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(404,52)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(404,52)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(404,52)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between U134_V.U134_V (96:75) and U134_V.U134_V[1] (1782:17)
+         remark #15346: vector dependence: assumed ANTI dependence between U134_V.U134_V[1] (1782:17) and U134_V.U134_V (96:75)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(404,52)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(353,35) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(403,20)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1778,43) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(404,52)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::maxIndex(const amrex::iMultiFab *, int, int) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(411,20)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(411,20)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(411,20)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed ANTI dependence between *U122_V (280:9) and r (280:9)
+         remark #15346: vector dependence: assumed FLOW dependence between r (280:9) and *U122_V (280:9)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(280,9) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(411,20)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(412,52)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(412,52)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(412,52)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between U134_V.U134_V (96:75) and U134_V.U134_V[1] (1782:17)
+         remark #15346: vector dependence: assumed ANTI dependence between U134_V.U134_V[1] (1782:17) and U134_V.U134_V (96:75)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1782,17) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(412,52)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(680,35) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(411,20)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1778,43) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(412,52)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::plus(amrex::iMultiFab *, const amrex::iMultiFab &, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+strt_comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+strt_comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+strt_comp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.800
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 48 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 24.990 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1449,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(472,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::minus(amrex::iMultiFab *, const amrex::iMultiFab &, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+strt_comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+strt_comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+strt_comp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.800
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 48 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 24.990 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1513,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(421,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::divide(amrex::iMultiFab *, const amrex::iMultiFab &, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+strt_comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+strt_comp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+strt_comp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.187
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 68 
+            remark #15477: vector cost: 18.750 
+            remark #15478: estimated potential speedup: 3.490 
+            remark #15482: vectorized math library calls: 1 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1577,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(430,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::Add(amrex::iMultiFab &, const amrex::iMultiFab &, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+srccomp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.800
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 48 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 24.990 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1456,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1449,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(36,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::Copy(amrex::iMultiFab &, const amrex::iMultiFab &, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(dstcomp+n)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(srccomp+n)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 4.667
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 31 
+            remark #15477: vector cost: 0.750 
+            remark #15478: estimated potential speedup: 25.830 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1488,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1481,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(51,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::Subtract(amrex::iMultiFab &, const amrex::iMultiFab &, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+srccomp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.800
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 48 
+            remark #15477: vector cost: 1.250 
+            remark #15478: estimated potential speedup: 24.990 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1520,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1513,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(66,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::Multiply(amrex::iMultiFab &, const amrex::iMultiFab &, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+srccomp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 2.000
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 48 
+            remark #15477: vector cost: 1.750 
+            remark #15478: estimated potential speedup: 19.880 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1552,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1545,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(81,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::Divide(amrex::iMultiFab &, const amrex::iMultiFab &, int, int, int, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V+(n+dstcomp)*U13b_V.U13b_V] has aligned access
+            remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U137_V.U137_V+(k-U125_V.U125_V)*U137_V.U137_V+(n+srccomp)*U137_V.U137_V] has aligned access
+            remark #15305: vectorization support: vector length 4
+            remark #15309: vectorization support: normalized vectorization overhead 0.187
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 2 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 68 
+            remark #15477: vector cost: 18.750 
+            remark #15478: estimated potential speedup: 3.490 
+            remark #15482: vectorized math library calls: 1 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1584,13) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArrayUtility.H(1577,48) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(96,5)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::iMultiFab::define(amrex::iMultiFab *, const amrex::BoxArray &, const amrex::DistributionMapping &, int, const amrex::IntVect &, const amrex::MFInfo &, const amrex::FabFactory<amrex::IArrayBox> &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(198,32)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5)
+   remark #15346: vector dependence: assumed FLOW dependence between call:std::basic_string<char, std::char_traits<char>, std::alloca (249:5) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(198,32)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(198,32)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::OwnerMask(std::unique_ptr<amrex::iMultiFab, std::default_delete<amrex::iMultiFab>> *, const amrex::FabArrayBase &, const amrex::Periodicity &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(537,48)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(536,33)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(555,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(555,13)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(555,13)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(555,13)
+         remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V] has aligned access
+         remark #15305: vectorization support: vector length 4
+         remark #15309: vectorization support: normalized vectorization overhead 3.333
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 12 
+         remark #15477: vector cost: 0.750 
+         remark #15478: estimated potential speedup: 12.850 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(555,13)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(575,29)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(576,29)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(578,29)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(578,29)
+         remark #15388: vectorization support: reference p[i-U125_V.U125_V+(j-U125_V.U125_V)*U13b_V.U13b_V+(k-U125_V.U125_V)*U13b_V.U13b_V] has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(579,36) ]
+         remark #15305: vectorization support: vector length 4
+         remark #15309: vectorization support: normalized vectorization overhead 3.333
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 12 
+         remark #15477: vector cost: 0.750 
+         remark #15478: estimated potential speedup: 12.850 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(578,29)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(537,48)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(537,48)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(549,34)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(560,35)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(562,20) ]
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_iMultiFab.cpp(563,39)
+         remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: std::unique_ptr<amrex::iMultiFab, std::default_delete<amrex::iMultiFab>>::~unique_ptr(std::unique_ptr<amrex::iMultiFab, std::default_delete<amrex::iMultiFab>> *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /usr/include/c++/4.8.5/bits/unique_ptr.h(185,17)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /usr/include/c++/4.8.5/bits/unique_ptr.h(185,17)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1061,19) inlined into /usr/include/c++/4.8.5/bits/unique_ptr.h(185,17)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1063,28) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1071,30) inlined into /usr/include/c++/4.8.5/bits/unique_ptr.h(185,17)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_FabArray.H(1072,13) ]
+LOOP END
+===========================================================================

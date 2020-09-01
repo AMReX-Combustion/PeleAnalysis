@@ -1,0 +1,7 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -Itmp_build_dir/o/3d.intel.MPI.EXE -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/lib -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -implicitnone -module tmp_build_dir/o/3d.intel.MPI.EXE -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_constants_mod.o

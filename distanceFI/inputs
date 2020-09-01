@@ -1,0 +1,57 @@
+#isoFileName = Stldirtdum.stl
+isoFileName = Stldirtdum_5.stl
+#isoFileName = Stldirtdum_2_transformed.stl
+#isoFileName = brief.stl
+#isoFileType = stl_ascii
+isoFileType = stl_binary
+
+
+#isoFileName = flatplane
+#isoFileType = mef
+
+#nCell = 64 64 192
+#probLo = 0 0 0
+#probHi = .03 .03 .09
+#point = 0 0 0
+
+#isoFileName = Stldirtdum_ascii.stl
+#isoFileType = stl_ascii
+#isoFileName = Stldirtdum.stl
+
+#isoFileType = stl_binary
+#nCell = 128 64 64
+#probLo = -.004 -.004  .0035
+#probHi =  .004     0  .0075
+#point = 0 -.001 .005
+
+nCell = 384 256 256
+probLo = 0.001 0 0.008
+probHi =  .007  .004  .012
+point = .004 .003 .0015
+
+
+
+
+
+#isoFileName = test
+#isoFileType = stl_ascii
+
+
+#nCell = 64 64 64
+#probLo = 0 0 0
+#probHi = 1.6 1.6 1.6
+#point =   1.5 0.39 1.5
+
+
+
+#nCell = 32 32 32
+#probLo = -0.001 -0.002 0.012
+#probHi =  0      0     0.013
+#point = -0.0005 -0.001 0.0125
+#probLo =  0        0           0
+#probHi =  0.001      0.002     0.001
+#point = 0.0005 0.001 0.0005
+
+
+
+max_grid_size = 16

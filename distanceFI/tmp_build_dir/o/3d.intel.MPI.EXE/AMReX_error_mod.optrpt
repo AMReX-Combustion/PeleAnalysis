@@ -1,0 +1,245 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -Itmp_build_dir/o/3d.intel.MPI.EXE -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/lib -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -implicitnone -module tmp_build_dir/o/3d.intel.MPI.EXE -DBL_LANG_FORT -DAMREX_LANG_FORT -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_error_mod.o
+
+Begin optimization report for: BL_WARNING
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(73,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(97,8)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(73,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(97,8)
+      remark #15388: vectorization support: reference at (73:10) has aligned access
+      remark #15388: vectorization support: reference at (73:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(73,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(97,8)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: BL_ABORT
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(68,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(90,8)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(68,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(90,8)
+      remark #15388: vectorization support: reference at (68:10) has aligned access
+      remark #15388: vectorization support: reference at (68:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(68,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(90,8)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: BL_ERROR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(41,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(83,8)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(41,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(83,8)
+      remark #15388: vectorization support: reference at (41:10) has aligned access
+      remark #15388: vectorization support: reference at (41:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(41,10) inlined into /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(83,8)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_WARNING
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(73,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(73,10)
+      remark #15388: vectorization support: reference at (73:10) has aligned access
+      remark #15388: vectorization support: reference at (73:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(73,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_ABORT
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(68,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(68,10)
+      remark #15388: vectorization support: reference at (68:10) has aligned access
+      remark #15388: vectorization support: reference at (68:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(68,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_ERROR_MODULE^AMREX_ERROR1_R
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(63,10)
+   remark #15382: vectorization support: call to function for_concat cannot be vectorized
+   remark #15382: vectorization support: call to function memcpy cannot be vectorized
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between ac%ac(1) (63:10) and ac (63:10)
+   remark #15346: vector dependence: assumed OUTPUT dependence between ac (63:10) and ac%ac(1) (63:10)
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_ERROR_MODULE^AMREX_ERROR1_I
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(54,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(54,10)
+      remark #15388: vectorization support: reference at (54:10) has aligned access
+      remark #15388: vectorization support: reference at (54:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(54,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_ERROR_MODULE^AMREX_ERROR1_CH
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(46,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(46,10)
+      remark #15388: vectorization support: reference at (46:10) has aligned access
+      remark #15388: vectorization support: reference at (46:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(46,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_ERROR_MODULE^AMREX_ERROR0
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(41,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(41,10)
+      remark #15388: vectorization support: reference at (41:10) has aligned access
+      remark #15388: vectorization support: reference at (41:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_error_mod.F90(41,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================

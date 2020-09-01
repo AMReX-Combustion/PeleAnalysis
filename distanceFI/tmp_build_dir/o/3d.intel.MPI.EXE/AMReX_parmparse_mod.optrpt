@@ -1,0 +1,918 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -Itmp_build_dir/o/3d.intel.MPI.EXE -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/lib -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -implicitnone -module tmp_build_dir/o/3d.intel.MPI.EXE -DBL_LANG_FORT -DAMREX_LANG_FORT -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_parmparse_mod.o
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::AMREX_PARMPARSE_BUILD
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(251,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(251,13)
+      remark #15388: vectorization support: reference at (251:13) has aligned access
+      remark #15388: vectorization support: reference at (251:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(251,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_INT
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(280,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(280,10)
+      remark #15388: vectorization support: reference at (280:10) has aligned access
+      remark #15388: vectorization support: reference at (280:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(280,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_REAL
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(287,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(287,10)
+      remark #15388: vectorization support: reference at (287:10) has aligned access
+      remark #15388: vectorization support: reference at (287:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(287,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_LOGICAL
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(295,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(295,10)
+      remark #15388: vectorization support: reference at (295:10) has aligned access
+      remark #15388: vectorization support: reference at (295:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(295,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_STRING
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(307,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(307,10)
+      remark #15388: vectorization support: reference at (307:10) has aligned access
+      remark #15388: vectorization support: reference at (307:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(307,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_INTARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(321,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(321,9)
+      remark #15388: vectorization support: reference at (321:9) has aligned access
+      remark #15388: vectorization support: reference at (321:9) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(321,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(325,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(325,13)
+      remark #15388: vectorization support: reference at (325:13) has aligned access
+      remark #15388: vectorization support: reference at (325:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(325,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_REALARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(336,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(336,9)
+      remark #15388: vectorization support: reference at (336:9) has aligned access
+      remark #15388: vectorization support: reference at (336:9) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(336,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(340,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(340,13)
+      remark #15388: vectorization support: reference at (340:13) has aligned access
+      remark #15388: vectorization support: reference at (340:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(340,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::GET_STRINGARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(354,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(354,9)
+      remark #15388: vectorization support: reference at (354:9) has aligned access
+      remark #15388: vectorization support: reference at (354:9) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(354,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(358,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(358,13)
+      remark #15388: vectorization support: reference at (358:13) has aligned access
+      remark #15388: vectorization support: reference at (358:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(358,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(359,17)
+   remark #15388: vectorization support: reference N_PASS(:) has aligned access
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.824
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 6 
+   remark #15477: vector cost: 4.250 
+   remark #15478: estimated potential speedup: 1.370 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(359,17)
+<Remainder loop for vectorization>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(366,8)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_INT
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(378,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(378,13)
+      remark #15388: vectorization support: reference at (378:13) has aligned access
+      remark #15388: vectorization support: reference at (378:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(378,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_REAL
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(388,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(388,13)
+      remark #15388: vectorization support: reference at (388:13) has aligned access
+      remark #15388: vectorization support: reference at (388:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(388,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_LOGICAL
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(398,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(398,13)
+      remark #15388: vectorization support: reference at (398:13) has aligned access
+      remark #15388: vectorization support: reference at (398:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(398,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_STRING
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(414,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(414,13)
+      remark #15388: vectorization support: reference at (414:13) has aligned access
+      remark #15388: vectorization support: reference at (414:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(414,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_INTARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(432,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(432,9)
+      remark #15388: vectorization support: reference at (432:9) has aligned access
+      remark #15388: vectorization support: reference at (432:9) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(432,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(434,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(434,13)
+      remark #15388: vectorization support: reference at (434:13) has aligned access
+      remark #15388: vectorization support: reference at (434:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(434,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_REALARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(445,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(445,9)
+      remark #15388: vectorization support: reference at (445:9) has aligned access
+      remark #15388: vectorization support: reference at (445:9) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(445,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(447,13)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(447,13)
+      remark #15388: vectorization support: reference at (447:13) has aligned access
+      remark #15388: vectorization support: reference at (447:13) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(447,13)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::QUERY_STRINGARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(458,9)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(458,9)
+      remark #15388: vectorization support: reference at (458:9) has aligned access
+      remark #15388: vectorization support: reference at (458:9) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(458,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_INT
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(469,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(469,10)
+      remark #15388: vectorization support: reference at (469:10) has aligned access
+      remark #15388: vectorization support: reference at (469:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(469,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_REAL
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(476,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(476,10)
+      remark #15388: vectorization support: reference at (476:10) has aligned access
+      remark #15388: vectorization support: reference at (476:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(476,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_LOGICAL
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(489,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(489,10)
+      remark #15388: vectorization support: reference at (489:10) has aligned access
+      remark #15388: vectorization support: reference at (489:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(489,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_STRING
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(496,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(496,10)
+      remark #15388: vectorization support: reference at (496:10) has aligned access
+      remark #15388: vectorization support: reference at (496:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(496,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(496,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(496,10)
+      remark #15388: vectorization support: reference at (496:10) has aligned access
+      remark #15388: vectorization support: reference at (496:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(496,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_INTARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+      remark #15388: vectorization support: reference at (503:10) has aligned access
+      remark #15388: vectorization support: reference at (503:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+<Multiversioned v1>
+   remark #15388: vectorization support: reference at (503:72) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,72) ]
+   remark #15389: vectorization support: reference v(:) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,72) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.600
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 1.250 
+   remark #15478: estimated potential speedup: 3.170 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+<Remainder loop for vectorization, Multiversioned v1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+<Multiversioned v2>
+   remark #15388: vectorization support: reference at (503:72) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,72) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <v(:)>, stride is unknown to compiler   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,72) ]
+   remark #15305: vectorization support: vector length 4
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 8.750 
+   remark #15478: estimated potential speedup: 0.450 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(503,10)
+<Remainder, Multiversioned v2>
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_REALARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+      remark #15388: vectorization support: reference at (510:10) has aligned access
+      remark #15388: vectorization support: reference at (510:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+<Multiversioned v1>
+   remark #15388: vectorization support: reference at (510:73) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,73) ]
+   remark #15389: vectorization support: reference v(:) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,73) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.750
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 2.000 
+   remark #15478: estimated potential speedup: 1.990 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+<Remainder loop for vectorization, Multiversioned v1>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+<Multiversioned v2>
+   remark #15388: vectorization support: reference at (510:73) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,73) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <v(:)>, stride is unknown to compiler   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,73) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 4 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.600 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(510,10)
+<Remainder loop for vectorization, Multiversioned v2>
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::ADD_STRINGARR
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(524,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(525,8)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(525,8)
+      remark #15388: vectorization support: reference CS(i) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(526,10) ]
+      remark #15388: vectorization support: reference v(mi-1,ni) has aligned access   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(526,18) ]
+      remark #15305: vectorization support: vector length 16
+      remark #15309: vectorization support: normalized vectorization overhead 4.750
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 7 
+      remark #15477: vector cost: 0.250 
+      remark #15478: estimated potential speedup: 7.420 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(525,8)
+   <Alternate Alignment Vectorized Loop>
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(525,8)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(532,10)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(532,10)
+      remark #15388: vectorization support: reference at (532:10) has aligned access
+      remark #15388: vectorization support: reference at (532:10) has aligned access
+      remark #15305: vectorization support: vector length 16
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 4 
+      remark #15477: vector cost: 0.180 
+      remark #15478: estimated potential speedup: 21.330 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(532,10)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_PARMPARSE_MODULE::AMREX_INIT_NAMELIST
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(551,11)
+   remark #15382: vectorization support: call to function for_alloc_allocatable cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(552,14) ]
+   remark #15382: vectorization support: call to function for_cpystr cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(552,14) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between amrex_namelist_ (552:14) and amrex_namelist_ (552:14)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(556,11)
+   remark #15382: vectorization support: call to function for_alloc_allocatable cannot be vectorized   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(557,14) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between amrex_namelist_ (557:14) and amrex_namelist_ (557:14)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_parmparse_mod.F90(540,5)
+   remark #15523: loop was not vectorized: loop control variable n was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+===========================================================================

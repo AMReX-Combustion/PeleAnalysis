@@ -1,0 +1,50 @@
+=== If no file names and line numbers are shown below, one can run
+            addr2line -Cpfie my_exefile my_line_address
+    to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
+    Or one can use amrex/Tools/Backtrace/parse_bt.py.
+
+=== Please note that the line number reported by addr2line may not be accurate.
+    One can use
+            readelf -wl my_exefile | grep my_line_address'
+    to find out the offset for that line.
+
+ 0: ./main3d.intel.MPI.ex() [0x6a9896]
+    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*)
+??:0
+
+ 1: ./main3d.intel.MPI.ex() [0x6ab067]
+    amrex::BLBackTrace::handler(int)
+??:0
+
+ 2: /lib64/libc.so.6(+0x36340) [0x7f81a6f8e340]
+    __restore_rt
+??:0
+
+ 3: ./main3d.intel.MPI.ex() [0x4247e1]
+    amrex::EB2::TriangulatedIF::mergeVertex(std::vector<amrex::EB2::pointToElement, std::allocator<amrex::EB2::pointToElement> >&)
+??:0
+
+ 4: ./main3d.intel.MPI.ex() [0x4242c8]
+    amrex::EB2::TriangulatedIF::makeWatertight(std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > const&)
+??:0
+
+ 5: ./main3d.intel.MPI.ex() [0x424f81]
+    amrex::EB2::TriangulatedIF::loadData_stl_binary(std::string const&)
+??:0
+
+ 6: ./main3d.intel.MPI.ex() [0x420e3d]
+    amrex::EB2::TriangulatedIF::TriangulatedIF(std::string const&, std::string const&)
+??:0
+
+ 7: ./main3d.intel.MPI.ex() [0x418a69]
+    main
+??:0
+
+ 8: /lib64/libc.so.6(__libc_start_main+0xf5) [0x7f81a6f7a495]
+    __libc_start_main
+??:0
+
+ 9: ./main3d.intel.MPI.ex() [0x418869]
+    _start
+??:0
+

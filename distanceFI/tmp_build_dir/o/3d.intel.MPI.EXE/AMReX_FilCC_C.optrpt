@@ -1,0 +1,1095 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C++ Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi -I/share/apps/opt/HWLOC/2.1.0/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -std=c++14 -pthread -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_FilCC_C.o -pthread
+
+Begin optimization report for: MPI::Datatype::Get_contents(const MPI::Datatype *, int, int, int, int *, MPI::Aint *, MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+   remark #15388: vectorization support: reference c_datatypes[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,22) ]
+   remark #15329: vectorization support: non-unit strided store was emulated for the variable <array_of_datatypes->mpi_datatype[i]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(88,7) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.667
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15453: unmasked strided stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 3.000 
+   remark #15478: estimated potential speedup: 1.640 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype_inln.h(369,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Comm::Alltoallw(const MPI::Comm *, const void *, const int *, const int *, const MPI::Datatype *, void *, const int *, const int *, const MPI::Datatype *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+   remark #15388: vectorization support: reference data_type_tbl[i_rank] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(426,9) ]
+   remark #15388: vectorization support: reference data_type_tbl[i_rank+comm_size] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(427,9) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <sendtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <recvtypes->mpi_datatype[i_rank]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/datatype.h(90,50) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 1.400
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 2 
+   remark #15452: unmasked strided loads: 2 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 5.000 
+   remark #15478: estimated potential speedup: 1.770 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/comm_inln.h(425,5)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Create_cart(MPI::Cartcomm *, const MPI::Intracomm *, int, const int *, const bool *, bool) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(105,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(104,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(189,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Intracomm::Spawn_multiple(MPI::Intercomm *, MPI::Intracomm *, int, const char **, const char ***, const int *, const MPI::Info *, int, int *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+   remark #15388: vectorization support: reference mpi_info_tbl[i_tbl] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(205,8) ]
+   remark #15328: vectorization support: non-unit strided load was emulated for the variable <array_of_info->mpi_info[i_tbl]>, stride is 2   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/info.h(73,39) ]
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 2.000
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15452: unmasked strided loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 1.960 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(204,4) inlined into /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/intracomm_inln.h(222,7)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Get_topo(const MPI::Cartcomm *, int, int *, bool *, int *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(73,27) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(72,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.778
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(76,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,5) ]
+   remark #15389: vectorization support: reference int_periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(77,18) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 0.867
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.120 
+   remark #15478: estimated potential speedup: 3.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Sub(MPI::Cartcomm *, const MPI::Cartcomm *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15388: vectorization support: reference remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_remain_dims[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,5) ]
+   remark #15389: vectorization support: reference remain_dims[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(110,31) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(109,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: MPI::Cartcomm::Map(const MPI::Cartcomm *, int, const int *, const bool *) const
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15388: vectorization support: reference periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15305: vectorization support: vector length 16
+   remark #15309: vectorization support: normalized vectorization overhead 0.875
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+   remark #15388: vectorization support: reference int_periods[i] has aligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,5) ]
+   remark #15389: vectorization support: reference periods[i] has unaligned access   [ /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(123,28) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.300
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 5 
+   remark #15477: vector cost: 1.000 
+   remark #15478: estimated potential speedup: 4.140 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include/openmpi/ompi/mpi/cxx/topology_inln.h(122,3)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================
+
+Begin optimization report for: amrex::fab_filcc(const amrex::Box &, const amrex::Array4<amrex::Real> &, int, const amrex::Box &, const amrex::Real *, const amrex::Real *, const amrex::BCRec *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(47,16)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(48,16)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(49,16)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (50:21) and q.p[U1c_V.U1c_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (50:21)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1c_V.U1c_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (50:21) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (50:21)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(49,16)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(53,16)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(54,16)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(55,16)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (57:25) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (62:29)
+         remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (62:29) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (57:25)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(55,16)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(67,16)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(68,16)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(69,16)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (70:21) and q.p[U1c_V.U1c_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (70:21)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1c_V.U1c_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (70:21) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (70:21)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(69,16)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(73,16)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(74,16)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(75,16)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (76:21) and q.p[U1c_V.U1c_V+U1c_V.U1c_V-i-1-q.begin.begin+(j-q.begin.begin)* (76:21)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1c_V.U1c_V+U1c_V.U1c_V-i-1-q.begin.begin+(j-q.begin.begin)* (76:21) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (76:21)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(75,16)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(79,16)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(80,16)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(81,16)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (82:21) and q.p[U1c_V.U1c_V+U1c_V.U1c_V-i-1-q.begin.begin+(j-q.begin.begin)* (82:21)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1c_V.U1c_V+U1c_V.U1c_V-i-1-q.begin.begin+(j-q.begin.begin)* (82:21) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (82:21)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(81,16)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(94,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(95,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(96,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (97:22) and q.p[U1d_V.U1d_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (97:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1d_V.U1d_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (97:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (97:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(96,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(100,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(101,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(102,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (104:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (109:30)
+         remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (109:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (104:26)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(102,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(114,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(115,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(116,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (117:22) and q.p[U1d_V.U1d_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (117:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1d_V.U1d_V-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q (117:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (117:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(116,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(120,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(121,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(122,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (123:22) and q.p[U1d_V.U1d_V-i-U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)* (123:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1d_V.U1d_V-i-U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)* (123:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (123:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(122,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(126,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(127,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(128,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (129:22) and q.p[U1d_V.U1d_V-i-U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)* (129:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[U1d_V.U1d_V-i-U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)* (129:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (129:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(128,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(142,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(143,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(144,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (145:22) and q.p[i-q.begin.begin+(U1c_V.U1c_V-q.begin.begin)*qn->jstride+(k-q (145:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-q.begin.begin)*qn->jstride+(k-q (145:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (145:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(144,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(148,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(149,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(150,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (152:26) and q.p[i-q.begin.begin+(U1c_V.U1c_V-q.begin.begin)*qn->jstride+(k-q (152:26)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-q.begin.begin)*qn->jstride+(k-q (152:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (152:26)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(150,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(150,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (155:30) and q.p[i-q.begin.begin+(U1c_V.U1c_V+2-q.begin.begin)*qn->jstride+(k (155:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V+2-q.begin.begin)*qn->jstride+(k (155:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (155:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(150,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(150,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (157:30) and q.p[i-q.begin.begin+(U1c_V.U1c_V+1-q.begin.begin)*qn->jstride+(k (157:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V+1-q.begin.begin)*qn->jstride+(k (157:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (157:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(150,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(162,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(163,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(164,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (165:22) and q.p[i-q.begin.begin+(U1c_V.U1c_V-q.begin.begin)*qn->jstride+(k-q (165:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-q.begin.begin)*qn->jstride+(k-q (165:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (165:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(164,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(168,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(169,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(170,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (171:22) and q.p[i-q.begin.begin+(U1c_V.U1c_V+U1c_V.U1c_V-j-1-q.begin.begin)* (171:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V+U1c_V.U1c_V-j-1-q.begin.begin)* (171:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (171:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(170,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(174,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(175,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(176,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (177:22) and q.p[i-q.begin.begin+(U1c_V.U1c_V+U1c_V.U1c_V-j-1-q.begin.begin)* (177:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V+U1c_V.U1c_V-j-1-q.begin.begin)* (177:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (177:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(176,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(188,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(189,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(190,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (191:22) and q.p[i-q.begin.begin+(U1d_V.U1d_V-q.begin.begin)*qn->jstride+(k-q (191:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-q.begin.begin)*qn->jstride+(k-q (191:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (191:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(190,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(194,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(195,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(196,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (198:26) and q.p[i-q.begin.begin+(U1d_V.U1d_V-q.begin.begin)*qn->jstride+(k-q (198:26)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-q.begin.begin)*qn->jstride+(k-q (198:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (198:26)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(196,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(196,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (201:30) and q.p[i-q.begin.begin+(U1d_V.U1d_V-2-q.begin.begin)*qn->jstride+(k (201:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-2-q.begin.begin)*qn->jstride+(k (201:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (201:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(196,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(196,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (203:30) and q.p[i-q.begin.begin+(U1d_V.U1d_V-1-q.begin.begin)*qn->jstride+(k (203:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-1-q.begin.begin)*qn->jstride+(k (203:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (203:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(196,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(208,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(209,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(210,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (211:22) and q.p[i-q.begin.begin+(U1d_V.U1d_V-q.begin.begin)*qn->jstride+(k-q (211:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-q.begin.begin)*qn->jstride+(k-q (211:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (211:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(210,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(214,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(215,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(216,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (217:22) and q.p[i-q.begin.begin+(U1d_V.U1d_V-j-U1d_V.U1d_V+1-q.begin.begin)* (217:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-j-U1d_V.U1d_V+1-q.begin.begin)* (217:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (217:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(216,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(220,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(221,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(222,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (223:22) and q.p[i-q.begin.begin+(U1d_V.U1d_V-j-U1d_V.U1d_V+1-q.begin.begin)* (223:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V-j-U1d_V.U1d_V+1-q.begin.begin)* (223:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (223:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(222,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(237,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(238,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(239,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (240:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V-q (240:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V-q (240:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (240:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(239,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(243,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(244,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(245,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (247:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V-q (247:26)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V-q (247:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (247:26)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(245,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(245,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (250:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+2 (250:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+2 (250:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (250:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(245,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(245,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (252:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+1 (252:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+1 (252:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (252:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(245,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(257,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(258,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(259,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (260:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V-q (260:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V-q (260:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (260:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(259,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(263,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(264,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(265,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (266:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+U (266:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+U (266:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (266:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(265,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(269,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(270,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(271,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (272:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+U (272:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1c_V.U1c_V+U (272:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (272:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(271,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(283,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(284,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(285,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (286:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-q (286:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-q (286:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (286:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(285,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(289,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(290,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(291,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (293:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-q (293:26)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-q (293:26) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (293:26)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(291,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(291,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (296:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-2 (296:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-2 (296:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (296:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(291,17)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(291,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (298:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-1 (298:30)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-1 (298:30) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (298:30)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(291,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(303,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(304,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(305,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (306:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-q (306:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-q (306:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (306:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(305,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(309,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(310,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(311,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (312:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-k (312:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-k (312:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (312:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(311,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(315,17)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(316,17)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(317,17)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (318:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-k (318:22)
+         remark #15346: vector dependence: assumed ANTI dependence between q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U1d_V.U1d_V-k (318:22) and q.p[i-q.begin.begin+(j-q.begin.begin)*qn->jstride+(k-q.begin.beg (318:22)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(317,17)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(339,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (341:30) and q.p[U1c_V.U1c_V-1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (369:34)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (369:34) and q.p[U1c_V.U1c_V-1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (341:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(391,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (393:30) and q.p[U1c_V.U1c_V-1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (420:34)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (420:34) and q.p[U1c_V.U1c_V-1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (393:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(442,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (444:30) and q.p[U1d_V.U1d_V+1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (469:34)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (469:34) and q.p[U1d_V.U1d_V+1-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn (444:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(491,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (493:30) and q.p[U1d_V.U1d_V+1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (518:34)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (518:34) and q.p[U1d_V.U1d_V+1-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn (493:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(542,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (544:30) and q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (553:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (553:30) and q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (544:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(573,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (575:30) and q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (584:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (584:30) and q.p[U1c_V.U1c_V-1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (575:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(604,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (606:30) and q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (615:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (615:30) and q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (606:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(635,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (637:30) and q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (646:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (646:30) and q.p[U1d_V.U1d_V+1-q.begin.begin+(j-q.begin.begin)*qn->jstride+(U (637:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(666,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (668:30) and q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (677:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (677:30) and q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (668:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(697,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (699:30) and q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (708:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (708:30) and q.p[i-q.begin.begin+(U1c_V.U1c_V-1-q.begin.begin)*qn->jstride+(U (699:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(728,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (730:30) and q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (739:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (739:30) and q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (730:30)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(759,21)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (761:30) and q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (770:30)
+   remark #15346: vector dependence: assumed OUTPUT dependence between q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (770:30) and q.p[i-q.begin.begin+(U1d_V.U1d_V+1-q.begin.begin)*qn->jstride+(U (761:30)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_FilCC_C.cpp(36,5)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+LOOP END
+===========================================================================

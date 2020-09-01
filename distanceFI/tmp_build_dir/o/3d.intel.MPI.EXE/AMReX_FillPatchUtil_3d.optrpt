@@ -1,0 +1,850 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.0.4.243 Build 20190416
+
+Compiler options: -Itmp_build_dir/o/3d.intel.MPI.EXE -I. -I. -I/home/zou00066/peleLM/amrex/Src/Base -I/home/zou00066/peleLM/amrex/Src/Boundary -I/home/zou00066/peleLM/amrex/Src/EB -I/home/zou00066/peleLM/amrex/Src/AmrCore -I../Tools/SDFGen -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/include -I/stage/opt/OpenMPI/4.0.2/Intel/2019_U4_EPYC_MLNX/lib -g -O2 -ip -qopt-report=5 -qopt-report-phase=vec -implicitnone -module tmp_build_dir/o/3d.intel.MPI.EXE -DBL_LANG_FORT -DAMREX_LANG_FORT -DBL_USE_MPI -DAMREX_USE_MPI -DAMREX_GIT_VERSION="20.06-82-gdf3e65beac99-dirty" -DAMREX_LAUNCH= -DAMREX_DEVICE= -DAMREX_CUDA_FORT_GLOBAL= -DAMREX_CUDA_FORT_DEVICE= -DAMREX_CUDA_FORT_HOST= -DAMREX_CUDA_FORT_HOST_DEVICE= -DBL_SPACEDIM=3 -DAMREX_SPACEDIM=3 -DBL_FORT_USE_UNDERSCORE -DAMREX_FORT_USE_UNDERSCORE -DBL_Linux -DAMREX_Linux -DBL_USE_ASSERTION -DAMREX_USE_ASSERTION -DAMREX_USE_EB -c -o tmp_build_dir/o/3d.intel.MPI.EXE/AMReX_FillPatchUtil_3d.o
+
+Begin optimization report for: AMREX_INTERP_DIV_FREE_BFIELD
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(30,3)
+   remark #15388: vectorization support: reference dxinv(:) has aligned access
+   remark #15389: vectorization support: reference dx(:) has unaligned access
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 2
+   remark #15309: vectorization support: normalized vectorization overhead 0.083
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 30 
+   remark #15477: vector cost: 18.000 
+   remark #15478: estimated potential speedup: 1.300 
+   remark #15486: divides: 1 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(30,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(40,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(41,6)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(43,12)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCXDY(i,j,k) (44:15) and DCXDZ(i,j,k) (45:15)
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCXDZ(i,j,k) (45:15) and DCXDY(i,j,k) (44:15)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(43,12)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(48,12)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCXDY(i,j,k) (52:15) and DCXDZ(i,j,k) (58:15)
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCXDZ(i,j,k) (58:15) and DCXDY(i,j,k) (52:15)
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(65,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(66,6)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(68,12)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCYDX(i,j,k) (69:15) and DCYDZ(i,j,k) (70:15)
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCYDZ(i,j,k) (70:15) and DCYDX(i,j,k) (69:15)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(68,12)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(73,12)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCYDX(i,j,k) (77:15) and DCYDZ(i,j,k) (83:15)
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCYDZ(i,j,k) (83:15) and DCYDX(i,j,k) (77:15)
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(90,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(91,6)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(93,12)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCZDX(i,j,k) (94:15) and DCZDY(i,j,k) (95:15)
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCZDY(i,j,k) (95:15) and DCZDX(i,j,k) (94:15)
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(93,12)
+      <Remainder>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(98,12)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCZDX(i,j,k) (102:15) and DCZDY(i,j,k) (108:15)
+         remark #15346: vector dependence: assumed OUTPUT dependence between DCZDY(i,j,k) (108:15) and DCZDX(i,j,k) (102:15)
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(115,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(116,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(117,9)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(151,12)
+            remark #15542: loop was not vectorized: inner loop was already vectorized
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(153,15)
+               remark #15542: loop was not vectorized: inner loop was already vectorized
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(155,18)
+               <Peeled loop for vectorization>
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(155,18)
+                  remark #15388: vectorization support: reference bx(ir+ii,jr+jj,kr+kk) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(157,21) ]
+                  remark #15305: vectorization support: vector length 2
+                  remark #15309: vectorization support: normalized vectorization overhead 0.763
+                  remark #15300: LOOP WAS VECTORIZED
+                  remark #15442: entire loop may be executed in remainder
+                  remark #15449: unmasked aligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 52 
+                  remark #15477: vector cost: 19.000 
+                  remark #15478: estimated potential speedup: 2.690 
+                  remark #15487: type converts: 1 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(155,18)
+               <Remainder loop for vectorization>
+               LOOP END
+            LOOP END
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(163,12)
+            remark #15542: loop was not vectorized: inner loop was already vectorized
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(165,15)
+               remark #15542: loop was not vectorized: inner loop was already vectorized
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(167,18)
+               <Peeled loop for vectorization>
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(167,18)
+                  remark #15388: vectorization support: reference by(ir+ii,jr+jj,kr+kk) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(169,21) ]
+                  remark #15305: vectorization support: vector length 2
+                  remark #15399: vectorization support: unroll factor set to 4
+                  remark #15309: vectorization support: normalized vectorization overhead 0.220
+                  remark #15300: LOOP WAS VECTORIZED
+                  remark #15442: entire loop may be executed in remainder
+                  remark #15449: unmasked aligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 52 
+                  remark #15477: vector cost: 12.500 
+                  remark #15478: estimated potential speedup: 3.960 
+                  remark #15487: type converts: 1 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(167,18)
+               <Remainder loop for vectorization>
+                  remark #15388: vectorization support: reference by(ir+ii,jr+jj,kr+kk) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(169,21) ]
+                  remark #15305: vectorization support: vector length 2
+                  remark #15309: vectorization support: normalized vectorization overhead 0.815
+                  remark #15301: REMAINDER LOOP WAS VECTORIZED
+                  remark #15442: entire loop may be executed in remainder
+                  remark #15449: unmasked aligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 52 
+                  remark #15477: vector cost: 12.500 
+                  remark #15478: estimated potential speedup: 3.960 
+                  remark #15487: type converts: 1 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(167,18)
+               <Remainder loop for vectorization>
+               LOOP END
+            LOOP END
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(175,12)
+            remark #15542: loop was not vectorized: inner loop was already vectorized
+
+            LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(177,15)
+               remark #15542: loop was not vectorized: inner loop was already vectorized
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(179,18)
+               <Peeled loop for vectorization>
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(179,18)
+                  remark #15388: vectorization support: reference bz(ir+ii,jr+jj,kr+kk) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(181,21) ]
+                  remark #15305: vectorization support: vector length 2
+                  remark #15399: vectorization support: unroll factor set to 4
+                  remark #15309: vectorization support: normalized vectorization overhead 0.220
+                  remark #15300: LOOP WAS VECTORIZED
+                  remark #15442: entire loop may be executed in remainder
+                  remark #15449: unmasked aligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 52 
+                  remark #15477: vector cost: 12.500 
+                  remark #15478: estimated potential speedup: 3.960 
+                  remark #15487: type converts: 1 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(179,18)
+               <Remainder loop for vectorization>
+                  remark #15388: vectorization support: reference bz(ir+ii,jr+jj,kr+kk) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(181,21) ]
+                  remark #15305: vectorization support: vector length 2
+                  remark #15309: vectorization support: normalized vectorization overhead 0.815
+                  remark #15301: REMAINDER LOOP WAS VECTORIZED
+                  remark #15442: entire loop may be executed in remainder
+                  remark #15449: unmasked aligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 52 
+                  remark #15477: vector cost: 12.500 
+                  remark #15478: estimated potential speedup: 3.960 
+                  remark #15487: type converts: 1 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(179,18)
+               <Remainder loop for vectorization>
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: AMREX_INTERP_EFIELD
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(231,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(232,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(233,9)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(233,9)
+         <Peeled loop for vectorization>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(233,9)
+            remark #15388: vectorization support: reference TMPX(ic,jc*2,kc*2) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(234,12) ]
+            remark #15388: vectorization support: reference cx(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(234,12) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15309: vectorization support: normalized vectorization overhead 4.667
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15442: entire loop may be executed in remainder
+            remark #15448: unmasked aligned unit stride loads: 1 
+            remark #15449: unmasked aligned unit stride stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 4 
+            remark #15477: vector cost: 1.500 
+            remark #15478: estimated potential speedup: 1.290 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(233,9)
+         <Alternate Alignment Vectorized Loop>
+         LOOP END
+
+         LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(233,9)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(237,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(237,12)
+         remark #15388: vectorization support: reference TMPX(ic,jc*2+1,kc*2) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(238,15) ]
+         remark #15389: vectorization support: reference cx(ic,jc,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(238,45) ]
+         remark #15388: vectorization support: reference cx(ic,jc+1,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(238,58) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.472
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 9 
+         remark #15477: vector cost: 4.500 
+         remark #15478: estimated potential speedup: 1.940 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(237,12)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(237,12)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(244,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(245,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(246,9)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(246,9)
+         remark #15388: vectorization support: reference TMPX(ic,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(247,12) ]
+         remark #15389: vectorization support: reference TMPX(ic,j,k-1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(247,34) ]
+         remark #15388: vectorization support: reference TMPX(ic,j,k+1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(247,49) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.472
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 9 
+         remark #15477: vector cost: 4.500 
+         remark #15478: estimated potential speedup: 1.940 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(246,9)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(246,9)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(252,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(253,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(255,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(255,12)
+         remark #15388: vectorization support: reference TMPX(ic+1,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(256,27) ]
+         remark #15388: vectorization support: reference TMPX(ic-1,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(256,44) ]
+         remark #15389: vectorization support: reference ex(ic*2,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(257,15) ]
+         remark #15389: vectorization support: reference TMPX(ic,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(257,32) ]
+         remark #15389: vectorization support: reference TMPX(ic,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(258,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <ex(ic*2,j,k)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(257,15) ]
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <ex(ic*2+1,j,k)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(258,15) ]
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.121
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 2 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15453: unmasked strided stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 26 
+         remark #15477: vector cost: 15.500 
+         remark #15478: estimated potential speedup: 1.650 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(255,12)
+      <Remainder loop for vectorization>
+         remark #15388: vectorization support: reference TMPX(ic+1,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(256,27) ]
+         remark #15388: vectorization support: reference TMPX(ic-1,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(256,44) ]
+         remark #15389: vectorization support: reference ex(ic*2,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(257,15) ]
+         remark #15389: vectorization support: reference TMPX(ic,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(257,32) ]
+         remark #15389: vectorization support: reference TMPX(ic,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(258,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.341
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15453: unmasked strided stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 175 
+         remark #15477: vector cost: 93.500 
+         remark #15478: estimated potential speedup: 1.850 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(255,12)
+      <Remainder loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(261,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(261,12)
+         remark #15388: vectorization support: reference TMPX(ic,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(262,27) ]
+         remark #15389: vectorization support: reference TMPX(ic-1,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(262,44) ]
+         remark #15389: vectorization support: reference TMPX(ic+1,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(263,27) ]
+         remark #15389: vectorization support: reference TMPX(ic-1,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(263,44) ]
+         remark #15389: vectorization support: reference TMPX(ic+1,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(264,27) ]
+         remark #15388: vectorization support: reference TMPX(ic,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(264,44) ]
+         remark #15389: vectorization support: reference ex(ic*2,j,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(268,15) ]
+         remark #15388: vectorization support: reference TMPX(ic,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(268,32) ]
+         remark #15388: vectorization support: reference TMPX(ic,j,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(269,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <ex(ic*2,j,k)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(268,15) ]
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <ex(ic*2+1,j,k)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(269,15) ]
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.139
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15453: unmasked strided stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 175 
+         remark #15477: vector cost: 93.500 
+         remark #15478: estimated potential speedup: 1.850 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(261,12)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(276,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(277,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(278,9)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(278,9)
+         remark #15389: vectorization support: reference TMPY(ic*2,jc,kc*2) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(279,12) ]
+         remark #15388: vectorization support: reference cy(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(279,12) ]
+         remark #15388: vectorization support: reference cy(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(280,42) ]
+         remark #15389: vectorization support: reference cy(ic+1,jc,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(280,55) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <TMPY(ic*2,jc,kc*2)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(279,12) ]
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <TMPY(ic*2+1,jc,kc*2)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(280,12) ]
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.181
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15453: unmasked strided stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 13 
+         remark #15477: vector cost: 9.000 
+         remark #15478: estimated potential speedup: 1.420 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(278,9)
+      <Remainder loop for vectorization>
+         remark #15389: vectorization support: reference TMPY(ic*2,jc,kc*2) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(279,12) ]
+         remark #15388: vectorization support: reference cy(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(279,12) ]
+         remark #15388: vectorization support: reference cy(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(280,42) ]
+         remark #15389: vectorization support: reference cy(ic+1,jc,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(280,55) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.464
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15453: unmasked strided stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 13 
+         remark #15477: vector cost: 9.000 
+         remark #15478: estimated potential speedup: 1.420 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(287,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(288,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(289,9)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(289,9)
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(290,12) ]
+         remark #15389: vectorization support: reference TMPY(i,jc,k-1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(290,34) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k+1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(290,49) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.472
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 9 
+         remark #15477: vector cost: 4.500 
+         remark #15478: estimated potential speedup: 1.940 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(289,9)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(289,9)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(295,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(296,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(298,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(298,12)
+         remark #15389: vectorization support: reference TMPY(i,jc+1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(299,27) ]
+         remark #15389: vectorization support: reference TMPY(i,jc-1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(299,44) ]
+         remark #15389: vectorization support: reference ey(i,jc*2,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(300,15) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(300,32) ]
+         remark #15388: vectorization support: reference ey(i,jc*2+1,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(301,15) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(301,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.223
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15451: unmasked unaligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 26 
+         remark #15477: vector cost: 14.000 
+         remark #15478: estimated potential speedup: 1.820 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(298,12)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(298,12)
+      <Remainder loop for vectorization>
+         remark #15389: vectorization support: reference TMPY(i,jc+1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(299,27) ]
+         remark #15389: vectorization support: reference TMPY(i,jc-1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(299,44) ]
+         remark #15389: vectorization support: reference ey(i,jc*2,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(300,15) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(300,32) ]
+         remark #15389: vectorization support: reference ey(i,jc*2+1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(301,15) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(301,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.571
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15451: unmasked unaligned unit stride stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 175 
+         remark #15477: vector cost: 92.500 
+         remark #15478: estimated potential speedup: 1.870 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(298,12)
+      <Remainder loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(304,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(304,12)
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(305,27) ]
+         remark #15389: vectorization support: reference TMPY(i,jc-1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(305,44) ]
+         remark #15389: vectorization support: reference TMPY(i,jc+1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(306,27) ]
+         remark #15389: vectorization support: reference TMPY(i,jc-1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(306,44) ]
+         remark #15389: vectorization support: reference TMPY(i,jc+1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(307,27) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(307,44) ]
+         remark #15389: vectorization support: reference ey(i,jc*2,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(311,15) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(311,32) ]
+         remark #15389: vectorization support: reference ey(i,jc*2+1,k) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(312,15) ]
+         remark #15388: vectorization support: reference TMPY(i,jc,k) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(312,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.189
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15451: unmasked unaligned unit stride stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 175 
+         remark #15477: vector cost: 92.500 
+         remark #15478: estimated potential speedup: 1.870 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(304,12)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(320,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(321,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(322,9)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(322,9)
+         remark #15389: vectorization support: reference TMPZ(ic*2,jc*2,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(323,12) ]
+         remark #15388: vectorization support: reference cz(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(323,12) ]
+         remark #15388: vectorization support: reference cz(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(324,42) ]
+         remark #15389: vectorization support: reference cz(ic+1,jc,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(324,55) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <TMPZ(ic*2,jc*2,kc)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(323,12) ]
+         remark #15329: vectorization support: non-unit strided store was emulated for the variable <TMPZ(ic*2+1,jc*2,kc)>, stride is 2   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(324,12) ]
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.181
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15453: unmasked strided stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 13 
+         remark #15477: vector cost: 9.000 
+         remark #15478: estimated potential speedup: 1.420 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(322,9)
+      <Remainder loop for vectorization>
+         remark #15389: vectorization support: reference TMPZ(ic*2,jc*2,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(323,12) ]
+         remark #15388: vectorization support: reference cz(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(323,12) ]
+         remark #15388: vectorization support: reference cz(ic,jc,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(324,42) ]
+         remark #15389: vectorization support: reference cz(ic+1,jc,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(324,55) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.464
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 9 
+         remark #15477: vector cost: 4.500 
+         remark #15478: estimated potential speedup: 1.940 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(330,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(331,9)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(331,9)
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(332,12) ]
+         remark #15389: vectorization support: reference TMPZ(i,j-1,kc) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(332,34) ]
+         remark #15388: vectorization support: reference TMPZ(i,j+1,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(332,49) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.472
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 9 
+         remark #15477: vector cost: 4.500 
+         remark #15478: estimated potential speedup: 1.940 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(331,9)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(331,9)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(337,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(338,6)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(340,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(340,12)
+         remark #15389: vectorization support: reference TMPZ(i,j,kc+1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(341,27) ]
+         remark #15389: vectorization support: reference TMPZ(i,j,kc-1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(341,44) ]
+         remark #15389: vectorization support: reference ez(i,j,kc*2) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(342,15) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(342,32) ]
+         remark #15388: vectorization support: reference ez(i,j,kc*2+1) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(343,15) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(343,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15399: vectorization support: unroll factor set to 4
+         remark #15309: vectorization support: normalized vectorization overhead 0.223
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15449: unmasked aligned unit stride stores: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15451: unmasked unaligned unit stride stores: 1 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 26 
+         remark #15477: vector cost: 14.000 
+         remark #15478: estimated potential speedup: 1.820 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(340,12)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(340,12)
+      <Remainder loop for vectorization>
+         remark #15389: vectorization support: reference TMPZ(i,j,kc+1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(341,27) ]
+         remark #15389: vectorization support: reference TMPZ(i,j,kc-1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(341,44) ]
+         remark #15389: vectorization support: reference ez(i,j,kc*2) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(342,15) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(342,32) ]
+         remark #15389: vectorization support: reference ez(i,j,kc*2+1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(343,15) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(343,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.571
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15451: unmasked unaligned unit stride stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 175 
+         remark #15477: vector cost: 92.500 
+         remark #15478: estimated potential speedup: 1.870 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(340,12)
+      <Remainder loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(346,12)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(346,12)
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(347,27) ]
+         remark #15389: vectorization support: reference TMPZ(i,j,kc-1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(347,44) ]
+         remark #15389: vectorization support: reference TMPZ(i,j,kc+1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(348,27) ]
+         remark #15389: vectorization support: reference TMPZ(i,j,kc-1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(348,44) ]
+         remark #15389: vectorization support: reference TMPZ(i,j,kc+1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(349,27) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(349,44) ]
+         remark #15389: vectorization support: reference ez(i,j,kc*2) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(353,15) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(353,32) ]
+         remark #15389: vectorization support: reference ez(i,j,kc*2+1) has unaligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(354,15) ]
+         remark #15388: vectorization support: reference TMPZ(i,j,kc) has aligned access   [ /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(354,32) ]
+         remark #15381: vectorization support: unaligned access used inside loop body
+         remark #15305: vectorization support: vector length 2
+         remark #15309: vectorization support: normalized vectorization overhead 0.189
+         remark #15300: LOOP WAS VECTORIZED
+         remark #15442: entire loop may be executed in remainder
+         remark #15448: unmasked aligned unit stride loads: 1 
+         remark #15450: unmasked unaligned unit stride loads: 2 
+         remark #15451: unmasked unaligned unit stride stores: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 175 
+         remark #15477: vector cost: 92.500 
+         remark #15478: estimated potential speedup: 1.870 
+         remark #15488: --- end vector cost summary ---
+      LOOP END
+
+      LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/AmrCore/AMReX_FillPatchUtil_3d.F90(346,12)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================

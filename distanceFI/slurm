@@ -1,0 +1,45 @@
+#!/bin/bash
+# HEADER for Parallel job using 80 processors:
+#SBATCH --nodes=1           # number of nodes
+#SBATCH --ntasks-per-node=48    # number of processors per node
+#SBATCH --cpus-per-task=1       # number of cpus per task
+#SBATCH -t 96:00:00      # run for 3 hr max
+#SBATCH -e stderr              # Name of output file for error messages
+#SBATCH -o stdout              # Name of output file for standard output
+#SBATCH --partition=ROME
+#SBATCH --job-name=peleLM_trial
+
+# BODY - commands to be run
+# Load required modules
+#source $HOME/OpenFOAM/OpenFOAM-6/etc/bashrc WM_COMPILER_TYPE=ThirdParty WM_COMPILER=Gcc82 WM_LABEL_SIZE=64 WM_MPLIB=SYSTEMOPENMPI FOAMY_HEX_MESH=yes 
+#of6_nike
+#source $HOME/OpenFOAM/set_env_v6
+#source $HOME/peleLM/set_env_pelelm
+module load Compilers/Intel/2019_U4
+module load Boost/1.72
+module load CMAKE/3.16.3
+module load MPI/EPYC/OpenMPI/4.0.2/Intel/2019_U4 
+
+#export AMREX_HOME=/home/zou00066/peleLM/amrex_marc/amrex
+
+# Set number of openmp threads and number of MPI tasks
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export NTASKS=$(echo "$SLURM_NNODES*$(echo $SLURM_TASKS_PER_NODE | cut -d '(' -f 1)" | bc -l)
+
+# Print some information
+echo Directory is `pwd`
+echo Time is `date`
+echo
+echo This job runs on the following processors:
+echo $SLURM_JOB_NODELIST
+echo This job has allocated $SLURM_NNODES nodes with $SLURM_TASKS_PER_NODE cores per node.
+echo
+
+#decomposePar -latestTime
+#mpirun -np $NTASKS main3d.intel.TEST.TPROF.MPI.ex 
+#mpirun -np 16 main3d.intel.TEST.TPROF.MPI.ex
+mpiexec -np 48 ./main3d.intel.MPI.ex inputs
+
+#reconstructPar
+#foamToVTK
+
