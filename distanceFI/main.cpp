@@ -63,12 +63,29 @@ main (int   argc,
 
     Tri.finalize(geom,grids,dm);   
 
+    Vector<int> is_cut;
+
+    for(int i=0;i<Tri.grids().size();++i)
+    {
+        if(i%2 ==0)
+        {
+            is_cut.push_back(1);
+        }
+        else
+        {
+            is_cut.push_back(0);
+        }
+        std::cout<<"i="<<i<<std::endl;
+    } 
+
+    EB2::TriangulatedIF Tri2(Tri,is_cut);
+
     Print()<<"finish finalizing"<<std::endl;
 
     Vector<Real> pt(AMREX_SPACEDIM);
     pp.getarr("point",pt,0,AMREX_SPACEDIM);
 
-    Print() << "Distance is " << Tri(AMREX_D_DECL(pt[0],pt[1],pt[2])) << std::endl;
+    Print() << "Distance is " << Tri2(AMREX_D_DECL(pt[0],pt[1],pt[2])) << std::endl;
     timer_end = amrex::second();
 
     Print()<<"time cost"<<(timer_end - timer_init)<< std::endl;

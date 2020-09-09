@@ -54,50 +54,16 @@ namespace amrex
     class TriangulatedIF
     {
     public:
+      //construct from stl filename
       TriangulatedIF(const std::string& isoFile, const std::string& fileType);
-        
+      
+      //construct from an existed IF and a cut-cell tag
+      TriangulatedIF(const TriangulatedIF& TriIF, const Vector<int>& is_cut); 
+
       AMREX_GPU_HOST_DEVICE inline
       Real operator() (AMREX_D_DECL(Real x, Real y, Real z)) const noexcept {
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(distanceMF_.ok(),"Must call TriangulatedIF::finalize prior to operator()");
-        return Distance(AMREX_D_DECL(x,y,z));
-      }
-
-      inline Real operator() (const RealArray& p) const noexcept {
-        return this->operator()(AMREX_D_DECL(p[0],p[1],p[2]));
-      }  
-
-      void finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm) noexcept;
- 
-      const DistributionMapping& dm()
-      {
-          return dm_;
-      }
-    
-      const Geometry& geom()
-      {
-          return geom_; 
-      }
-
-      const BoxArray& grids()
-      {
-          return grids_;
-      }
-
-    protected:
-      //load data from non-watertight format
-      void loadData(const std::string& isoFile, const std::string& fileType) noexcept;              
-      void loadData_mef(const std::string& isoFile) noexcept;      
-      void loadData_stl_ascii (const std::string& isoFile) noexcept;
-      void loadData_stl_binary(const std::string& isoFile) noexcept;
-
-      void makeWatertight (const std::vector<std::vector<Real> >& temp_surface) noexcept;
-
-      void mergeVertex (std::vector<pointToElement>& temp_ptlist) noexcept;
-    
-      void buildDistance() noexcept;
-
-      Real Distance(AMREX_D_DECL(Real x, Real y, Real z)) const noexcept
-        {
+          
           const Real* dxInv = geom_.InvCellSize();
  
           const Real* plo = geom_.ProbLo(); 
@@ -137,9 +103,48 @@ namespace amrex
             }        
           }
           return distance;
-        }
+      }
+      inline Real operator() (const RealArray& p) const noexcept 
+      {
+        return this->operator()(AMREX_D_DECL(p[0],p[1],p[2]));
+      }
+
+      void finalize(const Geometry& geom, const BoxArray& grids, const DistributionMapping& dm) noexcept;
+ 
+      const DistributionMapping& dm()const
+      {
+          return dm_;
+      }
+    
+      const Geometry& geom()const
+      {
+          return geom_; 
+      }
+
+      const BoxArray& grids()const
+      {
+          return grids_;
+      }
       
-      
+      const MultiFab& distanceMF()const
+      {
+          return distanceMF_; 
+      }
+
+    protected:
+      //load data from non-watertight format
+      void loadData(const std::string& isoFile, const std::string& fileType) noexcept;              
+      void loadData_mef(const std::string& isoFile) noexcept;      
+      void loadData_stl_ascii (const std::string& isoFile) noexcept;
+      void loadData_stl_binary(const std::string& isoFile) noexcept;
+
+      void makeWatertight (const std::vector<std::vector<Real> >& temp_surface) noexcept;
+
+      void mergeVertex (std::vector<pointToElement>& temp_ptlist) noexcept;
+    
+      void buildDistance() noexcept;
+
+            
       //-------------members--------------------------
       std::vector<Vec3r> normalList;
    

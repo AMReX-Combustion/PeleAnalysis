@@ -11,6 +11,7 @@
 #include <AMReX.H>
 #include <AMReX_EB2.H>
 #include <AMReX_EB2_IF.H>
+#include <AMReX_Vector.H>
 
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
@@ -78,6 +79,84 @@ namespace amrex
                                        const std::string& fileType)
         {
             TriangulatedIF::loadData(isoFile,fileType); 
+        }
+
+        //Construct from existed IF and is_cut tag array
+        TriangulatedIF::TriangulatedIF(const TriangulatedIF& TriIF, 
+                                       const Vector<int>& is_cut)
+        
+        {
+            BoxList tbl;
+            Vector<int> dmTag;            
+
+            const Real* dx = geom().CellSize();
+            const Real* plo = geom().ProbLo();
+            const Real* phi =geom().ProbHi();
+
+            for (int i=0; i<is_cut.size(); ++i) 
+            {
+                if (is_cut[i] > 0)
+                {
+                    tbl.push_back(TriIF.grids()[i]);
+                    dmTag.push_back(TriIF.dm()[i]);
+                }
+            }
+            
+            this->grids_ = BoxArray(tbl);
+            
+            this->dm_.define(dmTag);
+            
+            this->geom_ = TriIF.geom();
+
+            this->distanceMF_.define(this->grids(),this->dm(),1,1);
+
+            for(int j=0;j<dmTag.size();++j)
+            {
+                std::cout<<"dmTag["<<j<<"]="<<dmTag[j]<<std::endl;
+            }
+            
+            MFIter mfi2(this->distanceMF());
+            
+            for(MFIter mfi(TriIF.distanceMF()); mfi.isValid(); ++mfi)
+            {std::cout<<"Terminalindex="<<mfi.LocalIndex()<<std::endl;}
+            
+            for (MFIter mfi(TriIF.distanceMF()); mfi.isValid(); ++mfi)
+            {
+                
+                if(is_cut[mfi.index()]>0 && mfi2.isValid())
+                {
+                    
+                    std::cout<<"tag before box"<<std::endl;
+                    const Box& vbox = this->grids()[mfi2.index()];
+                    std::cout<<"tag before d2"<<std::endl;
+
+                    const auto& d = distanceMF_.array(mfi2);
+                
+                    std::cout<<"tag before d"<<std::endl;
+                    const auto& d0 = TriIF.distanceMF().array(mfi);
+                    std::cout<<"mfi.index="<<mfi.index()<<std::endl;                   
+                                 std::cout<<"tag in loop"<<std::endl;
+
+  
+                    for (int k=lo[2]; k<=hi[2]; ++k)
+                    {
+                        for (int j=lo[1]; j<=hi[1]; ++j)
+                        {
+                            for (int i=lo[0]; i<=hi[0]; ++i)
+                            {
+                                d(i,j,k) = d0(i,j,k);
+                            }
+                        }
+                    }
+                    
+                    std::cout<<"tag before ++"<<std::endl;
+                    ++mfi2;
+                    std::cout<<"tag after ++" <<std::endl;
+                }
+               std::cout<<"Terminalindex="<<mfi.LocalIndex()<<std::endl;
+               std::cout<<std::endl;
+             }
+             WriteSingleLevelPlotfile("Distance_copy.out",distanceMF_,{"distance"},geom_,0.0,0);
         }
 
         //---------Protected Member Functions-----------------------

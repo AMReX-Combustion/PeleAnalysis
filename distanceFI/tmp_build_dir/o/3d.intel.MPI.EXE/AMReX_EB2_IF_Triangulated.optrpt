@@ -489,19 +489,19 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::TriangulatedIF(amrex:
 Non-optimizable loops:
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1140,7) inlined into AMReX_EB2_IF_Triangulated.cpp(80,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1140,7) inlined into AMReX_EB2_IF_Triangulated.cpp(81,13)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(80,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(81,13)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(80,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(81,13)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(80,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(81,13)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 ===========================================================================
@@ -511,7 +511,7 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::loadData_mef(amrex::E
     Report from: Vector optimizations [vec]
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(144,23)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(235,23)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
@@ -519,7 +519,7 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AM
    remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(144,23)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(235,23)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
@@ -527,16 +527,16 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AM
    remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
 LOOP END
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(167,17)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(258,17)
    remark #15542: loop was not vectorized: inner loop was already vectorized
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(165,13)
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(256,13)
    <Peeled loop for vectorization>
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(165,13)
-      remark #15388: vectorization support: reference np[j][i] has aligned access   [ AMReX_EB2_IF_Triangulated.cpp(169,21) ]
-      remark #15328: vectorization support: non-unit strided load was emulated for the variable <ndat[j]>, stride is unknown to compiler   [ AMReX_EB2_IF_Triangulated.cpp(169,32) ]
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(256,13)
+      remark #15388: vectorization support: reference np[j][i] has aligned access   [ AMReX_EB2_IF_Triangulated.cpp(260,21) ]
+      remark #15328: vectorization support: non-unit strided load was emulated for the variable <ndat[j]>, stride is unknown to compiler   [ AMReX_EB2_IF_Triangulated.cpp(260,32) ]
       remark #15305: vectorization support: vector length 2
       remark #15309: vectorization support: normalized vectorization overhead 2.000
       remark #15301: PERMUTED LOOP WAS VECTORIZED
@@ -550,19 +550,19 @@ LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(167,17)
       remark #15488: --- end vector cost summary ---
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(165,13)
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(256,13)
    <Remainder loop for vectorization>
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    remark #15542: loop was not vectorized: inner loop was already vectorized
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Peeled loop for vectorization>
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
       remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(693,3) ]
       remark #15305: vectorization support: vector length 4
       remark #15309: vectorization support: normalized vectorization overhead 3.333
@@ -576,19 +576,19 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMR
       remark #15488: --- end vector cost summary ---
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Remainder loop for vectorization>
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    remark #15542: loop was not vectorized: inner loop was already vectorized
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Peeled loop for vectorization>
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
       remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
       remark #15305: vectorization support: vector length 4
       remark #15309: vectorization support: normalized vectorization overhead 3.333
@@ -602,19 +602,19 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMR
       remark #15488: --- end vector cost summary ---
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Remainder loop for vectorization>
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    remark #15542: loop was not vectorized: inner loop was already vectorized
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Peeled loop for vectorization>
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
       remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(693,3) ]
       remark #15305: vectorization support: vector length 4
       remark #15309: vectorization support: normalized vectorization overhead 3.333
@@ -628,19 +628,19 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMR
       remark #15488: --- end vector cost summary ---
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(692,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Remainder loop for vectorization>
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    remark #15542: loop was not vectorized: inner loop was already vectorized
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Peeled loop for vectorization>
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
       remark #15388: vectorization support: reference *__first has aligned access   [ /usr/include/c++/4.8.5/bits/stl_algobase.h(751,3) ]
       remark #15305: vectorization support: vector length 4
       remark #15309: vectorization support: normalized vectorization overhead 3.333
@@ -654,12 +654,12 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMR
       remark #15488: --- end vector cost summary ---
    LOOP END
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(176,22)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algobase.h(749,7) inlined into AMReX_EB2_IF_Triangulated.cpp(267,22)
    <Remainder loop for vectorization>
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(193,112)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(284,112)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
@@ -671,18 +671,18 @@ LOOP END
 Non-optimizable loops:
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(158,13)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(249,13)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
 LOOP END
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(181,13)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(272,13)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
 LOOP END
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(186,13)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(277,13)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(189,26)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(280,26)
       remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
    LOOP END
 LOOP END
@@ -711,11 +711,11 @@ Begin optimization report for: amrex::normal(const Vec3r &, const Vec3r &, const
 Non-optimizable loops:
 
 
-LOOP BEGIN at ../Tools/SDFGen/vec.h(104,7) inlined into AMReX_EB2_IF_Triangulated.cpp(38,22)
+LOOP BEGIN at ../Tools/SDFGen/vec.h(104,7) inlined into AMReX_EB2_IF_Triangulated.cpp(39,22)
    remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at ../Tools/SDFGen/vec.h(104,7) inlined into AMReX_EB2_IF_Triangulated.cpp(38,33)
+LOOP BEGIN at ../Tools/SDFGen/vec.h(104,7) inlined into AMReX_EB2_IF_Triangulated.cpp(39,33)
    remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
 LOOP END
 ===========================================================================
@@ -753,7 +753,7 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::loadData_stl_ascii(am
     Report from: Vector optimizations [vec]
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(254,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(345,13)
    remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
 LOOP END
@@ -762,14 +762,14 @@ LOOP END
 Non-optimizable loops:
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(216,28)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(307,28)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/ext/new_allocator.h(104,27) ]
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(233,34)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(324,34)
       remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(237,17)
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(328,17)
       remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/bits/vector.tcc(101,4) ]
    LOOP END
 LOOP END
@@ -831,35 +831,35 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::makeWatertight(amrex:
 Non-optimizable loops:
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(318,45)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(409,45)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/ext/new_allocator.h(104,27) ]
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(320,26)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(411,26)
       remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(322,17)
-      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ AMReX_EB2_IF_Triangulated.cpp(324,70) ]
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(413,17)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ AMReX_EB2_IF_Triangulated.cpp(415,70) ]
 
-      LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(324,33)
+      LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(415,33)
          remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
       LOOP END
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(2306,7) inlined into AMReX_EB2_IF_Triangulated.cpp(327,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(2306,7) inlined into AMReX_EB2_IF_Triangulated.cpp(418,13)
    remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_heap.h(406,25) inlined into AMReX_EB2_IF_Triangulated.cpp(327,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_heap.h(406,25) inlined into AMReX_EB2_IF_Triangulated.cpp(418,13)
    remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1934,54) inlined into AMReX_EB2_IF_Triangulated.cpp(327,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_algo.h(1934,54) inlined into AMReX_EB2_IF_Triangulated.cpp(418,13)
    remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_heap.h(475,7) inlined into AMReX_EB2_IF_Triangulated.cpp(327,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_heap.h(475,7) inlined into AMReX_EB2_IF_Triangulated.cpp(418,13)
    remark #15523: loop was not vectorized: loop control variable __last._M_current was found, but loop iteration count cannot be computed before executing the loop
 LOOP END
 ===========================================================================
@@ -997,14 +997,14 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::mergeVertex(amrex::EB
 Non-optimizable loops:
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(340,35)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(431,35)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/ext/new_allocator.h(104,27) ]
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(346,26)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(437,26)
       remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(350,41)
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(441,41)
       remark #15523: loop was not vectorized: loop control variable j was found, but loop iteration count cannot be computed before executing the loop
    LOOP END
 LOOP END
@@ -1015,7 +1015,7 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::loadData_stl_binary(a
     Report from: Vector optimizations [vec]
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(309,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(400,13)
    remark #15382: vectorization support: call to function operator delete(void *) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/new_allocator.h(110,9) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
 LOOP END
@@ -1024,14 +1024,14 @@ LOOP END
 Non-optimizable loops:
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(277,13)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(368,13)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/ext/new_allocator.h(104,27) ]
 
-   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(285,34)
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(376,34)
       remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(287,17)
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(378,17)
       remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/bits/vector.tcc(101,4) ]
    LOOP END
 LOOP END
@@ -1046,34 +1046,136 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::TriangulatedIF(amrex:
 Non-optimizable loops:
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1140,7) inlined into AMReX_EB2_IF_Triangulated.cpp(77,25)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1140,7) inlined into AMReX_EB2_IF_Triangulated.cpp(78,25)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(77,25)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(78,25)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(77,25)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(78,25)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(77,25)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(78,25)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 ===========================================================================
 
-Begin optimization report for: amrex::EB2::TriangulatedIF::finalize(amrex::EB2::TriangulatedIF *, const amrex::Geometry &, const amrex::BoxArray &, const amrex::DistributionMapping &)
+Begin optimization report for: amrex::EB2::TriangulatedIF::TriangulatedIF(amrex::EB2::TriangulatedIF *, const amrex::EB2::TriangulatedIF &, const amrex::Vector<int, std::allocator<int>> &)
+
+    Report from: Offload optimizations [offload]
+
+Optimization 'PRE-STAR' reduced: function size or variable count limit exceeded: use -override_limits / -Qoverride_limits to override
 
     Report from: Vector optimizations [vec]
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(94,25)
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(100,49)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(100,49)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(113,31)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
    remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
    remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(136,58)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(136,58)
+   remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+LOOP END
+
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(149,21)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(152,25)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(155,29)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization
+         remark #15346: vector dependence: assumed FLOW dependence between p[i-U19c_V.U19c_V+(j-U19c_V.U19c_V)*U1a2_V.U1a2_V+(k-U19c_V.U19c (159:34) and p[i-U19c_V.U19c_V+(j-U19c_V.U19c_V)*U19e_V.U19e_V+(k-U19c_V.U19c (159:34)
+         remark #15346: vector dependence: assumed ANTI dependence between p[i-U19c_V.U19c_V+(j-U19c_V.U19c_V)*U19e_V.U19e_V+(k-U19c_V.U19c (159:34) and p[i-U19c_V.U19c_V+(j-U19c_V.U19c_V)*U1a2_V.U1a2_V+(k-U19c_V.U19c (159:34)
+      LOOP END
+
+      LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(155,29)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(171,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(171,14)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(96,36)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(100,49)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(100,49)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,23) inlined into AMReX_EB2_IF_Triangulated.cpp(100,25)
+      remark #15523: loop was not vectorized: loop control variable __cur was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(115,33)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ AMReX_EB2_IF_Triangulated.cpp(117,26) ]
+LOOP END
+
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(126,53)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ AMReX_EB2_IF_Triangulated.cpp(127,23) ]
+LOOP END
+
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(129,54)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(136,58)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(136,58)
+      remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into AMReX_EB2_IF_Triangulated.cpp(171,71)
+   remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,42) ]
 LOOP END
 ===========================================================================
 
@@ -1091,22 +1193,36 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into /h
 LOOP END
 ===========================================================================
 
+Begin optimization report for: amrex::EB2::TriangulatedIF::finalize(amrex::EB2::TriangulatedIF *, const amrex::Geometry &, const amrex::BoxArray &, const amrex::DistributionMapping &)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(185,25)
+   remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
+   remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between __first->_M_p (539:9) and *__mem (68:6)
+   remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
+LOOP END
+===========================================================================
+
 Begin optimization report for: amrex::EB2::TriangulatedIF::buildDistance(amrex::EB2::TriangulatedIF *)
 
     Report from: Vector optimizations [vec]
 
 
-LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(391,53)
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(482,53)
    remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
 LOOP END
 
-LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(391,53)
+LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(777,4) inlined into AMReX_EB2_IF_Triangulated.cpp(482,53)
    remark #26015: Exception can be thrown by the call to amrex::detail::Assert_host_doit(const char *, const char *, int, const char *)   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(421,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(512,13)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
@@ -1114,7 +1230,7 @@ LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AM
    remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and __first->_M_p (539:9)
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(421,13)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_construct.h(102,4) inlined into AMReX_EB2_IF_Triangulated.cpp(512,13)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
@@ -1126,31 +1242,31 @@ LOOP END
 Non-optimizable loops:
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(389,47)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(480,47)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
 
-   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(391,53)
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(482,53)
       remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
    LOOP END
 
-   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(391,53)
+   LOOP BEGIN at /home/zou00066/peleLM/amrex/Src/Base/AMReX_Box.H(742,13) inlined into AMReX_EB2_IF_Triangulated.cpp(482,53)
       remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /home/zou00066/peleLM/amrex/Src/Base/AMReX.H(149,9) ]
    LOOP END
 
-   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(407,17)
+   LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(498,17)
       remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
 
-      LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(410,21)
+      LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(501,21)
          remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
 
-         LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(413,25)
+         LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(504,25)
             remark #15523: loop was not vectorized: loop control variable i was found, but loop iteration count cannot be computed before executing the loop
          LOOP END
       LOOP END
    LOOP END
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into AMReX_EB2_IF_Triangulated.cpp(421,65)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_uninitialized.h(74,8) inlined into AMReX_EB2_IF_Triangulated.cpp(512,65)
    remark #15333: loop was not vectorized: exception handling for a call prevents vectorization   [ /usr/include/c++/4.8.5/bits/stl_construct.h(75,42) ]
 LOOP END
 ===========================================================================
@@ -1164,19 +1280,19 @@ Begin optimization report for: amrex::EB2::TriangulatedIF::loadData(amrex::EB2::
 Non-optimizable loops:
 
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1140,7) inlined into AMReX_EB2_IF_Triangulated.cpp(105,27)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1140,7) inlined into AMReX_EB2_IF_Triangulated.cpp(196,27)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(105,27)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(196,27)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(105,27)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(196,27)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 
-LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(105,27)
+LOOP BEGIN at /usr/include/c++/4.8.5/bits/stl_tree.h(1321,7) inlined into AMReX_EB2_IF_Triangulated.cpp(196,27)
    remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
 LOOP END
 ===========================================================================
@@ -1186,7 +1302,7 @@ Begin optimization report for: __sti__$E()
     Report from: Vector optimizations [vec]
 
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(34,43) inlined into /usr/include/c++/4.8.5/iostream(75,25)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(35,43) inlined into /usr/include/c++/4.8.5/iostream(75,25)
    remark #15382: vectorization support: call to function __atomic_fetch_add_4(volatile void *, unsigned int, int) cannot be vectorized   [ /usr/include/c++/4.8.5/ext/atomicity.h(49,12) ]
    remark #15382: vectorization support: call to function std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep::_M_destroy(std::basic_string<char, std::char_traits<char>, std::allocator<char>>::_Rep *, const std::allocator<char> &) cannot be vectorized   [ /usr/include/c++/4.8.5/bits/basic_string.h(249,5) ]
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
@@ -1194,7 +1310,7 @@ LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(34,43) inlined into /usr/include/c++
    remark #15346: vector dependence: assumed FLOW dependence between *__mem (68:6) and this->_M_p (539:9)
 LOOP END
 
-LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(34,109) inlined into /usr/include/c++/4.8.5/iostream(75,25)
+LOOP BEGIN at AMReX_EB2_IF_Triangulated.cpp(35,109) inlined into /usr/include/c++/4.8.5/iostream(75,25)
    remark #15382: vectorization support: call to function std::pair<const std::string, amrex::FILETYPE>::~pair(std::pair<const std::string, amrex::FILETYPE> *) cannot be vectorized
    remark #15344: loop was not vectorized: vector dependence prevents vectorization
 LOOP END

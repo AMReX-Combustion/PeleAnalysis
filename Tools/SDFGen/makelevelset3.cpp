@@ -86,7 +86,7 @@ static std::pair<bool,amrex::Real> point_triangle_distance(const Vec3r &x0, cons
       }
       
 
-      if(D > 0.005 * dx && std::abs(dotProduct) < 0.005 * dx)
+      if(D > 0.005 * dx && std::abs(dotProduct) < 0.0005 * dx)
       {
            judge = false;
            /*std::cout<<" ========================================"<<std::endl;           
