@@ -89,9 +89,9 @@ namespace amrex
             BoxList tbl;
             Vector<int> dmTag;            
 
-            const Real* dx = geom().CellSize();
-            const Real* plo = geom().ProbLo();
-            const Real* phi =geom().ProbHi();
+  //          const Real* dx = geom().CellSize();
+  //          const Real* plo = geom().ProbLo();
+  //          const Real* phi =geom().ProbHi();
 
             for (int i=0; i<is_cut.size(); ++i) 
             {
@@ -110,15 +110,15 @@ namespace amrex
 
             this->distanceMF_.define(this->grids(),this->dm(),1,1);
 
-            for(int j=0;j<dmTag.size();++j)
-            {
-                std::cout<<"dmTag["<<j<<"]="<<dmTag[j]<<std::endl;
-            }
+      //      for(int j=0;j<dmTag.size();++j)
+      //      {
+      //          std::cout<<"dmTag["<<j<<"]="<<dmTag[j]<<std::endl;
+      //      }
             
             MFIter mfi2(this->distanceMF());
             
-            for(MFIter mfi(TriIF.distanceMF()); mfi.isValid(); ++mfi)
-            {std::cout<<"Terminalindex="<<mfi.LocalIndex()<<std::endl;}
+    //        for(MFIter mfi(TriIF.distanceMF()); mfi.isValid(); ++mfi)
+    //        {std::cout<<"Terminalindex="<<mfi.LocalIndex()<<std::endl;}
             
             for (MFIter mfi(TriIF.distanceMF()); mfi.isValid(); ++mfi)
             {
@@ -126,16 +126,16 @@ namespace amrex
                 if(is_cut[mfi.index()]>0 && mfi2.isValid())
                 {
                     
-                    std::cout<<"tag before box"<<std::endl;
+  //                  std::cout<<"tag before box"<<std::endl;
                     const Box& vbox = this->grids()[mfi2.index()];
-                    std::cout<<"tag before d2"<<std::endl;
+  //                  std::cout<<"tag before d2"<<std::endl;
 
                     const auto& d = distanceMF_.array(mfi2);
                 
-                    std::cout<<"tag before d"<<std::endl;
+  //                  std::cout<<"tag before d"<<std::endl;
                     const auto& d0 = TriIF.distanceMF().array(mfi);
-                    std::cout<<"mfi.index="<<mfi.index()<<std::endl;                   
-                                 std::cout<<"tag in loop"<<std::endl;
+  //                  std::cout<<"mfi.index="<<mfi.index()<<std::endl;                   
+  //                               std::cout<<"tag in loop"<<std::endl;
 
   
                     for (int k=lo[2]; k<=hi[2]; ++k)
@@ -149,12 +149,12 @@ namespace amrex
                         }
                     }
                     
-                    std::cout<<"tag before ++"<<std::endl;
+//                    std::cout<<"tag before ++"<<std::endl;
                     ++mfi2;
-                    std::cout<<"tag after ++" <<std::endl;
+//                    std::cout<<"tag after ++" <<std::endl;
                 }
-               std::cout<<"Terminalindex="<<mfi.LocalIndex()<<std::endl;
-               std::cout<<std::endl;
+//               std::cout<<"Terminalindex="<<mfi.LocalIndex()<<std::endl;
+//               std::cout<<std::endl;
              }
              WriteSingleLevelPlotfile("Distance_copy.out",distanceMF_,{"distance"},geom_,0.0,0);
         }

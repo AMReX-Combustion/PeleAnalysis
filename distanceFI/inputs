@@ -1,9 +1,9 @@
 #isoFileName = Stldirtdum.stl
-#isoFileName = Stldirtdum_5.stl
+isoFileName = Stldirtdum_5.stl
 #isoFileName = Stldirtdum_2_transformed.stl
-isoFileName = brief.stl
-isoFileType = stl_ascii
-#isoFileType = stl_binary
+#isoFileName = brief.stl
+#isoFileType = stl_ascii
+isoFileType = stl_binary
 
 
 #isoFileName = flatplane
