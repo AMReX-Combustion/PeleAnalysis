@@ -75,7 +75,7 @@ main (int   argc,
         {
             is_cut.push_back(0);
         }
-        std::cout<<"i="<<i<<std::endl;
+//        std::cout<<"i="<<i<<std::endl;
     } 
 
     EB2::TriangulatedIF Tri2(Tri,is_cut);
