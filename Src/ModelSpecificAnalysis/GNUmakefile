@@ -18,18 +18,21 @@ EBASE = plotXtoY
 EBASE = testQPDtools
 EBASE = plotQPD
 
+USE_SUNDIALS_PP = TRUE
+
 # This sets the EOS directory in $(PELE_PHYSICS_HOME)/Eos
 #Eos_dir     := Soave-Redlich-Kwong
 Eos_dir     := Fuego
 
 # This sets the network directory in $(PELE_PHYSICS_HOME)/Reactions
 Reactions_dir := Fuego
+Reactions_dir := Null
 
 # This sets the model directory in $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models
 #Chemistry_Model := Davis
-#Chemistry_Model := LiDryer
+Chemistry_Model := LiDryer
 #Chemistry_Model := grimech12
-Chemistry_Model := drm19
+#Chemistry_Model := drm19
 
 # This sets the transport directory in $(PELE_PHYSICS_HOME)/Transport
 Transport_dir := EGLib

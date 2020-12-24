@@ -12,7 +12,6 @@
 #include <AMReX_BLFort.H>
 #include <chemistry_file.H>
 #include <util.H>
-#include <util_F.H>
 
 using namespace amrex;
 using namespace analysis_util;

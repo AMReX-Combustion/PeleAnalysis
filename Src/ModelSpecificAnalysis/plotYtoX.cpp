@@ -12,11 +12,10 @@
 #include <AMReX_BLFort.H>
 #include <mechanism.h>
 #include <chemistry_file.H>
+#include <EOS.H>
 #include <util.H>
-#include <util_F.H>
 
 using namespace amrex;
-using namespace analysis_util;
 
 static
 void 
@@ -63,7 +62,7 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    init_mech();
+    EOS::init();
 
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
@@ -71,7 +70,8 @@ main (int   argc,
 
     int idYin = -1;
     int idTin = -1;
-    Vector<std::string> spec_names = GetSpecNames();
+    Vector<std::string> spec_names;
+    EOS::speciesNames(spec_names);
     const Vector<std::string>& plotVarNames = amrData.PlotVarNames();
     const std::string spName= "Y(" + spec_names[0] + ")";
     const std::string TName = "temp";
@@ -132,7 +132,7 @@ main (int   argc,
           for (int n=0; n<NUM_SPECIES; ++n) {
             Yl[n] = Y(i,j,k,idYlocal+n);
           }
-          CKYTX(Yl,Xl);
+          EOS::Y2X(Yl,Xl);
           for (int n=0; n<NUM_SPECIES; ++n) {
             X(i,j,k,idXout+n) = Xl[n];
           }

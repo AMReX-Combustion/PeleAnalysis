@@ -1,5 +1,3 @@
 CEXE_sources += util.cpp
 CEXE_headers += util.H
-fEXE_headers += util_F.H
-f90EXE_sources += util_F.f90
 
