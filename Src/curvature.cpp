@@ -315,7 +315,8 @@ main (int   argc,
             const auto& StateVarFab = StateVar.array(mfi); 
             const auto& ProgVarFab  = ProgressVar.array(mfi); 
             Real invdenom = 1.0 / (progMax - progMin);
-            AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+            amrex::ParallelFor(bx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
                 ProgVarFab(i,j,k) = ( StateVarFab(i,j,k) - progMin ) * invdenom;
             });
@@ -390,7 +391,7 @@ main (int   argc,
        for (int lev = 0; lev < Nlev; ++lev) {
            rhs[lev].define(grids[lev], dmap[lev], 1, 0);
            MultiFab::Copy(rhs[lev],*state[lev], idProg, 0, 1, 0);
-           solution[lev].define(grids[lev], dmap[lev], 1, 1);
+           solution[lev].define(grids[lev], dmap[lev], 1, nGrow);
            solution[lev].setVal(0.0);
        }
 
@@ -424,7 +425,7 @@ main (int   argc,
         if (verbose) Print() << "Starting mean curvature on level " << lev << "\n";
 
         // Get face gradients of progress variable 
-        MLPoisson poisson({*geoms[lev]}, {ba}, {dm}, info);
+        MLPoisson poisson({*geoms[lev]}, {ba}, {dmap[lev]}, info);
         poisson.setMaxOrder(4);
         std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
         std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
@@ -445,35 +446,36 @@ main (int   argc,
            MultiFab::Copy(*ProgVarCoarse, *state[lev-1], idprogvar, 0, 1, nGrow);
            poisson.setCoarseFineBC(ProgVarCoarse,2);
         }
-        MultiFab ProgVar(ba, dm, 1, nGrow); 
+        MultiFab ProgVar(ba, dmap[lev], 1, nGrow); 
         MultiFab::Copy(ProgVar, *state[lev], idprogvar, 0, 1, nGrow);
         poisson.setLevelBC(0,&ProgVar);
 
         MLMG mlmg(poisson);
 
         std::array<MultiFab,AMREX_SPACEDIM> face_gradient;
-        AMREX_D_TERM(face_gradient[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-                     face_gradient[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-                     face_gradient[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+        AMREX_D_TERM(face_gradient[0].define(convert(ba,IntVect::TheDimensionVector(0)), dmap[lev], 1, 0); ,
+                     face_gradient[1].define(convert(ba,IntVect::TheDimensionVector(1)), dmap[lev], 1, 0); ,
+                     face_gradient[2].define(convert(ba,IntVect::TheDimensionVector(2)), dmap[lev], 1, 0); );
         mlmg.getFluxes({amrex::GetArrOfPtrs(face_gradient)},{&ProgVar});
 
         // Convert to cell avg gradient
-        MultiFab cellavg_gradient(ba, dm, AMREX_SPACEDIM, 0);
+        MultiFab cellavg_gradient(ba, dmap[lev], AMREX_SPACEDIM, 0);
         average_face_to_cellcenter(cellavg_gradient, 0, amrex::GetArrOfConstPtrs(face_gradient));
         cellavg_gradient.mult(-1.0,0,AMREX_SPACEDIM);
 
         // Compute ||\nabla c||
-        MultiFab cellnorm_gradient(ba, dm, 1, 1);
+        MultiFab cellnorm_gradient(ba, dmap[lev], 1, 1);
         cellnorm_gradient.setVal(0.0);
         for (MFIter mfi(cellnorm_gradient); mfi.isValid(); ++mfi)
         {
             const Box& bx = mfi.validbox();
-            AMREX_D_TERM(const auto& Cx = cellavg_gradient.array(mfi,0);,
-                         const auto& Cy = cellavg_gradient.array(mfi,1);,
-                         const auto& Cz = cellavg_gradient.array(mfi,2); );
+            AMREX_D_TERM(auto const& Cx = cellavg_gradient.array(mfi,0);,
+                         auto const& Cy = cellavg_gradient.array(mfi,1);,
+                         auto const& Cz = cellavg_gradient.array(mfi,2););
             const auto& normgrad  = cellnorm_gradient.array(mfi); 
             const auto& progvar   = ProgVar.array(mfi); 
-            AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+            amrex::ParallelFor(bx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
                 normgrad(i,j,k) = std::max(1e-14, std::sqrt( AMREX_D_TERM (   std::pow(Cx(i,j,k),2.0),
                                                                             + std::pow(Cy(i,j,k),2.0),
@@ -502,12 +504,12 @@ main (int   argc,
         flame_normal[lev]->FillBoundary(0, AMREX_SPACEDIM, geoms[lev]->periodicity());
 
 //      Define curvature        
-        MultiFab Curv(ba, dm, 1, 0);     
+        MultiFab Curv(ba, dmap[lev], 1, 0);     
         Curv.setVal(0.0); 
 
         for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
 
-           MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
+           MLPoisson poisson2({*geoms[lev]}, {ba}, {dmap[lev]}, info);
            poisson2.setMaxOrder(4);
            poisson2.setDomainBC(lo_bc, hi_bc);
            if ( lev > 0 ) {
@@ -517,7 +519,7 @@ main (int   argc,
                MultiFab::Copy(*FlameNormalIdimCoarse, *flame_normal[lev-1], idim, 0, 1, 0);
                poisson2.setCoarseFineBC(FlameNormalIdimCoarse,2);
            }
-           MultiFab* FlameNormalIdim = new MultiFab(ba, dm, 1, 1); 
+           MultiFab* FlameNormalIdim = new MultiFab(ba, dmap[lev], 1, 1); 
            MultiFab::Copy(*FlameNormalIdim, *flame_normal[lev], idim, 0, 1, 1);
            poisson2.setLevelBC(0,FlameNormalIdim);
             
@@ -525,13 +527,13 @@ main (int   argc,
 
            // Get the fluxes : d N_i / d x_j   , i = idim, j = 0, 1 (,2)
            std::array<MultiFab,AMREX_SPACEDIM> faceg;
-           AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-                        faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-                        faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+           AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dmap[lev], 1, 0); ,
+                        faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dmap[lev], 1, 0); ,
+                        faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dmap[lev], 1, 0); );
            mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{FlameNormalIdim});
 
            // Get cell centered d N_i / d x_y
-           MultiFab cell_avgg(ba, dm, AMREX_SPACEDIM, 0);
+           MultiFab cell_avgg(ba, dmap[lev], AMREX_SPACEDIM, 0);
            average_face_to_cellcenter(cell_avgg, 0, amrex::GetArrOfConstPtrs(faceg));
            cell_avgg.mult(-1.0,0,AMREX_SPACEDIM);
 
@@ -554,7 +556,8 @@ main (int   argc,
                          const auto& FnormYFab  = flame_normal[lev]->array(mfi,1); ,
                          const auto& FnormZFab  = flame_normal[lev]->array(mfi,2); );
             const auto& progvar   = ProgVar.array(mfi); 
-            AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+            amrex::ParallelFor(bx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
                 if ( do_threshold && ( progvar(i,j,k) < threshold || progvar(i,j,k) > 1.0-threshold ) ) {
                    CurvFab(i,j,k) = 0.0;
@@ -575,12 +578,12 @@ main (int   argc,
         if ( do_gaussCurv ) { 
 
            // Start by getting the Hessian of the progress variable
-           MultiFab Hessian(ba, dm, 9, 0);     
+           MultiFab Hessian(ba, dmap[lev], 9, 0);     
 
            // Compute grad of grad in each dim and store in Hessian
            for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
 
-              MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
+              MLPoisson poisson2({*geoms[lev]}, {ba}, {dmap[lev]}, info);
               poisson2.setMaxOrder(4);
               poisson2.setDomainBC(lo_bc, hi_bc);
               if ( lev > 0 ) {
@@ -590,20 +593,20 @@ main (int   argc,
                   MultiFab::Copy(*gradIdimCoarse, *cell_normal[lev-1], idim, 0, 1, 0);
                   poisson2.setCoarseFineBC(gradIdimCoarse,2);
               }
-              MultiFab* gradIdim = new MultiFab(ba, dm, 1, 1); 
+              MultiFab* gradIdim = new MultiFab(ba, dmap[lev], 1, 1); 
               MultiFab::Copy(*gradIdim, *cell_normal[lev], idim, 0, 1, 1);
               poisson2.setLevelBC(0,gradIdim);
 
               MLMG mlmg2(poisson2);
 
               std::array<MultiFab,AMREX_SPACEDIM> faceg;
-              AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-                           faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-                           faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+              AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dmap[lev], 1, 0); ,
+                           faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dmap[lev], 1, 0); ,
+                           faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dmap[lev], 1, 0); );
               mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{gradIdim});
 
               // Get cell centered d C / d idim _x_y_z
-              MultiFab cell_avgg(ba, dm, AMREX_SPACEDIM, 0);
+              MultiFab cell_avgg(ba, dmap[lev], AMREX_SPACEDIM, 0);
               average_face_to_cellcenter(cell_avgg, 0, amrex::GetArrOfConstPtrs(faceg));
               cell_avgg.mult(-1.0,0,AMREX_SPACEDIM);
 
@@ -612,7 +615,7 @@ main (int   argc,
            } 
 
            // Get the adjugate of the Hessian
-           MultiFab AdjHessian(ba, dm, 9, 0);     
+           MultiFab AdjHessian(ba, dmap[lev], 9, 0);     
 
            for (MFIter mfi(Hessian); mfi.isValid(); ++mfi)
            {
@@ -623,7 +626,8 @@ main (int   argc,
                const auto& AdjHxiFab  = AdjHessian.array(mfi,0); 
                const auto& AdjHyiFab  = AdjHessian.array(mfi,3); 
                const auto& AdjHziFab  = AdjHessian.array(mfi,6); 
-               AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+               amrex::ParallelFor(bx,
+               [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
                {
                    AdjHxiFab(i,j,k,0) = HyiFab(i,j,k,1) * HziFab(i,j,k,2) - HziFab(i,j,k,1) * HyiFab(i,j,k,2); 
                    AdjHyiFab(i,j,k,0) = HyiFab(i,j,k,2) * HziFab(i,j,k,0) - HziFab(i,j,k,2) * HyiFab(i,j,k,0);
@@ -638,7 +642,7 @@ main (int   argc,
            }
 
            // Now get the gausian curvature
-           MultiFab gCurv(ba, dm, 1, 0);     
+           MultiFab gCurv(ba, dmap[lev], 1, 0);     
            for (MFIter mfi(gCurv); mfi.isValid(); ++mfi)
            {
                const Box& bx = mfi.validbox();
@@ -651,7 +655,8 @@ main (int   argc,
                const auto& AdjHxiFab  = AdjHessian.array(mfi,0); 
                const auto& AdjHyiFab  = AdjHessian.array(mfi,3); 
                const auto& AdjHziFab  = AdjHessian.array(mfi,6); 
-               AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+               amrex::ParallelFor(bx,
+               [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
                {
                   gCurvFab(i,j,k) = ( CxFab(i,j,k) * ( AdjHxiFab(i,j,k,0) * CxFab(i,j,k) +
                                                        AdjHxiFab(i,j,k,1) * CyFab(i,j,k) + 
@@ -677,12 +682,12 @@ main (int   argc,
            // Strain rate -nn:\nabla u + \nabla \cdot u
 
            // Start by building the strain tensor
-           MultiFab StrainT(ba, dm, AMREX_SPACEDIM * AMREX_SPACEDIM, 0);     
+           MultiFab StrainT(ba, dmap[lev], AMREX_SPACEDIM * AMREX_SPACEDIM, 0);     
 
            // Compute strain tensor with a MLMG in each direction
            for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
 
-              MLPoisson poisson2({*geoms[lev]}, {ba}, {dm}, info);
+              MLPoisson poisson2({*geoms[lev]}, {ba}, {dmap[lev]}, info);
               poisson2.setMaxOrder(4);
               poisson2.setDomainBC(lo_bc, hi_bc);
               if ( lev > 0 ) {
@@ -692,20 +697,20 @@ main (int   argc,
                   MultiFab::Copy(*velIdimCoarse, *state[lev-1], idVst+idim, 0, 1, 0);
                   poisson2.setCoarseFineBC(velIdimCoarse,2);
               }
-              MultiFab* velIdim = new MultiFab(ba, dm, 1, 1); 
+              MultiFab* velIdim = new MultiFab(ba, dmap[lev], 1, 1); 
               MultiFab::Copy(*velIdim, *state[lev], idVst+idim, 0, 1, 1);
               poisson2.setLevelBC(0,velIdim);
 
               MLMG mlmg2(poisson2);
 
               std::array<MultiFab,AMREX_SPACEDIM> faceg;
-              AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 0); ,
-                           faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 0); ,
-                           faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 0); );
+              AMREX_D_TERM(faceg[0].define(convert(ba,IntVect::TheDimensionVector(0)), dmap[lev], 1, 0); ,
+                           faceg[1].define(convert(ba,IntVect::TheDimensionVector(1)), dmap[lev], 1, 0); ,
+                           faceg[2].define(convert(ba,IntVect::TheDimensionVector(2)), dmap[lev], 1, 0); );
               mlmg2.getFluxes({amrex::GetArrOfPtrs(faceg)},{velIdim});
 
               // Get cell centered d u_idim / d _x_y(_z)
-              MultiFab cell_avgg(ba, dm, AMREX_SPACEDIM, 0);
+              MultiFab cell_avgg(ba, dmap[lev], AMREX_SPACEDIM, 0);
               average_face_to_cellcenter(cell_avgg, 0, amrex::GetArrOfConstPtrs(faceg));
               cell_avgg.mult(-1.0,0,AMREX_SPACEDIM);
 
@@ -714,7 +719,7 @@ main (int   argc,
            } 
 
            // Gather the components of strain rate
-           MultiFab strainrate(ba, dm, 1, 0);
+           MultiFab strainrate(ba, dmap[lev], 1, 0);
 
            for (MFIter mfi(strainrate); mfi.isValid(); ++mfi)
            {
@@ -727,7 +732,8 @@ main (int   argc,
                AMREX_D_TERM(const auto& gradUx = StrainT.array(mfi,0); ,
                             const auto& gradUy = StrainT.array(mfi,AMREX_SPACEDIM); ,
                             const auto& gradUz = StrainT.array(mfi,AMREX_SPACEDIM*2); ); 
-               AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+               amrex::ParallelFor(bx,
+               [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
                {
                   srFab(i,j,k) = AMREX_D_TERM ( AMREX_D_TERM( - gradUx(i,j,k,0) * NxFab(i,j,k) * NxFab(i,j,k) ,
                                                               - gradUx(i,j,k,1) * NxFab(i,j,k) * NyFab(i,j,k) ,
@@ -756,7 +762,7 @@ main (int   argc,
 
         if (do_velnormal) { 
            // Velocity normal to the flame front
-           MultiFab velNormal(ba, dm, 1, 0);
+           MultiFab velNormal(ba, dmap[lev], 1, 0);
 
            for (MFIter mfi(velNormal); mfi.isValid(); ++mfi)
            {
@@ -769,7 +775,8 @@ main (int   argc,
                AMREX_D_TERM(const auto& Ux = state[lev]->array(mfi,idVst+0); ,
                             const auto& Uy = state[lev]->array(mfi,idVst+1); ,
                             const auto& Uz = state[lev]->array(mfi,idVst+2); ); 
-               AMREX_HOST_DEVICE_PARALLEL_FOR_3D(bx, i, j, k,
+               amrex::ParallelFor(bx,
+               [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
                {
                   velNormFab(i,j,k) = AMREX_D_TERM ( + Ux(i,j,k) * NxFab(i,j,k) ,
                                                      + Uy(i,j,k) * NyFab(i,j,k) , 
@@ -833,7 +840,7 @@ main (int   argc,
         for (int lev=0; lev<Nlev; ++lev)
         {
             const BoxArray ba = state[lev]->boxArray();
-            ostate[lev] = new MultiFab(ba,DistributionMapping(ba),nStateOut,0);
+            ostate[lev] = new MultiFab(ba,dmap[lev],nStateOut,0);
             MultiFab::Copy(*ostate[lev],*state[lev],nCompIn,0,nStateOut,0);
         }
         Vector<std::string> namesOut(nStateOut);
@@ -853,7 +860,7 @@ main (int   argc,
         for (int lev=0; lev<Nlev; ++lev)
         {
             const BoxArray ba = state[lev]->boxArray();
-            ostate[lev] = new MultiFab(ba,DistributionMapping(ba),nCompOut,0);
+            ostate[lev] = new MultiFab(ba,dmap[lev],nCompOut,0);
             MultiFab::Copy(*ostate[lev],*state[lev],0,0,nCompOut,0);
         }
         Print() << "Writing new data to " << outfile << "\n";
