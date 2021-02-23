@@ -33,7 +33,9 @@ ifeq ($(NEEDS_f90_SRC),TRUE)
   f90EXE_sources += $(EBASE)_nd.f90
 endif
 CEXE_headers += StreamData.H    StreamPC.H
-CEXE_sources += StreamData.cpp  StreamPC.cpp
+ifeq ($(EBASE),partStream)
+  CEXE_sources += StreamData.cpp  StreamPC.cpp
+endif
 
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
@@ -52,7 +54,7 @@ VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 
 CEXE_sources += AMReX_Extrapolater.cpp
 CEXE_headers += AMReX_Extrapolater.H
-f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
+#f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
 VPATH_LOCATIONS += $(AMREX_HOME)/Src/Amr
 
