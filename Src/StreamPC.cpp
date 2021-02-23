@@ -54,7 +54,7 @@ InitParticles (const Vector<Vector<Real>>& locs)
     for (const auto& loc : locs)
     {
       // Keep track of pairs of lines
-      Array<int,2> ppair = {ParticleType::NextID(), ParticleType::NextID()};
+      Array<Long,2> ppair = {ParticleType::NextID(), ParticleType::NextID()};
 
       for (int i_part=0; i_part<2; i_part++)
       {

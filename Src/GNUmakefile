@@ -54,7 +54,6 @@ VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 
 CEXE_sources += AMReX_Extrapolater.cpp
 CEXE_headers += AMReX_Extrapolater.H
-#f90EXE_sources += AMReX_extrapolater_$(DIM)d.f90
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
 VPATH_LOCATIONS += $(AMREX_HOME)/Src/Amr
 
