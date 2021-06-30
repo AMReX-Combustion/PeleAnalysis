@@ -22,6 +22,10 @@ include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 # Need this for DataServices to compile
 DEFINES += -DBL_NOLINEVALUES
 
+INCLUDE_LOCATIONS += $(PELE_PHYSICS_HOME)/Source
+VPATH_LOCATIONS   += $(PELE_PHYSICS_HOME)/Source
+include  $(PELE_PHYSICS_HOME)/Source/Make.package
+
 ifeq ($(USE_ACC), TRUE)
   DEFINES += -DACC
 endif

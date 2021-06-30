@@ -7,11 +7,10 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
+#include <AMReX_GpuLaunch.H>
 #include <WritePlotFile.H>
 
-#include <AMReX_BLFort.H>
-#include <chemistry_file.H>
-#include <util.H>
+#include <PelePhysics.H>
 
 using namespace amrex;
 using namespace analysis_util;
@@ -70,8 +69,6 @@ main (int   argc,
       // ^^^ this calls ParallelDescriptor::EndParallel() and exit()
     }
     AmrData& amrData = dataServices.AmrDataRef();
-
-    init_mech();
 
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);

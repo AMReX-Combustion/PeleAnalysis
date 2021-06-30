@@ -1,7 +1,7 @@
 AMREX_HOME ?= ../../../amrex
 
 DEBUG	      = FALSE
-DIM	      = 2
+DIM	      = 3
 COMP          = gcc
 PRECISION     = DOUBLE
 USE_MPI       = TRUE
@@ -10,7 +10,8 @@ USE_OMP       = FALSE
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-EBASE         = partStream
+#EBASE         = partStream
+EBASE         = blowOut
 #EBASE         = stream2plt
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
@@ -23,8 +24,8 @@ EBASE         = partStream
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-NEEDS_f90_SRC = FALSE
-#NEEDS_f90_SRC = TRUE
+#NEEDS_f90_SRC = FALSE
+NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 

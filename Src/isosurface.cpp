@@ -91,6 +91,7 @@ struct Segment
 {
   Segment() : p(2), mLength(-1) {}
   Real Length ();
+  const Vector<Real>& normalVector ();
   const PMapIt& operator[] (int n) const { return p[n]; }
   PMapIt& operator[] (int n) { return p[n]; }
   void flip ();
@@ -100,6 +101,8 @@ struct Segment
 private:
   void my_length();
   Real mLength;
+  void my_normVector();
+  Vector<Real> mnormVector;
 };
 
 int Segment::xComp = 0;
@@ -129,6 +132,21 @@ Segment::my_length()
   mLength = std::sqrt(((p1[xComp] - p0[xComp])*(p1[xComp] - p0[xComp]))
                       +((p1[yComp] - p0[yComp])*(p1[yComp] - p0[yComp])));
 }    
+
+void
+Segment::my_normVector()
+{
+    const Point& p0 = (*p[0]).second;
+    const Point& p1 = (*p[1]).second;
+    mnormVector[0] = (p0[yComp]-p1[yComp])/Length();
+    mnormVector[1] = (p1[xComp]-p0[xComp])/Length();
+}
+const Vector<Real>&
+Segment::normalVector()
+{
+    my_normVector();
+    return mnormVector;
+}
 
 void
 Segment::flip()
@@ -2013,6 +2031,42 @@ main (int   argc,
         }
         ofm << '\n';
       }
+#endif
+
+
+#if 1
+      const auto& xComp = Segment::xComp;
+      const auto& yComp = Segment::yComp;
+      const int pComp = yComp+1; // Guessing here
+      for (std::list<Line>::iterator it = contours.begin(); it!=contours.end(); ++it)
+      {
+        Array<Real,2> integral = {0, 0};
+        const auto& iLine = *it;
+        for (Line::const_iterator it1 = iLine.begin(); it1!=iLine.end(); ++it1)
+        {
+          const auto seg = *it1;
+          const Real* p0 = sortedNodes[seg.ID_l()]->m_vec;
+          const Real* p1 = sortedNodes[seg.ID_r()]->m_vec;
+
+          const Real x0 = p0[xComp];
+          const Real x1 = p1[xComp];
+          const Real y0 = p0[yComp];
+          const Real y1 = p1[yComp];
+          const Real avgp0 = p0[pComp];
+          const Real avgp1 = p1[pComp];
+          
+          Real len = std::sqrt(((x1 - x0)*(x1 - x0)) + (y1-y0)*(y1-y0));
+          Array<Real,2> normal = {0, 0};
+          if (len > 0) {
+            normal = {(y0 - y1)/len, (x1 - x0)/len};
+          }
+          for (int i=0; i<2; ++i) {
+            integral[i] += normal[i] * 0.5 * (avgp0 + avgp1) * len;
+          }
+        }
+        Print() << "Integral: " << integral[0] << " " << integral[1] << std::endl;
+      }
+
 #endif
 
 #endif
