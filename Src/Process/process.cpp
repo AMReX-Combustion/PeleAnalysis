@@ -47,8 +47,8 @@ main (int   argc,
     AmrData& amrData = dataServices.AmrDataRef();
 
     // Set up input field data names, and destination components to load data upon read.
-    //Vector<std::string> inNames = {{"velx","vely","velz","density"}};
-    Vector<std::string> inNames = {{AMREX_D_DECL("x_velocity","y_velocity","z_velocity"),"density"}};
+    Vector<std::string> inNames = {{AMREX_D_DECL("velx","vely","velz"),"density"}};
+    //Vector<std::string> inNames = {{AMREX_D_DECL("x_velocity","y_velocity","z_velocity"),"density"}};
     Vector<int> destFillComps   = {{AMREX_D_DECL(0, 1, 2), AMREX_SPACEDIM}};
     const int idVlocal = destFillComps[0]; // Vs start here
     const int idRlocal = destFillComps[AMREX_SPACEDIM]; // R starts here
