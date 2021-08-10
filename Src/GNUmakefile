@@ -11,7 +11,7 @@ USE_OMP       = FALSE
 #EBASE         = isosurface
 #EBASE         = stream
 #EBASE         = partStream
-EBASE         = blowOut
+#EBASE         = blowOut
 #EBASE         = stream2plt
 #EBASE         = sampleStreamlines
 #EBASE         = streamScatter
@@ -24,8 +24,9 @@ EBASE         = blowOut
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-#NEEDS_f90_SRC = FALSE
-NEEDS_f90_SRC = TRUE
+EBASE         = avgToPlane
+NEEDS_f90_SRC = FALSE
+#NEEDS_f90_SRC = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
