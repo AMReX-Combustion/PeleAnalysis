@@ -77,10 +77,10 @@ main (int   argc,
     int finestLevel = amrData.FinestLevel(); pp.query("finestLevel",finestLevel);
     AMREX_ALWAYS_ASSERT(finestLevel >= 0 && finestLevel<=amrData.FinestLevel());
     Box subbox = amrData.ProbDomain()[finestLevel];
-    Vector<int> inBox;
 
     if (int nx=pp.countval("box"))
     {
+      Vector<int> inBox;
       pp.getarr("box",inBox,0,nx);
       int d=BL_SPACEDIM;
       BL_ASSERT(inBox.size()==2*d);
@@ -90,8 +90,6 @@ main (int   argc,
     }
 
     Vector<std::string> names(comps.size());
-    Vector<std::string> subNames;
-    Vector<int> fillComps;
    
     Vector<Real> plo(BL_SPACEDIM), phi(BL_SPACEDIM);
     Vector<Box> psize(finestLevel+1);
@@ -107,7 +105,7 @@ main (int   argc,
     int loc = 0;
     
     BoxArray ba_sub(subbox);
-    int max_grid_size = 32;
+    int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
     ba_sub.maxSize(max_grid_size);
 
     if (ba_sub.size() > 0)
@@ -128,12 +126,12 @@ main (int   argc,
 
       for (int i=0; i<comps.size(); ++i)
       {
+        names[i] = amrData.PlotVarNames()[comps[i]];
         if (ParallelDescriptor::IOProcessor()) 
           std::cout << "Filling " << names[i] << " on level " << finestLevel << std::endl;
 
         mf_full.ParallelCopy(amrData.GetGrids(finestLevel,comps[i],subbox),0,0,1);
         amrData.FlushGrids(comps[i]);                
-        names[i] = amrData.PlotVarNames()[comps[i]];
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -188,7 +186,7 @@ main (int   argc,
             }
           });
         }
-        res_mf.ParallelAdd(mf_flat);
+        res_mf.ParallelAdd(mf_flat,0,i,1);
       }
 
       std::string outfile=getFileRoot(plotFileName) + "_avg.fab";
