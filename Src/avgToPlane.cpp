@@ -101,7 +101,7 @@ main (int   argc,
        phi[i] = amrData.ProbLo()[i]+(ihi[i]+1)*amrData.DxLevel()[finestLevel][i];
     }
 
-    int dir = 0; pp.query("dir",dir); AMREX_ALWAYS_ASSERT(dir>0 && dir<AMREX_SPACEDIM);
+    int dir = 0; pp.query("dir",dir); AMREX_ALWAYS_ASSERT(dir>=0 && dir<AMREX_SPACEDIM);
     int loc = 0;
     
     BoxArray ba_sub(subbox);
@@ -121,7 +121,8 @@ main (int   argc,
       MultiFab mf_flat(ba_flat,dmap_sub,1,0); mf_flat.setVal(0);
 
       Box res_box = ProjectBox(subbox,dir,loc);
-      DistributionMapping res_dm({0});
+      const Vector<int> dm_vec({0});
+      DistributionMapping res_dm(dm_vec);
       MultiFab res_mf(BoxArray(res_box),res_dm,comps.size(),0); res_mf.setVal(0);
 
       for (int i=0; i<comps.size(); ++i)
@@ -155,7 +156,6 @@ main (int   argc,
               int ilo = flat_box.smallEnd(dir);
               for     (int k = lo.z; k <= hi.z; ++k) {
                 for   (int j = lo.y; j <= hi.y; ++j) {
-                  AMREX_PRAGMA_SIMD
                     for (int i = lo.x; i <= hi.x; ++i) {
                       flat_arr(ilo,j,k) += full_arr(i,j,k);
                     }
@@ -166,7 +166,6 @@ main (int   argc,
               int jlo = flat_box.smallEnd(dir);
               for     (int k = lo.z; k <= hi.z; ++k) {
                 for   (int j = lo.y; j <= hi.y; ++j) {
-                  AMREX_PRAGMA_SIMD
                     for (int i = lo.x; i <= hi.x; ++i) {
                       flat_arr(i,jlo,k) += full_arr(i,j,k);
                     }
@@ -177,7 +176,6 @@ main (int   argc,
               int klo = flat_box.smallEnd(dir);
               for     (int k = lo.z; k <= hi.z; ++k) {
                 for   (int j = lo.y; j <= hi.y; ++j) {
-                  AMREX_PRAGMA_SIMD
                     for (int i = lo.x; i <= hi.x; ++i) {
                       flat_arr(i,j,klo) += full_arr(i,j,k);
                     }
