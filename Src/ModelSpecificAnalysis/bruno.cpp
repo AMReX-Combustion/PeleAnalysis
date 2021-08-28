@@ -52,9 +52,9 @@ main (int   argc,
     if (pp.contains("verbose"))
       AmrData::SetVerbose(true);
 
-    Vector<std::string> spec_names;
-    auto eos = pele::physics::PhysicsType::eos();
-    pele::physics::eos::speciesNames(spec_names);
+    Vector<std::string> spec_names(1);
+    spec_names[0] = "Null";
+    CKSYMS_STR(spec_names);
     for (int i=0; i<spec_names.size(); ++i) {
       Print() << spec_names[i] << " ";
     }
@@ -111,10 +111,12 @@ main (int   argc,
               &ncomp,geom.ProbLo(),geom.CellSize());
     }
 
+#if 0
     std::string outfile(getFileRoot(plotFileName) + "_b");
     Print() << "Writing new data to " << outfile << std::endl;
     bool verb = false;
     WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,amrData.PlotVarNames());
+#endif
   }
   Finalize();
   return 0;

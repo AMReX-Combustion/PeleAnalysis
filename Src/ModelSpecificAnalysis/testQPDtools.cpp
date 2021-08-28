@@ -10,8 +10,7 @@
 #include <WritePlotFile.H>
 
 #include <AMReX_BLFort.H>
-#include <mechanism.h>
-#include <chemistry_file.H>
+#include <PelePhysics.H>
 #include <util.H>
 #include <util_F.H>
 
@@ -24,8 +23,6 @@ main (int   argc,
 {
   Initialize(argc,argv);
   {
-    init_mech();
-    
     ParmParse pp;
 
     Vector<std::string> elem_names = GetElemNames();

@@ -1,158 +1,157 @@
-CEXE_sources += $(EBASE).cpp
-
 AMREX_HOME        ?= ../../../../../amrex
-PELE_HOME         ?= ../../../..
-PELE_PHYSICS_HOME ?= $(PELE_HOME)/PelePhysics
-PELE_ANALYSIS_HOME ?= $(PELE_HOME)/PeleAnalysis
+PELE_PHYSICS_HOME ?= ../../../../PelePhysics
+PELE_ANALYSIS_HOME ?= ../../../../PeleAnalysis
 
 TOP := $(PELE_ANALYSIS_HOME)
 
-EOS_HOME     ?= $(PELE_PHYSICS_HOME)/Eos
-REACTIONS_HOME ?= $(PELE_PHYSICS_HOME)/Reactions
-TRAN_HOME    ?= $(PELE_PHYSICS_HOME)/Transport
-
-ifeq ($(USE_SUNDIALS_PP),TRUE) 
-  include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
-else ifeq ($(USE_RK64_PP),TRUE)
-  DEFINES += -DUSE_RK64_PP
-endif
+#Turn off all fortran in amrex
+#ifneq ($(USE_MASA), TRUE)
+#  BL_NO_FORT = TRUE
+#endif
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
-# Need this for DataServices to compile
-DEFINES += -DBL_NOLINEVALUES
+# PeleC uses a coarse grained OMP approach
+DEFINES += -DCRSEGRNDOMP
 
-INCLUDE_LOCATIONS += $(PELE_PHYSICS_HOME)/Source
-VPATH_LOCATIONS   += $(PELE_PHYSICS_HOME)/Source
-include  $(PELE_PHYSICS_HOME)/Source/Make.package
-
-ifeq ($(USE_ACC), TRUE)
-  DEFINES += -DACC
+ifeq ($(USE_FORCING), TRUE)
+  DEFINES += -DPELEC_USE_FORCING
 endif
+
+ifeq ($(USE_EB), TRUE)
+  DEFINES += -DPELEC_USE_EB
+  ifeq ($(DIM), 1)
+    $(error EB is not supported in 1D)
+  endif
+endif
+
+all: $(executable) 
+	$(SILENT) $(RM) AMReX_buildInfo.cpp
+	@echo SUCCESS
+
+# PelePhysics
+PP_SRC_HOME = $(PELE_PHYSICS_HOME)/Source
+INCLUDE_LOCATIONS += $(PP_SRC_HOME)
+VPATH_LOCATIONS   += $(PP_SRC_HOME)
+Bpack             += $(PP_SRC_HOME)/Make.package $(PELE_PHYSICS_HOME)/Utility/Make.package
+Blocs             += $(PP_SRC_HOME) $(PELE_PHYSICS_HOME)/Utility
 
 # EOS
-# Both Fortran and cpp can be loaded for EOS
-EOS_PATH := $(EOS_HOME)/$(strip $(Eos_dir))
-include $(EOS_PATH)/Make.package
-INCLUDE_LOCATIONS += $(EOS_HOME) $(EOS_PATH) 
-VPATH_LOCATIONS   += $(EOS_HOME) $(EOS_PATH) 
-ifeq ($(USE_F90_PP),TRUE) 
-    EOS_HOME_F90 := $(EOS_HOME)/F90
-    EOS_PATH_F90 := $(EOS_PATH)/F90
-    include $(EOS_HOME_F90)/Make.package
-    include $(EOS_PATH_F90)/Make.package
-    INCLUDE_LOCATIONS += $(EOS_HOME_F90) $(EOS_PATH_F90)
-    VPATH_LOCATIONS   += $(EOS_HOME_F90) $(EOS_PATH_F90)
+EOS_HOME = $(PELE_PHYSICS_HOME)/Eos/
+ifeq ($(Eos_Model),$(filter $(Eos_Model),GammaLaw))
+   DEFINES += -DUSE_GAMMALAW_EOS
 endif
-ifeq ($(Eos_dir), Fuego)
-  TRANSPORT_TYPE := IDEAL_GAS
-else
-  ifeq ($(Eos_dir), GammaLaw)
-    TRANSPORT_TYPE := IDEAL_GAS
-  else
-    TRANSPORT_TYPE := REAL_GAS
-  endif
+ifeq ($(Eos_Model),$(filter $(Eos_Model),Fuego))
+   DEFINES += -DUSE_FUEGO_EOS
 endif
-Bpack             += $(EOS_PATH)/Make.package
-Blocs             += $(EOS_PATH)
+ifeq ($(Eos_Model),$(filter $(Eos_Model),Soave-Redlich-Kwong))
+   DEFINES += -DUSE_SRK_EOS
+endif
+INCLUDE_LOCATIONS += $(EOS_HOME)
+VPATH_LOCATIONS   += $(EOS_HOME)
+Bpack             += $(EOS_HOME)/Make.package
+Blocs             += $(EOS_HOME)
 
 # Reactions
-REACTIONS_PATH := $(REACTIONS_HOME)/$(strip $(Reactions_dir))
-include $(REACTIONS_PATH)/Make.package
-INCLUDE_LOCATIONS += $(REACTIONS_HOME) $(REACTIONS_PATH) 
-VPATH_LOCATIONS   += $(REACTIONS_HOME) $(REACTIONS_PATH) 
-ifeq ($(USE_F90_PP),TRUE) 
-    REACTIONS_HOME_F90 := $(REACTIONS_HOME)/F90
-    REACTIONS_PATH_F90 := $(REACTIONS_PATH)/F90
-    INCLUDE_LOCATIONS += $(REACTIONS_HOME_F90) $(REACTIONS_PATH_F90)
-    VPATH_LOCATIONS   += $(REACTIONS_HOME_F90) $(REACTIONS_PATH_F90)
-endif
-ifeq ($(Eos_dir), GammaLaw)
-  ifneq ($(Chemistry_Model), Null)
-    $(error Chemistry_Model definition not compatible with Eos_Dir=GammaLaw)
+ifeq ($(USE_REACT), TRUE)
+  REACTIONS_HOME = $(PELE_PHYSICS_HOME)/Reactions
+  INCLUDE_LOCATIONS += $(REACTIONS_HOME)
+  VPATH_LOCATIONS   += $(REACTIONS_HOME)
+  DEFINES += -DPELEC_USE_REACTIONS
+  Bpack += $(REACTIONS_HOME)/Make.package
+  Blocs += $(REACTIONS_HOME)
+  ifeq ($(Reactor_dir), arkode)
+      USE_SUNDIALS_PP = TRUE
+      USE_ARKODE_PP = TRUE
+      Bpack += $(REACTIONS_HOME)/$(Reactor_dir)/Make.package
+      Blocs += $(REACTIONS_HOME)/$(Reactor_dir)
+  endif
+  ifeq ($(Reactor_dir), cvode)
+      USE_SUNDIALS_PP = TRUE
+      USE_CVODE_PP = TRUE
+      Bpack += $(REACTIONS_HOME)/$(Reactor_dir)/Make.package
+      Blocs += $(REACTIONS_HOME)/$(Reactor_dir)
+      DEFINES += -DCOMPILE_JACOBIAN
+  endif
+  ifeq ($(Reactor_dir), rk64)
+      USE_SUNDIALS_PP = FALSE
+      USE_ARKODE_PP = FALSE
+      USE_CVODE_PP = FALSE
+      USE_RK64_PP = TRUE
+      Bpack += $(REACTIONS_HOME)/$(Reactor_dir)/Make.package
+      Blocs += $(REACTIONS_HOME)/$(Reactor_dir)
+  endif
+  ifeq ($(USE_SUNDIALS_PP), TRUE)
+      include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
   endif
 endif
-CHEM_HOME = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models/$(Chemistry_Model)
-CHEM_ALL  = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models
-VPATH_LOCATIONS += $(CHEM_HOME) $(CHEM_ALL)
-Bpack += $(CHEM_HOME)/Make.package \
-         $(CHEM_ALL)/Make.package
-Blocs += $(CHEM_HOME) $(CHEM_ALL)
-Blocs   += $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation
+
+ifdef Chemistry_Model
+  CHEM_HOME = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models/$(Chemistry_Model)
+  Blocs += $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation
+endif
+VPATH_LOCATIONS += $(CHEM_HOME)
+Bpack += $(CHEM_HOME)/Make.package
+Blocs += $(CHEM_HOME)
 
 # Transport
-TRAN_PATH := $(TRAN_HOME)/$(strip $(Transport_dir))
-include $(TRAN_PATH)/Make.package
-INCLUDE_LOCATIONS += $(TRAN_PATH)
-VPATH_LOCATIONS   += $(TRAN_PATH)
-ifeq ($(USE_F90_PP),TRUE) 
-    TRAN_HOME_F90 := $(TRAN_HOME)/F90
-    TRAN_PATH_F90 := $(TRAN_PATH)/F90
-    include $(TRAN_HOME_F90)/Make.package
-    include $(TRAN_PATH_F90)/Make.package
-    INCLUDE_LOCATIONS += $(TRAN_HOME_F90) $(TRAN_PATH_F90)
-    VPATH_LOCATIONS   += $(TRAN_HOME_F90) $(TRAN_PATH_F90)
-    Bpack   += $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation/Make.package
+TRANSPORT_HOME = $(PELE_PHYSICS_HOME)/Transport
+ifeq ($(Transport_Model),$(filter $(Transport_Model),Constant))
+   DEFINES += -DUSE_CONSTANT_TRANSPORT
 endif
-USE_FUEGO = FALSE
+ifeq ($(Transport_Model),$(filter $(Transport_Model),Simple))
+   DEFINES += -DUSE_SIMPLE_TRANSPORT
+endif
+ifeq ($(Transport_Model),$(filter $(Transport_Model),Sutherland))
+   DEFINES += -DUSE_SUTHERLAND_TRANSPORT
+endif
+INCLUDE_LOCATIONS += $(TRANSPORT_HOME)
+VPATH_LOCATIONS   += $(TRANSPORT_HOME)
+Bpack             += $(TRANSPORT_HOME)/Make.package
+Blocs             += $(TRANSPORT_HOME)
 
-Blocs   += $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism
-
-ifeq ($(Transport_dir), Simple)
-  DEFINES += -DSIMPLE_TRANSPORT
-endif
-ifeq ($(Transport_dir), EGLib)
-  DEFINES += -DEGLIB_TRANSPORT
-  USE_FUEGO = TRUE
-endif
-ifeq ($(Transport_dir), Constant)
-  DEFINES += -DCONSTANT_TRANSPORT
+Pdirs := Base Boundary Extern/amrdata AmrCore
+ifeq ($(USE_EB), TRUE)
+  Pdirs += EB
+  Bpack += $(AMREX_HYDRO_HOME)/Redistribution/Make.package
+  Blocs += $(AMREX_HYDRO_HOME)/Redistribution
 endif
 
-Pdirs 	:= Base Boundary AmrCore Extern/amrdata
-Bdirs   := Source
+ifeq ($(USE_PARTICLES), TRUE)
+  DEFINES+=-DAMREX_PARTICLES
+  Pdirs += Particle
+  DEFINES+=-DSPRAY_FUEL_NUM=$(SPRAY_FUEL_NUM)
+  ifeq ($(USE_SPRAY_SOA), TRUE)
+    DEFINES+=-DUSE_SPRAY_SOA
+  endif
+  Bpack   += $(PELEC_MP_HOME)/Source/PP_Spray/Make.package
+  Blocs   += $(PELEC_MP_HOME)/Source/PP_Spray
+  INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Particle
+  VPATH_LOCATIONS   += $(AMREX_HOME)/Src/Particle
+endif
 
-Bpack	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
-Blocs	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
+Bpack += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
+Blocs += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
+
+Bdirs +=  $(AMREX_HOME)/Tools/C_util
+Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
+Bpack += $(foreach dir, $(Bdirs), $(dir)/Make.package)
+Blocs += $(foreach dir, $(Bdirs), $(dir))
+
+$(info $${Bpack} is [${Bpack}])
 
 include $(Bpack)
 
 INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
-AMREX_UTILS_HOME = $(AMREX_HOME)/Tools/C_util
-include $(AMREX_UTILS_HOME)/Make.package
-INCLUDE_LOCATIONS += $(AMREX_UTILS_HOME)
-VPATH_LOCATIONS   += $(AMREX_UTILS_HOME)
-
-
-# job_info support
 CEXE_sources += AMReX_buildInfo.cpp
-CEXE_headers += $(AMREX_HOME)/Tools/C_scripts/buildInfo.H
-INCLUDE_LOCATIONS +=  $(AMREX_HOME)/Tools/C_scripts
+CEXE_headers += $(AMREX_HOME)/Tools/C_scripts/AMReX_buildInfo.H
+INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_scripts
 
-
-MNAMES := EOS=$(EOS_PATH) REACTIONS=$(REACTIONS_PATH)
-MNAMES += TRANSPORT=$(TRAN_HOME)
-MNAMES += CHEMISTRY=$(Chemistry_Model)
-
-include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
-
-ifeq ($(shell uname),Darwin)
-  all: $(executable)
-	install_name_tool -add_rpath $(PELE_PHYSICS_HOME)/ThirdParty/INSTALL/$(configSpecificTPSuffix)/lib $(executable)
-	$(SILENT) $(RM) AMReX_buildInfo.cpp
-	@echo SUCCESS
-else
-  all: $(executable)
-	$(SILENT) $(RM) AMReX_buildInfo.cpp
-	@echo SUCCESS
+ifdef Chemistry_Model
+  MNAMES += CHEMISTRY=$(Chemistry_Model)
 endif
-
-include $(AMREX_HOME)/Tools/GNUMake/Make.rules
-
-clean::
-	$(SILENT) $(RM) AMReX_buildInfo.cpp
 
 AMReX_buildInfo.cpp:
 	$(AMREX_HOME)/Tools/C_scripts/makebuildinfo_C.py \
@@ -162,24 +161,28 @@ AMReX_buildInfo.cpp:
           --MODULES "$(MNAMES)" \
           --GIT "$(TOP) $(AMREX_HOME) $(PELE_PHYSICS_HOME)"
 
-ifeq ($(USE_SUNDIALS_PP),TRUE)
+include $(AMREX_HOME)/Tools/GNUMake/Make.rules
+
+clean::
+	$(SILENT) $(RM) AMReX_buildInfo.cpp
+
+ifeq ($(USE_SUNDIALS_PP), TRUE)
   TPL:
-	cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_CUDA=$(USE_CUDA) USE_KLU_PP=$(USE_KLU_PP) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP)
+	cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_CUDA=$(USE_CUDA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP)
 
   TPLclean:
-	cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_CUDA=$(USE_CUDA) USE_KLU_PP=$(USE_KLU_PP) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) clean
+	cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_CUDA=$(USE_CUDA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) clean
 
   TPLrealclean:
-	cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_CUDA=$(USE_CUDA) USE_KLU_PP=$(USE_KLU_PP) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) realclean
+	cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_CUDA=$(USE_CUDA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) realclean
 else
   TPL:
   TPLclean:
   TPLrealclean:
 endif
 
-
 #-----------------------------------------------------------------------------
 # for debugging.  To see the value of a Makefile variable,
 # e.g. Fmlocs, simply do "make print-Fmlocs".  This will
 # print out the value.
-print-%: ; @echo $* is $($*) ; $(SILENT) $(RM) buildInfo.cpp
+#print-%: ; @echo $* is $($*) ; $(SILENT) $(RM) AMReX_buildInfo.cpp

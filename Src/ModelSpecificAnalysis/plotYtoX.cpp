@@ -66,11 +66,11 @@ main (int   argc,
     int idYin = -1;
     int idTin = -1;
     Vector<std::string> spec_names;
+    pele::physics::eos::speciesNames<pele::physics::PhysicsType::eos_type>(spec_names);
     auto eos = pele::physics::PhysicsType::eos();
-    pele::physics::eos::speciesNames(spec_names);
     const Vector<std::string>& plotVarNames = amrData.PlotVarNames();
     const std::string spName= "Y(" + spec_names[0] + ")";
-    const std::string TName = "temp";
+    const std::string TName = "Temp";
     for (int i=0; i<plotVarNames.size(); ++i)
     {
       if (plotVarNames[i] == spName) idYin = i;
@@ -142,7 +142,7 @@ main (int   argc,
     std::string outfile(getFileRoot(plotFileName) + "_X");
     Print() << "Writing new data to " << outfile << std::endl;
     const bool verb = false;
-    WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,outNames);
+    WritePlotFile(GetVecOfPtrs(outdata),amrData.ProbDomain(),amrData,outfile,verb,outNames);
   }
   Finalize();
   return 0;
