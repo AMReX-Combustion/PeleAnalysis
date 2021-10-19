@@ -6,60 +6,13 @@
 
 using namespace amrex;
 
-void STORE_PPM_STR (const std::string& file,
-                    int width, int height, int iimage[],
-                    const int r[], const int g[], const int b[]);
-void STORE_PGM_STR (const std::string& file,
-                    int width, int height, int iimage[]);
-void LOAD_PALETTE_STR (const std::string& file, int r[], int g[], int b[], int a[]);
-void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
-                  BaseFab<int>& image, Real data_min, Real data_max, int nVals);
-
-static std::string AND("_");
-static std::string PPM(".ppm");
-static std::string PGM(".pgm");
-static std::string FABF(".fab");
-
-static
-void 
-print_usage (int,
-             char* argv[])
-{
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=f1 [options] \n\tOptions:\n";
-  exit(1);
-}
-
-std::string
-getFileRoot(const std::string& infile)
-{
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
-  return tokens[tokens.size()-1];
-}
-
-Box ProjectBox(const Box& srcBox,
-               int        dir,
-               int        loc)
-{
-  Box dstBox = srcBox;
-  dstBox.setSmall(dir,loc);
-  dstBox.setBig(dir,loc);
-  return dstBox;
-}
-
 int
 main (int   argc,
       char* argv[])
 {
   Initialize(argc,argv);
   {
-    if (argc < 2)
-      print_usage(argc,argv);
-
     ParmParse pp;
-
-    if (pp.contains("help"))
-      print_usage(argc,argv);
 
     // Open first plotfile header and create an amrData object pointing into it
     int nf = pp.countval("infiles");
@@ -167,7 +120,7 @@ main (int   argc,
           if (lev==0) {
             alias.ParallelCopy(amrData.GetGrids(0,comps[i],domain[0]));
           } else {
-            average_down(amrData.GetGrids(lev+1,comps[i],domain[lev+1]),alias,geom[lev+1],geom[lev],0,1,ratioTot[lev]);
+            average_down(amrData.GetGrids(lev,comps[i],domain[lev]),alias,geom[lev],geom[0],0,1,ratioTot[lev]);
           }
           amrData.FlushGrids(comps[i]);
         }
