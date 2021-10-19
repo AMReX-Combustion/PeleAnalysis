@@ -2,7 +2,7 @@ AMREX_HOME ?= ../../../amrex
 
 DEBUG	      = FALSE
 DIM	      = 3
-COMP          = gcc
+COMP          = gnu
 PRECISION     = DOUBLE
 USE_MPI       = TRUE
 USE_OMP       = FALSE
@@ -28,6 +28,8 @@ EBASE         = partStream
 EBASE         = avgPlotfiles
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
+
+BL_NO_FORT = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
