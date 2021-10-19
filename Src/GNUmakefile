@@ -10,7 +10,7 @@ USE_OMP       = FALSE
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
-#EBASE         = partStream
+EBASE         = partStream
 #EBASE         = blowOut
 #EBASE         = stream2plt
 #EBASE         = sampleStreamlines
@@ -24,7 +24,8 @@ USE_OMP       = FALSE
 #EBASE         = subPlt
 #EBASE         = conditionalMean
 #EBASE         = jpdf
-EBASE         = avgToPlane
+#EBASE         = avgToPlane
+EBASE         = avgPlotfiles
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
@@ -48,11 +49,6 @@ Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 include $(Ppack)
 INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
-
-CEXE_sources += AppendToPlotFile.cpp WritePlotFile.cpp
-CEXE_headers += AppendToPlotFile.H   WritePlotFile.cpp
-INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_util
-VPATH_LOCATIONS += $(AMREX_HOME)/Tools/C_util
 
 CEXE_sources += AMReX_Extrapolater.cpp
 CEXE_headers += AMReX_Extrapolater.H
