@@ -90,8 +90,6 @@ main (int   argc,
     for (int lev=0; lev<=finestLevel; ++lev) {
       ratioTot[lev] = (lev == 0 ? 1 : ratioTot[lev-1] * ratio[lev-1]);
     }
-    Print() << "****************************************** rr[0]: " << ratioTot[0] << std::endl;
-    Print() << "****************************************** rr[1]: " << ratioTot[1] << std::endl;
 
     AMREX_ALWAYS_ASSERT(domain[0].numPts() > 0);
     Vector<Geometry> geom(finestLevel+1);
