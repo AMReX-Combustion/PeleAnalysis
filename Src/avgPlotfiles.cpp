@@ -79,15 +79,20 @@ main (int   argc,
     const Vector<int>& ratio = amrData0.RefRatio();
 
     Vector<Box> domain(finestLevel+1);
-    Vector<int> ratioTot(finestLevel,1);
+    Vector<int> ratioTot(finestLevel+1);
     domain[finestLevel] = subbox;
     for (int lev=finestLevel-1; lev>=0; --lev) {
       domain[lev] = coarsen(domain[lev+1],ratio[lev]);
     }
     for (int lev=1; lev<=finestLevel; ++lev) {
       domain[lev] = refine(domain[lev-1],ratio[lev-1]);
-      ratioTot[lev-1] = (lev == 1 ? ratio[lev-1] : ratioTot[lev-2] * ratio[lev-1]);
     }
+    for (int lev=0; lev<=finestLevel; ++lev) {
+      ratioTot[lev] = (lev == 0 ? 1 : ratioTot[lev-1] * ratio[lev-1]);
+    }
+    Print() << "****************************************** rr[0]: " << ratioTot[0] << std::endl;
+    Print() << "****************************************** rr[1]: " << ratioTot[1] << std::endl;
+
     AMREX_ALWAYS_ASSERT(domain[0].numPts() > 0);
     Vector<Geometry> geom(finestLevel+1);
     RealBox rb(AMREX_D_DECL(plo[0],plo[1],plo[2]), AMREX_D_DECL(phi[0],phi[1],phi[2]));
@@ -95,7 +100,6 @@ main (int   argc,
     for (int lev=0; lev<=finestLevel; ++lev) {
       geom[lev].define(domain[lev],rb,amrData0.CoordSys(),is_per);
     }
-    
     BoxArray ba_res(domain[0]);
     int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
     ba_res.maxSize(max_grid_size);
