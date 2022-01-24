@@ -212,49 +212,54 @@ main (int   argc,
           AMREX_PARALLEL_FOR_3D ( box, i, j, k,
           {
 
-          for (int n=0; n<amrData.PlotVarNames().size(); ++n){
-            output(i,j,k,n) = sfab(i,j,k,n);
-          }
+            //output PeleC scalars without computing anything
+            for (int n=0; n<amrData.PlotVarNames().size(); ++n){
+              output(i,j,k,n) = sfab(i,j,k,n);
+            }
 
-          if(idvFlocal> -1){ //Dealing with EB cases
-            if(sfab(i,j,k,idvFlocal) > 1.e-10){ //only compute reaction rate for volume fraction greater than zero
-              amrex::Real Yl[NUM_SPECIES];
-              for (int n=0; n<NUM_SPECIES; ++n) {
-                Yl[n] = sfab(i,j,k,idYlocal+n);
+            //PeleLM processing requires to calculate reaction rates
+            if(plt_src == 1){//PeleLM
+              if(idvFlocal> -1){ //Dealing with EB cases
+                if(sfab(i,j,k,idvFlocal) > 1.e-10){ //only compute reaction rate for volume fraction greater than zero
+                  amrex::Real Yl[NUM_SPECIES];
+                  for (int n=0; n<NUM_SPECIES; ++n) {
+                    Yl[n] = sfab(i,j,k,idYlocal+n);
+                  }
+                  
+                  amrex::Real reaction_rate[NUM_SPECIES];
+                  amrex::Real rho = sfab(i,j,k,idRlocal)*convert_rho;
+                  // printf("rho = %e  T = %e  \n", rho,sfab(i,j,k,idTlocal));
+                  eos.RTY2WDOT(rho, sfab(i,j,k,idTlocal), Yl, reaction_rate);
+                  for (int n=0; n<NUM_SPECIES; ++n) {
+                    output(i,j,k,n+ncomp) = reaction_rate[n];
+                    // if(n == O2_ID) printf("%e\n", WDOT(i,j,k,n));
+                  }
+                }
+                else{//setting reaction rate to zero at vfrac = 0
+                  for (int n=0; n<NUM_SPECIES; ++n) {
+                    output(i,j,k,n) = 0.0;
+                  }          
+                }
               }
-              
-              amrex::Real reaction_rate[NUM_SPECIES];
-              amrex::Real rho = sfab(i,j,k,idRlocal)*convert_rho;
-              // printf("rho = %e  T = %e  \n", rho,sfab(i,j,k,idTlocal));
-              eos.RTY2WDOT(rho, sfab(i,j,k,idTlocal), Yl, reaction_rate);
-              for (int n=0; n<NUM_SPECIES; ++n) {
-                output(i,j,k,n+ncomp) = reaction_rate[n];
-                // if(n == O2_ID) printf("%e\n", WDOT(i,j,k,n));
+
+              else{ //The code below is used for cases without EB
+                  amrex::Real Yl[NUM_SPECIES];
+                  amrex::Real rho_from_Y=0.0;
+                  amrex::Real rho = sfab(i,j,k,idRlocal)*convert_rho;
+                  for (int n=0; n<NUM_SPECIES; ++n) {
+                    Yl[n] = sfab(i,j,k,idYlocal+n);
+                    rho_from_Y += Yl[n]*rho;
+                  }
+                  clip_normalize_Y(Yl);
+                  
+                  amrex::Real reaction_rate[NUM_SPECIES];
+                  // printf("rho = %e  T = %e  \n", rho,sfab(i,j,k,idTlocal));
+                  eos.RTY2WDOT(rho_from_Y, sfab(i,j,k,idTlocal), Yl, reaction_rate);
+                  for (int n=0; n<NUM_SPECIES; ++n) {
+                    output(i,j,k,n+ncomp) = reaction_rate[n];
+                  }    
               }
             }
-            else{//setting reaction rate to zero at vfrac = 0
-              for (int n=0; n<NUM_SPECIES; ++n) {
-                output(i,j,k,n) = 0.0;
-              }          
-            }
-          }
-          else{ //The code below is used for cases without EB
-              amrex::Real Yl[NUM_SPECIES];
-              amrex::Real rho_from_Y=0.0;
-              amrex::Real rho = sfab(i,j,k,idRlocal)*convert_rho;
-              for (int n=0; n<NUM_SPECIES; ++n) {
-                Yl[n] = sfab(i,j,k,idYlocal+n);
-                rho_from_Y += Yl[n]*rho;
-              }
-              clip_normalize_Y(Yl);
-              
-              amrex::Real reaction_rate[NUM_SPECIES];
-              // printf("rho = %e  T = %e  \n", rho,sfab(i,j,k,idTlocal));
-              eos.RTY2WDOT(rho_from_Y, sfab(i,j,k,idTlocal), Yl, reaction_rate);
-              for (int n=0; n<NUM_SPECIES; ++n) {
-                output(i,j,k,n+ncomp) = reaction_rate[n];
-              }    
-          }
           });
 
           // process(BL_TO_FORTRAN_BOX(box),
@@ -294,9 +299,11 @@ main (int   argc,
     {
       outNames[i] = amrData.PlotVarNames()[i];
     }
-    for (int i=0; i<NUM_SPECIES; ++i)
-    {
-      outNames[i+ncomp] = "rho_omega_" + spec_names[i];
+    if(plt_src == 1){ //Only PeleLM requires to compute rho*omega_i
+      for (int i=0; i<NUM_SPECIES; ++i)
+      {
+        outNames[i+ncomp] = "rho_omega_" + spec_names[i];
+      }
     }
 
     std::string outfile(output_folder+getFileRoot(plotFileName) + "_finest_small");
