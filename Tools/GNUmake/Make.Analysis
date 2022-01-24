@@ -121,7 +121,7 @@ Bpack             += $(TRANSPORT_HOME)/Make.package
 Blocs             += $(TRANSPORT_HOME)
 
 # Utilities
-include $(PELE_PHYSICS_HOME)/Utility/Make.package
+include $(PELE_PHYSICS_HOME)/Utility/PMF/Make.package
 
 USE_FUEGO = FALSE
 
