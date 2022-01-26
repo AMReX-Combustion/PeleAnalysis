@@ -5,12 +5,15 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <AMReX_PlotFileUtil.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
-#include <AMReX_GpuLaunch.H>
+#include <WritePlotFile.H>
 
-#include <PelePhysics.H>
+#include <AMReX_BLFort.H>
+#include <mechanism.h>
+#include <chemistry_file.H>
+#include <EOS.H>
+#include <util.H>
 
 using namespace amrex;
 
@@ -27,7 +30,7 @@ print_usage (int,
 std::string
 getFileRoot(const std::string& infile)
 {
-  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
 
@@ -59,59 +62,48 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
+    EOS::init();
+
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
     int Nlev = finestLevel + 1;
 
-    int idXin = -1;
+    int idYin = -1;
     int idTin = -1;
     Vector<std::string> spec_names;
-    pele::physics::eos::speciesNames<pele::physics::PhysicsType::eos_type>(spec_names);
-    auto eos = pele::physics::PhysicsType::eos();
+    EOS::speciesNames(spec_names);
     const Vector<std::string>& plotVarNames = amrData.PlotVarNames();
-    const std::string spName= "X(" + spec_names[0] + ")";
-    const std::string TName = "Temp";
+    const std::string spName= "Y(" + spec_names[0] + ")";
+    const std::string TName = "temp";
     for (int i=0; i<plotVarNames.size(); ++i)
     {
-      if (plotVarNames[i] == spName) idXin = i;
+      if (plotVarNames[i] == spName) idYin = i;
       if (plotVarNames[i] == TName) idTin = i;
     }
-    if (idXin<0 || idTin<0)
+    if (idYin<0 || idTin<0)
       Print() << "Cannot find required data in pltfile" << std::endl;
 
-    const int idYout = 0;
-    const int idTout = NUM_SPECIES;
+    const int idTout = 0;
+    const int iddTout = idTout + 1;
+    const int nCompOut = iddTout + 1;
     const int nCompIn = NUM_SPECIES + 1;
-    const int nCompOut = idYout + NUM_SPECIES + 1;
 
     Vector<std::string> outNames(nCompOut);
     Vector<std::string> inNames(nCompIn);
     Vector<int> destFillComps(nCompIn);
-    const int idXlocal = 0; // Xs start here
+    const int idYlocal = 0; // Ys start here
     const int idTlocal = NUM_SPECIES; // T start here
     for (int i=0; i<NUM_SPECIES; ++i)
     {
-      destFillComps[i] = idXlocal + i;
-      inNames[i] =  "X(" + spec_names[i] + ")";
-      outNames[i] = "Y(" + spec_names[i] + ")";
+      destFillComps[i] = idYlocal + i;
+      inNames[i] =  "Y(" + spec_names[i] + ")";
     }
     destFillComps[idTlocal] = idTlocal;
     inNames[idTlocal] = TName;
     outNames[idTout] = TName;
+    outNames[iddTout] = "d" + TName;
     
     Vector<std::unique_ptr<MultiFab>> outdata(Nlev);
-    Vector<Geometry> geoms(Nlev);
-    amrex::RealBox real_box({AMREX_D_DECL(amrData.ProbLo()[0],
-                                          amrData.ProbLo()[1],
-                                          amrData.ProbLo()[2])},
-                            {AMREX_D_DECL(amrData.ProbHi()[0],
-                                          amrData.ProbHi()[1],
-                                          amrData.ProbHi()[2])});
-    amrex::Array<int, AMREX_SPACEDIM> is_periodic{AMREX_D_DECL(1, 1, 1)};
-    geoms[0] = amrex::Geometry((amrData.ProbDomain())[0],
-                               real_box,
-                               amrData.CoordSys(),
-                               is_periodic);
     const int nGrow = 0;
 
     for (int lev=0; lev<Nlev; ++lev)
@@ -119,9 +111,6 @@ main (int   argc,
       const BoxArray ba = amrData.boxArray(lev);
       const DistributionMapping dm(ba);
       outdata[lev].reset(new MultiFab(ba,dm,nCompOut,nGrow));
-      if ( lev > 0 ) {
-         geoms[lev] = amrex::refine(geoms[lev - 1], 2);
-      }
       MultiFab indata(ba,dm,nCompIn,nGrow);
 
       Print() << "Reading data for level " << lev << std::endl;
@@ -131,35 +120,35 @@ main (int   argc,
       for (MFIter mfi(indata,TilingIfNotGPU()); mfi.isValid(); ++mfi)
       {
         const Box& bx = mfi.tilebox();
-        Array4<Real> const& X = indata.array(mfi);
-        Array4<Real> const& Tin = indata.array(mfi);
-        Array4<Real> const& Y = (*outdata[lev]).array(mfi);
-        Array4<Real> const& Tout = (*outdata[lev]).array(mfi);
+        Array4<Real> const& Y = indata.array(mfi,idYlocal);
+        Array4<Real> const& Tin = indata.array(mfi,idTlocal);
+        Array4<Real> const& Tout = (*outdata[lev]).array(mfi,idTout);
+        Array4<Real> const& dTout = (*outdata[lev]).array(mfi,iddTout);
 
         AMREX_PARALLEL_FOR_3D ( bx, i, j, k,
         {
           Real Yl[NUM_SPECIES];
           Real Xl[NUM_SPECIES];
           for (int n=0; n<NUM_SPECIES; ++n) {
-            Xl[n] = X(i,j,k,idXlocal+n);
+            Yl[n] = Y(i,j,k,idYlocal+n);
           }
-          eos.X2Y(Xl,Yl);
-          for (int n=0; n<NUM_SPECIES; ++n) {
-            Y(i,j,k,idYout+n) = Yl[n];
-          }
-          Tout(i,j,k,idTout) = Tin(i,j,k,idTlocal);
+          Real H;
+          EOS::TY2H(Tin(i,j,k),Yl,H);
+
+          Real Tsolve = 300;
+          EOS::HY2T(H,Yl,Tsolve);
+          Tout(i,j,k) = Tsolve;
+          dTout(i,j,k) = Tsolve - Tin(i,j,k);
         });
       }
 
       Print() << "Derive finished for level " << lev << std::endl;
     }
 
-    std::string outfile(getFileRoot(plotFileName) + "_Y");
+    std::string outfile(getFileRoot(plotFileName) + "_T");
     Print() << "Writing new data to " << outfile << std::endl;
-    Vector<int> isteps(Nlev, 0);
-    Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
-    amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(outdata), outNames,
-                                   geoms, 0.0, isteps, refRatios);
+    const bool verb = false;
+    WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,outNames);
   }
   Finalize();
   return 0;

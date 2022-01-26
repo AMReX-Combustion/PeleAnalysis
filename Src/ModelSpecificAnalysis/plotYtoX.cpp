@@ -5,18 +5,14 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
+#include <AMReX_PlotFileUtil.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
-#include <WritePlotFile.H>
+#include <AMReX_GpuLaunch.H>
 
-#include <AMReX_BLFort.H>
-#include <mechanism.h>
-#include <chemistry_file.H>
-#include <util.H>
-#include <util_F.H>
+#include <PelePhysics.H>
 
 using namespace amrex;
-using namespace analysis_util;
 
 static
 void 
@@ -31,7 +27,7 @@ print_usage (int,
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
 
@@ -63,18 +59,18 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    init_mech();
-
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
     int Nlev = finestLevel + 1;
 
     int idYin = -1;
     int idTin = -1;
-    Vector<std::string> spec_names = GetSpecNames();
+    Vector<std::string> spec_names;
+    pele::physics::eos::speciesNames<pele::physics::PhysicsType::eos_type>(spec_names);
+    auto eos = pele::physics::PhysicsType::eos();
     const Vector<std::string>& plotVarNames = amrData.PlotVarNames();
     const std::string spName= "Y(" + spec_names[0] + ")";
-    const std::string TName = "temp";
+    const std::string TName = "Temp";
     for (int i=0; i<plotVarNames.size(); ++i)
     {
       if (plotVarNames[i] == spName) idYin = i;
@@ -104,6 +100,18 @@ main (int   argc,
     outNames[idTout] = TName;
     
     Vector<std::unique_ptr<MultiFab>> outdata(Nlev);
+    Vector<Geometry> geoms(Nlev);
+    amrex::RealBox real_box({AMREX_D_DECL(amrData.ProbLo()[0],
+                                          amrData.ProbLo()[1],
+                                          amrData.ProbLo()[2])},
+                            {AMREX_D_DECL(amrData.ProbHi()[0],
+                                          amrData.ProbHi()[1],
+                                          amrData.ProbHi()[2])});
+    amrex::Array<int, AMREX_SPACEDIM> is_periodic{AMREX_D_DECL(1, 1, 1)};
+    geoms[0] = amrex::Geometry((amrData.ProbDomain())[0],
+                               real_box,
+                               amrData.CoordSys(),
+                               is_periodic);
     const int nGrow = 0;
 
     for (int lev=0; lev<Nlev; ++lev)
@@ -111,6 +119,9 @@ main (int   argc,
       const BoxArray ba = amrData.boxArray(lev);
       const DistributionMapping dm(ba);
       outdata[lev].reset(new MultiFab(ba,dm,nCompOut,nGrow));
+      if ( lev > 0 ) {
+         geoms[lev] = amrex::refine(geoms[lev - 1], 2);
+      }
       MultiFab indata(ba,dm,nCompIn,nGrow);
 
       Print() << "Reading data for level " << lev << std::endl;
@@ -132,7 +143,7 @@ main (int   argc,
           for (int n=0; n<NUM_SPECIES; ++n) {
             Yl[n] = Y(i,j,k,idYlocal+n);
           }
-          CKYTX(Yl,Xl);
+          eos.Y2X(Yl,Xl);
           for (int n=0; n<NUM_SPECIES; ++n) {
             X(i,j,k,idXout+n) = Xl[n];
           }
@@ -145,8 +156,10 @@ main (int   argc,
 
     std::string outfile(getFileRoot(plotFileName) + "_X");
     Print() << "Writing new data to " << outfile << std::endl;
-    const bool verb = false;
-    WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,outNames);
+    Vector<int> isteps(Nlev, 0);
+    Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
+    amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(outdata), outNames,
+                                   geoms, 0.0, isteps, refRatios);
   }
   Finalize();
   return 0;
