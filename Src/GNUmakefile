@@ -25,7 +25,8 @@ EBASE         = partStream
 #EBASE         = conditionalMean
 #EBASE         = jpdf
 #EBASE         = avgToPlane
-EBASE         = avgPlotfiles
+EBASE          = avgPlotfiles
+EBASE          = amrToFE
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
 
@@ -56,7 +57,6 @@ CEXE_sources += AMReX_Extrapolater.cpp
 CEXE_headers += AMReX_Extrapolater.H
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Amr
 VPATH_LOCATIONS += $(AMREX_HOME)/Src/Amr
-
 SDF_LOC = ../Tools/SDFGen
 include $(SDF_LOC)/Make.package
 INCLUDE_LOCATIONS += $(SDF_LOC)
