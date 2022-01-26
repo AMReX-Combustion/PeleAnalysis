@@ -172,7 +172,6 @@ main (int   argc,
 
     std::string outfile(getFileRoot(plotFileName) + "_D");
     Print() << "Writing new data to " << outfile << std::endl;
-    const bool verb = false;
     Vector<int> isteps(Nlev, 0);
     Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
     amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(outdata), outNames,

@@ -5,20 +5,15 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
+#include <AMReX_PlotFileUtil.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
-#include <WritePlotFile.H>
 
 #include <AMReX_BLFort.H>
-#include <mechanism.h>
-#include <chemistry_file.H>
-#include <util.H>
-#include <util_F.H>
-#include <Transport_F.H>
-#include <Fuego_EOS.H>
+#include <mechanism.H>
+#include <PelePhysics.H>
 
 using namespace amrex;
-using namespace analysis_util;
 
 static
 void 
@@ -33,7 +28,7 @@ print_usage (int,
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
 
@@ -65,27 +60,31 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    init_mech();
+    pele::physics::transport::TransportParams<
+      pele::physics::PhysicsType::transport_type>
+      trans_parms;
+    trans_parms.allocate();
 
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
     int Nlev = finestLevel + 1;
 
-    int idXin = -1;
+    int idYin = -1;
     int idTin = -1;
     int idRin = -1;
-    Vector<std::string> spec_names = GetSpecNames();
+    Vector<std::string> spec_names;
+    pele::physics::eos::speciesNames<pele::physics::PhysicsType::eos_type>(spec_names);
     const Vector<std::string>& plotVarNames = amrData.PlotVarNames();
-    const std::string spName= "X(" + spec_names[0] + ")";
+    const std::string spName= "Y(" + spec_names[0] + ")";
     const std::string TName = "temp";
     const std::string RName = "density";
     for (int i=0; i<plotVarNames.size(); ++i)
     {
-      if (plotVarNames[i] == spName) idXin = i;
+      if (plotVarNames[i] == spName) idYin = i;
       if (plotVarNames[i] == TName)  idTin = i;
       if (plotVarNames[i] == RName)  idRin = i;
     }
-    if (idXin<0 || idTin<0 || idRin<0)
+    if (idYin<0 || idTin<0 || idRin<0)
       Print() << "Cannot find required data in pltfile" << std::endl;
 
     const int nCompIn  = NUM_SPECIES + 2;
@@ -95,13 +94,13 @@ main (int   argc,
     Vector<std::string> outNames(nCompOut);
     Vector<std::string> inNames(nCompIn);
     Vector<int> destFillComps(nCompIn);
-    const int idXlocal = 0; // Xs start here
+    const int idYlocal = 0; // Xs start here
     const int idTlocal = NUM_SPECIES;   // T starts here
     const int idRlocal = NUM_SPECIES+1; // R starts here
     for (int i=0; i<NUM_SPECIES; ++i)
     {
-      destFillComps[i] = idXlocal + i;
-      inNames[i] =  "X(" + spec_names[i] + ")";
+      destFillComps[i] = idYlocal + i;
+      inNames[i] =  "Y(" + spec_names[i] + ")";
       outNames[idLeout + i] = "Le(" + spec_names[i] + ")";
     }
     destFillComps[idTlocal] = idTlocal;
@@ -110,52 +109,71 @@ main (int   argc,
     inNames[idRlocal] = RName;
 
     Vector<std::unique_ptr<MultiFab>> outdata(Nlev);
+    Vector<std::unique_ptr<MultiFab>> tempdata(Nlev);
+    Vector<Geometry> geoms(Nlev);
+    amrex::RealBox real_box({AMREX_D_DECL(amrData.ProbLo()[0],
+                                          amrData.ProbLo()[1],
+                                          amrData.ProbLo()[2])},
+                            {AMREX_D_DECL(amrData.ProbHi()[0],
+                                          amrData.ProbHi()[1],
+                                          amrData.ProbHi()[2])});
+    amrex::Array<int, AMREX_SPACEDIM> is_periodic{AMREX_D_DECL(1, 1, 1)};
+    geoms[0] = amrex::Geometry((amrData.ProbDomain())[0],
+                               real_box,
+                               amrData.CoordSys(),
+                               is_periodic);
     const int nGrow = 0;
-    int b[3] = {1, 1, 1};
 
     for (int lev=0; lev<Nlev; ++lev)
     {
       const BoxArray ba = amrData.boxArray(lev);
       const DistributionMapping dm(ba);
       outdata[lev].reset(new MultiFab(ba,dm,nCompOut,nGrow));
+      tempdata[lev].reset(new MultiFab(ba,dm,NUM_SPECIES+3,nGrow));
+      if ( lev > 0 ) {
+         geoms[lev] = amrex::refine(geoms[lev - 1], 2);
+      }
       MultiFab indata(ba,dm,nCompIn,nGrow);
 
       Print() << "Reading data for level " << lev << std::endl;
       amrData.FillVar(indata,lev,inNames,destFillComps);
       Print() << "Data has been read for level " << lev << std::endl;
 
-      for (MFIter mfi(indata,TilingIfNotGPU()); mfi.isValid(); ++mfi)
-      {
-        const Box& bx = mfi.tilebox();
-        Array4<Real> const& X  = indata.array(mfi);
-        Array4<Real> const& T  = indata.array(mfi);
-        Array4<Real> const& R  = indata.array(mfi);
-        Array4<Real> const& Le = (*outdata[lev]).array(mfi);
+      // Get the transport data pointer
+      auto const* ltransparm = trans_parms.device_trans_parm();
 
-        AMREX_PARALLEL_FOR_3D ( bx, i, j, k,
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+      for (amrex::MFIter mfi(indata, amrex::TilingIfNotGPU()); mfi.isValid();
+           ++mfi) {
+
+        const Box& bx = mfi.tilebox();
+        Array4<Real> const& Y_a = indata.array(mfi,idYlocal);
+        Array4<Real> const& T_a = indata.array(mfi,idTlocal);
+        Array4<Real> const& rho_a = indata.array(mfi,idRlocal);
+        Array4<Real> const& D_a = tempdata[lev]->array(mfi,0);
+        Array4<Real> const& mu_a = tempdata[lev]->array(mfi,NUM_SPECIES);
+        Array4<Real> const& xi_a = tempdata[lev]->array(mfi,NUM_SPECIES+1);
+        Array4<Real> const& lam_a = tempdata[lev]->array(mfi,NUM_SPECIES+2);
+        Array4<Real> const& Le_a = outdata[lev]->array(mfi,idLeout);
+
+        amrex::launch(bx, [=] AMREX_GPU_DEVICE(amrex::Box const& tbx) {
+          auto trans = pele::physics::PhysicsType::transport();
+          trans.get_transport_coeffs(
+            tbx, Y_a, T_a, rho_a, D_a, mu_a, xi_a, lam_a, ltransparm);
+        });
+        amrex::ParallelFor(bx, [=]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
-          Real Yl[NUM_SPECIES];
-          Real Xl[NUM_SPECIES];
-          Real rhoDl[NUM_SPECIES];
+          Real Cpmix = 0.0;
+          Real Yloc[NUM_SPECIES] = {0.0};
           for (int n=0; n<NUM_SPECIES; ++n) {
-            Xl[n] = X(i,j,k,idXlocal+n);
+              Yloc[n] = Y_a(i,j,k,n);
           }
-          CKXTY(Xl,Yl);
-          Real lambda;
-          Real xi;
-          Real mu;
-          get_transport_coeffs(b, b,
-                               Yl,                 b, b,
-                               &T(i,j,k,idTlocal), b, b,
-                               &R(i,j,k,idRlocal), b, b,
-                               rhoDl,              b, b,
-                               &mu,                b, b,
-                               &xi,                b, b,
-                               &lambda,            b, b);
-          Real Cpmix;
-          CKCPBS(&T(i,j,k,idTlocal),Yl,&Cpmix);
+          CKCPBS(&T_a(i,j,k),Yloc,&Cpmix);
           for (int n=0; n<NUM_SPECIES; ++n) {
-            Le(i,j,k,idLeout+n) = rhoDl[n] / (lambda / Cpmix);
+            Le_a(i,j,k,n) = D_a(i,j,k,n) / (lam_a(i,j,k) / Cpmix);
           }
         });
       }
@@ -165,8 +183,10 @@ main (int   argc,
 
     std::string outfile(getFileRoot(plotFileName) + "_Le");
     Print() << "Writing new data to " << outfile << std::endl;
-    const bool verb = false;
-    WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,outNames);
+    Vector<int> isteps(Nlev, 0);
+    Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
+    amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(outdata), outNames,
+                                   geoms, 0.0, isteps, refRatios);
   }
   Finalize();
   return 0;
