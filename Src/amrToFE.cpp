@@ -9,10 +9,6 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
-#include <AppendToPlotFile.H>
-
-#include <AMReX_BLFort.H>
 
 using namespace amrex;
 using std::cout;
@@ -314,7 +310,7 @@ main (int   argc,
     bool verbose = false;
     pp.query("verbose",verbose);
 
-    if (verbose>1)
+    if (verbose)
         AmrData::SetVerbose(true);
 
     std::string infile; pp.get("infile",infile);
@@ -684,18 +680,18 @@ main (int   argc,
             MultiFab tmpMF(tmpBA,DistributionMapping(tmpBA),1,0);
             tmpMF.setVal(2.e30);
             amrData.FillVar(tmpMF,lev,names[comps[i]],0);
-            fileData[lev]->copy(tmpMF,0,i,1);
+            fileData[lev]->ParallelCopy(tmpMF,0,i,1);
             if (ng>0 && geom[lev]->isAnyPeriodic())
             {
                 pData.setVal(3.e30);
-                pDataNG.copy(tmpMF);
+                pDataNG.ParallelCopy(tmpMF);
                 for (MFIter mfi(pData); mfi.isValid(); ++mfi)
                     pData[mfi].copy(pDataNG[mfi]);
                 amrData.FillVar(pData,lev,names[comps[i]],0);
                 pData.FillBoundary(geom[lev]->periodicity());
                 for (MFIter mfi(pData); mfi.isValid(); ++mfi)
                     pDataNG[mfi].copy(pData[mfi]);
-                fileData[lev]->copy(pDataNG,0,i,1);
+                fileData[lev]->ParallelCopy(pDataNG,0,i,1);
             }            
         }
 
@@ -827,9 +823,9 @@ main (int   argc,
     {
 
 #ifdef BIN_POINT
-        string block_or_point = "FEPOINT";
+        std::string block_or_point = "FEPOINT";
 #else /* BLOCK ordering */
-        string block_or_point = "FEBLOCK";
+        std::string block_or_point = "FEBLOCK";
 #endif
 
 
