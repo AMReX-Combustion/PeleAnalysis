@@ -17,7 +17,8 @@ EBASE         = partStream
 #EBASE         = streamScatter
 #EBASE         = streamSub
 #EBASE         = streamTubeStats
-#EBASE         = curvature
+EBASE         = curvature
+#EBASE         = curvature_old
 #EBASE         = surfMEFtoDAT
 #EBASE         = surfDATtoMEF
 #EBASE         = buildPMF
@@ -46,7 +47,7 @@ endif
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
 
-Pdirs   := Base Boundary AmrCore Extern/amrdata Particle
+Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG Particle
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)
