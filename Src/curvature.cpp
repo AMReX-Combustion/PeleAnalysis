@@ -6,11 +6,10 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_MultiFabUtil_C.H>
 #include <AMReX_MultiFabUtil.H>
+#include <AMReX_PlotFileUtil.H>
 #include <AMReX_DataServices.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
-#include <AppendToPlotFile.H>
-#include <WritePlotFile.H>
 #include <AMReX_VisMF.H>
 
 #include <AMReX_MLMG.H>
@@ -23,7 +22,7 @@ using namespace amrex;
 std::string
 getFileRoot(const std::string& infile)
 {
-    vector<std::string> tokens = Tokenize(infile,std::string("/"));
+    std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
     return tokens[tokens.size()-1];
 }
 
@@ -35,6 +34,7 @@ main (int   argc,
 {
     amrex::Initialize(argc,argv);
     {
+
     // if (argc < 2)
     //    print_usage(argc,argv);
     
@@ -61,7 +61,6 @@ main (int   argc,
     bool do_smooth            = false;
     Real smooth_time          = 1.0e-7;
     int nAuxVar               = 0;
-    bool appendPlotFile       = false;
 
     
     // ---------------------------------------------------------------------
@@ -76,7 +75,6 @@ main (int   argc,
     std::string outfile(getFileRoot(plotFileName) + "_K");
     pp.query("outfile",outfile);
     pp.query("finestLevel",finestLevel);
-    pp.query("appendPlotFile",appendPlotFile);
     pp.query("do_gaussCurv",do_gaussCurv);
 
     // Progress variable
@@ -103,7 +101,7 @@ main (int   argc,
 
     // Auxiliary variables
     nAuxVar = pp.countval("Aux_Variables");
-    Vector<string> AuxVar(nAuxVar);
+    Vector<std::string> AuxVar(nAuxVar);
     for(int ivar = 0; ivar < nAuxVar; ++ivar) { 
          pp.get("Aux_Variables", AuxVar[ivar],ivar);
     }
@@ -831,41 +829,19 @@ main (int   argc,
     }
 
     // Write to plotfile
-    bool verb=true;
-    if (appendPlotFile)
+    // Remove GC from outstate
+    Vector<MultiFab*> ostate(Nlev);
+    for (int lev=0; lev<Nlev; ++lev)
     {
-
-        int nStateOut = nCompOut - nCompIn;
-        Vector<MultiFab*> ostate(Nlev);
-        for (int lev=0; lev<Nlev; ++lev)
-        {
-            const BoxArray ba = state[lev]->boxArray();
-            ostate[lev] = new MultiFab(ba,dmap[lev],nStateOut,0);
-            MultiFab::Copy(*ostate[lev],*state[lev],nCompIn,0,nStateOut,0);
-        }
-        Vector<std::string> namesOut(nStateOut);
-        for (int i=0; i<nStateOut; ++i)
-            namesOut[i] = nnames[nCompIn+i];
-
-        std::string newMFBaseName = "NEWDAT"; pp.query("newMFBaseName",newMFBaseName);
-        std::string newHeaderName = "NewHeader"; pp.query("newHeaderName",newHeaderName);
-        AppendToPlotFile(amrData,ostate,plotFileName,namesOut,newMFBaseName,newHeaderName,verb);
-        Print() << "...finished.  Note: to see new data, you must rename NewHeader in the" << "\n";
-        Print() << "              pltfile to Header (probably want to save the original first)" << "\n";
+        const BoxArray ba = state[lev]->boxArray();
+        ostate[lev] = new MultiFab(ba,dmap[lev],nCompOut,0);
+        MultiFab::Copy(*ostate[lev],*state[lev],0,0,nCompOut,0);
     }
-    else
-    {
-        // Remove GC from outstate
-        Vector<MultiFab*> ostate(Nlev);
-        for (int lev=0; lev<Nlev; ++lev)
-        {
-            const BoxArray ba = state[lev]->boxArray();
-            ostate[lev] = new MultiFab(ba,dmap[lev],nCompOut,0);
-            MultiFab::Copy(*ostate[lev],*state[lev],0,0,nCompOut,0);
-        }
-        Print() << "Writing new data to " << outfile << "\n";
-        WritePlotFile(ostate,amrData,outfile,verb,nnames);
-    }
+    Print() << "Writing new data to " << outfile << "\n";
+    Vector<int> isteps(Nlev, 0);
+    Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
+    amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(ostate), nnames,
+                                   geomsOP, 0.0, isteps, refRatios);
 
     }
     amrex::Finalize();
