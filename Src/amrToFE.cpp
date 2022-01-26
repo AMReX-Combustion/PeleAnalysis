@@ -341,6 +341,7 @@ main (int   argc,
     bool connect_cc = true; pp.query("connect_cc",connect_cc);
 
     std::string outfile(outfile_DEF); pp.query("outfile",outfile);
+    Print() << "outfile: " << outfile << std::endl;
     DataServices::SetBatchMode();
     Amrvis::FileType fileType(Amrvis::NEWPLT);
     DataServices dataServices(infile, fileType);
@@ -392,13 +393,16 @@ main (int   argc,
 
     int nGrowPer = 0; pp.query("nGrowPer",nGrowPer);
     Vector<std::unique_ptr<Geometry>> geom(Nlev);
+
+    RealBox rb(amrData.ProbLo().data(), amrData.ProbHi().data());
+    
     for (int lev=0; lev<Nlev; ++lev)
     {
         subboxArray[lev]
             = (lev==0 ? subbox
                : Box(subboxArray[lev-1]).refine(amrData.RefRatio()[lev-1]));
 
-        geom[lev].reset(new Geometry(amrData.ProbDomain()[lev]));
+        geom[lev].reset(new Geometry(amrData.ProbDomain()[lev], &rb));
 
         if (nGrowPer>0 && lev==0)
         {
