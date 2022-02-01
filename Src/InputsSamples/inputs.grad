@@ -1,0 +1,6 @@
+infile = plt00005
+outfile = pltgrad
+gradVar = temp
+finestLevel = 2
+is_per = 1 1 0
+Aux_Variables = density x_velocity
