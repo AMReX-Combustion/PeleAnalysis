@@ -7,8 +7,7 @@ using std::endl;
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
-#include <AppendToPlotFile.H>
+#include <AMReX_WritePlotFile.H>
 
 using namespace amrex;
 
@@ -119,7 +118,7 @@ main (int   argc,
     
     Real domainVol = -1;
     Vector<int> weights;
-    Vector<string> compNames;
+    Vector<std::string> compNames;
     Vector<int> destFillComps(avgComps.size()+1);
     for (int i=0; i<destFillComps.size(); ++i)
         destFillComps[i] = i+1;// zero slot for mask
@@ -127,7 +126,7 @@ main (int   argc,
     
     Vector<Real> dataIV(nComp);
 
-    vector<Real> bbll,bbur;
+    Vector<Real> bbll,bbur;
     if (int nx=pp.countval("bounds"))
     {
         Vector<Real> barr;
@@ -324,7 +323,7 @@ main (int   argc,
 	    std::cout << "Opening file " << filename << std::endl;
 	}
         std::ofstream ofs(filename.c_str());
-        string variables = "VARIABLES = " + compNames[0];
+        std::string variables = "VARIABLES = " + compNames[0];
 	for (int i=1; i<compNames.size(); ++i)
 	    variables += " " + compNames[i] + "_sum";
 	for (int i=1; i<compNames.size(); ++i)

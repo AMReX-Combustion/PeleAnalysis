@@ -4,8 +4,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
-#include <AppendToPlotFile.H>
+#include <AMReX_WritePlotFile.H>
 
 using namespace amrex;
 

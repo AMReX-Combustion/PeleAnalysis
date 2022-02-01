@@ -7,7 +7,7 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
-#include <WritePlotFile.H>
+#include <AMReX_WritePlotFile.H>
 
 #include <AMReX_BLFort.H>
 #include <mechanism.h>
