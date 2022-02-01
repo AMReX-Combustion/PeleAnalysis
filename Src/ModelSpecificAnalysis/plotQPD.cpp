@@ -8,7 +8,7 @@
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
 #include <AMReX_GpuLaunch.H>
-#include <WritePlotFile.H>
+#include <AMReX_WritePlotFile.H>
 
 #include <PelePhysics.H>
 

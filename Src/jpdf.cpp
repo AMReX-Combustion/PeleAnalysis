@@ -7,8 +7,7 @@ using std::endl;
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
-#include <AppendToPlotFile.H>
+#include <AMReX_WritePlotFile.H>
 
 using namespace amrex;
 
@@ -207,7 +206,7 @@ main (int   argc,
     // Intersect variable number (must come after stoichiometry)
     int isVar=nVars;
 
-    Vector<string> whichVar(nVars);
+    Vector<std::string> whichVar(nVars);
     if (verbose)
         std::cout << "Variable list:" << std::endl;
     // Read in variable list - adjusting for stoichiometry
@@ -220,7 +219,7 @@ main (int   argc,
         whichVar[sVar] = "Stoichiometry";
 
     // Copy the names of the variable for output filenames, replacing dodgy characters
-    Vector<string> whichVarOut(nVars);
+    Vector<std::string> whichVarOut(nVars);
     for (int iVar=0; iVar<nVars; iVar++) {
         whichVarOut[iVar] = ProtectSlashes(whichVar[iVar]);
         if (verbose)
@@ -363,7 +362,7 @@ main (int   argc,
             mf[iLevel]->setVal(1.,isVar,1);
 
             // Load the data (make a copy of whichVar to make sure it's the same size as destFills)
-            Vector<string> loadWhichVar(lVars);
+            Vector<std::string> loadWhichVar(lVars);
             for (int v=0; v<lVars; v++)
                 loadWhichVar[v] = whichVar[v];
             amrData.FillVar(*mf[iLevel], iLevel, loadWhichVar, destFills);
@@ -766,7 +765,7 @@ main (int   argc,
             //
             // Now do all the work for a plot file
             // 
-            string pltfile;
+            std::string pltfile;
             if (outSuffix != "")
                 pltfile = infile + outSuffix;
             else
@@ -795,13 +794,13 @@ main (int   argc,
                 // The variable names
                 for (int var1=0; var1<nVars; var1++) {
                     for (int var2=var1+1; var2<nVars; var2++) {
-                        string variableName = "Pdf_" + whichVar[var1] + "_" + whichVar[var2];
+                        std::string variableName = "Pdf_" + whichVar[var1] + "_" + whichVar[var2];
                         os << variableName << '\n';
                     }
                 }
                 for (int var1=0; var1<nVars; var1++) {
                     for (int var2=var1+1; var2<nVars; var2++) {
-                        string variableName = "Pdf_" + whichVar[var1] + "_" + whichVar[var2] + " (log)";
+                        std::string variableName = "Pdf_" + whichVar[var1] + "_" + whichVar[var2] + " (log)";
                         os << variableName << '\n';
                     }
                 }

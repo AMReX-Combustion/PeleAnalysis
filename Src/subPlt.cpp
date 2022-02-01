@@ -2,7 +2,7 @@
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_DataServices.H"
 #include "AMReX_Utility.H"
-#include "WritePlotFile.H"
+#include "AMReX_WritePlotFile.H"
 
 using std::cout;
 using std::endl;
@@ -58,7 +58,7 @@ main (int   argc,
 
     pp.get("infile",infile);
 
-    vector<std::string> pieces = Tokenize(infile,std::string("/"));
+    std::vector<std::string> pieces = Tokenize(infile,std::string("/"));
     std::string outfile = pieces[pieces.size()-1] + std::string("_section");
     pp.query("outfile",outfile);
 
@@ -141,7 +141,7 @@ main (int   argc,
 
             for (int i=0; i<comps.size(); ++i)
             {
-                data_sub[iLevel]->copy(amrData.GetGrids(iLevel,comps[i],subboxes[iLevel]),0,i,1);
+                data_sub[iLevel]->ParallelCopy(amrData.GetGrids(iLevel,comps[i],subboxes[iLevel]),0,i,1);
                 amrData.FlushGrids(comps[i]);                
                 names[i] = amrData.PlotVarNames()[comps[i]];
                 

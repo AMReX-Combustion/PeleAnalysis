@@ -5,7 +5,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
+#include <AMReX_WritePlotFile.H>
 
 using namespace amrex;
 
@@ -22,16 +22,9 @@ print_usage (int,
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
-
-extern "C" {
-    void process(const int* lo,  const int* hi,
-                 const int* dlo, const int* dhi,
-                 Real* U, const int* Ulo, const int* Uhi,
-                 const int* nc, const amrex::Real* plo,  const amrex::Real* dx);
-};
 
 int
 main (int   argc,
@@ -91,14 +84,20 @@ main (int   argc,
     Vector<int> is_per(AMREX_SPACEDIM,0);
     Geometry geom(amrData.ProbDomain()[finestLevel],&rb,coord,&(is_per[0]));
 
+    const auto geomdata = geom.data();
+
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
     for (MFIter mfi(*outdata[0],TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
-      const Box& box = mfi.tilebox();
-      auto& fab = (*outdata[0])[mfi];
-      process(BL_TO_FORTRAN_BOX(box),
-              BL_TO_FORTRAN_BOX(domain),
-              BL_TO_FORTRAN_ANYD(fab),
-              &ncomp,geom.ProbLo(),geom.CellSize());
+      const Box& bx = mfi.tilebox();
+      auto const& out_a = outdata[0]->array(mfi);
+      amrex::ParallelFor(bx, [=]
+      AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      {
+        // Do something funky
+      });
     }
 
     std::string outfile(getFileRoot(plotFileName) + "_b");
