@@ -1,11 +1,11 @@
-PELE_ANALYSIS_HOME ?= /lustre/scratch/bsouzas/PeleAnalysis
-PELE_PHYSICS_HOME ?= /lustre/scratch/bsouzas/PeleC_EBreflux/PeleC/Submodules/PelePhysics/
-AMREX_HOME ?= /lustre/scratch/bsouzas/PeleC_EBreflux/PeleC/Submodules/AMReX/
+PELE_ANALYSIS_HOME ?= /scratch/bsoriano/PeleAnalysis
+PELE_PHYSICS_HOME ?= /scratch/bsoriano/PeleC/Submodules/PelePhysics/
+AMREX_HOME ?= /scratch/bsoriano/PeleC/Submodules/AMReX/
 
 PRECISION  = DOUBLE
 PROFILE    = FALSE
 DEBUG      = FALSE
-DIM        = 2
+DIM        = 3
 COMP	   = intel
 USE_MPI    = TRUE
 USE_OMP    = FALSE
@@ -13,8 +13,8 @@ NEEDS_f90_SRC = FALSE
 
 # EBASE = bruno
 # EBASE = newbruno
-EBASE = regridPlt_new
-# EBASE = generate_turbinflow
+# EBASE = regridPlt_new
+EBASE = reduce_size
 
 USE_SUNDIALS_PP = TRUE
 
@@ -37,7 +37,7 @@ Eos_Model := Fuego
 # This sets the model directory in $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models
 Chemistry_Model := TPRF_98species_gpu
 # Chemistry_Model := grimech30_nasa9
-# Chemistry_Model := air
+# Chemistry_Model := LiDryer
 
 # This sets the transport directory in $(PELE_PHYSICS_HOME)/Transport
 Transport_dir := Simple

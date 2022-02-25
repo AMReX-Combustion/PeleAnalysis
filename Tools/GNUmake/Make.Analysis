@@ -149,8 +149,10 @@ include $(Bpack)
 INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
-AMREX_UTILS_HOME = $(AMREX_HOME)/Tools/C_util
+# AMREX_UTILS_HOME = $(AMREX_HOME)/Tools/C_util
+AMREX_UTILS_HOME = $(AMREX_HOME)/Src/Extern/amrdata
 include $(AMREX_UTILS_HOME)/Make.package
+include $(AMREX_HOME)/Src/Extern/SUNDIALS/Make.package
 INCLUDE_LOCATIONS += $(AMREX_UTILS_HOME)
 VPATH_LOCATIONS   += $(AMREX_UTILS_HOME)
 
