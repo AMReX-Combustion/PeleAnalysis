@@ -266,10 +266,10 @@ main (int   argc,
               // output(i,j,k,n) = sfab_ensemble(i,j,k,n+idUlocal_sn);
             }
             
-	    amrex::Real ux = output(i,j,k,0);
-	    amrex::Real uy = output(i,j,k,1);
-	    amrex::Real uz = output(i,j,k,2);
-	    output(i,j,k,3) = 0.5*(ux*ux + uy*uy + uz*uz);
+            amrex::Real ux = output(i,j,k,0);
+            amrex::Real uy = output(i,j,k,1);
+            amrex::Real uz = output(i,j,k,2);
+            output(i,j,k,3) = 0.5*(ux*ux + uy*uy + uz*uz);
           });
 
           // process(BL_TO_FORTRAN_BOX(box),
@@ -289,21 +289,6 @@ main (int   argc,
       // geoms = Geometry(subbox,&rb,coord,&(is_per[0]));
       levelSteps = 0;
     }
-
-    // Box small_box = amrData_en.boxArray(Nlev - 1).minimalBox();
-
-    // BoxArray ba_sub(small_box);
-    // ba_sub.maxSize(max_grid_size);
-    // DistributionMapping dmap_sub(ba_sub);
-
-    // Print() << "Box small_box: " << small_box << std::endl; 
-    // Print() << "Number of boxes in subset: " << ba_sub.size() << std::endl; 
-
-    // // Vector<MultiFab> data_sub(1);
-    // MultiFab data_sub;
-    // data_sub.define(ba_sub,dmap_sub,ncomp_all,ngrow);
-    // data_sub.ParallelCopy(outdata,0,0,ncomp_all);
-
 
     std::string outfile(output_folder+getFileRoot(snapshot_file) + "_uprime");
     Print() << "Writing new data to " << outfile << std::endl;
