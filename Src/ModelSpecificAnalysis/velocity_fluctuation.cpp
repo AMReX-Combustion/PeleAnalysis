@@ -223,16 +223,35 @@ main (int   argc,
       amrData_sn.FillVar(*indata_snapshot[lev],lev,amrData_sn.PlotVarNames(),destFill);
       Print() << "Done!" << std::endl;
       if (lev == Nlev - 1) {
-        outdata.define(ba_sn,dm_sn,nCompOut,ngrow);
+
+        BoxArray ba_sub(domain_sn);
+        ba_sub.maxSize(max_grid_size);
+        DistributionMapping dmap_sub(ba_sub);
+
+        //copy into a new MultiFab common to both ensemble and snapshot data
+        MultiFab data_ensemble;
+        int ensemble_size = amrData_en.PlotVarNames().size();
+        data_ensemble.define(ba_sub,dmap_sub,ensemble_size,ngrow);
+        data_ensemble.ParallelCopy(*indata_ensemble[lev],0,0,ensemble_size);
+
+        MultiFab data_snapshot;
+        int snapshot_size = amrData_sn.PlotVarNames().size();
+        data_snapshot.define(ba_sub,dmap_sub,snapshot_size,ngrow);
+        data_snapshot.ParallelCopy(*indata_snapshot[lev],0,0,snapshot_size);
+
+        outdata.define(ba_sub,dmap_sub,nCompOut,ngrow);
+
 
         Geometry geom(amrData_sn.ProbDomain()[lev],&rb_sn,coord,&(is_per[0]));
         // Print() << "amrData.ProbDomain()[lev] " << amrData.ProbDomain()[lev] << std::endl;
         
-        for (MFIter mfi(*indata_snapshot[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(data_ensemble,TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
           const Box& box = mfi.tilebox();
-          amrex::Array4<const amrex::Real> sfab_ensemble = (*indata_ensemble[lev]).array(mfi);
+          // amrex::Array4<const amrex::Real> sfab_ensemble = (*indata_ensemble[lev]).array(mfi);
           amrex::Array4<const amrex::Real> sfab_snapshot = (*indata_snapshot[lev]).array(mfi);
+
+          amrex::Array4<Real> const sfab_ensemble = data_ensemble.array(mfi);
           amrex::Array4<Real> const output = outdata.array(mfi);
           // amrex::Array4<Real> const WDOT = outdata.array(mfi);
 
@@ -242,7 +261,7 @@ main (int   argc,
             //output PeleC scalars without computing anything
             for (int n=0; n<nCompOut; ++n){
               output(i,j,k,n) = sfab_snapshot(i,j,k,n+idUlocal_sn) - sfab_ensemble(i,j,k,n+idUlocal_en);
-              // output(i,j,k,n) = sfab_snapshot(i,j,k,n+idUlocal_sn);
+              // output(i,j,k,n) = sfab_ensemble(i,j,k,n+idUlocal_sn);
             }
 
           });
