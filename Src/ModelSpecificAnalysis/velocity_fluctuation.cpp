@@ -168,11 +168,12 @@ main (int   argc,
     Print() << "x_velocity index in ensemble file: " << idUlocal_en  << std::endl;
     Print() << "x_velocity index in snapshot file: " << idUlocal_sn  << std::endl;
 
-    int nCompOut = 3;
+    int nCompOut = 4;
     Vector<std::string> outNames(nCompOut);
     outNames[0] = "ux_prime";
     outNames[1] = "uy_prime";
     outNames[2] = "uz_prime";
+    outNames[3] = "tke";
 
 
     RealBox rb_en(&(amrData_en.ProbLo()[0]),
@@ -249,9 +250,10 @@ main (int   argc,
         {
           const Box& box = mfi.tilebox();
           // amrex::Array4<const amrex::Real> sfab_ensemble = (*indata_ensemble[lev]).array(mfi);
-          amrex::Array4<const amrex::Real> sfab_snapshot = (*indata_snapshot[lev]).array(mfi);
+          // amrex::Array4<const amrex::Real> sfab_snapshot = (*indata_snapshot[lev]).array(mfi);
 
           amrex::Array4<Real> const sfab_ensemble = data_ensemble.array(mfi);
+          amrex::Array4<Real> const sfab_snapshot = data_snapshot.array(mfi);
           amrex::Array4<Real> const output = outdata.array(mfi);
           // amrex::Array4<Real> const WDOT = outdata.array(mfi);
 
@@ -259,11 +261,15 @@ main (int   argc,
           {
 
             //output PeleC scalars without computing anything
-            for (int n=0; n<nCompOut; ++n){
+            for (int n=0; n<3; ++n){
               output(i,j,k,n) = sfab_snapshot(i,j,k,n+idUlocal_sn) - sfab_ensemble(i,j,k,n+idUlocal_en);
               // output(i,j,k,n) = sfab_ensemble(i,j,k,n+idUlocal_sn);
             }
-
+            
+	    amrex::Real ux = output(i,j,k,0);
+	    amrex::Real uy = output(i,j,k,1);
+	    amrex::Real uz = output(i,j,k,2);
+	    output(i,j,k,3) = 0.5*(ux*ux + uy*uy + uz*uz);
           });
 
           // process(BL_TO_FORTRAN_BOX(box),
@@ -279,7 +285,7 @@ main (int   argc,
     int levelSteps;
 
     {
-      geoms = Geometry(amrData_en.ProbDomain()[Nlev - 1],&rb_sn,coord,&(is_per[0]));
+      geoms = Geometry(amrData_sn.ProbDomain()[Nlev - 1],&rb_sn,coord,&(is_per[0]));
       // geoms = Geometry(subbox,&rb,coord,&(is_per[0]));
       levelSteps = 0;
     }
