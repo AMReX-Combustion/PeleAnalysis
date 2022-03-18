@@ -1,5 +1,4 @@
 #include <util.H>
-#include <util_F.H>
 
 #include <AMReX_Print.H>
 
@@ -20,66 +19,81 @@ namespace analysis_util {
   int
   NumSpecies()
   {
-    return num_species();
+    return NUM_SPECIES;
   }
   
   int
   NumElements()
   {
-    return num_elements();
+    return NUM_ELEMENTS;
   }
   
   int
   NumReactions()
   {
-    return num_reactions();
+    return NUM_REACTIONS;
   }
   
   Vector<std::string>
   GetSpecNames ()
   {
-    int nspecies = analysis_util::NumSpecies();
-    Vector<std::string> spec_names(nspecies);
-    int Lmax = max_spec_namelen();
-    Vector<int> coded_name(Lmax);
-    for (int i = 0; i < nspecies; i++)
-    {
-      int len = Lmax;
-      get_spec_names(coded_name.dataPtr(),&i,&len);
-      spec_names[i] = decodeStringFromFortran(coded_name,len);
-    }
-    return spec_names;
+    Vector<std::string> names;
+    CKSYMS_STR(names);
+    return names;
   }
 
   Vector<std::string>
   GetElemNames ()
   {
-    int nelements = analysis_util::NumElements();
-    Vector<std::string> elem_names(nelements);
-    int Lmax = max_elem_namelen();
-    Vector<int> coded_name(Lmax);
-    for (int i = 0; i < nelements; i++)
-    {
-      int len = Lmax;
-      get_elem_names(coded_name.dataPtr(),&i,&len);
-      elem_names[i] = decodeStringFromFortran(coded_name,len);
-    }
-    return elem_names;
+    Vector<std::string> names;
+    CKSYME_STR(names);
+    return names;
   }
 
   amrex::Vector<int>
   ReactionsWithXonL(int ispec)
   {
-    int nspecies = analysis_util::NumSpecies();
-    int nreactions = analysis_util::NumReactions();    
-    Vector<int> rns(nreactions); // result
-    int len = nreactions;
-    int ispec_fort = ispec + 1;
-    get_rns_with_X_on_L(&(rns[0]),&len,&ispec_fort);
-    rns.resize(len);
-    // Translate to 0-based numbering
-    for (int i=0; i<len; ++i) {
-      rns[i]--;
+    int max_num_spec, num_spec;
+    Vector<int> specIDs, specNUs;
+    int rid = 0; // Special flag to find max_num_spec
+    CKINU(&rid,&max_num_spec,specIDs.data(),specNUs.data());
+    int nreactions = analysis_util::NumReactions();
+    Vector<int> rns;
+    specIDs.resize(max_num_spec);
+    specNUs.resize(max_num_spec);
+    for (int j=1; j<=nreactions; ++j) {
+      CKINU(&j,&num_spec,specIDs.data(),specNUs.data());
+      if (num_spec > 0) {
+        for (int is=0; is<num_spec; ++is) {
+          if (specIDs[is]==ispec+1 && specNUs[is]<0) {
+            rns.push_back(j-1);
+          }
+        }
+      }
+    }
+    return rns;
+  }
+
+  amrex::Vector<int>
+  ReactionsWithXonR(int ispec)
+  {
+    int max_num_spec, num_spec;
+    Vector<int> specIDs, specNUs;
+    int rid = 0; // Special flag to find max_num_spec
+    CKINU(&rid,&max_num_spec,specIDs.data(),specNUs.data());
+    int nreactions = analysis_util::NumReactions();
+    Vector<int> rns;
+    specIDs.resize(max_num_spec);
+    specNUs.resize(max_num_spec);
+    for (int j=1; j<=nreactions; ++j) {
+      CKINU(&j,&num_spec,specIDs.data(),specNUs.data());
+      if (num_spec > 0) {
+        for (int is=0; is<num_spec; ++is) {
+          if (specIDs[is]==ispec+1 && specNUs[is]>0) {
+            rns.push_back(j-1);
+          }
+        }
+      }
     }
     return rns;
   }
@@ -88,14 +102,18 @@ namespace analysis_util {
   specCoeffsInReactions(int ireac)
   {
     amrex::Vector<std::pair<std::string,int> > coeffs;
-    int nspecies = analysis_util::NumSpecies();
+
+    int max_num_spec, num_spec;
+    Vector<int> specIDs, specNUs;
     Vector<std::string> spec_names = analysis_util::GetSpecNames();
-    amrex::Vector<int> ids(nspecies), nus(nspecies);
-    int len;
-    int ireac_fort = ireac + 1;
-    get_spec_nu_for_rn(&(ids[0]),&(nus[0]),&len,&ireac_fort);
-    for (int i=0; i<len; ++i) {
-      coeffs.push_back(std::make_pair(spec_names[ids[i]-1],nus[i]));
+    int rid = 0; // Special flag to find max_num_spec
+    CKINU(&rid,&max_num_spec,specIDs.data(),specNUs.data());
+    specIDs.resize(max_num_spec);
+    specNUs.resize(max_num_spec);
+    int freac = ireac + 1;
+    CKINU(&freac,&num_spec,specIDs.data(),specNUs.data());
+    for (int is=0; is<num_spec; ++is) {
+      coeffs.push_back(std::make_pair(spec_names[specIDs[is]-1],specNUs[is]));
     }
     return coeffs;
   }
@@ -125,32 +143,11 @@ namespace analysis_util {
   }
   
   amrex::Vector<int>
-  ReactionsWithXonR(int ispec)
-  {
-    int nspecies = analysis_util::NumSpecies();
-    int nreactions = analysis_util::NumReactions();    
-    Vector<int> rns(nreactions); // result
-    int len = nreactions;
-    int ispec_fort = ispec + 1;
-    get_rns_with_X_on_R(&(rns[0]),&len,&ispec_fort);
-    rns.resize(len);
-    // Translate to 0-based numbering
-    for (int i=0; i<len; ++i) {
-      rns[i]--;
-    }
-    return rns;
-  }
-  
-  amrex::Vector<int>
   GetReactionMap()
   {
     int nreactions = analysis_util::NumReactions();    
     Vector<int> rmap(nreactions);
-    get_rns_map(&(rmap[0]));
-    // Translate to 0-based numbering
-    for (int i=0; i<rmap.size(); ++i) {
-      rmap[i]--;
-    }
+    GET_RMAP(rmap.data());
     return rmap;
   }
 
@@ -159,10 +156,12 @@ namespace analysis_util {
                   const std::string& spec)
   {
     int nelements = analysis_util::NumElements();
-    Vector<int> composition(nelements);
-    int ispec_fort = IndexSpec(spec) + 1;
-    get_elt_comp(&ispec_fort,&(composition[0]));
-    return composition[IndexElem(elem)];
+    int nspecies = analysis_util::NumSpecies();
+    Vector<int> ncf(nspecies * nelements);
+    CKNCF(ncf.data());
+    int ielem = analysis_util::IndexElem(elem);
+    int ispec = analysis_util::IndexSpec(spec);
+    return ncf[ispec*nelements + ielem];
   }
 
   Edge::Edge (const std::string& n1,

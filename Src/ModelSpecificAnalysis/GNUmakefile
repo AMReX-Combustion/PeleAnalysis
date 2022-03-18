@@ -18,8 +18,9 @@ TINY_PROFILE = FALSE
 EBASE=bruno
 EBASE=plotXtoY
 EBASE=plotYtoX
-EBASE=testQPDtools
 EBASE=plotTransportCoeff
+EBASE=plotQPD
+EBASE=testQPDtools
 NEEDS_f90_SRC = FALSE
 
 CEXE_sources += $(EBASE).cpp

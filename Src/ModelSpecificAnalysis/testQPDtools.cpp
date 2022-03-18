@@ -12,7 +12,6 @@
 #include <AMReX_BLFort.H>
 #include <PelePhysics.H>
 #include <util.H>
-#include <util_F.H>
 
 using namespace amrex;
 using namespace analysis_util;
@@ -26,21 +25,25 @@ main (int   argc,
     ParmParse pp;
 
     Vector<std::string> elem_names = GetElemNames();
-    int nelements = NumElements();
-    Print() << "{ ";
+    int nelements = elem_names.size();
+    Print() << "Elements = { ";
     for (int i=0; i<nelements; ++i) {
       Print() << elem_names[i] << " ";
     }
     Print() << "}" << std::endl;
 
     Vector<std::string> spec_names = GetSpecNames();
-    int nspecies = NumSpecies();
-    Print() << "{ ";
+    int nspecies = spec_names.size();
+    Print() << "Species = { ";
     for (int i=0; i<nspecies; ++i) {
       Print() << spec_names[i] << " ";
     }
     Print() << "}" << std::endl;
+    int nreactions = NumReactions();
+    Print() << "NumReactions: " << nreactions << std::endl;
+    Print() << "\n";
 
+    Print() << "Elemental compositions: " << std::endl;
     for (int i=0; i<nspecies; ++i) {
       Print() << spec_names[i] << " = { ";
       for (int j=0; j<nelements; ++j) {
@@ -51,17 +54,23 @@ main (int   argc,
       }
       Print() << "}\n";
     }
+    Print() << "\n";
 
-    int nreactions = NumReactions();
-    Print() << "NumReactions: " << nreactions << std::endl;
+    Vector<int> rmap = GetReactionMap();
+    Print() << "Reaction map = { ";
+    for (int j=0; j<rmap.size(); ++j) {
+      Print() << rmap[j] << " ";
+    }
+    Print() << "}\n\n";
 
-    Vector<int> rns(nreactions);
+    Print() << "For each species, reactions on left and right:" << std::endl;
+
     for (int i=0; i<nspecies; ++i) {
-      rns = ReactionsWithXonL(i);
-      Print() << "Spec, rnsL, rnsR: " << spec_names[i] <<  ": ";
+      Print() << spec_names[i] <<  ": ";
+      Vector<int> rns = ReactionsWithXonL(i);
       Print() << "{ ";
       for (int j=0; j<rns.size(); ++j) {
-        Print() << rns[j] << " ";
+        Print() << rns[j] << " (orig: " << rmap[rns[j]]+1 << ") ";
       }
       Print() << "}";
       rns = ReactionsWithXonR(i);
@@ -71,43 +80,16 @@ main (int   argc,
       }
       Print() << "}" << std::endl;
     }
-
-    Vector<int> rmap = GetReactionMap();
-    Print() << "rmap = { ";
-    for (int j=0; j<rmap.size(); ++j) {
-      Print() << rmap[j] << " ";
-    }
-    Print() << "}\n";
-
-    // Build revese reaction map
-    Vector<int> rrmap(nreactions);
-    for (int i=0; i<nreactions; ++i) {
-      rrmap[rmap[i]] = i;
-    }
-    Print() << "rrmap = { ";
-    for (int j=0; j<rrmap.size(); ++j) {
-      Print() << rrmap[j] << " ";
-    }
-    Print() << "}\n";
-
-    for (int j=0; j<nreactions; ++j) {
-      auto sc = specCoeffsInReactions(rmap[j]);
-      Print() << "rn[" << j << "] (" << rmap[j] << ") = { ";
-      for (int i=0; i<sc.size(); ++i) {
-        Print() << sc[i].first << ":" << sc[i].second << " ";
-      }
-      Print() << "}\n";
-    }
+    Print() << "\n";
 
     std::string trElem = "C";
     pp.query("trElem",trElem);
     AMREX_ALWAYS_ASSERT(IndexElem(trElem)>=0 && IndexElem(trElem)<NumElements());
+    Print() << "Edges: " << std::endl;
     auto edges = getEdges(trElem,1,1);
     for (auto edge : edges) {
       Print() << edge << std::endl;
     }
-
-
   }
   Finalize();
   return 0;

@@ -4,6 +4,7 @@
 #include <AMReX_Vector.H>
 #include <map>
 #include <list>
+#include <mechanism.H>
 
 namespace analysis_util
 {

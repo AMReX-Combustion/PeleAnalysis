@@ -106,6 +106,7 @@ endif
 
 # Utilities
 include $(PELE_PHYSICS_HOME)/Utility/PMF/Make.package
+include $(PELE_ANALYSIS_HOME)/Tools/Util/Make.package
 
 Pdirs := Base Boundary Extern/amrdata AmrCore
 ifeq ($(USE_EB), TRUE)
@@ -130,7 +131,7 @@ endif
 Bpack += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 Blocs += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
 
-##Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
+Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
 Bpack += $(foreach dir, $(Bdirs), $(dir)/Make.package)
 Blocs += $(foreach dir, $(Bdirs), $(dir))
 
