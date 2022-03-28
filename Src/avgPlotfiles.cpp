@@ -102,37 +102,80 @@ main (int   argc,
     int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
     ba_res.maxSize(max_grid_size);
 
-    MultiFab mf_avg(ba_res,DistributionMapping(ba_res),comps.size(),0);
-    mf_avg.setVal(0);
-    
-    MultiFab mf_avgDn(ba_res,DistributionMapping(ba_res),comps.size(),0);
-    for (int iFile=0; iFile<plotFileNames.size(); ++iFile) {
-      DataServices dataServices(plotFileNames[iFile], fileType);
-      if( ! dataServices.AmrDataOk()) {
-        DataServices::Dispatch(DataServices::ExitRequest, NULL);
-      }
-      AmrData& amrData = dataServices.AmrDataRef();
+    bool all_same_boxes = false; pp.query("all_same_boxes",all_same_boxes);
+    Print() << "All same boxes: " << all_same_boxes << std::endl;
 
-      Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
-    
-      for (int lev=0; lev<=finestLevel; ++lev) {
-        for (int i=0; i<comps.size(); ++i)
+    if (all_same_boxes) {
+      Vector<MultiFab*> mf_avg(finestLevel+1);
+      for (int lev=0; lev<=finestLevel; ++lev)
+      {
+        const BoxArray& ba_lev = amrData0.boxArray(lev);
+        mf_avg[lev] = new MultiFab(ba_lev,DistributionMapping(ba_lev),comps.size(),0);
+        mf_avg[lev]->setVal(0);
+      }
+
+      for (int iFile=0; iFile<plotFileNames.size(); ++iFile)
+      {
+        DataServices dataServices(plotFileNames[iFile], fileType);
+        if( ! dataServices.AmrDataOk())
         {
-          MultiFab alias(mf_avgDn,make_alias,i,1);
-          if (lev==0) {
-            alias.ParallelCopy(amrData.GetGrids(0,comps[i],domain[0]));
-          } else {
-            average_down(amrData.GetGrids(lev,comps[i],domain[lev]),alias,geom[lev],geom[0],0,1,ratioTot[lev]);
+          DataServices::Dispatch(DataServices::ExitRequest, NULL);
+        }
+        AmrData& amrData = dataServices.AmrDataRef();
+
+        Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
+
+        for (int lev=0; lev<=finestLevel; ++lev)
+        {
+          AMREX_ALWAYS_ASSERT_WITH_MESSAGE(amrData.boxArray(lev) == mf_avg[lev]->boxArray(),"BoxArrays not equal");
+    
+          for (int i=0; i<comps.size(); ++i)
+          {
+            MultiFab::Add(*mf_avg[lev],amrData.GetGrids(lev,comps[i]),0,i,1,0);
           }
-          amrData.FlushGrids(comps[i]);
         }
       }
-
-      MultiFab::Add(mf_avg,mf_avgDn,0,0,comps.size(),0);
+      Print() << "Writing output to " << outfile << std::endl;
+      for (int lev=0; lev<=finestLevel; ++lev)
+      {
+        mf_avg[lev]->mult(1.0/nf);
+      }
+      WritePlotFile(mf_avg,domain,amrData0,outfile);
     }
+    else
+    {
+      MultiFab mf_avg(ba_res,DistributionMapping(ba_res),comps.size(),0);
+      mf_avg.setVal(0);
 
-    mf_avg.mult(1.0/nf);
-    writePlotFile(outfile.c_str(),mf_avg,geom[0],IntVect(AMREX_D_DECL(2,2,2)),0.0,pltnames);
+      MultiFab mf_avgDn(ba_res,DistributionMapping(ba_res),comps.size(),0);
+      for (int iFile=0; iFile<plotFileNames.size(); ++iFile) {
+        DataServices dataServices(plotFileNames[iFile], fileType);
+        if( ! dataServices.AmrDataOk()) {
+          DataServices::Dispatch(DataServices::ExitRequest, NULL);
+        }
+        AmrData& amrData = dataServices.AmrDataRef();
+
+        Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
+    
+        for (int lev=0; lev<=finestLevel; ++lev) {
+          for (int i=0; i<comps.size(); ++i)
+          {
+            MultiFab alias(mf_avgDn,make_alias,i,1);
+            if (lev==0) {
+              alias.ParallelCopy(amrData.GetGrids(0,comps[i],domain[0]));
+            } else {
+              average_down(amrData.GetGrids(lev,comps[i],domain[lev]),alias,geom[lev],geom[0],0,1,ratioTot[lev]);
+            }
+            amrData.FlushGrids(comps[i]);
+          }
+        }
+
+        MultiFab::Add(mf_avg,mf_avgDn,0,0,comps.size(),0);
+      }
+
+      mf_avg.mult(1.0/nf);
+      writePlotFile(outfile.c_str(),mf_avg,geom[0],IntVect(AMREX_D_DECL(2,2,2)),0.0,pltnames);
+    }
   }
   Finalize();
   return 0;
