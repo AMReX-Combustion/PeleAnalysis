@@ -1397,8 +1397,8 @@ main (int   argc,
     int r = lev==0 ? 1 : pf.refRatio(lev-1);
     IntVect ratio(D_DECL(r,r,r));
 
-    Vector<Real> dxf(BL_SPACEDIM);
-    for (int i=0; i<BL_SPACEDIM; ++i)
+    GpuArray<Real,AMREX_SPACEDIM> dxf;
+    for (int i=0; i<AMREX_SPACEDIM; ++i)
       dxf[i] = pf.probSize()[i] / pf.probDomain(lev).length(i);
 
     MultiFab state(gridArray[lev],dm,nComp+BL_SPACEDIM,nGrow[lev]);
@@ -1454,7 +1454,7 @@ main (int   argc,
             {
               auto L = geoms[lev].ProbLength(d);
               if (iv[d] != 0) {
-                sfab.plus((iv[d]>0 ? -L : L),pisect,d,1); // shift the location back
+                sfab.plus<amrex::RunOn::Device>((iv[d]>0 ? -L : L),pisect,d,1); // shift the location back
               }
             }
           }
@@ -1503,7 +1503,7 @@ main (int   argc,
       const auto& gbox = mask.box();
       const auto g1box = grow(mfi.validbox(),1);
 
-      mask.setVal(1.0);
+      mask.setVal<amrex::RunOn::Device>(1.0);
 
       if (lev<finestLevel && !build_distance_function)
       {
@@ -1513,7 +1513,7 @@ main (int   argc,
           const auto cgFineBox = Box(fineBoxes[i]).coarsen(ratio);
           const auto isect = gbox & cgFineBox;
           if (isect.ok()) {
-            mask.setVal(-1.0,isect,0);
+            mask.setVal<amrex::RunOn::Device>(-1.0,isect,0);
           }
           if (geoms[lev].isAnyPeriodic()) {
             Vector<IntVect> pshifts(27);
@@ -1522,7 +1522,7 @@ main (int   argc,
               auto shbox = cgFineBox + iv;
               const auto pisect = gbox & shbox;
               if (pisect.ok()) {
-                mask.setVal(-1.0,pisect,0);
+                mask.setVal<amrex::RunOn::Device>(-1.0,pisect,0);
               }
             }
           }
@@ -1623,7 +1623,7 @@ main (int   argc,
         {
           const auto& vb = gridArray[lev][mfi.index()];
           const auto& iv = vb.smallEnd();
-          (*distance[lev])[mfi].setVal(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
+          (*distance[lev])[mfi].setVal<amrex::RunOn::Device>(sfab(iv,isoComp) < isoVal ? -dmax : + dmax);
         }
       }
 
