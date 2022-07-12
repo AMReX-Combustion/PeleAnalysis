@@ -63,7 +63,7 @@ public:
 
   void FlushGrids(int componentIndex);
 
-  const amrex::Vector<string> &StreamVarNames() const { return PlotVarNames(); }
+  const amrex::Vector<std::string> &StreamVarNames() const { return PlotVarNames(); }
 
   static std::string FileFormatName00() { return "Oddball-multilevel-connected-data-format";}
   static std::string FileFormatName10() { return "Oddball-multilevel-connected-data-format-1.0";}

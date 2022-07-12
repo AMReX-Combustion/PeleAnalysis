@@ -33,7 +33,7 @@ StreamData::DefineFab(int level, int componentIndex, int fabIndex)
         int whichVisMFComponent(compIndexToVisMFComponentMap[componentIndex]);
         dataGrids[level][componentIndex]->setFab(
             fabIndex,
-            visMF[level][whichVisMF]->readFAB(fabIndex, whichVisMFComponent));
+            std::unique_ptr<FArrayBox>(visMF[level][whichVisMF]->readFAB(fabIndex, whichVisMFComponent)));
         dataGridsDefined[level][componentIndex][fabIndex] = true;
     }
     return true;
@@ -47,7 +47,7 @@ StreamData::getFab (int level,
   if (fabIdx<0) {
       // Intends to access boundary/ghost data
       if (compIdx < boundaryNodes.size()) {
-          if (!boundaryNodes.size()>compIdx
+        if (!(boundaryNodes.size()>compIdx)
               || boundaryNodes[compIdx] == nullptr) {
               std::cout << "Boundary data not correctly partitioned for component " << compIdx << std::endl;
               Abort("Data not correctly partitioned");
@@ -319,7 +319,7 @@ StreamData::WriteFile(std::string&               outfile,
             CreateDirectoryFailed(outfile);
 
         // Write Header
-        const string FullHeaderFileName = outfile + "/" + HeaderFileName_DEF;
+        const std::string FullHeaderFileName = outfile + "/" + HeaderFileName_DEF;
         std::ofstream ofh;
         ofh.open(FullHeaderFileName.c_str());
         ofh << FileFormatName << '\n';
@@ -345,7 +345,7 @@ StreamData::WriteFile(std::string&               outfile,
         ofh.close();
 
         // Write elements
-        const string FullElementFileName = outfile + "/" + ElementFileName;
+        const std::string FullElementFileName = outfile + "/" + ElementFileName;
         int my_nodes_per_element = global_element_node_ids.size() / num_global_elements;
         std::ofstream ofe;
         ofe.open(FullElementFileName.c_str());

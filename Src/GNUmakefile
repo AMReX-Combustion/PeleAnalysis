@@ -1,8 +1,8 @@
 AMREX_HOME ?= ../../../amrex
 
 # AMReX
-DEBUG	      = TRUE
-DIM	          = 3
+DEBUG	      = FALSE
+DIM	      = 3
 PRECISION     = DOUBLE
 
 # Compilation
@@ -13,7 +13,7 @@ USE_CUDA      = FALSE
 
 # Executable
 # Uncomment the desired exec
-EBASE         = grad
+#EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
 #EBASE         = stream
@@ -33,11 +33,21 @@ EBASE         = grad
 #EBASE         = conditionalMean
 #EBASE         = jpdf
 #EBASE         = avgToPlane
-#EBASE          = avgPlotfiles
+EBASE          = avgPlotfiles
 #EBASE          = amrToFE
 
 NEEDS_f90_SRC = FALSE
 #NEEDS_f90_SRC = TRUE
+
+Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
+Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
+
+ifeq ($(EBASE),partStream)
+  USE_PARTICLES = TRUE
+  Pdirs += Particle
+  CEXE_headers += StreamData.H    StreamPC.H
+  CEXE_sources += StreamData.cpp  StreamPC.cpp
+endif
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
@@ -45,16 +55,8 @@ CEXE_sources += $(EBASE).cpp
 ifeq ($(NEEDS_f90_SRC),TRUE)
   f90EXE_sources += $(EBASE)_nd.f90
 endif
-ifeq ($(EBASE),partStream)
-  CEXE_headers += StreamData.H    StreamPC.H
-  CEXE_sources += StreamData.cpp  StreamPC.cpp
-endif
-
 INCLUDE_LOCATIONS += .
 VPATH_LOCATIONS   += .
-
-Pdirs   := Base Boundary Amr AmrCore Extern/amrdata LinearSolvers/MLMG Particle
-Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 include $(Ppack)
 INCLUDE_LOCATIONS += $(Blocs)
