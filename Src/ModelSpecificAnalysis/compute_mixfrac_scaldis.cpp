@@ -41,6 +41,8 @@ extern "C" {
 };
 
 
+
+
 int
 main (int   argc,
       char* argv[])
@@ -246,6 +248,10 @@ main (int   argc,
         // Get the transport data pointer
         auto const* ltransparm = trans_parms.device_trans_parm();
 
+        MultiFab grad;
+        int grad_comp = 4;
+        grad.define(ba,dm,grad_comp,ngrow_out);
+
         //Now that we have all the Fabs with data lets get the transp. coeff. and compute scaldis
         for (MFIter mfi(*indata[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
@@ -269,6 +275,7 @@ main (int   argc,
 
           amrex::Array4<const amrex::Real> sfab = (*indata[lev]).array(mfi);
           amrex::Array4<Real> const sfab_out = outdata.array(mfi);
+          amrex::Array4<Real> const sfab_tmp = grad.array(mfi);
           // auto& sfab_out = (*outdata[0])[mfi];
           const Real* dx = geom.CellSize();
           
@@ -277,8 +284,18 @@ main (int   argc,
           // amrex::ParallelFor(box, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
           AMREX_PARALLEL_FOR_3D ( box, i, j, k,
           {
+            //Fill up FAB with original data
+            for(int n=0;n<ncomp;n++)
+              sfab_out(i,j,k,n) = sfab(i,j,k,n);
 
-            sfab_out(i,j,k,ncomp) = 2.*D_a(i,j,k,N2_ID)*pow(dxInv*(sfab(i+1,j,k,idMixFrac) - sfab(i-1,j,k,idMixFrac)),2);
+            sfab_tmp(i,j,k,0) = dxInv*(sfab(i+1,j,k,idMixFrac) - sfab(i-1,j,k,idMixFrac));
+            sfab_tmp(i,j,k,1) = dxInv*(sfab(i,j+1,k,idMixFrac) - sfab(i,j-1,k,idMixFrac));
+            sfab_tmp(i,j,k,2) = dxInv*(sfab(i,j,k+1,idMixFrac) - sfab(i,j,k-1,idMixFrac));
+            //gradient magnitude
+            sfab_tmp(i,j,k,3) = sqrt(pow(sfab_tmp(i,j,k,0),2)+pow(sfab_tmp(i,j,k,1),2)+pow(sfab_tmp(i,j,k,3),2));
+
+            sfab_out(i,j,k,idScalDis) = 2.*D_a(i,j,k,N2_ID)*pow(sfab_tmp(i,j,k,3),2);
+
 
           });
 
