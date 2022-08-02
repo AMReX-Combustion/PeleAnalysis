@@ -121,7 +121,7 @@ Bpack             += $(TRANSPORT_HOME)/Make.package
 Blocs             += $(TRANSPORT_HOME)
 
 # Utilities
-include $(PELE_PHYSICS_HOME)/Utility/PMF/Make.package
+include $(PELE_PHYSICS_HOME)/Utility/PltFileManager/Make.package
 
 USE_FUEGO = FALSE
 
@@ -149,10 +149,8 @@ include $(Bpack)
 INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
-# AMREX_UTILS_HOME = $(AMREX_HOME)/Tools/C_util
-AMREX_UTILS_HOME = $(AMREX_HOME)/Src/Extern/amrdata
-include $(AMREX_UTILS_HOME)/Make.package
-include $(AMREX_HOME)/Src/Extern/SUNDIALS/Make.package
+AMREX_UTILS_HOME = $(AMREX_HOME)/Tools/GNUMake/packages/
+include $(AMREX_UTILS_HOME)/Make.sundials
 INCLUDE_LOCATIONS += $(AMREX_UTILS_HOME)
 VPATH_LOCATIONS   += $(AMREX_UTILS_HOME)
 
