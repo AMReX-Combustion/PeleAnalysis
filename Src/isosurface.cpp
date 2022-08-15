@@ -1360,6 +1360,16 @@ main (int   argc,
   const Real strt_time_io = ParallelDescriptor::second();
   Vector<Vector<MultiFab>> pfdata(Nlev);
   Vector<Geometry> geoms(Nlev);
+  RealBox rb(&(pf.probLo()[0]), &(pf.probHi()[0]));
+  int coord = pf.coordSys();
+  Vector<int> is_per(AMREX_SPACEDIM,1);
+  pp.queryarr("is_per",is_per,0,AMREX_SPACEDIM);
+  Print() << "Periodicity assumed for this case: ";
+  for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+    Print() << is_per[idim] << " ";
+  }
+  Print() << std::endl;
+
   for (int lev=0; lev<Nlev; ++lev) {
     pfdata[lev].resize(nComp);
     Print() << "Reading the plotfile data at level " << lev
@@ -1370,7 +1380,7 @@ main (int   argc,
       pfdata[lev][n] = pf.get(lev,varnames[n]);
     }
     Print() << "...done reading the plotfile data at level " << lev << "..." << std::endl;
-    geoms[lev] = Geometry(pf.probDomain(lev));
+    geoms[lev] = Geometry(pf.probDomain(lev),&rb,coord,&(is_per[0]));
   }
   const Real end_time_io = ParallelDescriptor::second();
   Real io_time = end_time_io - strt_time_io;
@@ -1477,7 +1487,7 @@ main (int   argc,
         FillPatchTwoLevels(gstate,time,{&pfdata[lev-1][n]},{time},{&pfdata[lev][n]},{time},0,0,1,
                            geoms[lev-1],geoms[lev],f,0,f,0,ratio,&pci,{bc},0);
       }
-      state.copy(gstate,0,BL_SPACEDIM+n,1,nGrow[lev],nGrow[lev],geoms[lev].periodicity());
+      state.ParallelCopy(gstate,0,BL_SPACEDIM+n,1,nGrow[lev],nGrow[lev],geoms[lev].periodicity());
     }
     Print() << "...done FillPatching the grown structures at level " << lev << "..." << std::endl;
 #else
