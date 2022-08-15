@@ -62,7 +62,7 @@ def ReadNodes(Nnodes,Nscalars,varnames,f):
     for i in range(Nnodes):
         line = f.readline().strip(' \n')
         d = line.split(' ')
-        d = [ x for x in d if x is not '' ]
+        d = [ x for x in d if x != '' ]
         Nscalars_this = len(d) - 3
         if Nscalars != Nscalars_this:
             print('Number of scalars inconsistent across points '+str(Nscalars)+' vs '+str(Nscalars_this))
