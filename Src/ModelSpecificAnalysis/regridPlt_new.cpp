@@ -5,8 +5,9 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <WritePlotFile.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_WritePlotFile.H>
+#include <AMReX_Sundials.H>
 
 #include "mechanism.H"
 #include <PelePhysics.H>
@@ -27,7 +28,8 @@ print_usage (int,
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  // vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
 
@@ -127,9 +129,7 @@ main (int   argc,
     // pele::physics::reactions::ReactorBase::create(chem_integrator);
     std::unique_ptr<pele::physics::reactions::ReactorBase> reactor =
       pele::physics::reactions::ReactorBase::create(chem_integrator);
-    {
-      reactor->init(ode_iE, ode_ncells);
-    }
+    reactor->init(ode_iE, ode_ncells);
 
     Vector<std::string> spec_names;
     auto eos = pele::physics::PhysicsType::eos();
