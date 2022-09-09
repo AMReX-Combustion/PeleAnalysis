@@ -79,7 +79,7 @@ struct Edge
   IntVect IV_r;
 };
 
-// Point is space
+// Point in space
 typedef Vector<Real> Point;
 
 // Map of points associated to an edge
@@ -2128,7 +2128,7 @@ main (int   argc,
           // Get back some memory
           eltSet.clear();
 
-          int binEltSize = sizeof(int)*eltRaw.size();
+          size_t binEltSize = sizeof(int)*eltRaw.size();
 
           // Output file
           char buf[72];
@@ -2145,7 +2145,9 @@ main (int   argc,
              outfile_data << "<?xml version=\"1.0\"?>\n";
              outfile_data << "<Xdmf Version=\"3.0\" xmlns:xi=\"http://www.w3.org/2001/XInclude\">\n";
              outfile_data << "   <Domain>\n";
-             outfile_data << "      <Grid Name=\"isoSurf\">\n";
+             outfile_data << "      <Grid Name=\"isoSurface\">\n";
+             outfile_data << "      <Information Name=\"Variable\""<< isoCompName <<">\n";
+             outfile_data << "      <Information Name=\"IsoValue\""<< isoVal <<">\n";
              outfile_data << "      <Time Value=\"" << pf.time() << "\"/>\n";
              // Mesh
              outfile_data << "         <Topology TopologyType=\"Triangle\" NumberOfElements=\""<<nElts<< "\">\n";
