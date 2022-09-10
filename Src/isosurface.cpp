@@ -2146,8 +2146,8 @@ main (int   argc,
              outfile_data << "<Xdmf Version=\"3.0\" xmlns:xi=\"http://www.w3.org/2001/XInclude\">\n";
              outfile_data << "   <Domain>\n";
              outfile_data << "      <Grid Name=\"isoSurface\">\n";
-             outfile_data << "      <Information Name=\"Variable\""<< isoCompName <<">\n";
-             outfile_data << "      <Information Name=\"IsoValue\""<< isoVal <<">\n";
+             outfile_data << "      <Information Name=\"Variable\">"<< isoCompName <<"</Information>\n";
+             outfile_data << "      <Information Name=\"IsoValue\">"<< isoVal <<"</Information>\n";
              outfile_data << "      <Time Value=\"" << pf.time() << "\"/>\n";
              // Mesh
              outfile_data << "         <Topology TopologyType=\"Triangle\" NumberOfElements=\""<<nElts<< "\">\n";
