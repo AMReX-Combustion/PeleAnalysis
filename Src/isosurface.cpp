@@ -8,6 +8,7 @@
 #include <AMReX_BLFort.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
+#include <AMReX_PlotFileUtil.H>
 #include "makelevelset3.h"
 
 using namespace amrex;
@@ -19,7 +20,7 @@ using std::cerr;
 
 static Real isoVal_DEF = 1090.;
 static string isoCompName_DEF = "temp";
-static Real epsilon_DEF = 1.e-12;
+static Real epsilon_DEF = 1.e-15;
 
 static
 void
@@ -1292,6 +1293,9 @@ main (int   argc,
     int verbose=0;
     pp.query("verbose",verbose);
 
+    int doCollate=1;
+    pp.query("collate",doCollate);
+
     std::string infile("");
     pp.get("infile", infile);
     if (infile.empty()) {
@@ -1423,6 +1427,9 @@ main (int   argc,
     std::set<Element> eltSet;
     int nodeCtr = 0;
 
+    Vector<MultiFab> states(Nlev);
+    Vector<DistributionMapping> dmaps(Nlev);
+
     for (int lev=0; lev<Nlev; ++lev) {
 
       // Get a domain box grown in periodic dir
@@ -1435,14 +1442,12 @@ main (int   argc,
       }
 
       // Define data holders
-      DistributionMapping dm(grids[lev]);
+      dmaps[lev] = DistributionMapping(grids[lev]);
       BoxArray gba = BoxArray(grids[lev]).grow(nGrow[lev]);
-      int r = lev==0 ? 1 : pf.refRatio(lev-1);
-      IntVect ratio(D_DECL(r,r,r));
 
-      MultiFab state(grids[lev],dm,nComp+AMREX_SPACEDIM,nGrow[lev]);
+      states[lev].define(grids[lev],dmaps[lev],nComp+AMREX_SPACEDIM,nGrow[lev]);
       if (build_distance_function) {
-        distance[lev].reset(new MultiFab(grids[lev],dm,1,nGrow[lev]));
+        distance[lev].reset(new MultiFab(grids[lev],dmaps[lev],1,nGrow[lev]));
       }
 
       // Get cell center coordinates
@@ -1450,10 +1455,10 @@ main (int   argc,
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-      for (MFIter mfi(state,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+      for (MFIter mfi(states[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
       {
         Box const& gbx = mfi.growntilebox();
-        const auto& sta = state.array(mfi);
+        const auto& sta = states[lev].array(mfi);
         AMREX_PARALLEL_FOR_3D ( gbx, i, j, k,
         {
           const amrex::Real* plo = geomdata.ProbLo();
@@ -1464,7 +1469,18 @@ main (int   argc,
         });
       }
 
-      state.FillBoundary(0,AMREX_SPACEDIM,geoms[lev].periodicity()); // After this, bad data in periodic directions however
+      states[lev].FillBoundary(0,AMREX_SPACEDIM,geoms[lev].periodicity()); // After this, bad data in periodic directions however
+
+      if (lev > 0) {
+        Vector<BCRec> bc(AMREX_SPACEDIM);
+        int r = pf.refRatio(lev-1);
+        IntVect ratio(D_DECL(r,r,r));
+        FillPatchTwoLevels(states[lev], time,
+                           {&states[lev-1]},{time},
+                           {&states[lev]},{time},
+                           0, 0, AMREX_SPACEDIM, geoms[lev-1], geoms[lev],
+                           bcFunc, 0, bcFunc, 0, ratio, &pci, bc, 0);
+      }
 
       // In periodic direction, manually shift the coordinate back to its original location
       if (geoms[lev].isAnyPeriodic()) {
@@ -1473,10 +1489,10 @@ main (int   argc,
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(state,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(states[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
           Box const& bx = mfi.tilebox();
-          auto& sfab = state[mfi];
+          auto& sfab = states[lev][mfi];
           geoms[lev].periodicShift(domain,bx,pshifts);
           for (const auto& iv : pshifts) {
             const auto shbox = bx + iv;
@@ -1496,27 +1512,29 @@ main (int   argc,
 
       // Use FillPatch to get properly filled ghost cells
       Print() << "FillPatching the grown structures at level " << lev << "..." << std::endl;
-      MultiFab gstate(grids[lev],dm,1,nGrow[lev]);
+      MultiFab gstate(grids[lev],dmaps[lev],1,nGrow[lev]);
       gstate.setVal(-666);
       for (int n=0; n<nComp; ++n) {
         if (lev==0) {
           FillPatchSingleLevel(gstate,time,{&pfdata[lev][n]},{time},0,0,1,geoms[0],bcFunc,0);
         } else {
           BCRec bc;
+          int r = pf.refRatio(lev-1);
+          IntVect ratio(D_DECL(r,r,r));
           FillPatchTwoLevels(gstate, time,
                              {&pfdata[lev-1][n]},{time},
                              {&pfdata[lev][n]},{time},
                              0, 0, 1, geoms[lev-1], geoms[lev],
                              bcFunc, 0, bcFunc, 0, ratio, &pci, {bc}, 0);
         }
-        state.ParallelCopy(gstate, 0, AMREX_SPACEDIM+n, 1, nGrow[lev], nGrow[lev], geoms[lev].periodicity());
+        states[lev].ParallelCopy(gstate, 0, AMREX_SPACEDIM+n, 1, nGrow[lev], nGrow[lev], geoms[lev].periodicity());
       }
       Print() << "...done FillPatching the grown structures at level " << lev << "..." << std::endl;
 
       // Populate the list of elements of the isosurface
-      for (MFIter mfi(state); mfi.isValid(); ++mfi) {
+      for (MFIter mfi(states[lev]); mfi.isValid(); ++mfi) {
 
-        const auto& sfab = state[mfi];
+        const auto& sfab = states[lev][mfi];
 
         // Build a fine-covered mask using gstate
         auto& mask = gstate[mfi];
@@ -1616,7 +1634,7 @@ main (int   argc,
             ptID.clear();
 
             const auto& d = distance[lev]->array(mfi);
-            const auto& sfaba = state.array(mfi);
+            const auto& sfaba = states[lev].array(mfi);
             const int* lo = vbox.loVect();
             const int* hi = vbox.hiVect();
 
@@ -1798,7 +1816,9 @@ main (int   argc,
     sortedNodes.clear();
 
     // Communicate node and element info from all procs to IOProc
-    Collate(nodeRaw,eltRaw,nComp+AMREX_SPACEDIM);
+    if (doCollate) {
+       Collate(nodeRaw,eltRaw,nComp+AMREX_SPACEDIM);
+    }
 
     if (ParallelDescriptor::IOProcessor()) {
       // Uniquify nodes, and make elements consistent
