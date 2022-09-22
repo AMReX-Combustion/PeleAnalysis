@@ -1434,12 +1434,7 @@ main (int   argc,
 
       // Get a domain box grown in periodic dir
       const Box& domain = geoms[lev].Domain();
-      Box gpdomain = domain;
-      for (int d=0; d<AMREX_SPACEDIM; ++d) {
-        if (geoms[lev].isPeriodic(d)) {
-          gpdomain.grow(d,nGrow[lev]);
-        }
-      }
+      const Box& gpdomain = geoms[lev].growPeriodicDomain(nGrow[lev]);
 
       // Define data holders
       dmaps[lev] = DistributionMapping(grids[lev]);
