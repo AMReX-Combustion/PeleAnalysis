@@ -1423,16 +1423,38 @@ main (int   argc,
       const Box& gbox = state[mfi].box();
       const int ratio = (lev == 0 ? 1 : pf.refRatio(lev-1));
       Real loc[BL_SPACEDIM];
+      Box cbox = amrex::coarsen(gbox,ratio);
+      Box fcbox = amrex::refine(cbox,ratio);
+      if (!(fcbox.contains(gbox))) {
+        amrex::Abort("BAD CBOX");
+      }
+      FArrayBox cpos(fcbox,AMREX_SPACEDIM);
+      Elixir eli = cpos.elixir();
+      Array4<Real> cposa = cpos.array(0);
+ 
       if (lev!=0)
       {
-        const Real ri = 1./ratio;
+        int rx = ratio;
+        int ry = (AMREX_SPACEDIM>1 ? ratio : 1);
+        int rz = (AMREX_SPACEDIM>2 ? ratio : 1);
+        GpuArray<Real,AMREX_SPACEDIM> dxc;
+        for (int i=0; i<AMREX_SPACEDIM; ++i)
+          dxc[i] = pf.probSize()[i] / pf.probDomain(lev-1).length(i);
 
-        AMREX_PARALLEL_FOR_3D ( gbox, i, j, k,
+        AMREX_PARALLEL_FOR_3D ( cbox, i, j, k,
         {
-          AMREX_D_TERM(f(i,j,k,0) = (static_cast<int>(i < 0 ? i*ri-1  : i*ri) + 0.5)*dxf[0]*ratio + plo[0];,
-                       f(i,j,k,1) = (static_cast<int>(j < 0 ? j*ri-1  : j*ri) + 0.5)*dxf[1]*ratio + plo[1];,
-                       f(i,j,k,2) = (static_cast<int>(k < 0 ? k*ri-1  : k*ri) + 0.5)*dxf[2]*ratio + plo[2];);
+          for (int kk=0; kk<rz; ++kk) {
+            for (int jj=0; jj<ry; ++jj) {
+              for (int ii=0; ii<rx; ++ii) {
+                AMREX_D_TERM(cposa(rx*i+ii,ry*j+jj,rz*k+kk,0) = (i + 0.5)*dxc[0] + plo[0];,
+                             cposa(rx*i+ii,ry*j+jj,rz*k+kk,1) = (j + 0.5)*dxc[1] + plo[1];,
+                             cposa(rx*i+ii,ry*j+jj,rz*k+kk,2) = (k + 0.5)*dxc[2] + plo[2];);
+              }
+            }
+	  }
         });
+        Box ovlp = gbox & fcbox;
+        state[mfi].copy<amrex::RunOn::Device>(cpos,ovlp,0,ovlp,0,AMREX_SPACEDIM);
       }
 
       const Box& vbox = gridArray[lev][mfi.index()];
