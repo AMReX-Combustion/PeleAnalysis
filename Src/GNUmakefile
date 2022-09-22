@@ -1,4 +1,5 @@
 AMREX_HOME ?= ../../../amrex
+PELE_PHYSICS_HOME ?= ../../../PelePhysics
 
 # AMReX
 DEBUG	      = FALSE
@@ -16,6 +17,7 @@ USE_CUDA      = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
+EBASE         = flattenAMRFile
 #EBASE         = stream
 #EBASE         = partStream
 #EBASE         = blowOut
@@ -33,7 +35,7 @@ USE_CUDA      = FALSE
 #EBASE         = conditionalMean
 #EBASE         = jpdf
 #EBASE         = avgToPlane
-EBASE          = avgPlotfiles
+#EBASE          = avgPlotfiles
 #EBASE          = amrToFE
 
 NEEDS_f90_SRC = FALSE
@@ -41,6 +43,9 @@ NEEDS_f90_SRC = FALSE
 
 Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
+
+PPdirs  := Utility/PltFileManager
+Ppack   += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
 
 ifeq ($(EBASE),partStream)
   USE_PARTICLES = TRUE
