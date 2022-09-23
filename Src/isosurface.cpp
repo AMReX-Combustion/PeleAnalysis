@@ -1390,7 +1390,7 @@ main (int   argc,
     Vector<Geometry> geoms(Nlev);
     RealBox rb(&(pf.probLo()[0]), &(pf.probHi()[0]));
     int coord = pf.coordSys();
-    Vector<int> is_per(AMREX_SPACEDIM,1);
+    Vector<int> is_per(AMREX_SPACEDIM,0);
     pp.queryarr("is_per",is_per,0,AMREX_SPACEDIM);
     Print() << "Periodicity assumed for this case: ";
     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
