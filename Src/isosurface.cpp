@@ -2165,13 +2165,21 @@ main (int   argc,
              outfile_data << "      <Information Name=\"IsoValue\" Value=\""<< isoVal <<"\"/>\n";
              outfile_data << "      <Time Value=\"" << pf.time() << "\"/>\n";
              // Mesh
-             outfile_data << "         <Topology TopologyType=\"Triangle\" NumberOfElements=\""<<nElts<< "\">\n";
+             if (AMREX_SPACEDIM == 2) {
+                outfile_data << "         <Topology TopologyType=\"Polyline\" NodesPerElement=\"2\" NumberOfElements=\""<<nElts<< "\">\n";
+             } else {
+                outfile_data << "         <Topology TopologyType=\"Triangle\" NumberOfElements=\""<<nElts<< "\">\n";
+             }
              outfile_data << "            <DataItem Name=\"Conn\" Format=\"Binary\" DataType=\"Int\" Dimensions=\""
                           << AMREX_SPACEDIM*nElts << "\">\n";
              outfile_data << "               "<<outfile<<"\n";
              outfile_data << "            </DataItem>\n";
              outfile_data << "         </Topology>\n";
-             outfile_data << "         <Geometry GeometryType=\"XYZ\">\n";
+             if (AMREX_SPACEDIM == 2) {
+                outfile_data << "         <Geometry GeometryType=\"XY\">\n";
+             } else {
+                outfile_data << "         <Geometry GeometryType=\"XYZ\">\n";
+             }
              outfile_data << "            <DataItem Name=\"Coord\" Format=\"Binary\" Precision=\"8\" DataType=\"Float\" Seek=\""<< binEltSize << "\" Dimensions=\""
                           << AMREX_SPACEDIM*sortedNodes.size() <<"\">\n";
              outfile_data << "               "<<outfile<<"\n";
