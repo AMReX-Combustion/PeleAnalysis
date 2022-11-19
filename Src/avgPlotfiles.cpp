@@ -3,6 +3,7 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_DataServices.H>
 #include <AMReX_WritePlotFile.H>
+#include <AMReX_PlotFileUtil.H>
 
 using namespace amrex;
 
@@ -42,7 +43,7 @@ main (int   argc,
       pp.query("sComp",sComp);
       int nComp = amrData0.NComp();
       pp.query("nComp",nComp);
-      BL_ASSERT(sComp+nComp <= amrData0.NComp());
+      AMREX_ASSERT(sComp+nComp <= amrData0.NComp());
       comps.resize(nComp);
       for (int i=0; i<nComp; ++i)
         comps[i] = sComp + i;
@@ -59,19 +60,19 @@ main (int   argc,
     {
       Vector<int> inBox;
       pp.getarr("box",inBox,0,nx);
-      int d=BL_SPACEDIM;
-      BL_ASSERT(inBox.size()==2*d);
+      int d=AMREX_SPACEDIM;
+      AMREX_ASSERT(inBox.size()==2*d);
       subbox=Box(IntVect(D_DECL(inBox[0],inBox[1],inBox[2])),
                  IntVect(D_DECL(inBox[d],inBox[d+1],inBox[d+2])),
                  IndexType::TheCellType());
     }
 
-    Vector<Real> plo(BL_SPACEDIM), phi(BL_SPACEDIM);
+    Vector<Real> plo(AMREX_SPACEDIM), phi(AMREX_SPACEDIM);
     Vector<Box> psize(finestLevel+1);
     const IntVect ilo = subbox.smallEnd();
     const IntVect ihi = subbox.bigEnd();
 
-    for (int i =0 ; i< BL_SPACEDIM; i++) {   
+    for (int i =0 ; i< AMREX_SPACEDIM; i++) {
        plo[i] = amrData0.ProbLo()[i]+(ilo[i])*amrData0.DxLevel()[finestLevel][i];
        phi[i] = amrData0.ProbLo()[i]+(ihi[i]+1)*amrData0.DxLevel()[finestLevel][i];
     }
@@ -107,15 +108,13 @@ main (int   argc,
 
     if (all_same_boxes) {
       Vector<MultiFab*> mf_avg(finestLevel+1);
-      for (int lev=0; lev<=finestLevel; ++lev)
-      {
+      for (int lev=0; lev<=finestLevel; ++lev) {
         const BoxArray& ba_lev = amrData0.boxArray(lev);
         mf_avg[lev] = new MultiFab(ba_lev,DistributionMapping(ba_lev),comps.size(),0);
         mf_avg[lev]->setVal(0);
       }
 
-      for (int iFile=0; iFile<plotFileNames.size(); ++iFile)
-      {
+      for (int iFile=0; iFile<plotFileNames.size(); ++iFile) {
         DataServices dataServices(plotFileNames[iFile], fileType);
         if( ! dataServices.AmrDataOk())
         {
@@ -128,19 +127,24 @@ main (int   argc,
         for (int lev=0; lev<=finestLevel; ++lev)
         {
           AMREX_ALWAYS_ASSERT_WITH_MESSAGE(amrData.boxArray(lev) == mf_avg[lev]->boxArray(),"BoxArrays not equal");
-    
+
           for (int i=0; i<comps.size(); ++i)
           {
-            MultiFab::Add(*mf_avg[lev],amrData.GetGrids(lev,comps[i]),0,i,1,0);
+            MultiFab mfComp(mf_avg[lev]->boxArray(),mf_avg[lev]->DistributionMap(),1,0);
+            mfComp.setVal(0);
+            mfComp.ParallelCopy(amrData.GetGrids(lev,comps[i]));
+            MultiFab::Add(*mf_avg[lev],mfComp,0,i,1,0);
           }
         }
       }
       Print() << "Writing output to " << outfile << std::endl;
-      for (int lev=0; lev<=finestLevel; ++lev)
-      {
+      for (int lev=0; lev<=finestLevel; ++lev) {
         mf_avg[lev]->mult(1.0/nf);
       }
-      WritePlotFile(mf_avg,domain,amrData0,outfile);
+      Vector<int> isteps(finestLevel+1, 0);
+      Vector<IntVect> refRatios(finestLevel,{AMREX_D_DECL(2, 2, 2)});
+      amrex::WriteMultiLevelPlotfile(outfile, finestLevel+1, GetVecOfConstPtrs(mf_avg), pltnames,
+                                     geom, 0.0, isteps, refRatios);
     }
     else
     {
@@ -156,7 +160,7 @@ main (int   argc,
         AmrData& amrData = dataServices.AmrDataRef();
 
         Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
-    
+
         for (int lev=0; lev<=finestLevel; ++lev) {
           for (int i=0; i<comps.size(); ++i)
           {
