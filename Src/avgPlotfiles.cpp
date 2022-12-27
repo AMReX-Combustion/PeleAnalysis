@@ -56,6 +56,8 @@ main (int   argc,
     AMREX_ALWAYS_ASSERT(finestLevel >= 0 && finestLevel<=amrData0.FinestLevel());
 
     Box subbox = amrData0.ProbDomain()[finestLevel];
+    /* Deactivate this for now. Lead to small differences to the original
+     * pltfile box due to arithmetic operations
     if (int nx=pp.countval("box"))
     {
       Vector<int> inBox;
@@ -68,7 +70,6 @@ main (int   argc,
     }
 
     Vector<Real> plo(AMREX_SPACEDIM), phi(AMREX_SPACEDIM);
-    Vector<Box> psize(finestLevel+1);
     const IntVect ilo = subbox.smallEnd();
     const IntVect ihi = subbox.bigEnd();
 
@@ -76,6 +77,7 @@ main (int   argc,
        plo[i] = amrData0.ProbLo()[i]+(ilo[i])*amrData0.DxLevel()[finestLevel][i];
        phi[i] = amrData0.ProbLo()[i]+(ihi[i]+1)*amrData0.DxLevel()[finestLevel][i];
     }
+    */
 
     const Vector<int>& ratio = amrData0.RefRatio();
 
@@ -94,7 +96,8 @@ main (int   argc,
 
     AMREX_ALWAYS_ASSERT(domain[0].numPts() > 0);
     Vector<Geometry> geom(finestLevel+1);
-    RealBox rb(AMREX_D_DECL(plo[0],plo[1],plo[2]), AMREX_D_DECL(phi[0],phi[1],phi[2]));
+    RealBox rb(AMREX_D_DECL(amrData0.ProbLo()[0],amrData0.ProbLo()[1],amrData0.ProbLo()[2]),
+               AMREX_D_DECL(amrData0.ProbHi()[0],amrData0.ProbHi()[1],amrData0.ProbHi()[2]));
     Array<int,AMREX_SPACEDIM> is_per = {0};
     for (int lev=0; lev<=finestLevel; ++lev) {
       geom[lev].define(domain[lev],rb,amrData0.CoordSys(),is_per);
