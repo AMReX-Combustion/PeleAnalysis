@@ -17,7 +17,7 @@ USE_CUDA      = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
-EBASE         = flattenAMRFile
+#EBASE         = flattenAMRFile
 #EBASE         = stream
 #EBASE         = partStream
 #EBASE         = blowOut
@@ -32,7 +32,7 @@ EBASE         = flattenAMRFile
 #EBASE         = surfDATtoMEF
 #EBASE         = buildPMF
 #EBASE         = subPlt
-#EBASE         = conditionalMean
+EBASE         = conditionalMean
 #EBASE         = jpdf
 #EBASE         = avgToPlane
 #EBASE          = avgPlotfiles
@@ -44,8 +44,18 @@ NEEDS_f90_SRC = FALSE
 Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
-PPdirs  := Utility/PltFileManager
+Chemistry_Model = dodecane_lu_qss
+##Chemistry_Model = drm19
+Transport_Model = Simple
+DEFINES += -DUSE_SIMPLE_TRANSPORT
+Eos_Model = Fuego
+DEFINES += -DUSE_FUEGO_EOS
+
+ChemDir  = Support/Mechanism/Models/$(Chemistry_Model)
+PPdirs  := Utility/PltFileManager $(ChemDir) Eos Source Transport
 Ppack   += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
+Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir))
+##INCLUDE_LOCATIONS += $(PELE_PHYSICS_HOME)/$(ChemDir) $(PELE_PHYSICS_HOME)/Eos $(PELE_PHYSICS_HOME)/Source
 
 ifeq ($(EBASE),partStream)
   USE_PARTICLES = TRUE
