@@ -582,6 +582,9 @@ main (int   argc,
                     int myZBin = 0;
                     if (doZcoorBins) {
                         Real zcoor = geomdata.ProbLo(2) + (static_cast<Real>(iv[2])+0.5)*geomdata.CellSize(2);
+                        if (zcoor < binZMin || zcoor > binZMax ) {
+                           continue;
+                        }
                         Real binZwidth_inv = static_cast<Real>(nBinsZ)/(binZMax-binZMin);
                         myZBin = std::floor((zcoor - binZMin) * binZwidth_inv);
                     }
