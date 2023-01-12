@@ -7,7 +7,10 @@ using std::endl;
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <AMReX_WritePlotFile.H>
+#include <AMReX_PlotFileUtil.H>
+#include <AMReX_MLMG.H>
+#include <AMReX_MLPoisson.H>
+#include <AMReX_MLABecLaplacian.H>
 #include <mixfracBilger.H>
 #include <mechanism.H>
 #include <PelePhysics.H>
@@ -232,6 +235,11 @@ main (int   argc,
     mixFracBilgerData mFrac_d;
     initMixtureFraction(mFrac_d);
 
+    // Transport pointer
+    static pele::physics::transport::TransportParams<
+              pele::physics::PhysicsType::transport_type> trans_parms;
+    trans_parms.allocate();
+
     // Make an array of srings containing paths of input plot files
     Vector<std::string> plotFileNames(nPlotFiles);
     for(int iPlot = 0; iPlot < nPlotFiles; ++iPlot) {
@@ -247,31 +255,39 @@ main (int   argc,
     // Number of bins
     int nBins(64); pp.query("nBins",nBins);
 
+    // Binning on Z-coor
+    bool doZcoorBins = false; pp.query("doZcoorBin",doZcoorBins);
+    int nBinsZ = 1; pp.query("nBinsZ",nBinsZ);
+
     // Variables to bin, and to average
     int binComp = -1; pp.get("binComp",binComp);
     bool useMixFrac = false; pp.query("useMixFrac",useMixFrac);
+    bool writePltMixFrac = false; pp.query("plotMixFrac",writePltMixFrac);
+    bool isPeleC = false; pp.query("isPeleC",isPeleC);
 
     // Get species names
     Vector<std::string> spec_names;
     pele::physics::eos::speciesNames<pele::physics::PhysicsType::eos_type>(spec_names);
     // Species + temp + volFrac
-    int readInnComp = NUM_SPECIES + 7;
+    int readInnComp = NUM_SPECIES + 8;
     Vector<std::string> readInComps(readInnComp,"");
     readInComps[0] = "volFrac";
     for (int comp{1}; comp < NUM_SPECIES+1; ++comp) {
        readInComps[comp] = "Y("+spec_names[comp-1]+")";
     }
     readInComps[NUM_SPECIES+1] = "temp";
-    readInComps[NUM_SPECIES+2] = "HeatRelease";
-    readInComps[NUM_SPECIES+3] = "I_R(OH)";
-    readInComps[NUM_SPECIES+4] = "I_R(H2O2)";
-    readInComps[NUM_SPECIES+5] = "I_R(CH2O)";
-    readInComps[NUM_SPECIES+6] = "I_R(OC12H23OOH)";
+    readInComps[NUM_SPECIES+2] = "density";
+    readInComps[NUM_SPECIES+3] = "HeatRelease";
+    readInComps[NUM_SPECIES+4] = "I_R(OH)";
+    readInComps[NUM_SPECIES+5] = "I_R(H2O2)";
+    readInComps[NUM_SPECIES+6] = "I_R(CH2O)";
+    readInComps[NUM_SPECIES+7] = "I_R(OC12H23OOH)";
 
-    // Y(OH), Y(H2O2), Y(CH2O), Y(OC12H23OOH), temp, HR, I_R(OH), I_R(H2O2), I_R(CH2O), I_R(OC12H23OOH)
-    const int nAvgComps = 10;
-    Array<int,nAvgComps> compIdx = {4,8,12,34,NUM_SPECIES+1,NUM_SPECIES+2,NUM_SPECIES+3,NUM_SPECIES+4,
-                                    NUM_SPECIES+5,NUM_SPECIES+6};
+    // List of field to average and map into mfVec multifab components
+    // Y(OH), Y(H2O2), Y(CH2O), Y(OC12H23OOH), temp, HR, I_R(OH), I_R(H2O2), I_R(CH2O), I_R(OC12H23OOH), ScalDiss
+    const int nAvgComps = 11;
+    Array<int,nAvgComps> compIdx = {4,8,12,34,NUM_SPECIES+1,NUM_SPECIES+3,NUM_SPECIES+4,NUM_SPECIES+5,
+                                    NUM_SPECIES+6,NUM_SPECIES+7,NUM_SPECIES+8};
     
     Real binMin=0; pp.get("binMin",binMin);
     Real binMax=1; pp.get("binMax",binMax);
@@ -279,20 +295,23 @@ main (int   argc,
         amrex::Abort("Bad bin min,max");
     }
 
-
     bool floor=false; pp.query("floor",floor);
     bool ceiling=false; pp.query("ceiling",ceiling);
-    
-    Real domainVol = -1;
 
     Vector<int> destFillComps(readInnComp);
     for (int i=0; i<destFillComps.size(); ++i) {
-        destFillComps[i] = i;// zero slot for mask
+        destFillComps[i] = i;
     }
     
-    // Adding mix frac, and a mask
+    // Adding a scaldiss and mask
     int nComp = readInnComp + 2;
     Vector<Real> dataIV(nComp);
+
+    // List of outgoing data fields
+    int nOutComp = nAvgComps;
+    Vector<std::string> outComps{"Y(OH)","Y(H2O2)","Y(CH2O)","Y(OC12H23OOH)",
+                                 "temp","HeatRelease","I_R(OH)","I_R(H2O2)",
+                                 "I_R(CH2O)","I_R(OC12H23OOH)","ScalDiss"};
 
     bool aja(false);
     pp.query("aja",aja);
@@ -305,9 +324,6 @@ main (int   argc,
 
         const Real plt_time_io = ParallelDescriptor::second();
         
-        Vector<Real>    binVals(nBins*nAvgComps,0.0);
-        Vector<Real>  binValsSq(nBins*nAvgComps,0.0);
-        Vector<Real>  binHits(nBins,0);
         // Open file and get an amrData pointer
         const std::string& infile = plotFileNames[iPlot];
         if (verbose) {
@@ -327,50 +343,71 @@ main (int   argc,
         if (iPlot==0)
         {
             domain = amrData.ProbDomain()[0];
-            domainVol = domain.d_numPts();
 
             if (finestLevel<0) {
                 finestLevel = amrData.FinestLevel();
             }
         }
 
-        int ratio = 1;
+        int thisFinestLevel = std::min(finestLevel,amrData.FinestLevel());
+        int Nlev = thisFinestLevel+1;
+
+        // Geometry data
         RealBox rb(&(amrData.ProbLo()[0]), 
                    &(amrData.ProbHi()[0]));
         int coord = 0;
-        Vector<int> is_per(AMREX_SPACEDIM,1);
-        int thisFinestLevel = std::min(finestLevel,amrData.FinestLevel());
-        for (int iLevel=0; iLevel<=thisFinestLevel; ++iLevel) {
+        Vector<int> is_per(AMREX_SPACEDIM,0);
+
+        // Solution containers
+        Vector<MultiFab> mixfracVec(Nlev);
+        Vector<MultiFab> mfVec(Nlev);
+        Vector<DistributionMapping> dmaps(Nlev);
+        Vector<BoxArray> grids(Nlev);
+        Vector<Geometry> geoms(Nlev);
+        for (int iLevel=0; iLevel<Nlev; ++iLevel) {
+            grids[iLevel] = amrData.boxArray(iLevel);
+            dmaps[iLevel] = DistributionMapping(grids[iLevel]);
+            mfVec[iLevel].define(grids[iLevel],dmaps[iLevel],nComp, ngrow);
+            mixfracVec[iLevel].define(grids[iLevel],dmaps[iLevel],AMREX_SPACEDIM+2, 1); // Contains MixFrac, Diffus, MixFrac_gradients
+            geoms[iLevel] = Geometry(amrData.ProbDomain()[iLevel],&rb,coord,&(is_per[0]));
+        }
+   
+        Real binZMin=amrData.ProbLo()[2]; pp.query("binZMin",binZMin);
+        Real binZMax=amrData.ProbHi()[2]; pp.query("binZMax",binZMax);
+
+        // Conditionals containers
+        Vector<Real>  binVals(nBins*nAvgComps*nBinsZ,0.0);
+        Vector<Real>  binValsSq(nBins*nAvgComps*nBinsZ,0.0);
+        Vector<Real>  binHits(nBins*nBinsZ,0.0);
+
+        for (int iLevel=0; iLevel<Nlev; ++iLevel) {
             if (verbose) {
                Print() << " Reading data at level " << iLevel << "\n";
             }
-            auto &boxA_plt = amrData.boxArray(iLevel);
-            DistributionMapping dmap(boxA_plt);
-            const Geometry geom(amrData.ProbDomain()[iLevel],&rb,coord,&(is_per[0]));
 
-            MultiFab mf(boxA_plt, dmap, nComp, ngrow);
-            amrData.FillVar(mf, iLevel, readInComps, destFillComps);
+            amrData.FillVar(mfVec[iLevel], iLevel, readInComps, destFillComps);
 
             // Prepare mask, zeroing out fine-covered and EB-covered data
-            mf.setVal(1.0,nComp-1,1); // initialize mask to value
+            mfVec[iLevel].setVal(1.0,nComp-1,1); // initialize mask to value
             if (iLevel<thisFinestLevel) {
-                ratio = amrData.RefRatio()[iLevel];
+                int ratio = amrData.RefRatio()[iLevel];
                 BoxArray baf = BoxArray(amrData.boxArray(iLevel+1)).coarsen(ratio);
-                for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
+                for (MFIter mfi(mfVec[iLevel]); mfi.isValid(); ++mfi) {
                     const Box& box = mfi.validbox();
-                    FArrayBox& fab = mf[mfi];
+                    FArrayBox& fab = mfVec[iLevel][mfi];
                     std::vector< std::pair<int,Box> > isects = baf.intersections(box);
                     for (int ii = 0; ii < isects.size(); ii++)
                         fab.setVal(0.0,isects[ii].second,nComp-1,1);
                 }
             }
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
+            for (MFIter mfi(mfVec[iLevel]); mfi.isValid(); ++mfi) {
                 const Box& bx = mfi.validbox();
-                auto        vf_a   = mf.const_array(mfi,0);
-                auto const& mask_a = mf.array(mfi,nComp-1);
+                auto        vf_a   = mfVec[iLevel].const_array(mfi,0);
+                auto const& mask_a = mfVec[iLevel].array(mfi,nComp-1);
                 amrex::ParallelFor(bx, [vf_a,mask_a] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {   
                     if (vf_a(i,j,k) < 0.999) {
@@ -379,31 +416,156 @@ main (int   argc,
                 });
             }
    
-            // Compute mixture fraction
+            // Compute mixture fraction and thermal diff
             if (verbose) {
                Print() << " Mixture fraction at level " << iLevel << "\n";
             }
+            auto const* ltransparm = trans_parms.device_trans_parm();
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
+            for (MFIter mfi(mfVec[iLevel]); mfi.isValid(); ++mfi) {
                 const Box& bx = mfi.validbox();
-                auto const& Ys       = mf.const_array(mfi,1);
-                auto       mixt_frac = mf.array(mfi,nComp-2);
+                auto const& Ys  = mfVec[iLevel].const_array(mfi,1);
+                auto const& T   = mfVec[iLevel].const_array(mfi,NUM_SPECIES+1);
+                auto const& rho = mfVec[iLevel].const_array(mfi,NUM_SPECIES+2);
+                auto       mixt_frac = mixfracVec[iLevel].array(mfi,0);
+                auto       diffus    = mixfracVec[iLevel].array(mfi,1);
 
                 amrex::Real denom_inv = 1.0 / (mFrac_d.Zfu - mFrac_d.Zox);
 
-                amrex::ParallelFor(bx, [Ys, mixt_frac, denom_inv, mFrac_d] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                amrex::ParallelFor(bx, [Ys, T, rho, mixt_frac, denom_inv, mFrac_d, diffus, ltransparm, isPeleC]
+                AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {   
                     mixt_frac(i,j,k) = 0.0_rt;
                     for (int n = 0; n<NUM_SPECIES; ++n) {
                         mixt_frac(i,j,k) += Ys(i,j,k,n) * mFrac_d.spec_Bilger_fact[n];
                     }   
                     mixt_frac(i,j,k) = ( mixt_frac(i,j,k) - mFrac_d.Zox ) * denom_inv;
+
+                    // Thermal diffusivity
+                    auto eos = pele::physics::PhysicsType::eos();
+                    Real rho_cgs = rho(i,j,k);
+                    if (!isPeleC) {
+                        rho_cgs *= 1.0e-3;
+                    }
+                    amrex::Real temp = T(i,j,k);
+                    amrex::Real Ysp[NUM_SPECIES] = {0.0};
+                    for (int n = 0; n < NUM_SPECIES; n++) {
+                        Ysp[n] = Ys(i,j,k,n);
+                    }
+                    amrex::Real dummy_rhoDi[NUM_SPECIES] = {0.0};
+                    amrex::Real lambda_cgs = 0.0;
+                    amrex::Real dummy_mu = 0.0;
+                    amrex::Real dummy_xi = 0.0;
+
+                    bool get_xi = false;
+                    bool get_mu = false;
+                    bool get_lam = true;
+                    bool get_Ddiag = false;
+                    auto trans = pele::physics::PhysicsType::transport();
+                    trans.transport(get_xi, get_mu, get_lam, get_Ddiag, temp,
+                                    rho_cgs, Ysp, dummy_rhoDi, dummy_mu, dummy_xi, lambda_cgs, ltransparm);
+
+                    amrex::Real cpmix = 0.0;
+                    eos.TY2Cp(temp, Ysp, cpmix);
+                    if (!isPeleC) {
+                        cpmix *= 1.0e-4;
+                        lambda_cgs *= 1.0e-5; // it's actually MKS now
+                    }
+                    diffus(i,j,k) = lambda_cgs / rho(i,j,k) / cpmix;
                 });
             }
-            MultiFab vol(boxA_plt, dmap, 1, ngrow);
-            geom.GetVolume(vol);
+
+            mixfracVec[iLevel].FillBoundary(0,1,geoms[iLevel].periodicity());
+        }
+
+        if (verbose) {
+           Print() << " Getting scalar dissipation rate using MLMG \n";
+        }
+
+        // Get face-centered gradients from MLMG
+        LPInfo info;
+        info.setAgglomeration(1);
+        info.setConsolidation(1);
+        info.setMetricTerm(false);
+        info.setMaxCoarseningLevel(0);
+        MLPoisson poisson({geoms}, {grids}, {dmaps}, info);
+        poisson.setMaxOrder(4);
+        std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
+        std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
+        for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
+           if (is_per[idim] == 1) {
+              lo_bc[idim] = hi_bc[idim] = LinOpBCType::Periodic;
+           } else {
+              lo_bc[idim] = hi_bc[idim] = LinOpBCType::Neumann;
+           }
+        }
+        poisson.setDomainBC(lo_bc, hi_bc);
+
+        // Need to apply the operator to ensure CF consistency with composite solve
+        int nGrowGrad = 0;                   // No need for ghost face on gradient
+        Vector<Array<MultiFab,AMREX_SPACEDIM> > grad(Nlev);
+        Vector<std::unique_ptr<MultiFab>> phi;
+        Vector<MultiFab> laps;
+        for (int lev = 0; lev < Nlev; ++lev) {
+          for (int idim = 0; idim <AMREX_SPACEDIM; idim++) {
+             const auto& ba = grids[lev];
+             grad[lev][idim].define(amrex::convert(ba,IntVect::TheDimensionVector(idim)),
+                                    dmaps[lev], 1, nGrowGrad);
+          }    
+          phi.push_back(std::make_unique<MultiFab> (mixfracVec[lev],amrex::make_alias,0,1));
+          poisson.setLevelBC(lev, phi[lev].get());
+          laps.emplace_back(grids[lev], dmaps[lev], 1, 1);
+        }
+
+        MLMG mlmg(poisson);
+        mlmg.apply(GetVecOfPtrs(laps), GetVecOfPtrs(phi));
+        mlmg.getFluxes(GetVecOfArrOfPtrs(grad), GetVecOfPtrs(phi), MLMG::Location::FaceCenter);
+
+        for (int lev = 0; lev < Nlev; ++lev) {
+            // Get the scalar dissipation rate D \nabla mixFrac \cdot \nabla mixFrac
+            MultiFab gradAlias(mixfracVec[lev], amrex::make_alias, 2, AMREX_SPACEDIM);
+            average_face_to_cellcenter(gradAlias, 0, GetArrOfConstPtrs(grad[lev]));
+            gradAlias.mult(-1.0);
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(mfVec[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {    
+               const Box& bx = mfi.tilebox();
+               auto const& grad_a   = gradAlias.const_array(mfi);
+               auto const& diffus   = mixfracVec[lev].array(mfi,1);
+               auto const& scaldiss = mfVec[lev].array(mfi,nComp-2);
+               amrex::ParallelFor(bx, [=]
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+               {    
+                  scaldiss(i,j,k) = diffus(i,j,k) * (AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
+                                                                  + grad_a(i,j,k,1) * grad_a(i,j,k,1),
+                                                                  + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
+               });  
+            } 
+        }
+
+        if (writePltMixFrac) {
+            Vector<std::unique_ptr<MultiFab>> scalDiss;
+            for (int lev = 0; lev < Nlev; ++lev) {
+              scalDiss.push_back(std::make_unique<MultiFab> (mfVec[lev],amrex::make_alias,nComp-2,1));
+            }
+            Vector<int> isteps(Nlev, 0);
+            Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
+            amrex::WriteMultiLevelPlotfile("ScalDiss", Nlev, GetVecOfConstPtrs(scalDiss),{"ScalDiss"},
+                                           geoms, 0.0, isteps, refRatios);
+            amrex::WriteMultiLevelPlotfile("MixFrac", Nlev, GetVecOfConstPtrs(phi),{"MixtureFraction"},
+                                           geoms, 0.0, isteps, refRatios);
+        }
+
+        for (int iLevel=0; iLevel<Nlev; ++iLevel) {
+
+            MultiFab vol(grids[iLevel], dmaps[iLevel], 1, ngrow);
+            geoms[iLevel].GetVolume(vol);
+
+            const auto geomdata = geoms[iLevel].data();
 
             if (verbose) {
                Print() << " CM at level " << iLevel << "\n";
@@ -411,29 +573,39 @@ main (int   argc,
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for(MFIter mfi(mf); mfi.isValid(); ++mfi) {
+            for(MFIter mfi(mfVec[iLevel]); mfi.isValid(); ++mfi) {
                 const Box& box = mfi.validbox();
-                FArrayBox& fab = mf[mfi];
+                FArrayBox& fab = mfVec[iLevel][mfi];
                 FArrayBox& vfab = vol[mfi];
+                FArrayBox& mixfracfab = mixfracVec[iLevel][mfi];
                 for (IntVect iv=box.smallEnd(); iv<=box.bigEnd(); box.next(iv)) {
+                    int myZBin = 0;
+                    if (doZcoorBins) {
+                        Real zcoor = geomdata.ProbLo(2) + (static_cast<Real>(iv[2])+0.5)*geomdata.CellSize(2);
+                        Real binZwidth_inv = static_cast<Real>(nBinsZ)/(binZMax-binZMin);
+                        myZBin = std::floor((zcoor - binZMin) * binZwidth_inv);
+                    }
                     Vector<Real> voldata(1,0.0);
+                    Vector<Real> mixfracdata(AMREX_SPACEDIM+2,0.0);
                     vfab.getVal(voldata.dataPtr(),iv);
+                    mixfracfab.getVal(mixfracdata.dataPtr(),iv);
                     fab.getVal(dataIV.dataPtr(),iv);
-                    if (dataIV[nComp-1] > 0.0) {
-                        Real binVal = dataIV[nComp-2];
+                    if (dataIV[nComp-1] > 0.0) {   // Mask fine/EB covered
+                        Real binVal = mixfracdata[0];
                         if (binVal>=binMin && binVal<binMax) {
-                            int myBin = (int)(nBins*(binVal-binMin)/(binMax-binMin));
-                            if (myBin<0 || myBin>=binHits.size()) {
+                            int myVBin =   (int)(nBins*(binVal-binMin)/(binMax-binMin));
+                            if (myVBin<0 || myVBin>=nBins) {
                                 amrex::Abort("Bad bin");
                             }
-                            Real myWeight = voldata[0] * 1000.0;
+                            Real myWeight = voldata[0];
                             for (int f{0}; f<nAvgComps; ++f) {
                                 Real val = dataIV[compIdx[f]];
-                                int binIdx = myBin*nAvgComps+f;
+                                int binIdx = myZBin*nBins*nAvgComps + myVBin*nAvgComps + f;
                                 binVals[binIdx]    += myWeight * val;
                                 binValsSq[binIdx]  += myWeight * val * val;
                             }
-                            binHits[myBin] += myWeight;
+                            int hbinIdx = myZBin*nBins + myVBin;
+                            binHits[hbinIdx] += myWeight;
                         }
                     }
                 }
@@ -444,33 +616,42 @@ main (int   argc,
         ParallelDescriptor::ReduceRealSum(binVals.dataPtr(),binVals.size(),ioproc);
         ParallelDescriptor::ReduceRealSum(binValsSq.dataPtr(),binValsSq.size(),ioproc);
         if (isioproc) {
-            std::string filename = "CondMean_Temp" + std::to_string(amrData.Time()) + ".dat";
-            std::ofstream ofs(filename.c_str());
-            std::string variables = "VARIABLES = mixFrac ";
-            ofs << variables;
-            for (int f{0}; f<nAvgComps; ++f) {
-                const std::string varName = readInComps[compIdx[f]];
-                ofs << varName+"_avg " << varName+"_stddev " << varName+"_Int ";
-            }
-            ofs << "\n";
-            const Real dv = (binMax - binMin)/nBins;
-            for (int n=0; n<nBins; n++) {
-                const Real v = binMin + dv*(0.5+(Real)n);
-                ofs << v << " ";
+            for (int zB{0}; zB<nBinsZ; ++zB) {
+                std::string filename = "CondMean_Time" + std::to_string(amrData.Time());
+                if (nBinsZ>1) {
+                    const Real dz = (binZMax - binZMin)/static_cast<Real>(nBinsZ);
+                    Real zCent = binZMin + (0.5+static_cast<Real>(zB))*dz;
+                    filename += "_Zcent"+std::to_string(zCent);
+                }
+                filename += ".dat";
+                std::ofstream ofs(filename.c_str());
+                std::string variables = "VARIABLES = mixFrac ";
+                ofs << variables;
                 for (int f{0}; f<nAvgComps; ++f) {
-                    if (binHits[n]>0.0) {
-                        int binIdx = n*nAvgComps+f;
-                        Real bh = binHits[n];
-                        ofs << binVals[binIdx]/bh << " ";
-                        ofs << std::sqrt( (binValsSq[binIdx]/bh) - (binVals[binIdx]/bh)*(binVals[binIdx]/bh) ) << " ";
-                        ofs << binVals[binIdx] << " ";
-                    } else {
-                        ofs << " 0.0 0.0 0.0 ";
-                    }
+                    const std::string varName = outComps[f];
+                    ofs << varName+"_avg " << varName+"_stddev " << varName+"_Int ";
                 }
                 ofs << "\n";
+                const Real dv = (binMax - binMin)/nBins;
+                for (int n=0; n<nBins; n++) {
+                    const Real v = binMin + dv*(0.5+(Real)n);
+                    ofs << v << " ";
+                    for (int f{0}; f<nAvgComps; ++f) {
+                        int hbinIdx = zB*nBins + n;
+                        if (binHits[hbinIdx] > 0.0) {
+                            int binIdx = zB*nBins*nAvgComps+n*nAvgComps+f;
+                            Real bh = binHits[hbinIdx];
+                            ofs << binVals[binIdx]/bh << " ";
+                            ofs << std::sqrt( (binValsSq[binIdx]/bh) - (binVals[binIdx]/bh)*(binVals[binIdx]/bh) ) << " ";
+                            ofs << binVals[binIdx] << " ";
+                        } else {
+                            ofs << " 0.0 0.0 0.0 ";
+                        }
+                    }
+                    ofs << "\n";
+                }
+                ofs.close();
             }
-            ofs.close();
         }
 
         const Real end_plt_time_io = ParallelDescriptor::second();
