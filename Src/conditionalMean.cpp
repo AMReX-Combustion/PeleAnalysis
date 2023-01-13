@@ -271,17 +271,33 @@ main (int   argc,
     // Species + temp + volFrac
     int readInnComp = NUM_SPECIES + 8;
     Vector<std::string> readInComps(readInnComp,"");
-    readInComps[0] = "volFrac";
+    if (isPeleC) {
+        readInComps[0] = "vfrac";
+    } else {
+        readInComps[0] = "volFrac";
+    }
     for (int comp{1}; comp < NUM_SPECIES+1; ++comp) {
        readInComps[comp] = "Y("+spec_names[comp-1]+")";
     }
-    readInComps[NUM_SPECIES+1] = "temp";
+    if (isPeleC) {
+        readInComps[NUM_SPECIES+1] = "Temp";
+    } else {
+        readInComps[NUM_SPECIES+1] = "temp";
+    }
     readInComps[NUM_SPECIES+2] = "density";
-    readInComps[NUM_SPECIES+3] = "HeatRelease";
-    readInComps[NUM_SPECIES+4] = "I_R(OH)";
-    readInComps[NUM_SPECIES+5] = "I_R(H2O2)";
-    readInComps[NUM_SPECIES+6] = "I_R(CH2O)";
-    readInComps[NUM_SPECIES+7] = "I_R(OC12H23OOH)";
+    if (isPeleC) {
+        readInComps[NUM_SPECIES+3] = "heatRelease";
+        readInComps[NUM_SPECIES+4] = "rho_omega_OH";
+        readInComps[NUM_SPECIES+5] = "rho_omega_H2O2";
+        readInComps[NUM_SPECIES+6] = "rho_omega_CH2O";
+        readInComps[NUM_SPECIES+7] = "rho_omega_OC12H23OOH";
+    } else {
+        readInComps[NUM_SPECIES+3] = "HeatRelease";
+        readInComps[NUM_SPECIES+4] = "I_R(OH)";
+        readInComps[NUM_SPECIES+5] = "I_R(H2O2)";
+        readInComps[NUM_SPECIES+6] = "I_R(CH2O)";
+        readInComps[NUM_SPECIES+7] = "I_R(OC12H23OOH)";
+    }
 
     // List of field to average and map into mfVec multifab components
     // Y(OH), Y(H2O2), Y(CH2O), Y(OC12H23OOH), temp, HR, I_R(OH), I_R(H2O2), I_R(CH2O), I_R(OC12H23OOH), ScalDiss
