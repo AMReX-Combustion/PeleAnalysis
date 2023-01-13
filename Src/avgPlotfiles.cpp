@@ -4,8 +4,18 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_WritePlotFile.H>
 #include <AMReX_PlotFileUtil.H>
+#include <PltFileManager.H>
 
 using namespace amrex;
+
+struct pltfileMesh {
+   void init (int a_nlevs) {
+      nLevels = a_nlevs;
+      BAVec.resize(nLevels);
+   };
+   int nLevels{0};
+   Vector<BoxArray> BAVec;
+};
 
 int
 main (int   argc,
@@ -19,12 +29,87 @@ main (int   argc,
     int nf = pp.countval("infiles");
     AMREX_ALWAYS_ASSERT(nf>0);
     Vector<std::string> plotFileNames; pp.getarr("infiles",plotFileNames,0,nf);
-
-    std::string outfile("JUNK");
-    pp.query("outfile",outfile);
+    for (auto &file : plotFileNames) {
+       if (!amrex::FileSystem::Exists(file)) {
+          Abort(file+" does not exists");
+       }
+    }
 
     DataServices::SetBatchMode();
     Amrvis::FileType fileType(Amrvis::NEWPLT);
+
+    // Build a Vector of BoxList where each entry is the union of the pltfile BoxList
+    // at each level
+    int finestPltLevel = 0;
+    Vector<BoxList> avgBL(1);
+    Vector<pltfileMesh> meshes(nf);
+    Box fixedCoarseDomain;
+    Vector<Geometry> geoms;
+    for (int f{0}; f<nf; ++f) {
+        DataServices dataServices(plotFileNames[f], fileType);
+        if( ! dataServices.AmrDataOk()) {
+            DataServices::Dispatch(DataServices::ExitRequest, NULL);
+        }
+        AmrData& amrData = dataServices.AmrDataRef();
+        if (f==0) {
+          fixedCoarseDomain = amrData.ProbDomain()[0];
+        } else {
+          AMREX_ALWAYS_ASSERT(fixedCoarseDomain == amrData.ProbDomain()[0]);
+        }
+        // Stash away the mesh data of this pltfile
+        if (amrData.FinestLevel() > finestPltLevel) {
+            finestPltLevel = amrData.FinestLevel();
+        }
+        meshes[f].init(amrData.FinestLevel()+1);
+        for (int lev{0}; lev<meshes[f].nLevels; ++lev) {
+            meshes[f].BAVec[lev] = amrData.boxArray(lev);
+        }
+        // Append to the union of BoxList of each level
+        if (f==0) {
+            avgBL.resize(meshes[f].nLevels);
+            for (int lev{0}; lev<meshes[f].nLevels; ++lev) {
+                avgBL[lev] = meshes[f].BAVec[lev].boxList();
+            }
+            geoms.resize(meshes[f].nLevels);
+            RealBox rb(AMREX_D_DECL(amrData.ProbLo()[0],amrData.ProbLo()[1],amrData.ProbLo()[2]),
+                       AMREX_D_DECL(amrData.ProbHi()[0],amrData.ProbHi()[1],amrData.ProbHi()[2]));
+            Array<int,AMREX_SPACEDIM> is_per = {0};
+            for (int lev{0}; lev<meshes[f].nLevels; ++lev) {
+                geoms[lev].define(amrData.ProbDomain()[lev],rb,amrData.CoordSys(),is_per);
+            }
+        } else {
+            for (int lev{0}; lev<meshes[f].nLevels; ++lev) {
+               if (lev >= avgBL.size()) {
+                   avgBL.push_back(meshes[f].BAVec[lev].boxList());
+               } else {
+                   auto currAvgBA = BoxArray(avgBL[lev]);
+                   auto baCompDom = complementIn(amrData.ProbDomain()[lev], currAvgBA);
+                   auto baAdd = intersect(baCompDom,meshes[f].BAVec[lev]);
+                   for (int bx{0}; bx<baAdd.size(); ++bx) {
+                      avgBL[lev].push_back(baAdd[bx]);
+                   }
+               }
+            }
+        }
+    }
+
+    /*
+    Vector<MultiFab> MFtest(finestPltLevel+1);
+    for (int lev{0}; lev<finestPltLevel+1; ++lev) {
+        auto finalAvgBA = BoxArray(avgBL[lev]);
+        auto dmap = DistributionMapping(finalAvgBA);
+        MFtest[lev].define(finalAvgBA,dmap,1,0);
+        MFtest[lev].setVal(lev+1);
+    }
+    Vector<int> isteps(finestPltLevel+1, 0);
+    Vector<IntVect> refRatios(finestPltLevel,{AMREX_D_DECL(2, 2, 2)});
+    amrex::WriteMultiLevelPlotfile("Test", finestPltLevel+1, GetVecOfConstPtrs(MFtest), {"test"},
+                                   geoms, 0.0, isteps, refRatios);
+    */
+
+    std::string outfile("PltAvg");
+    pp.query("outfile",outfile);
+
     DataServices dataServices0(plotFileNames[0], fileType);
     if( ! dataServices0.AmrDataOk()) {
       DataServices::Dispatch(DataServices::ExitRequest, NULL);
@@ -45,13 +130,15 @@ main (int   argc,
       pp.query("nComp",nComp);
       AMREX_ASSERT(sComp+nComp <= amrData0.NComp());
       comps.resize(nComp);
-      for (int i=0; i<nComp; ++i)
+      for (int i=0; i<nComp; ++i) {
         comps[i] = sComp + i;
+      }
     }
     Vector<std::string> pltnames(comps.size());
     for (int i=0; i<comps.size(); ++i) {
       pltnames[i] = amrData0.PlotVarNames()[comps[i]];
     }
+
     int finestLevel = amrData0.FinestLevel(); pp.query("finestLevel",finestLevel);
     AMREX_ALWAYS_ASSERT(finestLevel >= 0 && finestLevel<=amrData0.FinestLevel());
 
@@ -151,38 +238,40 @@ main (int   argc,
     }
     else
     {
-      MultiFab mf_avg(ba_res,DistributionMapping(ba_res),comps.size(),0);
-      mf_avg.setVal(0);
-
-      MultiFab mf_avgDn(ba_res,DistributionMapping(ba_res),comps.size(),0);
-      for (int iFile=0; iFile<plotFileNames.size(); ++iFile) {
-        DataServices dataServices(plotFileNames[iFile], fileType);
-        if( ! dataServices.AmrDataOk()) {
-          DataServices::Dispatch(DataServices::ExitRequest, NULL);
-        }
-        AmrData& amrData = dataServices.AmrDataRef();
-
-        Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
-
-        for (int lev=0; lev<=finestLevel; ++lev) {
-          for (int i=0; i<comps.size(); ++i)
-          {
-            MultiFab alias(mf_avgDn,make_alias,i,1);
-            if (lev==0) {
-              alias.ParallelCopy(amrData.GetGrids(0,comps[i],domain[0]));
-            } else {
-              average_down(amrData.GetGrids(lev,comps[i],domain[lev]),alias,geom[lev],geom[0],0,1,ratioTot[lev]);
-            }
-            amrData.FlushGrids(comps[i]);
-          }
-        }
-
-        MultiFab::Add(mf_avg,mf_avgDn,0,0,comps.size(),0);
+      Vector<MultiFab> MFweight(finestPltLevel+1);
+      Vector<MultiFab> MFout(finestPltLevel+1);
+      for (int lev{0}; lev<finestPltLevel+1; ++lev) {
+          auto finalAvgBA = BoxArray(avgBL[lev]);
+          auto dmap = DistributionMapping(finalAvgBA);
+          MFweight[lev].define(finalAvgBA,dmap,1,0);
+          MFweight[lev].setVal(0.0);
+          MFout[lev].define(finalAvgBA,dmap,comps.size(),0);
+          MFout[lev].setVal(0.0);
       }
 
-      mf_avg.mult(1.0/nf);
-      writePlotFile(outfile.c_str(),mf_avg,geom[0],IntVect(AMREX_D_DECL(2,2,2)),0.0,pltnames);
-    }
+      for (int f{0}; f<plotFileNames.size(); ++f) {
+        Print() << " Treating " << plotFileNames[f] << "\n";
+        pele::physics::pltfilemanager::PltFileManager pltData(plotFileNames[f]);
+        Vector<std::string> plt_vars = pltData.getVariableList();
+        int nvars = plt_vars.size();
+
+        for (int lev=0; lev<pltData.getNlev(); ++lev) {
+            MultiFab temp(MFout[lev].boxArray(),
+                          MFout[lev].DistributionMap(),
+                          MFout[lev].nComp(),0);
+            pltData.fillPatchFromPlt(0, geoms[lev], 0, 0, nvars, temp);
+            MultiFab::Add(MFout[lev],temp,0,0,nvars,0);
+        }
+      }
+
+      for (int lev{0}; lev<finestPltLevel+1; ++lev) {
+          MFout[lev].mult(1.0/nf);
+      }
+      Vector<int> isteps(finestPltLevel+1, 0);
+      Vector<IntVect> refRatios(finestPltLevel,{AMREX_D_DECL(2, 2, 2)});
+      amrex::WriteMultiLevelPlotfile(outfile, finestPltLevel+1, GetVecOfConstPtrs(MFout), pltnames,
+                                     geoms, 0.0, isteps, refRatios);
+      }
   }
   Finalize();
   return 0;

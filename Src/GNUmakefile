@@ -17,7 +17,7 @@ USE_CUDA      = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
-EBASE         = flattenAMRFile
+#EBASE         = flattenAMRFile
 #EBASE         = stream
 #EBASE         = partStream
 #EBASE         = blowOut
@@ -35,7 +35,7 @@ EBASE         = flattenAMRFile
 #EBASE         = conditionalMean
 #EBASE         = jpdf
 #EBASE         = avgToPlane
-#EBASE          = avgPlotfiles
+EBASE          = avgPlotfiles
 #EBASE          = amrToFE
 
 NEEDS_f90_SRC = FALSE
