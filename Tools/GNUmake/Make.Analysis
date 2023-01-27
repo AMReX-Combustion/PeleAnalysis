@@ -138,7 +138,7 @@ ifeq ($(Transport_dir), Constant)
   DEFINES += -DCONSTANT_TRANSPORT
 endif
 
-Pdirs 	:= Base Boundary AmrCore Extern/amrdata
+Pdirs 	:= Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
 Bdirs   := Source
 
 Bpack	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
