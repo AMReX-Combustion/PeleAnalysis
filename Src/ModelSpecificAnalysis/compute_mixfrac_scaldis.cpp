@@ -1,13 +1,15 @@
 #include <string>
 #include <iostream>
-#include <set>
 
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
+#include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
-#include <AMReX_WritePlotFile.H>
-#include <AMReX_Sundials.H>
+#include <AMReX_BLFort.H>
+#include <AMReX_MLMG.H>
+#include <AMReX_MLPoisson.H>
+#include <AMReX_MLABecLaplacian.H>
 
 #include "mechanism.H"
 #include <PelePhysics.H>
@@ -21,59 +23,66 @@ print_usage (int,
              char* argv[])
 {
   std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile infile=f1 [options] \n\tOptions:\n";
+  std::cerr << argv[0] << " infile=<plotfilename> \n\tOptions:\n\tis_per=<L M N> gradVar=<name>\n";
   exit(1);
 }
 
 std::string
 getFileRoot(const std::string& infile)
 {
-  // vector<std::string> tokens = Tokenize(infile,std::string("/"));
   std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
-
-extern "C" {
-    void process(const int* lo,  const int* hi,
-                 const int* dlo, const int* dhi,
-                 Real* U, const int* Ulo, const int* Uhi,
-                 const int* nc, const amrex::Real* plo,  const amrex::Real* dx);
-};
-
-
-
 
 int
 main (int   argc,
       char* argv[])
 {
-  Initialize(argc,argv);
+  amrex::Initialize(argc,argv);
   {
-    if (argc < 2)
+    if (argc < 2) {
       print_usage(argc,argv);
+    }
 
+    // ---------------------------------------------------------------------
+    // Set defaults input values
+    // ---------------------------------------------------------------------
+    std::string gradVar       = "mixture_fraction";
+    std::string infile        = "";  
+    int finestLevel           = 1000;
+    int nAuxVar               = 0;
+
+    // ---------------------------------------------------------------------
+    // ParmParse
+    // ---------------------------------------------------------------------
     ParmParse pp;
 
-    if (pp.contains("help"))
+    if (pp.contains("help")) {
       print_usage(argc,argv);
+    }
 
-    if (pp.contains("verbose"))
-      AmrData::SetVerbose(true);
+    pp.get("infile",infile);
+    pp.query("gradVar",gradVar);
+    pp.query("finestLevel",finestLevel);
+    int max_grid_size = 32;pp.query("max_grid_size",max_grid_size);
+    int plt_src = 1; pp.query("plt_src",plt_src);
 
-    std::string chem_integrator = "ReactorCvode";
-    std::string solve_type_str = "none";
 
-    int ode_ncells = 1;
-    int ode_iE = 1;
     // pp.get("chem_integrator", chem_integrator);
     // pele::physics::reactions::ReactorBase::create(chem_integrator);
+
+    // Initialize transport module
     pele::physics::transport::TransportParams<
       pele::physics::PhysicsType::transport_type>
       trans_parms;
     trans_parms.allocate();
 
+    // Initialize reactor module
+    std::string chem_integrator = "ReactorCvode";
     amrex::sundials::Initialize(amrex::OpenMP::get_max_threads());
 
+    int ode_ncells = 1;
+    int ode_iE = 1;
     std::unique_ptr<pele::physics::reactions::ReactorBase> reactor =
       pele::physics::reactions::ReactorBase::create(chem_integrator);
     reactor->init(ode_iE, ode_ncells);
@@ -87,48 +96,33 @@ main (int   argc,
     }
     Print() << std::endl;
 
-    std::string output_folder; pp.get("outFolder",output_folder);
-    std::string plotFileName; pp.get("infile",plotFileName);
+    // Initialize DataService
     DataServices::SetBatchMode();
     Amrvis::FileType fileType(Amrvis::NEWPLT);
-    Print() << "Processing " << plotFileName << std::endl;
-
-    DataServices dataServices(plotFileName, fileType);
+    DataServices dataServices(infile, fileType);
     if( ! dataServices.AmrDataOk()) {
       DataServices::Dispatch(DataServices::ExitRequest, NULL);
-      // ^^^ this calls ParallelDescriptor::EndParallel() and exit()
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    int finestLevel = amrData.FinestLevel();
-    pp.query("finestLevel",finestLevel);
+    // Plotfile global infos
+    finestLevel = std::min(finestLevel,amrData.FinestLevel());
     int Nlev = finestLevel + 1;
-    Print() << "Working with " << Nlev << " levels" << std::endl;
+    const Vector<std::string>& plotVarNames = amrData.PlotVarNames();
+    RealBox rb(&(amrData.ProbLo()[0]), 
+               &(amrData.ProbHi()[0]));
 
-    Vector<std::unique_ptr<MultiFab>> indata(Nlev);
-    MultiFab outdata;
-    // Vector<std::unique_ptr<MultiFab>> outdata(Nlev);
-
-    int ngrow = 1;
     int ncomp = amrData.NComp();
     Print() << "Number of scalars in the original file: " << ncomp << std::endl;
 
-    // const auto& domain = amrData.ProbDomain()[finestLevel];
-    // BoxArray ba(domain);
-    // int max_grid_size = 32;
-    // pp.query("max_grid_size",max_grid_size);
-    // ba.maxSize(max_grid_size);
-    // const DistributionMapping dm(ba);
-
-    int plt_src; pp.get("plt_src",plt_src);
-    
+    //=== Get index for relevant scalars present in the plt file ===
     int idRlocal  = -1; //density index
     int idTlocal  = -1; // T  index
     int idYlocal  = -1; // Ys index
     int idvFlocal = -1; // volume fraction index
     int idMixFrac = -1; // mixture fraction index
     int idScalDis = ncomp; // mixture fraction index
-    const int nCompOut = ncomp+1;
+    const int nCompOutput = ncomp+1;
 
     const std::string spName  = "Y(" + spec_names[0] + ")";
     const std::string RHOName = "density";
@@ -148,182 +142,310 @@ main (int   argc,
       convert_rho = 1.0e-3;
     }
     std::string ZName = "mixture_fraction";
-    for (int i=0; i<amrData.PlotVarNames().size(); ++i)
-    {
-      if (amrData.PlotVarNames()[i] == spName)    idYlocal = i;
-      if (amrData.PlotVarNames()[i] == TName)     idTlocal = i;
-      if (amrData.PlotVarNames()[i] == RHOName)   idRlocal = i;
-      if (amrData.PlotVarNames()[i] == vFracName) idvFlocal = i;
-      if (amrData.PlotVarNames()[i] == ZName)     idMixFrac = i;
-    }
 
+    // Gradient variable
+    int idC = -1;
+    for (int i=0; i<plotVarNames.size(); ++i)
+    {
+      if (plotVarNames[i] == gradVar) idC = i;
+      if (plotVarNames[i] == spName)    idYlocal = i;
+      if (plotVarNames[i] == TName)     idTlocal = i;
+      if (plotVarNames[i] == RHOName)   idRlocal = i;
+      if (plotVarNames[i] == ZName)     idMixFrac = i;
+    }
+    
     Print() << "Temperature index: " << idTlocal  << std::endl;
     Print() << "Density index    : " << idRlocal  << std::endl;
-    Print() << "Vfrac index      : " << idvFlocal << std::endl;
     Print() << "First spec index : " << idYlocal  << std::endl;
-    Print() << "Mix Frac index   : " << idMixFrac  << std::endl;
-    Print() << "Scaldis  index   : " << idScalDis  << std::endl;
 
-    Vector<std::string> outNames(nCompOut);
-    for (int i=0; i<amrData.PlotVarNames().size(); ++i)
-    {
-      outNames[i] = amrData.PlotVarNames()[i];
+    if (idC<0) {
+      Print() << "Cannot find " << gradVar << " data in pltfile \n";
     }
-    outNames[ncomp] = "scaldis";
+    // ===========================================
 
-    RealBox rb(&(amrData.ProbLo()[0]),
-               &(amrData.ProbHi()[0]));
-    Vector<int> is_per(AMREX_SPACEDIM,0);
+    // Auxiliary variables
+    nAuxVar = pp.countval("Aux_Variables");
+    Vector<std::string> AuxVar(nAuxVar);
+    for(int ivar = 0; ivar < nAuxVar; ++ivar) { 
+         pp.get("Aux_Variables", AuxVar[ivar],ivar);
+    }
+
+    // ---------------------------------------------------------------------
+    // Variables index management
+    // ---------------------------------------------------------------------
+    const int idCst = 0;
+    int nCompIn = idCst + 1;
+    Vector<std::string> inVarNames(nCompIn);
+    inVarNames[idCst] = plotVarNames[idC];
+
+    if (nAuxVar>0)
+    {
+        inVarNames.resize(nCompIn+nAuxVar);
+        for (int ivar=0; ivar<nAuxVar; ++ivar) {
+            if ( amrData.StateNumber(AuxVar[ivar]) < 0 ) {
+               amrex::Abort("Unknown auxiliary variable name: "+AuxVar[ivar]);
+            }
+            inVarNames[nCompIn] = AuxVar[ivar];
+            nCompIn ++;
+        } 
+    }
+
+    Vector<int> destFillComps(nCompIn);
+    for (int i=0; i<nCompIn; ++i) {
+      destFillComps[i] = i;
+    }
+    Vector<int> destFillComps_indata(ncomp);
+    for (int i=0; i<ncomp; ++i) {
+      destFillComps_indata[i] = i;
+    }
+
+    const int idGr = nCompIn;
+    const int nCompOut = idGr + AMREX_SPACEDIM +1 ; // 1 component stores the ||gradT||
+
+    // Check symmetry/periodicity in given coordinate direction
+    Vector<int> sym_dir(AMREX_SPACEDIM,0);
+    pp.queryarr("sym_dir",sym_dir,0,AMREX_SPACEDIM);  
+
+    Vector<int> is_per(AMREX_SPACEDIM,1);
+    pp.queryarr("is_per",is_per,0,AMREX_SPACEDIM);
+    Print() << "Periodicity assumed for this case: ";
+    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+        Print() << is_per[idim] << " ";
+    }
+    Print() << "\n";
+    BCRec gradVarBC;
+    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+        gradVarBC.setLo(idim,BCType::foextrap);
+        gradVarBC.setHi(idim,BCType::foextrap);
+        if ( is_per[idim] ) {
+            gradVarBC.setLo(idim, BCType::int_dir);
+            gradVarBC.setHi(idim, BCType::int_dir);
+        }
+    }
 
     int coord = 0;
-    int max_grid_size = 32;
-    pp.query("max_grid_size",max_grid_size);
 
-    for (int lev=0; lev<Nlev; ++lev)
-    {        
-      Print() << "Working on level " << lev << std::endl; 
-      //define domain stuff
-      const auto& domain = amrData.ProbDomain()[lev];
-      BoxArray ba(domain);
-      ba.maxSize(max_grid_size);
-      const DistributionMapping dm(ba);
+    // ---------------------------------------------------------------------
+    // Let's start the real work
+    // ---------------------------------------------------------------------
+    Vector<MultiFab> state(Nlev);  //At the moment this FAB stores the field which we will compute the gradient on
+    Vector<MultiFab> indata(Nlev); //This FAB stores all the variables in the plt file
+    Vector<Geometry> geoms(Nlev);
+    Vector<BoxArray> grids(Nlev);
+    Vector<DistributionMapping> dmap(Nlev);
+    const int nGrow = 1;
 
-      Print() << "Number of boxes: " << ba.size() << std::endl; 
+    // Read data on all the levels
+    for (int lev=0; lev<Nlev; ++lev) {
 
-      //declare MultiFabs for transport properties
-      int num_grow = 0;
-      amrex::MultiFab D(ba, dm, NUM_SPECIES, num_grow);
-      amrex::MultiFab mu (ba, dm, 1, num_grow);
-      amrex::MultiFab xi (ba, dm, 1, num_grow);
-      amrex::MultiFab lam(ba, dm, 1, num_grow);
+      const BoxArray ba = amrData.boxArray(lev);
+      grids[lev] = ba;
+      dmap[lev] = DistributionMapping(ba);
+      geoms[lev] = Geometry(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
+      state[lev] .define(grids[lev], dmap[lev], nCompOut, nGrow);
+      indata[lev].define(grids[lev], dmap[lev], ncomp   , 0);
 
-      // Data MFs
-      amrex::MultiFab mass_frac(ba, dm, NUM_SPECIES, num_grow);
-      amrex::MultiFab temperature(ba, dm, 1, num_grow);
-      amrex::MultiFab density(ba, dm, 1, num_grow);
+      Print() << "Reading data for level: " << lev << std::endl;
+      amrData.FillVar(state[lev], lev, inVarNames, destFillComps);
+      amrData.FillVar(indata[lev], lev, amrData.PlotVarNames(), destFillComps_indata);
 
-      //vector containing the number of components to be read
-      Vector<int> destFillComps(ncomp);
-      for (int i=0; i<ncomp; ++i) destFillComps[i] = i;
+      state[lev].FillBoundary(idCst,1,geoms[lev].periodicity());
+    }
 
-      //reset MultiFab pointer
-      indata[lev].reset(new MultiFab(ba,dm,ncomp,ngrow));
+    // Get face-centered gradients from MLMG
+    LPInfo info;
+    info.setAgglomeration(1);
+    info.setConsolidation(1);
+    info.setMetricTerm(false);
+    info.setMaxCoarseningLevel(0);
+    MLPoisson poisson({geoms}, {grids}, {dmap}, info);
+    poisson.setMaxOrder(4);
+    std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
+    std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
+    for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
+       if (is_per[idim] == 1) {
+          lo_bc[idim] = hi_bc[idim] = LinOpBCType::Periodic;
+       } else {
+          if (sym_dir[idim] == 1) {
+             lo_bc[idim] = hi_bc[idim] = LinOpBCType::reflect_odd;
+          } else {
+             lo_bc[idim] = hi_bc[idim] = LinOpBCType::Neumann;
+          }
+       }
+    }
+    poisson.setDomainBC(lo_bc, hi_bc);
 
-      Print() << "Reading data..." << std::endl; 
-      amrData.FillVar(*indata[lev],lev,amrData.PlotVarNames(),destFillComps);
-      Print() << "Done!" << std::endl;
-      if (lev == Nlev - 1) {
-        int ngrow_out = 0;
-        // outdata[lev].reset(new MultiFab(ba,dm,ncomp,ngrow));
-        outdata.define(ba,dm,nCompOut,ngrow_out);
+    // Need to apply the operator to ensure CF consistency with composite solve
+    int nGrowGrad = 0;                   // No need for ghost face on gradient
+    Vector<Array<MultiFab,AMREX_SPACEDIM> > grad(Nlev);
+    Vector<std::unique_ptr<MultiFab>> phi;
+    Vector<MultiFab> laps;
+    for (int lev = 0; lev < Nlev; ++lev) {
+      for (int idim = 0; idim <AMREX_SPACEDIM; idim++) {
+         const auto& ba = grids[lev];
+         grad[lev][idim].define(amrex::convert(ba,IntVect::TheDimensionVector(idim)),
+                                dmap[lev], 1, nGrowGrad);
+      }    
+      phi.push_back(std::make_unique<MultiFab> (state[lev],amrex::make_alias,idCst,1));
+      poisson.setLevelBC(lev, phi[lev].get());
+      laps.emplace_back(grids[lev], dmap[lev], 1, 1);
+    }
 
-        Geometry geom(amrData.ProbDomain()[lev],&rb,coord,&(is_per[0]));
-        
+    MLMG mlmg(poisson);
+    mlmg.apply(GetVecOfPtrs(laps), GetVecOfPtrs(phi));
+    mlmg.getFluxes(GetVecOfArrOfPtrs(grad), GetVecOfPtrs(phi), MLMG::Location::FaceCenter);
+
+    //declare MultiFabs for transport properties
+    int num_grow = 0;
+    Vector<MultiFab> D  (Nlev);
+    Vector<MultiFab> mu (Nlev);
+    Vector<MultiFab> xi (Nlev);
+    Vector<MultiFab> lam(Nlev);
+
+    // Data MFs
+    Vector<MultiFab> mass_frac  (Nlev);
+    Vector<MultiFab> temperature(Nlev);
+    Vector<MultiFab> density    (Nlev);
+
+    for (int lev = 0; lev < Nlev; ++lev) {
+        // const auto& ba = grids[lev];
+        // const auto& domain = amrData.ProbDomain()[lev];
+        // BoxArray ba(domain);
+        // ba.maxSize(max_grid_size);
+        // const DistributionMapping dm(ba);
+
+        //declare MultiFabs for transport properties
+        int num_grow = 0;
+        D  [lev].define(grids[lev], dmap[lev], NUM_SPECIES, num_grow);
+        mu [lev].define(grids[lev], dmap[lev], 1, num_grow);
+        xi [lev].define(grids[lev], dmap[lev], 1, num_grow);
+        lam[lev].define(grids[lev], dmap[lev], 1, num_grow);
+
+        // Data MFs
+        mass_frac  [lev].define(grids[lev], dmap[lev], NUM_SPECIES, num_grow);
+        temperature[lev].define(grids[lev], dmap[lev], 1, num_grow);
+        density    [lev].define(grids[lev], dmap[lev], 1, num_grow);
+
         // Initialize Fabs with data from plt file
-        for (MFIter mfi(*indata[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(indata[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
           const Box& box = mfi.tilebox();
 
-          auto const& Y_a = mass_frac.array(mfi);
-          auto const& T_a = temperature.array(mfi);
-          auto const& rho_a = density.array(mfi);
-          amrex::Array4<const amrex::Real> sfab_init = (*indata[lev]).array(mfi);
+          auto const& Y_a       = mass_frac[lev].array(mfi);
+          auto const& T_a       = temperature[lev].array(mfi);
+          auto const& rho_a     = density[lev].array(mfi);
+          auto const& sfab_init = indata[lev].array(mfi);
+          // amrex::Array4<const amrex::Real> sfab_init = indata[lev].array(mfi);
 
           // amrex::ParallelFor(
           //   box, [Y_a, T_a, rho_a,
           //        geom] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
           AMREX_PARALLEL_FOR_3D ( box, i, j, k,
           {
-                  
-                  for (int n = 0; n < NUM_SPECIES; n++){
+            
+            // Print() << "Massfrac: " << sfab_init(i,j,k,0) << std::endl;               
+                for (int n = 0; n < NUM_SPECIES; n++){
                     Y_a(i,j,k,n) = sfab_init(i,j,k,n+idYlocal);
-                  }
+                }
 
-                  T_a  (i,j,k) = sfab_init(i,j,k,idTlocal);
-                  rho_a(i,j,k) = sfab_init(i,j,k,idRlocal);
-                ;
+                T_a  (i,j,k) = sfab_init(i,j,k,idTlocal);
+                rho_a(i,j,k) = sfab_init(i,j,k,idRlocal);
+                
             });
         }
 
         // Get the transport data pointer
         auto const* ltransparm = trans_parms.device_trans_parm();
 
-        MultiFab grad;
-        int grad_comp = 4;
-        grad.define(ba,dm,grad_comp,ngrow_out);
-
-        //Now that we have all the Fabs with data lets get the transp. coeff. and compute scaldis
-        for (MFIter mfi(*indata[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        // Convert to cell avg gradient
+        MultiFab gradAlias(state[lev], amrex::make_alias, idGr, AMREX_SPACEDIM);
+        average_face_to_cellcenter(gradAlias, 0, GetArrOfConstPtrs(grad[lev]));
+        gradAlias.mult(-1.0);
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(state[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
-          const Box& box = mfi.tilebox();
 
-          amrex::Array4<amrex::Real> const& Y_a = mass_frac.array(mfi);
-          amrex::Array4<amrex::Real> const& T_a = temperature.array(mfi);
-          amrex::Array4<amrex::Real> const& rho_a = density.array(mfi);
-          amrex::Array4<amrex::Real> const& D_a = D.array(mfi);
-          amrex::Array4<amrex::Real> const& mu_a = mu.array(mfi);
-          amrex::Array4<amrex::Real> const& xi_a = xi.array(mfi);
-          amrex::Array4<amrex::Real> const& lam_a = lam.array(mfi);
+           const Box& box = mfi.tilebox();
+           
+           //Now that we have all the Fabs with data lets get the transp. coeff. and compute scaldis
+           amrex::Array4<amrex::Real> const& Y_a   = mass_frac[lev].array(mfi);
+           amrex::Array4<amrex::Real> const& T_a   = temperature[lev].array(mfi);
+           amrex::Array4<amrex::Real> const& rho_a = density[lev].array(mfi);
+           amrex::Array4<amrex::Real> const& D_a   = D[lev].array(mfi);
+           amrex::Array4<amrex::Real> const& mu_a  = mu[lev].array(mfi);
+           amrex::Array4<amrex::Real> const& xi_a  = xi[lev].array(mfi);
+           amrex::Array4<amrex::Real> const& lam_a = lam[lev].array(mfi);
 
-          amrex::launch(box, [=] AMREX_GPU_DEVICE(amrex::Box const& tbx) {
-          auto trans = pele::physics::PhysicsType::transport();
+           amrex::launch(box, [=] AMREX_GPU_DEVICE(amrex::Box const& tbx) {
+           auto trans = pele::physics::PhysicsType::transport();
           
-          trans.get_transport_coeffs(
-            tbx, Y_a, T_a, rho_a, D_a, mu_a, xi_a, lam_a, ltransparm);
-          
-          });
+           trans.get_transport_coeffs(
+             tbx, Y_a, T_a, rho_a, D_a, mu_a, xi_a, lam_a, ltransparm);
+           
+             });
 
-          amrex::Array4<const amrex::Real> sfab = (*indata[lev]).array(mfi);
-          amrex::Array4<Real> const sfab_out = outdata.array(mfi);
-          amrex::Array4<Real> const sfab_tmp = grad.array(mfi);
-          // auto& sfab_out = (*outdata[0])[mfi];
-          const Real* dx = geom.CellSize();
-          
-          amrex::Real dxInv = 0.5 / dx[0];
+           const Box& bx = mfi.tilebox();
+           auto const& grad_a   = gradAlias.const_array(mfi);
+           auto const& gradMag  = state[lev].array(mfi,idGr+AMREX_SPACEDIM);
+           amrex::ParallelFor(bx, [=]
+           AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+           {    
+              gradMag(i,j,k) = std::sqrt(AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
+                                                      + grad_a(i,j,k,1) * grad_a(i,j,k,1),
+                                                      + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
 
-          // amrex::ParallelFor(box, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-          AMREX_PARALLEL_FOR_3D ( box, i, j, k,
-          {
-            //Fill up FAB with original data
-            for(int n=0;n<ncomp;n++)
-              sfab_out(i,j,k,n) = sfab(i,j,k,n);
-
-            sfab_tmp(i,j,k,0) = dxInv*(sfab(i+1,j,k,idMixFrac) - sfab(i-1,j,k,idMixFrac));
-            sfab_tmp(i,j,k,1) = dxInv*(sfab(i,j+1,k,idMixFrac) - sfab(i,j-1,k,idMixFrac));
-            sfab_tmp(i,j,k,2) = dxInv*(sfab(i,j,k+1,idMixFrac) - sfab(i,j,k-1,idMixFrac));
-            //gradient magnitude
-            sfab_tmp(i,j,k,3) = sqrt(pow(sfab_tmp(i,j,k,0),2)+pow(sfab_tmp(i,j,k,1),2)+pow(sfab_tmp(i,j,k,3),2));
-
-            sfab_out(i,j,k,idScalDis) = 2.*D_a(i,j,k,N2_ID)*pow(sfab_tmp(i,j,k,3),2);
-
-
-          });
-
-        }
-      }
+              gradMag(i,j,k) = 2.*D_a(i,j,k,N2_ID)*pow(gradMag(i,j,k),2);
+           });  
+        } 
     }
 
-    std::string outfile(output_folder+getFileRoot(plotFileName) + "_scaldis");
-    Print() << "Writing new data to " << outfile << std::endl;
-    bool verb = false;
-
-    // This was working in 3D but is not in 2D
-    // WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,outNames);
+    // ---------------------------------------------------------------------
+    // Write the results
+    // ---------------------------------------------------------------------
     
-    // Output the finest level only    
-    int ref_ratio = 2;
-//     Vector<Geometry> geoms(1);
-//     Vector<int> levelSteps(1);
-    Geometry geoms;
-    int levelSteps;
-    {
-      geoms = Geometry(amrData.ProbDomain()[Nlev - 1],&rb,coord,&(is_per[0]));
-      levelSteps = 0;
+    // Combine the data from state FAB containing gradient info and data from indata FAB with all other scalars
+    Vector<MultiFab> data_output(Nlev);
+    int ncomp_all = ncomp + nCompIn;
+    int ngrow = 0;
+    for (int lev = 0; lev < Nlev; ++lev) {
+        // Box box_output = amrData.boxArray(lev);
+        const BoxArray box_output = amrData.boxArray(lev);
+
+        BoxArray ba_sub(box_output);
+        ba_sub.maxSize(max_grid_size);
+        DistributionMapping dmap_sub(ba_sub);
+
+        data_output[lev].define(grids[lev], dmap[lev],ncomp_all,ngrow);
+        // data_output[lev].define(grids[lev], dmap[lev], NUM_SPECIES, num_grow);
+        data_output[lev].ParallelCopy(indata[lev],0,0,ncomp);
+        data_output[lev].ParallelCopy(state[lev] ,idGr+AMREX_SPACEDIM,ncomp,1);
     }
 
-    WriteSingleLevelPlotfile(outfile, outdata, outNames, geoms, amrData.Time(), levelSteps);
+    Vector<std::string> nnames(ncomp_all);
+    for (int i=0; i<ncomp; ++i) {
+      nnames[i] = amrData.PlotVarNames()[i];
+    }
+    nnames[ncomp] = "scaldis";
+//     nnames[idGr+0] = gradVar + "_gx";
+//     nnames[idGr+1] = gradVar + "_gy";
+// #if AMREX_SPACEDIM==3
+//     nnames[idGr+2] = gradVar + "_gz";
+// #endif
+//     nnames[idGr+AMREX_SPACEDIM] = "||grad"+ gradVar+ "||";
+    std::string output_folder; pp.get("outFolder",output_folder);
+    std::string outfile(output_folder+getFileRoot(infile) + "_scaldis"); pp.query("outfile",outfile);
 
+    Print() << "Writing new data to " << outfile << std::endl;
+    Vector<int> isteps(Nlev, 0);
+    Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
+    amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(data_output), nnames,
+                                   geoms, amrData.Time(), isteps, refRatios);
   }
-  Finalize();
+
+
+//   }
+  amrex::Finalize();
   return 0;
 }
