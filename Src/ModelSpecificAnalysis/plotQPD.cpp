@@ -1,7 +1,3 @@
-#include <string>
-#include <iostream>
-#include <set>
-
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
@@ -9,6 +5,7 @@
 #include <AMReX_Interpolater.H>
 #include <AMReX_GpuLaunch.H>
 #include <AMReX_WritePlotFile.H>
+#include <util.H>
 
 #include <PelePhysics.H>
 
@@ -38,7 +35,7 @@ struct ELIcompare
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
 
@@ -150,8 +147,8 @@ main (int   argc,
           Real Qf[nreactions];
           Real Qr[nreactions];
           Real Pcgs;
-          CKPX(&Rl,&Tl,Xl,&Pcgs);
-          CKKFKR(&Pcgs,&Tl,Xl,Qf,Qr);
+          CKPX(Rl,Tl,Xl,Pcgs);
+          CKKFKR(Pcgs,Tl,Xl,Qf,Qr);
 
           for (int n=0; n<nreactions; ++n) {
             Qfarr(i,j,k,n) = Qf[n];
