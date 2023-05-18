@@ -31,18 +31,10 @@ all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
 	@echo SUCCESS
 
-# PelePhysics
-EOS_HOME       ?= $(PELE_PHYSICS_HOME)/Eos
-REACTIONS_HOME ?= $(PELE_PHYSICS_HOME)/Reactions
-TRAN_HOME      ?= $(PELE_PHYSICS_HOME)/Transport
-PP_SRC_HOME     = $(PELE_PHYSICS_HOME)/Source
-INCLUDE_LOCATIONS += $(PP_SRC_HOME)
-VPATH_LOCATIONS   += $(PP_SRC_HOME)
-Bpack             += $(PP_SRC_HOME)/Make.package
-Blocs             += $(PP_SRC_HOME)
-
-# EOS
-EOS_HOME = $(PELE_PHYSICS_HOME)/Eos/
+#--------------------
+# PelePhysics sources
+#--------------------
+# EOS models switches
 ifeq ($(Eos_Model),$(filter $(Eos_Model),GammaLaw))
    DEFINES += -DUSE_GAMMALAW_EOS
 endif
@@ -52,44 +44,8 @@ endif
 ifeq ($(Eos_Model),$(filter $(Eos_Model),Soave-Redlich-Kwong))
    DEFINES += -DUSE_SRK_EOS
 endif
-INCLUDE_LOCATIONS += $(EOS_HOME)
-VPATH_LOCATIONS   += $(EOS_HOME)
-Bpack             += $(EOS_HOME)/Make.package
-Blocs             += $(EOS_HOME)
 
-# Reactions
-include $(REACTIONS_HOME)/Make.package
-INCLUDE_LOCATIONS += $(REACTIONS_HOME)
-VPATH_LOCATIONS   += $(REACTIONS_HOME)
-ifeq ($(Eos_Model), GammaLaw)
-  ifneq ($(Chemistry_Model), Null)
-    $(error Chemistry_Model definition not compatible with Eos_Model=GammaLaw)
-  endif
-endif
-CHEM_HOME = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models/$(Chemistry_Model)
-CHEM_ALL  = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models
-VPATH_LOCATIONS += $(CHEM_HOME) $(CHEM_ALL)
-Bpack += $(CHEM_HOME)/Make.package \
-         $(CHEM_ALL)/Make.package
-Blocs += $(CHEM_HOME) $(CHEM_ALL)
-Blocs   += $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation
-
-ifdef Chemistry_Model
-  CHEM_HOME = $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism/Models/$(Chemistry_Model)
-  Blocs += $(PELE_PHYSICS_HOME)/Support/Fuego/Evaluation
-endif
-VPATH_LOCATIONS += $(CHEM_HOME)
-Bpack += $(CHEM_HOME)/Make.package
-Blocs += $(CHEM_HOME)
-
-# Transport
-include $(TRAN_HOME)/Make.package
-INCLUDE_LOCATIONS += $(TRAN_HOME)
-VPATH_LOCATIONS   += $(TRAN_HOME)
-USE_FUEGO = FALSE
-
-Blocs   += $(PELE_PHYSICS_HOME)/Support/Fuego/Mechanism
-
+# Transport model switches
 ifeq ($(Transport_Model), Simple)
   DEFINES += -DUSE_SIMPLE_TRANSPORT
 endif
@@ -104,9 +60,20 @@ ifeq ($(Transport_Model), Sutherland)
   DEFINES += -DUSE_SUTHERLAND_TRANSPORT
 endif
 
-# Utilities
-include $(PELE_PHYSICS_HOME)/Utility/PMF/Make.package
+# Chemistry Model
+ifdef Chemistry_Model
+  ChemDir  = Support/Mechanism/Models/$(Chemistry_Model)
+endif
 
+PPdirs := Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics
+PPdirs += Source $(ChemDir) Reactions Eos Transport
+Bpack += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
+Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir))
+include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
+
+#--------------
+# AMReX sources
+#--------------
 Pdirs := Base Boundary Extern/amrdata AmrCore
 ifeq ($(USE_EB), TRUE)
   Pdirs += EB
@@ -130,7 +97,10 @@ endif
 Bpack += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 Blocs += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
 
-##Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
+#---------------------
+# PeleAnalysis sources
+#---------------------
+Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
 Bpack += $(foreach dir, $(Bdirs), $(dir)/Make.package)
 Blocs += $(foreach dir, $(Bdirs), $(dir))
 
@@ -158,7 +128,6 @@ AMReX_buildInfo.cpp:
           --GIT "$(TOP) $(AMREX_HOME) $(PELE_PHYSICS_HOME)"
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.rules
-
 
 clean::
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
