@@ -27,7 +27,7 @@ print_usage (int,
 struct ELIcompare
 {
   // Order EL iters using the underlying edge
-  bool operator()(const EdgeList::const_iterator& lhs, const EdgeList::const_iterator& rhs) {
+  bool operator()(const EdgeList::const_iterator& lhs, const EdgeList::const_iterator& rhs) const {
     return *lhs < *rhs;
   }
 };
