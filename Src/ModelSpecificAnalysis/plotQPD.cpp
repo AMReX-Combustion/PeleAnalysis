@@ -107,6 +107,8 @@ main (int   argc,
     inNames[idRlocal] = RName;
     
     Vector<Real> Qfsum(nreactions,0), Qrsum(nreactions,0);
+
+    auto rmap=GetReactionMap();
     
     const int nGrow = 0;
     for (int lev=0; lev<Nlev; ++lev)
@@ -173,8 +175,8 @@ main (int   argc,
         }
 
         for (int i=0; i<nreactions; ++i) {
-          Qfsum[i] += Qf.sum(i) * vol;
-          Qrsum[i] += Qr.sum(i) * vol;
+          Qfsum[rmap[i]] += Qf[mfi].sum(i) * vol;
+          Qrsum[rmap[i]] += Qr[mfi].sum(i) * vol;
         }
       }
 
@@ -208,7 +210,7 @@ main (int   argc,
       }
 
       std::map<EdgeList::const_iterator,Real,ELIcompare> Qf,Qr;
-
+      
       Real normVal = 1;
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
@@ -232,7 +234,6 @@ main (int   argc,
         normVal *= scaleNorm;
       }
       std::cout << "NormVal: " << normVal << std::endl;
-      
 
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
