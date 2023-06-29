@@ -10,6 +10,7 @@ PeleAnalysis documentation
    data
    buildPMF
    conditionalMean
+   averagePlotfile
    combinePlts
    curvature
    grad
