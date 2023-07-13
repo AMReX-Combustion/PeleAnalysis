@@ -1,87 +1,106 @@
 #include <util.H>
-#include <util_F.H>
+#include <mechanism.H>
 
 #include <AMReX_Print.H>
 
 using namespace amrex;
-
-static std::string
-decodeStringFromFortran(const Vector<int>& coded,
-                        int                length)
-{
-    std::string result;
-    for (int i = 0; i < length; ++i)
-        result += coded[i];
-    return result;
-}
 
 namespace analysis_util {
 
   int
   NumSpecies()
   {
-    return num_species();
+    return NUM_SPECIES;
   }
   
   int
   NumElements()
   {
-    return num_elements();
+    return NUM_ELEMENTS;
   }
   
   int
   NumReactions()
   {
-    return num_reactions();
+    return NUM_REACTIONS;
   }
   
   Vector<std::string>
   GetSpecNames ()
   {
-    int nspecies = analysis_util::NumSpecies();
-    Vector<std::string> spec_names(nspecies);
-    int Lmax = max_spec_namelen();
-    Vector<int> coded_name(Lmax);
-    for (int i = 0; i < nspecies; i++)
-    {
-      int len = Lmax;
-      get_spec_names(coded_name.dataPtr(),&i,&len);
-      spec_names[i] = decodeStringFromFortran(coded_name,len);
-    }
+    Vector<std::string> spec_names;
+    CKSYMS_STR(spec_names);
     return spec_names;
   }
 
   Vector<std::string>
   GetElemNames ()
   {
-    int nelements = analysis_util::NumElements();
-    Vector<std::string> elem_names(nelements);
-    int Lmax = max_elem_namelen();
-    Vector<int> coded_name(Lmax);
-    for (int i = 0; i < nelements; i++)
-    {
-      int len = Lmax;
-      get_elem_names(coded_name.dataPtr(),&i,&len);
-      elem_names[i] = decodeStringFromFortran(coded_name,len);
-    }
+    Vector<std::string> elem_names;
+    CKSYME_STR(elem_names);
     return elem_names;
   }
 
-  amrex::Vector<int>
-  ReactionsWithXonL(int ispec)
-  {
-    int nspecies = analysis_util::NumSpecies();
-    int nreactions = analysis_util::NumReactions();    
-    Vector<int> rns(nreactions); // result
-    int len = nreactions;
-    int ispec_fort = ispec + 1;
-    get_rns_with_X_on_L(&(rns[0]),&len,&ispec_fort);
-    rns.resize(len);
-    // Translate to 0-based numbering
-    for (int i=0; i<len; ++i) {
-      rns[i]--;
+  // Get the list of reactions with given species
+  // as reactant
+  void
+  getReactWithXOnL(Vector<int> &res, int spec_id) {
+    // First call to get max_num_spec (maximum number of species
+    // involved in a reaction)
+    int max_num_spec = 0;
+    {
+      Vector<int> specIDs_dums(1,0);
+      Vector<int> specNUs_dums(1,0);
+      CKINU(0,max_num_spec,specIDs_dums.data(),specNUs_dums.data());
     }
-    return rns;
+
+    // Call on each reaction
+    Vector<int> specIDs(max_num_spec,0);
+    Vector<int> specNUs(max_num_spec,0);
+    for (int ireac{1}; ireac<=NUM_REACTIONS; ++ireac) {
+      int num_spec = 0;
+      CKINU(ireac, num_spec, specIDs.data(), specNUs.data());
+      if (num_spec < 0 || num_spec > NUM_SPECIES) {
+        Abort();
+      }
+      // CKINU is Fortran 1-based !
+      for (int ispec{0}; ispec<num_spec; ++ispec) {
+        if (specIDs[ispec] == spec_id+1 && specNUs[ispec] < 0) {
+          res.push_back(ireac-1);
+        }
+      }
+    }
+  }
+
+  // Get the list of reactions with given species
+  // as product
+  void
+  getReactWithXOnR(Vector<int> &res, int spec_id) {
+    // First call to get max_num_spec (maximum number of species
+    // involved in a reaction)
+    int max_num_spec = 0;
+    {
+      Vector<int> specIDs_dums(1,0);
+      Vector<int> specNUs_dums(1,0);
+      CKINU(0,max_num_spec,specIDs_dums.data(),specNUs_dums.data());
+    }
+
+    // Call on each reaction
+    Vector<int> specIDs(max_num_spec,0);
+    Vector<int> specNUs(max_num_spec,0);
+    for (int ireac{1}; ireac<=NUM_REACTIONS; ++ireac) {
+      int num_spec = 0;
+      CKINU(ireac, num_spec, specIDs.data(), specNUs.data());
+      if (num_spec < 0 || num_spec > NUM_SPECIES) {
+        Abort();
+      }
+      // CKINU is Fortran 1-based !
+      for (int ispec{0}; ispec<num_spec; ++ispec) {
+        if (specIDs[ispec] == spec_id+1 && specNUs[ispec] > 0) {
+          res.push_back(ireac-1);
+        }
+      }
+    }
   }
 
   amrex::Vector<std::pair<std::string,int> >
@@ -90,13 +109,25 @@ namespace analysis_util {
     amrex::Vector<std::pair<std::string,int> > coeffs;
     int nspecies = analysis_util::NumSpecies();
     Vector<std::string> spec_names = analysis_util::GetSpecNames();
-    amrex::Vector<int> ids(nspecies), nus(nspecies);
-    int len;
-    int ireac_fort = ireac + 1;
-    get_spec_nu_for_rn(&(ids[0]),&(nus[0]),&len,&ireac_fort);
-    for (int i=0; i<len; ++i) {
-      coeffs.push_back(std::make_pair(spec_names[ids[i]-1],nus[i]));
+
+    // First call to get max_num_spec (maximum number of species
+    // involved in a reaction)
+    int max_num_spec = 0;
+    {
+      Vector<int> specIDs_dums(1,0);
+      Vector<int> specNUs_dums(1,0);
+      CKINU(0,max_num_spec,specIDs_dums.data(),specNUs_dums.data());
     }
+
+    Vector<int> specIDs(max_num_spec,0);
+    Vector<int> specNUs(max_num_spec,0);
+    int num_spec = 0;
+    // CKINU is Fortran 1-based !
+    CKINU(ireac+1, num_spec, specIDs.data(), specNUs.data());
+
+    for (int i=0; i<num_spec; ++i) {
+      coeffs.push_back(std::make_pair(spec_names[specIDs[i]-1],specNUs[i]));
+    }   
     return coeffs;
   }
 
@@ -125,32 +156,11 @@ namespace analysis_util {
   }
   
   amrex::Vector<int>
-  ReactionsWithXonR(int ispec)
-  {
-    int nspecies = analysis_util::NumSpecies();
-    int nreactions = analysis_util::NumReactions();    
-    Vector<int> rns(nreactions); // result
-    int len = nreactions;
-    int ispec_fort = ispec + 1;
-    get_rns_with_X_on_R(&(rns[0]),&len,&ispec_fort);
-    rns.resize(len);
-    // Translate to 0-based numbering
-    for (int i=0; i<len; ++i) {
-      rns[i]--;
-    }
-    return rns;
-  }
-  
-  amrex::Vector<int>
   GetReactionMap()
   {
     int nreactions = analysis_util::NumReactions();    
     Vector<int> rmap(nreactions);
-    get_rns_map(&(rmap[0]));
-    // Translate to 0-based numbering
-    for (int i=0; i<rmap.size(); ++i) {
-      rmap[i]--;
-    }
+    GET_RMAP(rmap.data());
     return rmap;
   }
 
@@ -159,10 +169,43 @@ namespace analysis_util {
                   const std::string& spec)
   {
     int nelements = analysis_util::NumElements();
-    Vector<int> composition(nelements);
-    int ispec_fort = IndexSpec(spec) + 1;
-    get_elt_comp(&ispec_fort,&(composition[0]));
-    return composition[IndexElem(elem)];
+    int nspecies = analysis_util::NumSpecies();
+    Vector<std::string> speciesNames = GetSpecNames();
+    Vector<std::string> elemNames = GetElemNames();
+    int elem_idx = -1;
+    int spec_idx = -1;
+    for (int i{0}; i<nelements; ++i) {
+      if (elemNames[i] == elem) {
+        elem_idx = i;
+      }
+    }
+    if (elem_idx < 0 ) {
+      Abort("Unknown element "+elem);
+    }
+    for (int i{0}; i<nspecies; ++i) {
+      if (speciesNames[i] == spec) {
+        spec_idx = i;
+      }
+    }
+    if (spec_idx < 0 ) {
+      Abort("Unknown species "+spec);
+    }
+
+    int ecomp[NUM_SPECIES * NUM_ELEMENTS];
+    CKNCF(ecomp);
+    return ecomp[spec_idx * NUM_ELEMENTS + elem_idx];
+  }
+
+  int
+  NumElemXinSpecY(int elem,
+                  int spec)
+  {
+    int nelements = analysis_util::NumElements();
+    int nspecies = analysis_util::NumSpecies();
+
+    int ecomp[nelements * nspecies];
+    CKNCF(ecomp);
+    return ecomp[spec * NUM_ELEMENTS + elem];
   }
 
   Edge::Edge (const std::string& n1,
@@ -495,6 +538,7 @@ namespace analysis_util {
         groups[sp] = Group(eltCnts);
       }
     }
+
     for (int r=0; r<NumReactions(); ++r) {
       const amrex::Vector<std::pair<std::string,int> >& coeffs = specCoeffsInReactions(r);
 

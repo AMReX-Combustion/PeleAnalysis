@@ -18,11 +18,14 @@ namespace analysis_util
   amrex::Vector<std::string> GetElemNames();
   amrex::Vector<std::string> GetSpecNames();
 
-  amrex::Vector<int> ReactionsWithXonL(int ispec);
-  amrex::Vector<int> ReactionsWithXonR(int ispec);
+  void getReactWithXOnL(amrex::Vector<int> &res, int ispec);
+  void getReactWithXOnR(amrex::Vector<int> &res, int ispec);
+
   amrex::Vector<std::pair<std::string,int> > specCoeffsInReactions(int ireac);
   int NumElemXinSpecY(const std::string& elem,
                       const std::string& spec);
+  int NumElemXinSpecY(int elem,
+                      int spec);
 
   //
   // Data structure for generating chemical path diagrams,

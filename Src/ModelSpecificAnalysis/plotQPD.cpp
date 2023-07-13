@@ -1,7 +1,3 @@
-#include <string>
-#include <iostream>
-#include <set>
-
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
@@ -9,6 +5,7 @@
 #include <AMReX_Interpolater.H>
 #include <AMReX_GpuLaunch.H>
 #include <AMReX_WritePlotFile.H>
+#include <util.H>
 
 #include <PelePhysics.H>
 
@@ -30,7 +27,7 @@ print_usage (int,
 struct ELIcompare
 {
   // Order EL iters using the underlying edge
-  bool operator()(const EdgeList::const_iterator& lhs, const EdgeList::const_iterator& rhs) {
+  bool operator()(const EdgeList::const_iterator& lhs, const EdgeList::const_iterator& rhs) const {
     return *lhs < *rhs;
   }
 };
@@ -38,7 +35,7 @@ struct ELIcompare
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile,std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile,std::string("/"));
   return tokens[tokens.size()-1];
 }
 
@@ -110,6 +107,8 @@ main (int   argc,
     inNames[idRlocal] = RName;
     
     Vector<Real> Qfsum(nreactions,0), Qrsum(nreactions,0);
+
+    auto rmap=GetReactionMap();
     
     const int nGrow = 0;
     for (int lev=0; lev<Nlev; ++lev)
@@ -150,8 +149,8 @@ main (int   argc,
           Real Qf[nreactions];
           Real Qr[nreactions];
           Real Pcgs;
-          CKPX(&Rl,&Tl,Xl,&Pcgs);
-          CKKFKR(&Pcgs,&Tl,Xl,Qf,Qr);
+          CKPX(Rl,Tl,Xl,Pcgs);
+          CKKFKR(Pcgs,Tl,Xl,Qf,Qr);
 
           for (int n=0; n<nreactions; ++n) {
             Qfarr(i,j,k,n) = Qf[n];
@@ -176,8 +175,8 @@ main (int   argc,
         }
 
         for (int i=0; i<nreactions; ++i) {
-          Qfsum[i] += Qf.sum(i) * vol;
-          Qrsum[i] += Qr.sum(i) * vol;
+          Qfsum[rmap[i]] += Qf[mfi].sum(i) * vol;
+          Qrsum[rmap[i]] += Qr[mfi].sum(i) * vol;
         }
       }
 
@@ -211,7 +210,7 @@ main (int   argc,
       }
 
       std::map<EdgeList::const_iterator,Real,ELIcompare> Qf,Qr;
-
+      
       Real normVal = 1;
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
@@ -235,7 +234,6 @@ main (int   argc,
         normVal *= scaleNorm;
       }
       std::cout << "NormVal: " << normVal << std::endl;
-      
 
       for (EdgeList::const_iterator it = edges.begin(); it!=edges.end(); ++it)
       {
