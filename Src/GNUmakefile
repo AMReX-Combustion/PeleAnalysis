@@ -1,5 +1,6 @@
-AMREX_HOME ?= ../../../amrex
-PELE_PHYSICS_HOME ?= ../../../PelePhysics
+AMREX_HOME ?= ../../amrex
+PELE_PHYSICS_HOME ?= ../../PelePhysics
+PELEC_HOME ?= ../../PeleC
 
 # AMReX
 DEBUG	      = FALSE
@@ -17,7 +18,8 @@ USE_CUDA      = FALSE
 #EBASE         = grad
 #EBASE         = combinePlts
 #EBASE         = isosurface
-EBASE         = flattenAMRFile
+#EBASE         = flattenAMRFile
+EBASE         = filterPlt
 #EBASE         = stream
 #EBASE         = partStream
 #EBASE         = blowOut
@@ -36,6 +38,7 @@ EBASE         = flattenAMRFile
 #EBASE         = jpdf
 #EBASE         = avgToPlane
 #EBASE          = avgPlotfiles
+#EBASE          = avgPlotfilesFlexible
 #EBASE          = amrToFE
 
 NEEDS_f90_SRC = FALSE
@@ -46,6 +49,13 @@ Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
 PPdirs  := Utility/PltFileManager
 Ppack   += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
+
+ifeq ($(EBASE),filterPlt)
+  VPATH_LOCATIONS += $(PELEC_HOME)/Source
+  INCLUDE_LOCATIONS += $(PELEC_HOME)/Source
+  CEXE_sources += Filter.cpp
+  CEXE_headers += Filter.H
+endif
 
 ifeq ($(EBASE),partStream)
   USE_PARTICLES = TRUE
