@@ -11,6 +11,7 @@ PeleAnalysis documentation
    buildPMF
    conditionalMean
    averagePlotfile
+   filterPlt
    combinePlts
    curvature
    grad
