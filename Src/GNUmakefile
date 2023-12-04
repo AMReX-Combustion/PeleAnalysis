@@ -1,6 +1,5 @@
 AMREX_HOME ?= ../../amrex
 PELE_PHYSICS_HOME ?= ../../PelePhysics
-PELEC_HOME ?= ../../PeleC
 
 # AMReX
 DEBUG	      = FALSE
@@ -47,15 +46,8 @@ NEEDS_f90_SRC = FALSE
 Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
 Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
 
-PPdirs  := Utility/PltFileManager
+PPdirs  := Utility/PltFileManager Utility/Filter
 Ppack   += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
-
-ifeq ($(EBASE),filterPlt)
-  VPATH_LOCATIONS += $(PELEC_HOME)/Source
-  INCLUDE_LOCATIONS += $(PELEC_HOME)/Source
-  CEXE_sources += Filter.cpp
-  CEXE_headers += Filter.H
-endif
 
 ifeq ($(EBASE),partStream)
   USE_PARTICLES = TRUE
