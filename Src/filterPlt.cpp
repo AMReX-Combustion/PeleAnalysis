@@ -7,8 +7,10 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_BLFort.H>
+#include <AMReX_FillPatchUtil.H>
 #include <Filter.H>
 #include <PltFileManager.H>
+#include <PltFileManagerBCFill.H>
 
 static
 void
@@ -25,6 +27,7 @@ print_usage (int,
   std::cerr << "\t     base_fgr=<int> where <int> is the desired filter to grid ratio on the base level, must be even [DEF->2]\n";
   std::cerr << "\t     same_fgr_all_levels=<bool> where if true the same filter to grid ratio is kept on all levels (rather than absolute filter width) [DEF->false]\n";
   std::cerr << "\t     max_grid_size=<int> where <int> is the AMReX max_grid_size for the output [DEF->32]\n";
+  std::cerr << "\t     interp_type=<int> where this determines the type of interpolation when FillPatching: 0 -> piecewise constant, 1 -> cell cons linear [DEF->1]\n";
 exit(1);
 }
 
@@ -70,6 +73,7 @@ main(int argc, char** argv)
     int les_filter_type = 1;
     int les_filter_fgr  = 2;
     bool same_fgr_all_levels = false;
+    int interp_type = 1;
 
     pp.get("infile",infile);
     pp.query("max_filter_level",finestLevel);
@@ -78,6 +82,7 @@ main(int argc, char** argv)
     pp.query("same_fgr_all_levels", same_fgr_all_levels);
     int max_grid_size = 32;
     pp.query("max_grid_size",max_grid_size);
+    pp.query("interp_type",interp_type);
 
     // use PltFileManager to load data
     amrex::Vector<pele::physics::pltfilemanager::PltFileManager*> plt_file_data(1);
@@ -116,6 +121,7 @@ main(int argc, char** argv)
     amrex::Vector<amrex::MultiFab> outdata(Nlev);
     amrex::Vector<amrex::Geometry> level_geometries;
 
+    // Load the data from the Pltfile
     amrex::Print() << "Reading data..." << std::endl;
     int les_filter_fgr_lev = les_filter_fgr;
     for (int lev=0; lev<Nlev; ++lev)
@@ -139,11 +145,60 @@ main(int argc, char** argv)
       outdata[lev].define(ba,dm,ncomp_filter,nGrow);
 
       if (all_vars) {
-        plt_file_data[0]->fillPatchFromPlt(lev, level_geometries[lev], 0, 0, ncomp_filter, indata[lev], indata[lev].nGrowVect());
+        plt_file_data[0]->fillPatchFromPlt(lev, level_geometries[lev], 0, 0, ncomp_filter, indata[lev], interp_type);
       } else {
         for (int var = 0; var < nvar; ++var) {
-          plt_file_data[0]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[var], var, 1, indata[lev], indata[lev].nGrowVect());
+          plt_file_data[0]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[var], var, 1, indata[lev], interp_type);
         }
+      }
+    }
+    amrex::Print() << "Done!" << std::endl;
+
+    // fillPatchFromPlt doesn't fill ghost cells, so fill those now
+    // Note: domain boundary cells will be FOExtraped because we don't know anything better to do
+    amrex::Print() << "FillPatching data..." << std::endl;
+    amrex::Vector<amrex::BCRec> dummyBCRec(ncomp_filter);
+    for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
+      if (level_geometries[0].isPeriodic(idim)) {
+        for (int n = 0; n < ncomp_filter; n++) {
+          dummyBCRec[n].setLo(idim, amrex::BCType::int_dir);
+          dummyBCRec[n].setHi(idim, amrex::BCType::int_dir);
+        }
+      } else {
+        for (int n = 0; n < ncomp_filter; n++) {
+          dummyBCRec[n].setLo(idim, amrex::BCType::foextrap);
+          dummyBCRec[n].setHi(idim, amrex::BCType::foextrap);
+        }
+      }
+    }
+    for (int lev=0; lev<Nlev; ++lev) {
+      amrex::Print() << "on level "<< lev << std::endl;
+      if (lev == 0) {
+        amrex::PhysBCFunct<amrex::GpuBndryFuncFab<pele::physics::pltfilemanager::FillExtDirDummy>> bndry_func(
+        level_geometries[lev], {dummyBCRec}, pele::physics::pltfilemanager::FillExtDirDummy{});
+        amrex::FillPatchSingleLevel(indata[lev], indata[lev].nGrowVect(), 0.0,
+                             {&(indata[lev])},
+                             {0.0}, 0, 0, ncomp_filter, level_geometries[lev], bndry_func, 0);
+      } else {
+        amrex::InterpBase* mapper;
+        if (interp_type == 1) {
+          mapper = &amrex::mf_cell_cons_interp;
+        } else {
+          mapper = &amrex::mf_pc_interp;
+        }
+        amrex::PhysBCFunct<amrex::GpuBndryFuncFab<pele::physics::pltfilemanager::FillExtDirDummy>> crse_bndry_func(
+          level_geometries[lev-1], {dummyBCRec}, pele::physics::pltfilemanager::FillExtDirDummy{});
+        amrex::PhysBCFunct<amrex::GpuBndryFuncFab<pele::physics::pltfilemanager::FillExtDirDummy>> fine_bndry_func(
+          level_geometries[lev], {dummyBCRec}, pele::physics::pltfilemanager::FillExtDirDummy{});
+        FillPatchTwoLevels(indata[lev], indata[lev].nGrowVect(), 0.0,
+                           {&(indata[lev-1])},
+                           {0.0},
+                           {&(indata[lev])},
+                           {0.0},
+                           0, 0, ncomp_filter,
+                           level_geometries[lev - 1], level_geometries[lev],
+                           crse_bndry_func, 0, fine_bndry_func, 0, amrex::IntVect(plt_file_data[0]->getRefRatio(lev - 1)), mapper,
+                           {dummyBCRec}, 0);
       }
     }
     amrex::Print() << "Done!" << std::endl;
@@ -170,4 +225,6 @@ main(int argc, char** argv)
     write_plotfile(outfile,Nlev,amrex::GetVecOfConstPtrs(outdata),variableNames,level_geometries,plt_file_data[0]->getTime(),amrex::Vector<int>(Nlev, 0));
     amrex::Print() << "Done!" << std::endl;
 
+    amrex::Finalize();
+    return 0;
 }
