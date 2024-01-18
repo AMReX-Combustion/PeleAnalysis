@@ -18,6 +18,7 @@ print_usage (int,
   std::cerr << "\t     variables=<s1 s2 s3> where <s1> <s2> and <s3> are variable names to select for combined pltfile [DEF-> all possible]\n";
   std::cerr << "\t     output_max_level=<s> where <s> is the max refinement level to combine, zero-indexed [DEF->1000]\n";
   std::cerr << "\t     output_max_grid_size=<s> where <s> is the output max_grid_size. If all BoxArrays are the same, this is ignored. [DEF->32]\n";
+  std::cerr << "\t     interp_type=<int> where this determines the type of interpolation when FillPatching: 0 -> piecewise constant, 1 -> cell cons linear [DEF->1]\n";
 exit(1);
 }
 
@@ -63,6 +64,10 @@ main (int   argc,
      // Max grid size in output data
      int output_max_grid_size = 32;
      pp.query("output_max_grid_size", output_max_grid_size);
+
+     // Type of interpolation to do
+     int interp_type = 1;
+     pp.query("interp_type",interp_type);
 
 
      // ---------------------------------------------------------------------
@@ -169,12 +174,13 @@ main (int   argc,
      // Fillpatch tmp_data from each pltfile and add to running data
      Print() << "Fillpatching and combining..." << std::endl;
      for (int i = 0; i < plt_file_data.size(); ++i) {
+       Print() << "   working on file " << plotFileNames[i] << " (" << i+1 << "/" << plt_file_data.size() << ")" << std::endl;
        for (int lev = 0; lev < nlevels; ++lev) {
          if (all_vars) {
-           plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], 0, 0, nvar, tmp_data[lev]);
+           plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], 0, 0, nvar, tmp_data[lev], interp_type);
          } else {
            for (int var = 0; var < nvar; ++var) {
-             plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[i][var], var, 1, tmp_data[lev]);
+             plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[i][var], var, 1, tmp_data[lev], interp_type);
            }
          }
          MultiFab::Add(running_data[lev], tmp_data[lev], 0, 0, nvar, 0);
