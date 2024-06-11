@@ -73,7 +73,7 @@ mesh = meshio.Mesh(points=vertices,
                    cells={'triangle':faces},
                    point_data=point_data)
 
-# This is also quite fast
+# This takes a while due to compression
 print('Saving mesh object...')
 # Just change the extension to '.vtk'
 mesh.write('.'.join(mef_file.split('.')[:-1] + ['vtu']))
