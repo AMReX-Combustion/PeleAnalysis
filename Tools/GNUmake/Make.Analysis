@@ -62,13 +62,17 @@ endif
 
 # Chemistry Model
 ifdef Chemistry_Model
-  ChemDir  = Support/Mechanism/Models/$(Chemistry_Model)
+  ChemDir  = Mechanisms/$(Chemistry_Model)
 endif
+Bpack += $(PELE_PHYSICS_HOME)/$(ChemDir)/Make.package
+Blocs += $(PELE_PHYSICS_HOME)/$(ChemDir)
 
-PPdirs := Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics
-PPdirs += Source $(ChemDir) Reactions Eos Transport
-Bpack += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
-Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir))
+Bpack += $(PELE_PHYSICS_HOME)/Source/Make.package
+Blocs += $(PELE_PHYSICS_HOME)/Source
+
+PPdirs := Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics Reactions Eos Transport
+Bpack += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir)/Make.package)
+Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir))
 include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
 
 #--------------
