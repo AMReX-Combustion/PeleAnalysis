@@ -5,7 +5,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <AMReX_WritePlotFile.H>
+#include <AMReX_PlotFileUtil.H>
 
 using namespace amrex;
 
@@ -58,52 +58,69 @@ main (int   argc,
     pp.query("finestLevel",finestLevel);
     int Nlev = finestLevel + 1;
 
-    Vector<std::unique_ptr<MultiFab>> outdata(Nlev);
-    int ngrow = 0;
-    int ncomp = amrData.NComp();
+    Vector<int> is_per(AMREX_SPACEDIM,1);
+    pp.queryarr("is_per",is_per,0,AMREX_SPACEDIM);
+    Print() << "Periodicity assumed for this case: ";
+    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+        Print() << is_per[idim] << " ";
+    }
 
-    const auto& domain = amrData.ProbDomain()[finestLevel];
-    BoxArray ba(domain);
+    RealBox rb(&(amrData.ProbLo()[0]),&(amrData.ProbHi()[0]));
 
-    int max_grid_size = 32;
-    pp.query("max_grid_size",max_grid_size);
-    ba.maxSize(max_grid_size);
-    const DistributionMapping dm(ba);
-    outdata[0].reset(new MultiFab(ba,dm,ncomp,ngrow));
+    Vector<MultiFab> outdata(Nlev);
+    Vector<Geometry> geoms(Nlev);
 
-    Vector<int> destFillComps(ncomp);
-    for (int i=0; i<ncomp; ++i) destFillComps[i] = i;
+    int nGrow = 0;
+    int nComp = amrData.NComp();
 
-    Print() << "Reading data" << std::endl;
-    amrData.FillVar(*outdata[0],finestLevel,amrData.PlotVarNames(),destFillComps);
-    Print() << "Data has been read" << std::endl;
+    Vector<std::string> inNames = amrData.PlotVarNames();
+    Vector<std::string> outNames = amrData.PlotVarNames();
+    
+    Vector<int> destFillComps(nComp);
+    for (int i=0; i<nComp; ++i) destFillComps[i] = i;
 
-    int coord = 0;
-    RealBox rb(&(amrData.ProbLo()[0]),
-               &(amrData.ProbHi()[0]));
-    Vector<int> is_per(AMREX_SPACEDIM,0);
-    Geometry geom(amrData.ProbDomain()[finestLevel],&rb,coord,&(is_per[0]));
+    for (int lev = 0; lev < Nlev; ++lev) {
+      
+      const BoxArray ba = amrData.boxArray(lev);
+      const DistributionMapping dm(ba);
 
-    const auto geomdata = geom.data();
+      outdata[lev] = MultiFab(ba,dm,nComp,nGrow);
+      MultiFab indata(ba,dm,nComp,nGrow);
 
+      int coord = 0;
+      geoms[lev] = Geometry(amrData.ProbDomain()[lev],&rb, coord, &(is_per[0]));      
+      
+      Print() << "Reading data for level " << lev << std::endl;
+      amrData.FillVar(indata,finestLevel,inNames,destFillComps);
+      Print() << "Data has been read for level " << lev << std::endl;
+      
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (MFIter mfi(*outdata[0],TilingIfNotGPU()); mfi.isValid(); ++mfi)
-    {
-      const Box& bx = mfi.tilebox();
-      auto const& out_a = outdata[0]->array(mfi);
-      amrex::ParallelFor(bx, [=]
-      AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-      {
-        // Do something funky
-      });
-    }
+      for (MFIter mfi(indata,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+	{
+	  const Box& bx = mfi.tilebox();
+	  auto const& out_a = outdata[lev].array(mfi);
+	  auto const& in_a = indata.array(mfi);
+	  amrex::ParallelFor(bx, [=]
+			     AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+				 {
+				   // Do something funky
+				   for (int n = 0; n < nComp; n++) {
+				     out_a(i,j,k,n) = in_a(i,j,k,n); 
+				   }
+				 });
+	}
 
-    std::string outfile(getFileRoot(plotFileName) + "_b");
+    }
+    
+    std::string outfile(getFileRoot(plotFileName) + "_temp");
     Print() << "Writing new data to " << outfile << std::endl;
-    bool verb = false;
-    WritePlotFile(GetVecOfPtrs(outdata),amrData,outfile,verb,amrData.PlotVarNames());
+    Vector<int> isteps(Nlev, 0);
+    Vector<IntVect> refRatios(Nlev-1,{AMREX_D_DECL(2, 2, 2)});
+    amrex::WriteMultiLevelPlotfile(outfile, Nlev, GetVecOfConstPtrs(outdata), outNames,
+                                   geoms, 0.0, isteps, refRatios);
+
   }
   Finalize();
   return 0;
