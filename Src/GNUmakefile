@@ -1,6 +1,5 @@
-PELE_HOME ?= ../../PeleLMeX
-PELE_PHYSICS_HOME ?= $(PELE_HOME)/Submodules/PelePhysics
-AMREX_HOME ?= $(PELE_PHYSICS_HOME)/Submodules/amrex
+PELE_PHYSICS_HOME = /home/be563763/src/repo/PeleAnalysis/Submodules/PelePhysics
+AMREX_HOME = $(PELE_PHYSICS_HOME)/Submodules/amrex
 
 # AMReX
 DEBUG	      = FALSE
