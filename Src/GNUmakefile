@@ -15,10 +15,10 @@ USE_CUDA      = FALSE
 
 # Executable
 # Uncomment the desired exec
-EBASE		= template
+#EBASE		= template
 #EBASE         = grad
 #EBASE         = combinePlts
-#EBASE         = isosurface
+EBASE         = isosurface
 #EBASE         = flattenAMRFile
 #EBASE         = filterPlt
 #EBASE         = stream
@@ -60,7 +60,7 @@ ifeq ($(EBASE),partStream)
   CEXE_sources += StreamData.cpp  StreamPC.cpp
 endif
 
-ifeq ($(EBASE),isosurface)
+ifeq ($(EBASE),$(filter $(EBASE), isosurface buildDistance))
   SDF_LOC = ../Tools/SDFGen
   include $(SDF_LOC)/Make.package
   INCLUDE_LOCATIONS += $(SDF_LOC)
