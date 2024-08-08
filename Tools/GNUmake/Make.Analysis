@@ -14,11 +14,7 @@ all: $(executable)
 #--------------
 # AMReX sources
 #--------------
-Adirs := Base Boundary Extern/amrdata AmrCore
-
-ifeq ($(NEED_GRAD),TRUE)
-  Adirs += LinearSolvers/MLMG
-endif
+Adirs := Base Boundary Extern/amrdata AmrCore LinearSolvers/MLMG
 
 ifeq ($(NEED_PARTICLES),TRUE)
   USE_PARTICLES = TRUE
