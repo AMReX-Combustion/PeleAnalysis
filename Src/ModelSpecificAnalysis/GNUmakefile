@@ -1,4 +1,4 @@
-PELE_ANALYSIS_HOME = $(abspath ../..)
+PELE_ANALYSIS_HOME = ../..
 
 # AMReX
 DIM        = 3
@@ -9,7 +9,7 @@ DEBUG      = FALSE
 
 # Compiler
 COMP	   = gnu
-USE_MPI    = TRUE 
+USE_MPI    = TRUE
 USE_OMP    = FALSE
 USE_CUDA   = FALSE
 USE_HIP    = FALSE
@@ -20,12 +20,8 @@ EBASE=plotXtoY
 EBASE=plotYtoX
 EBASE=testQPDtools
 EBASE=plotTransportCoeff
-NEEDS_f90_SRC = FALSE
 
 CEXE_sources += $(EBASE).cpp
-ifeq ($(NEEDS_f90_SRC),TRUE)
-  f90EXE_sources += $(EBASE)_nd.f90
-endif
 
 Eos_Model       = Fuego
 Chemistry_Model = drm19
@@ -33,4 +29,4 @@ Transport_Model = Simple
 
 Blocs   := .
 
-include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.Analysis
+include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.ModelSpecific

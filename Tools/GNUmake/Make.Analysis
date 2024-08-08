@@ -5,109 +5,60 @@ SUNDIALS_HOME     ?= $(abspath $(lastword $(PELE_PHYSICS_HOME)/Submodules/sundia
 
 TOP := $(PELE_ANALYSIS_HOME)
 
-#Turn off all fortran in amrex
-#ifneq ($(USE_MASA), TRUE)
-#  BL_NO_FORT = TRUE
-#endif
-USE_SUNDIALS = TRUE
-
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
-include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
-
-# PeleC uses a coarse grained OMP approach
-DEFINES += -DCRSEGRNDOMP
-
-ifeq ($(USE_FORCING), TRUE)
-  DEFINES += -DPELEC_USE_FORCING
-endif
-
-ifeq ($(USE_EB), TRUE)
-  DEFINES += -DPELEC_USE_EB
-  ifeq ($(DIM), 1)
-    $(error EB is not supported in 1D)
-  endif
-endif
 
 all: $(executable) 
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
 	@echo SUCCESS
 
-#--------------------
-# PelePhysics sources
-#--------------------
-# EOS models switches
-ifeq ($(Eos_Model),$(filter $(Eos_Model),GammaLaw))
-   DEFINES += -DUSE_GAMMALAW_EOS
-endif
-ifeq ($(Eos_Model),$(filter $(Eos_Model),Fuego))
-   DEFINES += -DUSE_FUEGO_EOS
-endif
-ifeq ($(Eos_Model),$(filter $(Eos_Model),Soave-Redlich-Kwong))
-   DEFINES += -DUSE_SRK_EOS
-endif
-
-# Transport model switches
-ifeq ($(Transport_Model), Simple)
-  DEFINES += -DUSE_SIMPLE_TRANSPORT
-endif
-ifeq ($(Transport_Model), EGLib)
-  DEFINES += -DEGLIB_TRANSPORT
-  USE_FUEGO = TRUE
-endif
-ifeq ($(Transport_Model), Constant)
-  DEFINES += -DUSE_CONSTANT_TRANSPORT
-endif
-ifeq ($(Transport_Model), Sutherland)
-  DEFINES += -DUSE_SUTHERLAND_TRANSPORT
-endif
-
-# Chemistry Model
-ifdef Chemistry_Model
-  ChemDir  = Mechanisms/$(Chemistry_Model)
-endif
-Bpack += $(PELE_PHYSICS_HOME)/$(ChemDir)/Make.package
-Blocs += $(PELE_PHYSICS_HOME)/$(ChemDir)
-
-Bpack += $(PELE_PHYSICS_HOME)/Source/Make.package
-Blocs += $(PELE_PHYSICS_HOME)/Source
-
-PPdirs := Utility/BlackBoxFunction Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics Reactions Eos Transport
-Bpack += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir)/Make.package)
-Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir))
-include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
-
 #--------------
 # AMReX sources
 #--------------
-Pdirs := Base Boundary Extern/amrdata AmrCore
-ifeq ($(USE_EB), TRUE)
-  Pdirs += EB
-  Bpack += $(AMREX_HYDRO_HOME)/Redistribution/Make.package
-  Blocs += $(AMREX_HYDRO_HOME)/Redistribution
+Adirs := Base Boundary Extern/amrdata AmrCore
+
+ifeq ($(NEED_GRAD),TRUE)
+  Adirs += LinearSolvers/MLMG
 endif
 
-ifeq ($(USE_PARTICLES), TRUE)
-  DEFINES+=-DAMREX_PARTICLES
-  Pdirs += Particle
-  DEFINES+=-DSPRAY_FUEL_NUM=$(SPRAY_FUEL_NUM)
-  ifeq ($(USE_SPRAY_SOA), TRUE)
-    DEFINES+=-DUSE_SPRAY_SOA
-  endif
-  Bpack   += $(PELEC_MP_HOME)/Source/PP_Spray/Make.package
-  Blocs   += $(PELEC_MP_HOME)/Source/PP_Spray
-  INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Particle
-  VPATH_LOCATIONS   += $(AMREX_HOME)/Src/Particle
+ifeq ($(NEED_PARTICLES),TRUE)
+  USE_PARTICLES = TRUE
+  Adirs += Particle
 endif
 
-Bpack += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
-Blocs += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
+Bpack += $(foreach dir, $(Adirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
+Blocs += $(foreach dir, $(Adirs), $(AMREX_HOME)/Src/$(dir))
 
-#---------------------
-# PeleAnalysis sources
-#---------------------
-Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
-Bpack += $(foreach dir, $(Bdirs), $(dir)/Make.package)
-Blocs += $(foreach dir, $(Bdirs), $(dir))
+
+#--------------------
+#PeleAnalysis sources
+#--------------------
+
+ifeq ($(NEED_DISTANCE),TRUE)
+  SDF_LOC = $(PELE_ANALYSIS_HOME)/Tools/SDFGen
+  include $(SDF_LOC)/Make.package
+  INCLUDE_LOCATIONS += $(SDF_LOC)
+  VPATH_LOCATIONS += $(SDF_LOC)
+endif
+
+ifeq ($(NEED_QSLIM),TRUE)
+  QSLIM_LOC = $(PELE_ANALYSIS_HOME)/Tools/qslim
+  include $(QSLIM_LOC)/Make.package
+  MIX_ROOT       = $(QSLIM_LOC)/qslim-2.1/mixkit/src
+  GFX_ROOT       = $(QSLIM_LOC)/qslim-2.1/libgfx
+  INCLUDE_LOCATIONS += $(QSLIM_LOC) ${MIX_ROOT} ${GFX_ROOT}/include
+  LIBRARY_LOCATIONS += ${MIX_ROOT} ${GFX_ROOT}/src
+  LIBRARIES += -lmix -lgfx 
+  DEFINES += -DHAVE_CONFIG_H -DHAVE_BOOL
+  VPATH_LOCATIONS += $(QSLIM_LOC)
+endif
+
+#-------------------
+# PelePhysics sources
+#-------------------
+PPdirs  := Utility/PltFileManager Utility/Filter
+Bpack   += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir)/Make.package)
+Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir))
+
 
 $(info $${Bpack} is [${Bpack}])
 
@@ -120,9 +71,6 @@ CEXE_sources += AMReX_buildInfo.cpp
 CEXE_headers += $(AMREX_HOME)/Tools/C_scripts/AMReX_buildInfo.H
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Tools/C_scripts
 
-ifdef Chemistry_Model
-  MNAMES += CHEMISTRY=$(Chemistry_Model)
-endif
 
 AMReX_buildInfo.cpp:
 	$(AMREX_HOME)/Tools/C_scripts/makebuildinfo_C.py \
@@ -134,20 +82,21 @@ AMReX_buildInfo.cpp:
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.rules
 
+
 clean::
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
 
-TPL:
-	@echo "==> Building SUNDIALS library"
-	@cd $(PELE_PHYSICS_HOME)/ThirdParty; $(MAKE) sundials SUNDIALS_HOME=$(SUNDIALS_HOME) AMREX_HOME=$(AMREX_HOME) USE_SYCL=$(USE_SYCL) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) PELE_USE_MAGMA=$(PELE_USE_MAGMA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) PRECISION=$(PRECISION)
+qslim:
+	@echo "==> Building qslim library"
+	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/mixkit; ./configure
+	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/mixkit/src; $(MAKE)
+	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/libgfx; ./configure
+	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/libgfx/src; $(MAKE)
 
-TPLclean:
-	@echo "==> Removing SUNDIALS library"
-	@cd $(PELE_PHYSICS_HOME)/ThirdParty; $(MAKE) SUNDIALS_HOME=$(SUNDIALS_HOME) AMREX_HOME=$(AMREX_HOME) USE_SYCL=$(USE_SYCL) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) PELE_USE_MAGMA=$(PELE_USE_MAGMA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) PRECISION=$(PRECISION) clean
-
-TPLrealclean:
-	@echo "==> Removing SUNDIALS library"
-	@cd $(PELE_PHYSICS_HOME)/ThirdParty; $(MAKE) SUNDIALS_HOME=$(SUNDIALS_HOME) AMREX_HOME=$(AMREX_HOME) USE_SYCL=$(USE_SYCL) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) PELE_USE_MAGMA=$(PELE_USE_MAGMA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) PRECISION=$(PRECISION) realclean
+qslimclean:
+	@echo "==> Removing qslim library"
+	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/mixkit/src; $(MAKE) clean
+	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/libgfx/src; $(MAKE) clean
 
 
 #-----------------------------------------------------------------------------

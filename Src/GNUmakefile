@@ -1,5 +1,4 @@
-PELE_PHYSICS_HOME = $(abspath $(lastword ../Submodules/PelePhysics))
-AMREX_HOME = $(PELE_PHYSICS_HOME)/Submodules/amrex
+PELE_ANALYSIS_HOME = ..
 
 # AMReX
 DEBUG	      = FALSE
@@ -15,9 +14,9 @@ USE_CUDA      = FALSE
 # Executable
 # Uncomment the desired exec
 #EBASE		= template
-#EBASE         = grad
+EBASE         = grad
 #EBASE         = combinePlts
-EBASE         = isosurface
+#EBASE         = isosurface
 #EBASE         = flattenAMRFile
 #EBASE         = filterPlt
 #EBASE         = stream
@@ -33,46 +32,32 @@ EBASE         = isosurface
 #EBASE         = buildPMF
 #EBASE          = amrToFE
 #EBASE         = conditionalMean
-
+#EBASE		= decimateMEF
 #NEEDS FIXING:
 #EBASE         = subPlt
 #EBASE         = avgToPlane
 
-NEEDS_f90_SRC = FALSE
-#NEEDS_f90_SRC = TRUE
-
-Pdirs   := Base Boundary AmrCore Extern/amrdata LinearSolvers/MLMG
-Ppack   += $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
-
-PPdirs  := Utility/PltFileManager Utility/Filter
-Ppack   += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir)/Make.package)
 
 CEXE_sources += $(EBASE).cpp
-ifeq ($(NEEDS_f90_SRC),TRUE)
-  f90EXE_sources += $(EBASE)_nd.f90
+
+ifeq ($(EBASE),grad)
+  NEED_GRAD = TRUE
 endif
 
 ifeq ($(EBASE),partStream)
-  USE_PARTICLES = TRUE
-  Pdirs += Particle
+  NEED_PARTICLES = TRUE
   CEXE_headers += StreamData.H    StreamPC.H
   CEXE_sources += StreamData.cpp  StreamPC.cpp
 endif
 
 ifeq ($(EBASE),$(filter $(EBASE), isosurface buildDistance))
-  SDF_LOC = ../Tools/SDFGen
-  include $(SDF_LOC)/Make.package
-  INCLUDE_LOCATIONS += $(SDF_LOC)
-  VPATH_LOCATIONS += $(SDF_LOC)
+   NEED_DISTANCE = TRUE
 endif
 
-include $(AMREX_HOME)/Tools/GNUMake/Make.defs
+ifeq ($(EBASE),decimateMEF) #make qslim first!
+   NEED_QSLIM = TRUE
+endif
 
-INCLUDE_LOCATIONS += .
-VPATH_LOCATIONS   += .
+Blocs := .
 
-include $(Ppack)
-INCLUDE_LOCATIONS += $(Blocs)
-VPATH_LOCATIONS   += $(Blocs)
-
-include $(AMREX_HOME)/Tools/GNUMake/Make.rules
+include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.Analysis
