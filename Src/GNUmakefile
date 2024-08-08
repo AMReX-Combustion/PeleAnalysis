@@ -1,4 +1,4 @@
-PELE_PHYSICS_HOME = /home/be563763/src/repo/PeleAnalysis/Submodules/PelePhysics
+PELE_PHYSICS_HOME = $(abspath $(lastword ../Submodules/PelePhysics))
 AMREX_HOME = $(PELE_PHYSICS_HOME)/Submodules/amrex
 
 # AMReX

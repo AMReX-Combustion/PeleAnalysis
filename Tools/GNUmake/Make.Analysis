@@ -1,6 +1,7 @@
-AMREX_HOME         ?= ../../../../../amrex
-PELE_PHYSICS_HOME  ?= ../../../../PelePhysics
-PELE_ANALYSIS_HOME ?= ../../../../PeleAnalysis
+PELE_ANALYSIS_HOME ?= $(abspath ../..)
+PELE_PHYSICS_HOME ?= $(abspath $(lastword $(PELE_ANALYSIS_HOME)/Submodules/PelePhysics))
+AMREX_HOME        ?= $(abspath $(lastword $(PELE_PHYSICS_HOME)/Submodules/amrex))
+SUNDIALS_HOME     ?= $(abspath $(lastword $(PELE_PHYSICS_HOME)/Submodules/sundials))
 
 TOP := $(PELE_ANALYSIS_HOME)
 
@@ -70,7 +71,7 @@ Blocs += $(PELE_PHYSICS_HOME)/$(ChemDir)
 Bpack += $(PELE_PHYSICS_HOME)/Source/Make.package
 Blocs += $(PELE_PHYSICS_HOME)/Source
 
-PPdirs := Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics Reactions Eos Transport
+PPdirs := Utility/BlackBoxFunction Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics Reactions Eos Transport
 Bpack += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir)/Make.package)
 Blocs += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/Source/$(dir))
 include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
@@ -137,16 +138,18 @@ clean::
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
 
 TPL:
-	echo "==> Building SUNDIALS library"
-	@cd $(PELE_PHYSICS_HOME)/ThirdParty; make sundials AMREX_HOME=$(AMREX_HOME) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH)
+	@echo "==> Building SUNDIALS library"
+	@cd $(PELE_PHYSICS_HOME)/ThirdParty; $(MAKE) sundials SUNDIALS_HOME=$(SUNDIALS_HOME) AMREX_HOME=$(AMREX_HOME) USE_SYCL=$(USE_SYCL) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) PELE_USE_MAGMA=$(PELE_USE_MAGMA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) PRECISION=$(PRECISION)
 
 TPLclean:
 	@echo "==> Removing SUNDIALS library"
-	@cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP)  CUDA_ARCH=$(CUDA_ARCH) clean
+	@cd $(PELE_PHYSICS_HOME)/ThirdParty; $(MAKE) SUNDIALS_HOME=$(SUNDIALS_HOME) AMREX_HOME=$(AMREX_HOME) USE_SYCL=$(USE_SYCL) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) PELE_USE_MAGMA=$(PELE_USE_MAGMA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) PRECISION=$(PRECISION) clean
 
 TPLrealclean:
 	@echo "==> Removing SUNDIALS library"
-	@cd $(PELE_PHYSICS_HOME)/ThirdParty; make AMREX_HOME=$(AMREX_HOME) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) realclean
+	@cd $(PELE_PHYSICS_HOME)/ThirdParty; $(MAKE) SUNDIALS_HOME=$(SUNDIALS_HOME) AMREX_HOME=$(AMREX_HOME) USE_SYCL=$(USE_SYCL) USE_HIP=$(USE_HIP) USE_CUDA=$(USE_CUDA) PELE_USE_KLU=$(PELE_USE_KLU) PELE_USE_MAGMA=$(PELE_USE_MAGMA) DEBUG=$(DEBUG) COMP=$(HOSTCC) NVCC=$(COMP) CUDA_ARCH=$(CUDA_ARCH) PRECISION=$(PRECISION) realclean
+
+
 #-----------------------------------------------------------------------------
 # for debugging.  To see the value of a Makefile variable,
 # e.g. Fmlocs, simply do "make print-Fmlocs".  This will
