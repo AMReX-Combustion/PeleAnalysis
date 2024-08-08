@@ -1,4 +1,0 @@
-geometry.coord_sys = 0  # 0 => cart, 1 => RZ
-
-geometry.prob_lo =  -0.075 0. # m
-geometry.prob_hi =  +0.075 0.3
