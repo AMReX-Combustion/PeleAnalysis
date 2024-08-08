@@ -15,6 +15,11 @@
 
 using namespace amrex;
 
+pele::physics::PeleParams<pele::physics::transport::TransParm<
+  pele::physics::PhysicsType::eos_type,
+  pele::physics::PhysicsType::transport_type>>
+  trans_parms;
+
 static
 void 
 print_usage (int,
@@ -60,10 +65,7 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    pele::physics::transport::TransportParams<
-      pele::physics::PhysicsType::transport_type>
-      trans_parms;
-    trans_parms.allocate();
+    trans_parms.initialize();
 
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
@@ -129,7 +131,7 @@ main (int   argc,
       const BoxArray ba = amrData.boxArray(lev);
       const DistributionMapping dm(ba);
       outdata[lev].reset(new MultiFab(ba,dm,nCompOut,nGrow));
-      tempdata[lev].reset(new MultiFab(ba,dm,NUM_SPECIES+3,nGrow));
+      tempdata[lev].reset(new MultiFab(ba,dm,2*NUM_SPECIES+3,nGrow));
       if ( lev > 0 ) {
          geoms[lev] = amrex::refine(geoms[lev - 1], 2);
       }
@@ -140,7 +142,7 @@ main (int   argc,
       Print() << "Data has been read for level " << lev << std::endl;
 
       // Get the transport data pointer
-      auto const* ltransparm = trans_parms.device_trans_parm();
+      auto const* ltransparm = trans_parms.device_parm();
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -153,15 +155,16 @@ main (int   argc,
         Array4<Real> const& T_a = indata.array(mfi,idTlocal);
         Array4<Real> const& rho_a = indata.array(mfi,idRlocal);
         Array4<Real> const& D_a = tempdata[lev]->array(mfi,0);
-        Array4<Real> const& mu_a = tempdata[lev]->array(mfi,NUM_SPECIES);
-        Array4<Real> const& xi_a = tempdata[lev]->array(mfi,NUM_SPECIES+1);
-        Array4<Real> const& lam_a = tempdata[lev]->array(mfi,NUM_SPECIES+2);
+	Array4<Real> const& chi_a = tempdata[lev]->array(mfi,NUM_SPECIES);
+        Array4<Real> const& mu_a = tempdata[lev]->array(mfi,2*NUM_SPECIES);
+        Array4<Real> const& xi_a = tempdata[lev]->array(mfi,2*NUM_SPECIES+1);
+        Array4<Real> const& lam_a = tempdata[lev]->array(mfi,2*NUM_SPECIES+2);
         Array4<Real> const& Le_a = outdata[lev]->array(mfi,idLeout);
 
         amrex::launch(bx, [=] AMREX_GPU_DEVICE(amrex::Box const& tbx) {
           auto trans = pele::physics::PhysicsType::transport();
           trans.get_transport_coeffs(
-            tbx, Y_a, T_a, rho_a, D_a, mu_a, xi_a, lam_a, ltransparm);
+				     tbx, Y_a, T_a, rho_a, D_a, chi_a, mu_a, xi_a, lam_a, ltransparm);
         });
         amrex::ParallelFor(bx, [=]
         AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -171,7 +174,7 @@ main (int   argc,
           for (int n=0; n<NUM_SPECIES; ++n) {
               Yloc[n] = Y_a(i,j,k,n);
           }
-          CKCPBS(&T_a(i,j,k),Yloc,&Cpmix);
+          CKCPBS(T_a(i,j,k),Yloc,Cpmix);
           for (int n=0; n<NUM_SPECIES; ++n) {
             Le_a(i,j,k,n) = D_a(i,j,k,n) / (lam_a(i,j,k) / Cpmix);
           }
