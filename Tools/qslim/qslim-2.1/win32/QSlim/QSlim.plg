@@ -1,0 +1,86 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: libgfx - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP60A.tmp" with contents
+[
+/nologo /ML /W3 /GX /O2 /I "../../include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/libgfx.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\marc\src\qslim-2.1\libgfx\src\arcball.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\baseball.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\geom3d.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\gltools.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\gui.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\mat2.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\mat3.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\mat4.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\quat.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\raster-jpeg.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\raster-png.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\raster-pnm.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\raster-tiff.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\raster.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\script.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\time.cxx"
+"F:\marc\src\qslim-2.1\libgfx\src\trackball.cxx"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP60A.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP60B.tmp" with contents
+[
+/nologo /out:"Release\libgfx.lib" 
+".\Release\arcball.obj"
+".\Release\baseball.obj"
+".\Release\geom3d.obj"
+".\Release\gltools.obj"
+".\Release\gui.obj"
+".\Release\mat2.obj"
+".\Release\mat3.obj"
+".\Release\mat4.obj"
+".\Release\quat.obj"
+".\Release\raster-jpeg.obj"
+".\Release\raster-png.obj"
+".\Release\raster-pnm.obj"
+".\Release\raster-tiff.obj"
+".\Release\raster.obj"
+".\Release\script.obj"
+".\Release\time.obj"
+".\Release\trackball.obj"
+]
+Creating command line "link.exe -lib @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP60B.tmp"
+<h3>Output Window</h3>
+Compiling...
+arcball.cxx
+F:\marc\src\qslim-2.1\libgfx\src\arcball.cxx(182) : error C2679: binary '>>' : no operator defined which takes a right-hand operand of type 'class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >' (or there is no acceptable conversion)
+baseball.cxx
+F:\marc\src\qslim-2.1\libgfx\src\baseball.cxx(51) : error C2679: binary '>>' : no operator defined which takes a right-hand operand of type 'class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >' (or there is no acceptable conversion)
+geom3d.cxx
+gltools.cxx
+gui.cxx
+../../include\gfx/gui.h(22) : fatal error C1083: Cannot open include file: 'FL/Fl.H': No such file or directory
+mat2.cxx
+mat3.cxx
+mat4.cxx
+quat.cxx
+raster-jpeg.cxx
+F:\marc\src\qslim-2.1\libgfx\src\raster-jpeg.cxx(22) : fatal error C1083: Cannot open include file: 'jpeglib.h': No such file or directory
+raster-png.cxx
+F:\marc\src\qslim-2.1\libgfx\src\raster-png.cxx(18) : fatal error C1083: Cannot open include file: 'png.h': No such file or directory
+raster-pnm.cxx
+raster-tiff.cxx
+F:\marc\src\qslim-2.1\libgfx\src\raster-tiff.cxx(14) : fatal error C1083: Cannot open include file: 'tiffio.h': No such file or directory
+raster.cxx
+script.cxx
+time.cxx
+trackball.cxx
+Error executing cl.exe.
+
+
+
+<h3>Results</h3>
+QSlim.exe - 6 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

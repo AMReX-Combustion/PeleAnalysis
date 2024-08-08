@@ -1,0 +1,5 @@
+CEXE_sources += cmdline.cpp main.cpp output.cpp #qslim.cpp
+CEXE_headers += qslim.h
+fEXE_headers +=
+f90EXE_sources +=
+
