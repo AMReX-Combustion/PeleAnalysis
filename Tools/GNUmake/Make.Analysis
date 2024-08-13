@@ -86,7 +86,6 @@ clean::
 
 qslim:
 	@echo "==> Building qslim library"
-	#@cd $(PELE_ANALYSIS_HOME)/Tools/qslim; wget -O qslim-2.1.zip https://github.com/alecjacobson/qslim/archive/refs/heads/master.zip; unzip qslim-2.1.zip; rm qslim-2.1.zip
 	@cd $(QSLIM_LOC)/libgfx; ./configure
 	@cd $(QSLIM_LOC)/libgfx/src; $(MAKE)
 	@cd $(QSLIM_LOC)/mixkit; ./configure
