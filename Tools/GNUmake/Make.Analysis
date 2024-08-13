@@ -43,7 +43,7 @@ ifeq ($(NEED_QSLIM),TRUE)
   include $(QSLIM_TOOL)/Make.package
   MIX_ROOT       = $(QSLIM_LOC)/mixkit/src
   GFX_ROOT       = $(QSLIM_LOC)/libgfx
-  INCLUDE_LOCATIONS += $(QSLIM_LOC) ${MIX_ROOT} ${GFX_ROOT}/include
+  INCLUDE_LOCATIONS += $(QSLIM_TOOL) ${MIX_ROOT} ${GFX_ROOT}/include
   LIBRARY_LOCATIONS += ${MIX_ROOT} ${GFX_ROOT}/src
   LIBRARIES += -lmix -lgfx 
   DEFINES += -DHAVE_CONFIG_H -DHAVE_BOOL
