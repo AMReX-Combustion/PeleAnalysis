@@ -1,9 +1,0 @@
-dnl Process this file with 'autoconf' to produce a 'configure' script
-dnl $Id: configure.in,v 1.1.1.1 2006/09/20 01:42:04 marc Exp $
-AC_REVISION($Revision: 1.1.1.1 $)
-AC_INIT(src/stdmix.h)
-
-MIX_ROOT=`pwd`
-AC_SUBST(MIX_ROOT)
-
-AC_OUTPUT(mix-config)

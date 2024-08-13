@@ -5,7 +5,9 @@ SUNDIALS_HOME     ?= $(abspath $(lastword $(PELE_PHYSICS_HOME)/Submodules/sundia
 
 TOP := $(PELE_ANALYSIS_HOME)
 
+
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
+
 
 all: $(executable) 
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
@@ -16,8 +18,7 @@ all: $(executable)
 #--------------
 Adirs := Base Boundary Extern/amrdata AmrCore LinearSolvers/MLMG
 
-ifeq ($(NEED_PARTICLES),TRUE)
-  USE_PARTICLES = TRUE
+ifeq ($(USE_PARTICLES),TRUE)
   Adirs += Particle
 endif
 
@@ -37,15 +38,16 @@ ifeq ($(NEED_DISTANCE),TRUE)
 endif
 
 ifeq ($(NEED_QSLIM),TRUE)
-  QSLIM_LOC = $(PELE_ANALYSIS_HOME)/Tools/qslim
-  include $(QSLIM_LOC)/Make.package
-  MIX_ROOT       = $(QSLIM_LOC)/qslim-2.1/mixkit/src
-  GFX_ROOT       = $(QSLIM_LOC)/qslim-2.1/libgfx
+  QSLIM_TOOL = $(PELE_ANALYSIS_HOME)/Tools/qslim
+  QSLIM_LOC = $(PELE_ANALYSIS_HOME)/Submodules/qslim
+  include $(QSLIM_TOOL)/Make.package
+  MIX_ROOT       = $(QSLIM_LOC)/mixkit/src
+  GFX_ROOT       = $(QSLIM_LOC)/libgfx
   INCLUDE_LOCATIONS += $(QSLIM_LOC) ${MIX_ROOT} ${GFX_ROOT}/include
   LIBRARY_LOCATIONS += ${MIX_ROOT} ${GFX_ROOT}/src
   LIBRARIES += -lmix -lgfx 
   DEFINES += -DHAVE_CONFIG_H -DHAVE_BOOL
-  VPATH_LOCATIONS += $(QSLIM_LOC)
+  VPATH_LOCATIONS += $(QSLIM_TOOL)
 endif
 
 #-------------------
@@ -84,17 +86,17 @@ clean::
 
 qslim:
 	@echo "==> Building qslim library"
-	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/mixkit; ./configure
-	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/mixkit/src; $(MAKE)
-	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/libgfx; ./configure
-	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/libgfx/src; $(MAKE)
+	#@cd $(PELE_ANALYSIS_HOME)/Tools/qslim; wget -O qslim-2.1.zip https://github.com/alecjacobson/qslim/archive/refs/heads/master.zip; unzip qslim-2.1.zip; rm qslim-2.1.zip
+	@cd $(QSLIM_LOC)/libgfx; ./configure
+	@cd $(QSLIM_LOC)/libgfx/src; $(MAKE)
+	@cd $(QSLIM_LOC)/mixkit; ./configure
+	@cd $(QSLIM_LOC)/mixkit/src; $(MAKE)
 
 qslimclean:
 	@echo "==> Removing qslim library"
-	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/mixkit/src; $(MAKE) clean
-	@cd $(PELE_ANALYSIS_HOME)/Tools/qslim/qslim-2.1/libgfx/src; $(MAKE) clean
-
-
+	@cd $(QSLIM_LOC)/libgfx/src; $(MAKE) clean
+	@cd $(QSLIM_LOC)/mixkit/src; $(MAKE) clean
+	
 #-----------------------------------------------------------------------------
 # for debugging.  To see the value of a Makefile variable,
 # e.g. Fmlocs, simply do "make print-Fmlocs".  This will

@@ -1,2 +1,0 @@
-vc:
-	MAKEFLAGS=""; nmake /nologo /f Makefile.vc
