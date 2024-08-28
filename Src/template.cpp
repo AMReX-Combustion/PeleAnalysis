@@ -91,7 +91,7 @@ main (int   argc,
       geoms[lev] = Geometry(amrData.ProbDomain()[lev],&rb, coord, &(is_per[0]));      
       
       Print() << "Reading data for level " << lev << std::endl;
-      amrData.FillVar(indata,finestLevel,inNames,destFillComps);
+      amrData.FillVar(indata,lev,inNames,destFillComps);
       Print() << "Data has been read for level " << lev << std::endl;
       
 #ifdef AMREX_USE_OMP
