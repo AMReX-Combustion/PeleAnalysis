@@ -104,7 +104,7 @@ jobs:
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
           cmake --version
-          # make qslim EBASE=decimateMEF ${{matrix.amrex_build_args}};
+          make qslim EBASE=decimateMEF ${{matrix.amrex_build_args}};
       - name: Dependency (sundials)
         working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
         run: |
@@ -114,8 +114,7 @@ jobs:
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
           ccache -z
-          #for TYPE in template avgPlotfiles isosurface decimateMEF partStream; do \
-          for TYPE in template avgPlotfiles isosurface partStream; do \
+          for TYPE in template avgPlotfiles isosurface decimateMEF partStream; do \
             printf "\n-------- ${TYPE} --------\n";
             make -j ${{env.NPROCS}} EBASE=${TYPE} USE_CCACHE=TRUE ${{matrix.amrex_build_args}}; \
             make realclean; \
