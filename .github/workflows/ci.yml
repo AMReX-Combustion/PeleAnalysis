@@ -1,0 +1,142 @@
+name: PeleAnalysis-CI
+
+on:
+   workflow_dispatch:
+   push:
+     branches: [development]
+   pull_request:
+     branches: [development]
+
+concurrency:
+  group: ${{github.ref}}-${{github.head_ref}}-ci
+  cancel-in-progress: true
+
+jobs:
+
+# This is mostly just copied from the PelePhysics CI
+# and pruned somewhat. Stuff to add back indicated
+# with TODOs
+#
+## TODO:
+#
+#  Formatting:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Clone
+#        uses: actions/checkout@v4
+#      - name: Check formatting
+#        uses: DoozyX/clang-format-lint-action@v0.18.2
+#        with:
+#          source: './Source ./Testing ./Mechanisms'
+#          exclude: '.'
+#          extensions: 'H,h,cpp'
+#          clangFormatVersion: 18
+#
+#  Codespell:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Clone
+#        uses: actions/checkout@v4
+#        with:
+#          submodules: false
+#      - name: Python
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.11'
+#      - name: Dependencies
+#        run: |
+#          # Install Python packages
+#          python -m pip install --upgrade pip
+#          pip install codespell
+#      - name: Run codespell
+#        run: codespell
+
+  TestAnalysisCodes:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        comp: [gnu, llvm] # TODO: cuda, hip, sycl
+        python-version: ['3.11']
+        poetry-version: ['1.4.2']
+        include:
+          - comp: gnu
+            amrex_build_args: 'COMP=gnu'
+            dependency_cmds:
+          - comp: gnu-debug
+            amrex_build_args: 'COMP=gnu DEBUG=TRUE'
+            dependency_cmds:
+          - comp: llvm
+            amrex_build_args: 'COMP=llvm'
+            dependency_cmds:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Clone PeleAnalysis
+        uses: actions/checkout@v4
+        with:
+          path: PeleAnalysis-${{matrix.comp}}
+          submodules: recursive
+      - name: Set Environment Variables
+        run: |
+          echo "PELE_ANALYSIS_HOME=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}" >> $GITHUB_ENV
+          echo "BASE_WORKING_DIRECTORY=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}/Src" >> $GITHUB_ENV
+          echo "MODELSPECIFIC_WORKING_DIRECTORY=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}/Src/ModelSpecificAnalysis" >> $GITHUB_ENV
+          echo "NPROCS=$(nproc)" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
+          echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+      - name: Install Ccache
+        run: |
+          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
+          tar xvf ccache-4.8-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+      - name: Set Up Ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.comp}}-git-${{github.sha}}
+          restore-keys: |
+               ccache-${{github.workflow}}-${{github.job}}-${{matrix.comp}}-git-
+      - name: Dependency (qslim)
+        working-directory: ${{env.BASE_WORKING_DIRECTORY}}
+        run: |
+          cmake --version
+          # make qslim EBASE=decimateMEF ${{matrix.amrex_build_args}};
+      - name: Dependency (sundials)
+        working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
+        run: |
+          cmake --version
+          make TPL ${{matrix.amrex_build_args}};
+      - name: Test (Src)
+        working-directory: ${{env.BASE_WORKING_DIRECTORY}}
+        run: |
+          ccache -z
+          #for TYPE in template avgPlotfiles isosurface decimateMEF partStream; do \
+          for TYPE in template avgPlotfiles isosurface partStream; do \
+            printf "\n-------- ${TYPE} --------\n";
+            make -j ${{env.NPROCS}} EBASE=${TYPE} USE_CCACHE=TRUE ${{matrix.amrex_build_args}}; \
+            make realclean; \
+            if [ $? -ne 0 ]; then exit 1; fi; \
+          done
+      - name: Src ccache report
+        working-directory: ${{env.BASE_WORKING_DIRECTORY}}
+        run: |
+          ccache -s
+          du -hs ${HOME}/.cache/ccache
+      - name: Test (ModelSpecificAnalysis)
+        working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
+        run: |
+          ccache -z
+          for TYPE in plotTransportCoeff plotTYtoLe; do \
+            make -j ${{env.NPROCS}} EBASE=${TYPE} USE_CCACHE=TRUE ${{matrix.amrex_build_args}}; \
+            make realclean; \
+            if [ $? -ne 0 ]; then exit 1; fi; \
+          done
+      - name: ModelSpecificAnalysis ccache report
+        working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
+        run: |
+          ccache -s
+          du -hs ${HOME}/.cache/ccache
