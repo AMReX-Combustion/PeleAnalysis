@@ -104,6 +104,7 @@ jobs:
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
           cmake --version
+          sudo apt-get update && sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
           make qslim EBASE=decimateMEF ${{matrix.amrex_build_args}};
       - name: Dependency (sundials)
         working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
