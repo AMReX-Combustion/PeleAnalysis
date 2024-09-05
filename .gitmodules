@@ -1,6 +1,8 @@
 [submodule "Submodules/PelePhysics"]
 	path = Submodules/PelePhysics
 	url = https://github.com/AMReX-Combustion/PelePhysics.git
+        shallow = true
 [submodule "Submodules/qslim"]
 	path = Submodules/qslim
 	url = https://github.com/AMReX-Combustion/qslim.git
+        shallow = true
