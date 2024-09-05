@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include <list>
 
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
@@ -1040,7 +1041,7 @@ class FABdata
 public:
   FABdata(size_t i, int n)
     {fab.resize(Box(IntVect::TheZeroVector(),
-                    IntVect(D_DECL(i-1,0,0))),n);}
+                    IntVect(AMREX_D_DECL(i-1,0,0))),n);}
   Real& operator[](size_t i) {return fab.dataPtr()[i];}
   const FArrayBox& getFab() const {return fab;}
   FArrayBox fab;
@@ -1469,7 +1470,7 @@ main (int   argc,
       if (lev > 0) {
         Vector<BCRec> bc(AMREX_SPACEDIM);
         int r = pf.refRatio(lev-1);
-        IntVect ratio(D_DECL(r,r,r));
+        IntVect ratio(AMREX_D_DECL(r,r,r));
         FillPatchTwoLevels(states[lev], time,
                            {&states[lev-1]},{time},
                            {&states[lev]},{time},
@@ -1515,7 +1516,7 @@ main (int   argc,
         } else {
           BCRec bc;
           int r = pf.refRatio(lev-1);
-          IntVect ratio(D_DECL(r,r,r));
+          IntVect ratio(AMREX_D_DECL(r,r,r));
           FillPatchTwoLevels(gstate, time,
                              {&pfdata[lev-1][n]},{time},
                              {&pfdata[lev][n]},{time},
@@ -1739,7 +1740,7 @@ main (int   argc,
         levelSteps[lev] = pf.levelStep(lev);
         if (lev<finestLevel) {
           int ir = pf.refRatio(lev);
-          refRatio[lev] = IntVect(D_DECL(ir,ir,ir));
+          refRatio[lev] = IntVect(AMREX_D_DECL(ir,ir,ir));
         }
       }
       WriteMultiLevelPlotfile(outfile,Nlev,ptrs,{"distance"},geoms,time,levelSteps,refRatio);
@@ -1927,7 +1928,7 @@ main (int   argc,
             ost.open(tmpFile.c_str());
 
             size_t Npts = sortedNodes.size();
-            Box bigBox(IntVect::TheZeroVector(),IntVect(D_DECL(Npts-1,0,0)));
+            Box bigBox(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(Npts-1,0,0)));
             BoxArray little_boxes(bigBox); little_boxes.maxSize(chunk_size);
             FArrayBox little_fab;
             if (verbose) {

@@ -15,6 +15,11 @@
 
 using namespace amrex;
 
+pele::physics::PeleParams<pele::physics::transport::TransParm<
+  pele::physics::PhysicsType::eos_type,
+  pele::physics::PhysicsType::transport_type>>
+  trans_parms;
+
 static
 void 
 print_usage (int,
@@ -60,11 +65,8 @@ main (int   argc,
     }
     AmrData& amrData = dataServices.AmrDataRef();
 
-    pele::physics::transport::TransportParams<
-      pele::physics::PhysicsType::transport_type>
-      trans_parms;
-    trans_parms.allocate();
-
+    trans_parms.initialize();
+    
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel",finestLevel);
     int Nlev = finestLevel + 1;
@@ -89,7 +91,8 @@ main (int   argc,
 
     const int nCompIn  = NUM_SPECIES + 2;
     const int idDout   = 0;
-    const int idMuout  = idDout + NUM_SPECIES;
+    const int idChiout = idDout + NUM_SPECIES; 
+    const int idMuout  = idChiout + NUM_SPECIES;
     const int idXiout  = idMuout + 1;
     const int idLamout = idXiout + 1;
     const int nCompOut = idLamout + 1;
@@ -105,14 +108,15 @@ main (int   argc,
       destFillComps[i] = idYlocal + i;
       inNames[i] =  "Y(" + spec_names[i] + ")";
       outNames[i] = "rhoD(" + spec_names[i] + ")";
+      outNames[idChiout + i] = "chi(" + spec_names[i] + ")";
     }
     destFillComps[idTlocal] = idTlocal;
     destFillComps[idRlocal] = idRlocal;
     inNames[idTlocal] = TName;
     inNames[idRlocal] = RName;
-    outNames[NUM_SPECIES  ] = "mu";
-    outNames[NUM_SPECIES+1] = "xi";
-    outNames[NUM_SPECIES+2] = "lambda";
+    outNames[idMuout] = "mu";
+    outNames[idXiout] = "xi";
+    outNames[idLamout] = "lambda";
 
     Vector<std::unique_ptr<MultiFab>> outdata(Nlev);
     Vector<Geometry> geoms(Nlev);
@@ -144,7 +148,7 @@ main (int   argc,
       Print() << "Data has been read for level " << lev << std::endl;
 
       // Get the transport data pointer
-      auto const* ltransparm = trans_parms.device_trans_parm();
+      auto const* ltransparm = trans_parms.device_parm();
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -157,14 +161,15 @@ main (int   argc,
         Array4<Real> const& T_a = indata.array(mfi,idTlocal);
         Array4<Real> const& rho_a = indata.array(mfi,idRlocal);
         Array4<Real> const& D_a = outdata[lev]->array(mfi,idDout);
-        Array4<Real> const& mu_a = outdata[lev]->array(mfi,idMuout);
+	Array4<Real> const& chi_a = outdata[lev]->array(mfi,idChiout);
+	Array4<Real> const& mu_a = outdata[lev]->array(mfi,idMuout);
         Array4<Real> const& xi_a = outdata[lev]->array(mfi,idXiout);
         Array4<Real> const& lam_a = outdata[lev]->array(mfi,idLamout);
 
         amrex::launch(bx, [=] AMREX_GPU_DEVICE(amrex::Box const& tbx) {
           auto trans = pele::physics::PhysicsType::transport();
           trans.get_transport_coeffs(
-            tbx, Y_a, T_a, rho_a, D_a, mu_a, xi_a, lam_a, ltransparm);
+				     tbx, Y_a, T_a, rho_a, D_a, chi_a, mu_a, xi_a, lam_a, ltransparm);
         });
       }
       Print() << "Derive finished for level " << lev << std::endl;

@@ -1,190 +1,205 @@
 #include <AMReX_ParmParse.H>
-#include <AMReX_MultiFab.H>
 #include <AMReX_MultiFabUtil.H>
-#include <AMReX_DataServices.H>
-#include <AMReX_WritePlotFile.H>
 #include <AMReX_PlotFileUtil.H>
+#include <PltFileManager.H>
 
 using namespace amrex;
+
+static
+void
+print_usage (int,
+             char* argv[])
+{
+  std::cerr << "Utility to average pltfiles on same domain but with non-matching AMR";
+  std::cerr << "usage:\n";
+  std::cerr << argv[0] << "infiles=<s1 s2 s3> [options] \n\tOptions:\n";
+  std::cerr << "\t     infiles=<s1 s2 s3> where <s1> <s2> amnd <s3> are pltfiles\n";
+  std::cerr << "\t     outfile=<s> where <s> is the output pltfile\n";
+  std::cerr << "\t     variables=<s1 s2 s3> where <s1> <s2> and <s3> are variable names to select for combined pltfile [DEF-> all possible]\n";
+  std::cerr << "\t     output_max_level=<s> where <s> is the max refinement level to combine, zero-indexed [DEF->1000]\n";
+  std::cerr << "\t     output_max_grid_size=<s> where <s> is the output max_grid_size. If all BoxArrays are the same, this is ignored. [DEF->32]\n";
+  std::cerr << "\t     interp_type=<int> where this determines the type of interpolation when FillPatching: 0 -> piecewise constant, 1 -> cell cons linear [DEF->1]\n";
+exit(1);
+}
 
 int
 main (int   argc,
       char* argv[])
 {
-  Initialize(argc,argv);
-  {
-    ParmParse pp;
+   amrex::Initialize(argc,argv);
+   {
+     if (argc < 2) {
+       print_usage(argc,argv);
+     }
+     // ---------------------------------------------------------------------
+     // ParmParse
+     // ---------------------------------------------------------------------
+     ParmParse pp;
 
-    // Open first plotfile header and create an amrData object pointing into it
-    int nf = pp.countval("infiles");
-    AMREX_ALWAYS_ASSERT(nf>0);
-    Vector<std::string> plotFileNames; pp.getarr("infiles",plotFileNames,0,nf);
+     if (pp.contains("help")) {
+       print_usage(argc,argv);
+     }
 
-    std::string outfile("JUNK");
-    pp.query("outfile",outfile);
+     // Arbitrary number of input files will be combined and averaged
+     int nf = pp.countval("infiles");
+     AMREX_ALWAYS_ASSERT(nf>0);
+     Vector<std::string> plotFileNames; pp.getarr("infiles",plotFileNames,0,nf);
 
-    DataServices::SetBatchMode();
-    Amrvis::FileType fileType(Amrvis::NEWPLT);
-    DataServices dataServices0(plotFileNames[0], fileType);
-    if( ! dataServices0.AmrDataOk()) {
-      DataServices::Dispatch(DataServices::ExitRequest, NULL);
-    }
-    AmrData& amrData0 = dataServices0.AmrDataRef();
+     // into a single output file
+     std::string outfile("plt_averaged");
+     pp.query("outfile",outfile);
 
-    Vector<int> comps;
-    if (int nc = pp.countval("comps"))
-    {
-      comps.resize(nc);
-      pp.getarr("comps",comps,0,nc);
-    }
-    else
-    {
-      int sComp = 0;
-      pp.query("sComp",sComp);
-      int nComp = amrData0.NComp();
-      pp.query("nComp",nComp);
-      AMREX_ASSERT(sComp+nComp <= amrData0.NComp());
-      comps.resize(nComp);
-      for (int i=0; i<nComp; ++i)
-        comps[i] = sComp + i;
-    }
-    Vector<std::string> pltnames(comps.size());
-    for (int i=0; i<comps.size(); ++i) {
-      pltnames[i] = amrData0.PlotVarNames()[comps[i]];
-    }
-    int finestLevel = amrData0.FinestLevel(); pp.query("finestLevel",finestLevel);
-    AMREX_ALWAYS_ASSERT(finestLevel >= 0 && finestLevel<=amrData0.FinestLevel());
+     // Vairables to keep - will keep all if not specified
+     int nvar = pp.countval("variables");
+     Vector<std::string> variableNames;
+     pp.queryarr("variables",variableNames,0,nvar);
+     bool all_vars = nvar > 0 ? false : true;
+     Vector<Vector<int>> var_idxs;
 
-    Box subbox = amrData0.ProbDomain()[finestLevel];
-    /* Deactivate this for now. Lead to small differences to the original
-     * pltfile box due to arithmetic operations
-    if (int nx=pp.countval("box"))
-    {
-      Vector<int> inBox;
-      pp.getarr("box",inBox,0,nx);
-      int d=AMREX_SPACEDIM;
-      AMREX_ASSERT(inBox.size()==2*d);
-      subbox=Box(IntVect(D_DECL(inBox[0],inBox[1],inBox[2])),
-                 IntVect(D_DECL(inBox[d],inBox[d+1],inBox[d+2])),
-                 IndexType::TheCellType());
-    }
+     // Maximum number of levels to keep
+     int output_max_level = 1000;
+     pp.query("output_max_level", output_max_level);
+     output_max_level +=1; // account for base level
 
-    Vector<Real> plo(AMREX_SPACEDIM), phi(AMREX_SPACEDIM);
-    const IntVect ilo = subbox.smallEnd();
-    const IntVect ihi = subbox.bigEnd();
+     // Max grid size in output data
+     int output_max_grid_size = 32;
+     pp.query("output_max_grid_size", output_max_grid_size);
 
-    for (int i =0 ; i< AMREX_SPACEDIM; i++) {
-       plo[i] = amrData0.ProbLo()[i]+(ilo[i])*amrData0.DxLevel()[finestLevel][i];
-       phi[i] = amrData0.ProbLo()[i]+(ihi[i]+1)*amrData0.DxLevel()[finestLevel][i];
-    }
-    */
+     // Type of interpolation to do
+     int interp_type = 1;
+     pp.query("interp_type",interp_type);
 
-    const Vector<int>& ratio = amrData0.RefRatio();
 
-    Vector<Box> domain(finestLevel+1);
-    Vector<int> ratioTot(finestLevel+1);
-    domain[finestLevel] = subbox;
-    for (int lev=finestLevel-1; lev>=0; --lev) {
-      domain[lev] = coarsen(domain[lev+1],ratio[lev]);
-    }
-    for (int lev=1; lev<=finestLevel; ++lev) {
-      domain[lev] = refine(domain[lev-1],ratio[lev-1]);
-    }
-    for (int lev=0; lev<=finestLevel; ++lev) {
-      ratioTot[lev] = (lev == 0 ? 1 : ratioTot[lev-1] * ratio[lev-1]);
-    }
+     // ---------------------------------------------------------------------
+     // Execute
+     // ---------------------------------------------------------------------
 
-    AMREX_ALWAYS_ASSERT(domain[0].numPts() > 0);
-    Vector<Geometry> geom(finestLevel+1);
-    RealBox rb(AMREX_D_DECL(amrData0.ProbLo()[0],amrData0.ProbLo()[1],amrData0.ProbLo()[2]),
-               AMREX_D_DECL(amrData0.ProbHi()[0],amrData0.ProbHi()[1],amrData0.ProbHi()[2]));
-    Array<int,AMREX_SPACEDIM> is_per = {0};
-    for (int lev=0; lev<=finestLevel; ++lev) {
-      geom[lev].define(domain[lev],rb,amrData0.CoordSys(),is_per);
-    }
-    BoxArray ba_res(domain[0]);
-    int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
-    ba_res.maxSize(max_grid_size);
+     // First load the metadata of each input plt file
+     Print() << "Loading plt file metadata..." << std::endl;
+     Vector<pele::physics::pltfilemanager::PltFileManager*> plt_file_data(nf);
+     int nlevels = 0;
+     for (int i = 0; i < plt_file_data.size(); ++i) {
+       plt_file_data[i] = new pele::physics::pltfilemanager::PltFileManager(plotFileNames[i]);
+       nlevels = max(nlevels, plt_file_data[i]->getNlev());
+       // Verify we have the right vairables
+       if (all_vars) {
+         if (i==0) {
+           variableNames = plt_file_data[i]->getVariableList();
+           nvar = variableNames.size();
+         } else {
+           Vector<std::string> variableNamesTest = plt_file_data[i]->getVariableList();
+           if (variableNamesTest.size() != nvar) {
+             amrex::Abort("All plt files must have same number of variables unless variable list is specified. File: " + plotFileNames[i]);
+           }
+           for (int var = 0; var < nvar; ++var) {
+             if (variableNames[var] != variableNamesTest[var]) {
+               amrex::Abort("All plt files must have same variables unless variable list is specified. File: " + plotFileNames[i]);
+             }
+           }
+         }
+       } else {
+         Vector<int> var_idx_loc;
+         Vector<std::string> variableNamesPlt = plt_file_data[i]->getVariableList();
+         for (int var = 0; var < nvar; ++var) {
+           int pvar;
+           for (pvar = 0; pvar < variableNamesPlt.size(); ++pvar) {
+             if (variableNames[var] == variableNamesPlt[pvar]) {
+               var_idx_loc.push_back(pvar);
+               break;
+             }
+           }
+           if (pvar == variableNamesPlt.size()) {
+             amrex::Abort("Variable '" + variableNames[var] + "' not found in file: " + plotFileNames[i]);
+           }
+         }
+         var_idxs.push_back(var_idx_loc);
+       }
+     }
+     nlevels = min(nlevels, output_max_level);
+     Print() << " -> Combining " << nf << " files across " << nlevels << " levels" << std::endl;
 
-    bool all_same_boxes = false; pp.query("all_same_boxes",all_same_boxes);
-    Print() << "All same boxes: " << all_same_boxes << std::endl;
+     // Loop over each input file to get union of boxes on each level
+     // On any level with all same BoxArray, we use that without modification
+     Print() << "Finding the combined grids..." << std::endl;
+     Vector<BoxArray> combined_boxes;
+     Vector<Geometry> level_geometries;
+     Vector<int> boxarray_all_same(nlevels, 1);
+     for (int i = 0; i < plt_file_data.size(); ++i) {
+       int nlevels_file = min(nlevels, plt_file_data[i]->getNlev());
+       for (int lev = 0; lev < nlevels_file; ++lev) {
+         // Verify we have the same geometry
+         if (level_geometries.size() <= lev) {
+           level_geometries.push_back(plt_file_data[i]->getGeom(lev));
+         } else {
+           bool same_domain = AlmostEqual(plt_file_data[i]->getGeom(lev).ProbDomain(), level_geometries[lev].ProbDomain());
+           bool same_box = plt_file_data[i]->getGeom(lev).Domain() == level_geometries[lev].Domain();
+           if (!(same_domain and same_box)) {
+             amrex::Abort("All plt files must have the same geometry");
+           }
+         }
+         // Now combine the boxes - if not the same
+         if (combined_boxes.size() <= lev) {
+           combined_boxes.push_back(BoxArray(plt_file_data[i]->getGrid(lev)));
+         } else {
+           BoxList boxlist_file{plt_file_data[i]->getGrid(lev)};
+           BoxList boxlist_combined{combined_boxes[lev]};
+           if (boxlist_combined != boxlist_file) {
+             boxlist_combined.catenate(boxlist_file);
+             combined_boxes[lev] = BoxArray(boxlist_combined);
+             combined_boxes[lev].removeOverlap();
+             boxarray_all_same[lev] = 0;
+           }
+         }
+       }
+     }
 
-    if (all_same_boxes) {
-      Vector<MultiFab*> mf_avg(finestLevel+1);
-      for (int lev=0; lev<=finestLevel; ++lev) {
-        const BoxArray& ba_lev = amrData0.boxArray(lev);
-        mf_avg[lev] = new MultiFab(ba_lev,DistributionMapping(ba_lev),comps.size(),0);
-        mf_avg[lev]->setVal(0);
-      }
+     // Create the data structures to read in the data and keep running sums
+     Vector<MultiFab> running_data(nlevels);
+     Vector<MultiFab> tmp_data(nlevels);
+     Vector<IntVect> refRatios(nlevels-1);
+     for (int lev = 0; lev < nlevels; ++lev) {
+       if (!boxarray_all_same[lev]) {
+         combined_boxes[lev].maxSize(output_max_grid_size);
+       }
+       DistributionMapping dmap = DistributionMapping(combined_boxes[lev]);
+       tmp_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
+       running_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
+       running_data[lev].setVal(0.0);
+       if (lev > 0) {
+         int rr = int(level_geometries[lev-1].CellSize(0) / level_geometries[lev].CellSize(0));
+         refRatios[lev-1] = {AMREX_D_DECL(rr,rr,rr)};
+       }
+     }
 
-      for (int iFile=0; iFile<plotFileNames.size(); ++iFile) {
-        DataServices dataServices(plotFileNames[iFile], fileType);
-        if( ! dataServices.AmrDataOk())
-        {
-          DataServices::Dispatch(DataServices::ExitRequest, NULL);
-        }
-        AmrData& amrData = dataServices.AmrDataRef();
+     // Fillpatch tmp_data from each pltfile and add to running data
+     Print() << "Fillpatching and combining..." << std::endl;
+     for (int i = 0; i < plt_file_data.size(); ++i) {
+       Print() << "   working on file " << plotFileNames[i] << " (" << i+1 << "/" << plt_file_data.size() << ")" << std::endl;
+       for (int lev = 0; lev < nlevels; ++lev) {
+         if (all_vars) {
+           plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], 0, 0, nvar, tmp_data[lev], interp_type);
+         } else {
+           for (int var = 0; var < nvar; ++var) {
+             plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[i][var], var, 1, tmp_data[lev], interp_type);
+           }
+         }
+         MultiFab::Add(running_data[lev], tmp_data[lev], 0, 0, nvar, 0);
+       }
+       delete plt_file_data[i];
+     }
 
-        Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
+     // Divide by number of files to get average
+     Real factor = 1.0 / Real(nf);
+     for (int lev = 0; lev < nlevels; ++lev) {
+       running_data[lev].mult(factor);
+     }
 
-        for (int lev=0; lev<=finestLevel; ++lev)
-        {
-          AMREX_ALWAYS_ASSERT_WITH_MESSAGE(amrData.boxArray(lev) == mf_avg[lev]->boxArray(),"BoxArrays not equal");
-
-          for (int i=0; i<comps.size(); ++i)
-          {
-            MultiFab mfComp(mf_avg[lev]->boxArray(),mf_avg[lev]->DistributionMap(),1,0);
-            mfComp.setVal(0);
-            mfComp.ParallelCopy(amrData.GetGrids(lev,comps[i]));
-            MultiFab::Add(*mf_avg[lev],mfComp,0,i,1,0);
-          }
-        }
-      }
-      Print() << "Writing output to " << outfile << std::endl;
-      for (int lev=0; lev<=finestLevel; ++lev) {
-        mf_avg[lev]->mult(1.0/nf);
-      }
-      Vector<int> isteps(finestLevel+1, 0);
-      Vector<IntVect> refRatios(finestLevel,{AMREX_D_DECL(2, 2, 2)});
-      amrex::WriteMultiLevelPlotfile(outfile, finestLevel+1, GetVecOfConstPtrs(mf_avg), pltnames,
-                                     geom, 0.0, isteps, refRatios);
-    }
-    else
-    {
-      MultiFab mf_avg(ba_res,DistributionMapping(ba_res),comps.size(),0);
-      mf_avg.setVal(0);
-
-      MultiFab mf_avgDn(ba_res,DistributionMapping(ba_res),comps.size(),0);
-      for (int iFile=0; iFile<plotFileNames.size(); ++iFile) {
-        DataServices dataServices(plotFileNames[iFile], fileType);
-        if( ! dataServices.AmrDataOk()) {
-          DataServices::Dispatch(DataServices::ExitRequest, NULL);
-        }
-        AmrData& amrData = dataServices.AmrDataRef();
-
-        Print() << "Reading data in " << plotFileNames[iFile] << std::endl;
-
-        for (int lev=0; lev<=finestLevel; ++lev) {
-          for (int i=0; i<comps.size(); ++i)
-          {
-            MultiFab alias(mf_avgDn,make_alias,i,1);
-            if (lev==0) {
-              alias.ParallelCopy(amrData.GetGrids(0,comps[i],domain[0]));
-            } else {
-              average_down(amrData.GetGrids(lev,comps[i],domain[lev]),alias,geom[lev],geom[0],0,1,ratioTot[lev]);
-            }
-            amrData.FlushGrids(comps[i]);
-          }
-        }
-
-        MultiFab::Add(mf_avg,mf_avgDn,0,0,comps.size(),0);
-      }
-
-      mf_avg.mult(1.0/nf);
-      writePlotFile(outfile.c_str(),mf_avg,geom[0],IntVect(AMREX_D_DECL(2,2,2)),0.0,pltnames);
-    }
-  }
-  Finalize();
-  return 0;
+     // Save the final plt file
+     Print() << "Saving final plt file..." << std::endl;
+     Vector<int> stepidx(nlevels,0);
+     WriteMultiLevelPlotfile(outfile,nlevels, GetVecOfConstPtrs(running_data),variableNames,level_geometries,0.0,stepidx,refRatios);
+     Print() << "Done." << std::endl;
+   }
+   amrex::Finalize();
+   return 0;
 }
-

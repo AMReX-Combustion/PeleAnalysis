@@ -7,7 +7,6 @@ using std::endl;
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <AMReX_WritePlotFile.H>
 
 using namespace amrex;
 
@@ -690,14 +689,14 @@ main (int   argc,
                         filename = infile + outSuffix + "/Pdf_" + whichVarOut[var1] + "_" + whichVarOut[var2] + ".fab";
                         std::cout << "Opening file " << filename << std::endl;
                         std::ofstream os(filename.c_str(),std::ios::binary);
-                        FArrayBox fab(Box(IntVect::TheZeroVector(),IntVect(D_DECL(nBins-1,nBins-1,0))),4);
+                        FArrayBox fab(Box(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nBins-1,nBins-1,0))),4);
                         std::cout << "box: " << fab.box() << std::endl;
                         for (int v1i=0; v1i<nBins; v1i++) {
                             Real v1 = vMin[var1] + dv1*(0.5+(Real)v1i);
                             for (int v2i=0; v2i<nBins; v2i++) {
                                 Real v2 = vMin[var2] + dv2*(0.5+(Real)v2i);
                                 Real p  = bin[v1i*nBins+v2i];
-                                IntVect iv(D_DECL(v1i,v2i,0));
+                                IntVect iv(AMREX_D_DECL(v1i,v2i,0));
 
                                 fab(iv,0) = v1;
                                 fab(iv,1) = v2;
@@ -742,7 +741,7 @@ main (int   argc,
             //pmap[0] = ParallelDescriptor::IOProcessorNumber();
             //pmap[1] = ParallelDescriptor::MyProc();
             //DistributionMapping distMap(pmap);
-            BoxArray ba(Box(IntVect::TheZeroVector(),IntVect(D_DECL(nBins-1,nBins-1,0))));
+            BoxArray ba(Box(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nBins-1,nBins-1,0))));
             DistributionMapping distMap(ba);
             MultiFab omf(ba, distMap, 2*nPairs, ngrow);
             omf.setVal(0);
@@ -1030,13 +1029,13 @@ main (int   argc,
                         filename = infile + outSuffix + "/Pdf_" + whichVarOut[var1] + "_" + whichVarOut[var2] + ".fab";
                         std::cout << "Opening file " << filename << std::endl;
                         std::ofstream os(filename.c_str());
-                        FArrayBox fab(Box(IntVect::TheZeroVector(),IntVect(D_DECL(nBins-1,nBins-1,0))),4);
+                        FArrayBox fab(Box(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nBins-1,nBins-1,0))),4);
                         for (int v1i=0; v1i<nBins; v1i++) {
                             Real v1 = vMin[var1] + dv1*(0.5+(Real)v1i);
                             for (int v2i=0; v2i<nBins; v2i++) {
                                 Real v2 = vMin[var2] + dv2*(0.5+(Real)v2i);
                                 Real p  = binAv[v1i*nBins+v2i];
-                                IntVect iv(D_DECL(v1i,v2i,0));
+                                IntVect iv(AMREX_D_DECL(v1i,v2i,0));
                                 fab(iv,0) = v1;
                                 fab(iv,1) = v2;
                                 fab(iv,2) = log(p+small);
