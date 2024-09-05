@@ -521,7 +521,7 @@ find_containing_box(const FArrayBox&   XYZ,
     {
         for (int j=1; j<XYZ.box().length(0); ++j)
         {
-            strIV = IntVect(D_DECL(j,0,0));
+            strIV = IntVect(AMREX_D_DECL(j,0,0));
             Real loc = XYZ(strIV,idXYZ[d]);
             locL[d] = std::min(locL[d], loc);
             locH[d] = std::max(locH[d], loc);

@@ -706,7 +706,7 @@ main (int   argc,
            volInt[oFirstAvg+j] = 0;
            for (int k=0; k<nodesPerElt; ++k){
               volInt[oFirstAvg+j] +=
-                  (*streamlines[n[k]->amr_lev])[n[k]->box_idx](IntVect(D_DECL(n[k]->pt_idx,0,0)),comp);
+                  (*streamlines[n[k]->amr_lev])[n[k]->box_idx](IntVect(AMREX_D_DECL(n[k]->pt_idx,0,0)),comp);
            }
            
            volInt[oFirstAvg+j] /= nodesPerElt;
@@ -717,7 +717,7 @@ main (int   argc,
         {
             volInt[oFirstAux+j] = 0;
             for (int k=0; k<nodesPerElt; ++k)
-                volInt[oFirstAux+j] += auxNodes(IntVect(D_DECL(faceData[offset+k]-1,0,0)),j);
+                volInt[oFirstAux+j] += auxNodes(IntVect(AMREX_D_DECL(faceData[offset+k]-1,0,0)),j);
             volInt[oFirstAux+j] *= 1/nodesPerElt;
         }
 
@@ -887,7 +887,7 @@ max_grad(const MLloc&            p,
     IntVect hi, lo;
     Real hiVal, loVal, hiX[3], loX[3], tot;
 
-    hi = IntVect(D_DECL(p.pt_idx,fab.box().smallEnd()[1],0));
+    hi = IntVect(AMREX_D_DECL(p.pt_idx,fab.box().smallEnd()[1],0));
     BL_ASSERT(fab.box().contains(hi));
     hiVal = fab(hi,comp);
     for (int j=0; j<BL_SPACEDIM; ++j)
@@ -917,7 +917,7 @@ max_grad(const MLloc&            p,
     }
     eps = 1.e-4*maxs;
 
-    hi = IntVect(D_DECL(p.pt_idx,fab.box().smallEnd()[1],0));
+    hi = IntVect(AMREX_D_DECL(p.pt_idx,fab.box().smallEnd()[1],0));
     int loc = 1;
     for (int i=1; i<nPts; ++i)
     {
@@ -968,7 +968,7 @@ peak_val(const MLloc&            p,
     const int nPts = fab.box().length(1);
 
     int peakValLoc = fab.box().smallEnd()[1];
-    IntVect iv = IntVect(D_DECL(p.pt_idx,peakValLoc,0));
+    IntVect iv = IntVect(AMREX_D_DECL(p.pt_idx,peakValLoc,0));
     BL_ASSERT(fab.box().contains(iv));
     Real peakVal = fab(iv,pComp);
     for (int i=1; i<nPts; ++i)
@@ -1024,10 +1024,10 @@ wedge_volume_int(const Vector<const MLloc*>& p,
     {
         Real A[2], B[2], C[2], D[2];
 
-        const IntVect iv1(D_DECL(P1,ptOnStr,0));
-        const IntVect iv2(D_DECL(P2,ptOnStr,0));
-        const IntVect iv1p(D_DECL(P1,ptOnStr+1,0));
-        const IntVect iv2p(D_DECL(P2,ptOnStr+1,0));
+        const IntVect iv1(AMREX_D_DECL(P1,ptOnStr,0));
+        const IntVect iv2(AMREX_D_DECL(P2,ptOnStr,0));
+        const IntVect iv1p(AMREX_D_DECL(P1,ptOnStr+1,0));
+        const IntVect iv2p(AMREX_D_DECL(P2,ptOnStr+1,0));
 
         A[0] = (*data[L1])[B1](iv1,idX[0]);
         A[1] = (*data[L1])[B1](iv1,idX[1]);
@@ -1078,12 +1078,12 @@ wedge_volume_int(const Vector<const MLloc*>& p,
 
         Real A[3], B[3], C[3], D[3], E[3], F[3];
 
-        const IntVect iv1(D_DECL(P1,ptOnStr,0));
-        const IntVect iv2(D_DECL(P2,ptOnStr,0));
-        const IntVect iv3(D_DECL(P3,ptOnStr,0));
-        const IntVect iv1p(D_DECL(P1,ptOnStr+1,0));
-        const IntVect iv2p(D_DECL(P2,ptOnStr+1,0));
-        const IntVect iv3p(D_DECL(P3,ptOnStr+1,0));
+        const IntVect iv1(AMREX_D_DECL(P1,ptOnStr,0));
+        const IntVect iv2(AMREX_D_DECL(P2,ptOnStr,0));
+        const IntVect iv3(AMREX_D_DECL(P3,ptOnStr,0));
+        const IntVect iv1p(AMREX_D_DECL(P1,ptOnStr+1,0));
+        const IntVect iv2p(AMREX_D_DECL(P2,ptOnStr+1,0));
+        const IntVect iv3p(AMREX_D_DECL(P3,ptOnStr+1,0));
 
         A[0] = (*data[L1])[B1](iv1,idX[0]);
         A[1] = (*data[L1])[B1](iv1,idX[1]);
@@ -1131,12 +1131,12 @@ wedge_volume_int(const Vector<const MLloc*>& p,
             const Real vol_ABDF = tetVol(B,D,F,A);
             const Real vol_ABEF = tetVol(B,E,F,A);
 
-            const Real vA = (*data[L1])[B1](IntVect(D_DECL(P1,ptOnStr,  0)),comp);
-            const Real vB = (*data[L2])[B2](IntVect(D_DECL(P2,ptOnStr,  0)),comp);
-            const Real vC = (*data[L3])[B3](IntVect(D_DECL(P3,ptOnStr,  0)),comp);                    
-            const Real vD = (*data[L1])[B1](IntVect(D_DECL(P1,ptOnStr+1,0)),comp);
-            const Real vE = (*data[L2])[B2](IntVect(D_DECL(P2,ptOnStr+1,0)),comp);
-            const Real vF = (*data[L3])[B3](IntVect(D_DECL(P3,ptOnStr+1,0)),comp);
+            const Real vA = (*data[L1])[B1](IntVect(AMREX_D_DECL(P1,ptOnStr,  0)),comp);
+            const Real vB = (*data[L2])[B2](IntVect(AMREX_D_DECL(P2,ptOnStr,  0)),comp);
+            const Real vC = (*data[L3])[B3](IntVect(AMREX_D_DECL(P3,ptOnStr,  0)),comp);                    
+            const Real vD = (*data[L1])[B1](IntVect(AMREX_D_DECL(P1,ptOnStr+1,0)),comp);
+            const Real vE = (*data[L2])[B2](IntVect(AMREX_D_DECL(P2,ptOnStr+1,0)),comp);
+            const Real vF = (*data[L3])[B3](IntVect(AMREX_D_DECL(P3,ptOnStr+1,0)),comp);
 
             // These are actually 24 times the integral
             const Real int_1 = ( (vD+vA+vB+vC)*vol_DABC + 
@@ -1197,8 +1197,8 @@ wedge_surf_area(Vector<const MLloc*> p,
     if (nComp==2)
     {
         Real A[2], B[2];
-        const IntVect iv1(D_DECL(P1,ptOnStr,0));
-        const IntVect iv2(D_DECL(P2,ptOnStr,0));
+        const IntVect iv1(AMREX_D_DECL(P1,ptOnStr,0));
+        const IntVect iv2(AMREX_D_DECL(P2,ptOnStr,0));
         
         A[0] = (*data[L1])[B1](iv1,idX[0]);
         A[1] = (*data[L1])[B1](iv1,idX[1]);
@@ -1218,9 +1218,9 @@ wedge_surf_area(Vector<const MLloc*> p,
         int P3 = p[2]->pt_idx;
         
         Real A[3], B[3], C[3];
-        const IntVect iv1(D_DECL(P1,ptOnStr,0));
-        const IntVect iv2(D_DECL(P2,ptOnStr,0));
-        const IntVect iv3(D_DECL(P3,ptOnStr,0));
+        const IntVect iv1(AMREX_D_DECL(P1,ptOnStr,0));
+        const IntVect iv2(AMREX_D_DECL(P2,ptOnStr,0));
+        const IntVect iv3(AMREX_D_DECL(P3,ptOnStr,0));
         
         A[0] = (*data[L1])[B1](iv1,idX[0]);
         A[1] = (*data[L1])[B1](iv1,idX[1]);
@@ -1509,11 +1509,11 @@ write_binary_tec_file(const std::string&          outfile,
         {
             const MLloc& n = nodeMap[ faceData[offset+j] - 1 ];
             const IntVect iv = IntVect(n.pt_idx,ptOnStr,0);
-            nodeFab(IntVect(D_DECL(offset+j,0,0)),0) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[0]);
-            nodeFab(IntVect(D_DECL(offset+j,0,0)),1) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[1]);
-            nodeFab(IntVect(D_DECL(offset+j,0,0)),2) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[2]);
+            nodeFab(IntVect(AMREX_D_DECL(offset+j,0,0)),0) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[0]);
+            nodeFab(IntVect(AMREX_D_DECL(offset+j,0,0)),1) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[1]);
+            nodeFab(IntVect(AMREX_D_DECL(offset+j,0,0)),2) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[2]);
             for (int m=0; m<eltData[0].size(); ++m)
-                nodeFab(IntVect(D_DECL(offset+j,0,0)),m+BL_SPACEDIM) = eltData[i][m];
+                nodeFab(IntVect(AMREX_D_DECL(offset+j,0,0)),m+BL_SPACEDIM) = eltData[i][m];
             connData[offset+j] = offset+ j + 1;
         }
     }
@@ -1560,7 +1560,7 @@ write_ascii_tec_file(const std::string&           outfile,
     int nodesPerElt = faceData.size() / nElts;
     int nPts = nElts*nodesPerElt;
     
-    Box nbox(IntVect::TheZeroVector(),IntVect(D_DECL(nPts-1,0,0)));
+    Box nbox(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nPts-1,0,0)));
     FArrayBox nodeFab(nbox,nComp);
     Vector<int> connData(nPts);
     // Build nodeFab so we can write it, use ptOnStr=0 to get point at surface
@@ -1575,11 +1575,11 @@ write_ascii_tec_file(const std::string&           outfile,
         for (int j=0; j<nodesPerElt; ++j)
         {
             const MLloc& n = nodeMap[ faceData[offset+j] - 1 ];
-            const IntVect iv = IntVect(D_DECL(n.pt_idx,ptOnStr,0));
+            const IntVect iv = IntVect(AMREX_D_DECL(n.pt_idx,ptOnStr,0));
             for (int k=0; k<BL_SPACEDIM; ++k)
-                nodeFab(IntVect(D_DECL(offset+j,0,0)),k) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[k]);
+                nodeFab(IntVect(AMREX_D_DECL(offset+j,0,0)),k) = (*nodes[n.amr_lev])[n.box_idx](iv,idX[k]);
             for (int m=0; m<eltData[0].size(); ++m)
-                nodeFab(IntVect(D_DECL(offset+j,0,0)),m+BL_SPACEDIM) = eltData[i][m];
+                nodeFab(IntVect(AMREX_D_DECL(offset+j,0,0)),m+BL_SPACEDIM) = eltData[i][m];
             connData[offset+j] = offset+ j + 1;
         }
     }
@@ -1637,7 +1637,7 @@ write_binary_mef_file(const std::string&           outfile,
 #ifdef FAKE_NODE_MEF
     int nPts = nElts*nodesPerElt;
     
-    Box nbox(IntVect::TheZeroVector(),IntVect(D_DECL(nPts-1,0,0)));
+    Box nbox(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nPts-1,0,0)));
     FArrayBox fab(nbox,nComp);
     Vector<int> connData(nPts);
     // Build fab so we can write it, use ptOnStr=0 to get point at surface
@@ -1653,7 +1653,7 @@ write_binary_mef_file(const std::string&           outfile,
         for (int j=0; j<nodesPerElt; ++j)
         {
             const MLloc& n = nodeMap[ faceData[offset+j] - 1 ];
-            const IntVect iv = IntVect(D_DECL(n.pt_idx,ptOnStr,0));
+            const IntVect iv = IntVect(AMREX_D_DECL(n.pt_idx,ptOnStr,0));
             
             for (int k=0; k<BL_SPACEDIM; ++k)
                 *floatDat++ = (*nodes[n.amr_lev])[n.box_idx](iv,idX[k]);
@@ -1691,7 +1691,7 @@ write_binary_mef_file(const std::string&           outfile,
         
 #ifndef FAKE_NODE_MEF
     int nCompElt = eltData[0].size();
-    Box ebox(IntVect::TheZeroVector(),IntVect(D_DECL(nElts-1,0,0)));
+    Box ebox(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nElts-1,0,0)));
     fab.resize(ebox,nCompElt);
     floatDat = fab.dataPtr();
     for (int i=0; i<nElts; ++i)
