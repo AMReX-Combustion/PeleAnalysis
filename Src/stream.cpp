@@ -504,7 +504,7 @@ main (int   argc,
       nodesPerElt = 1;
       nElts = 1;
       faceData.resize(nElts*nodesPerElt,1);
-      surfNames = {D_DECL("X", "Y", "Z")};
+      surfNames = {AMREX_D_DECL("X", "Y", "Z")};
       Vector<Real> loc(BL_SPACEDIM); 
       pp.getarr("seedLoc",loc,0,BL_SPACEDIM);
       for (int i=0; i<BL_SPACEDIM; ++i) nodes(IntVect::TheZeroVector(),i) = loc[i];
@@ -528,7 +528,7 @@ main (int   argc,
         }
         //faceData[i] = i;
       }
-      surfNames = {D_DECL("X", "Y", "Z")};
+      surfNames = {AMREX_D_DECL("X", "Y", "Z")};
     }
     io_time += ParallelDescriptor::second() - strt_io;
     if (ParallelDescriptor::IOProcessor() && verbose>0)
@@ -736,7 +736,7 @@ main (int   argc,
         if (lev < finestLevel)
             baf_c = BoxArray(amrData.boxArray(lev+1)).coarsen(amrData.RefRatio()[lev]);
 
-        BoxList bl(IndexType(D_DECL(IndexType::CELL,
+        BoxList bl(IndexType(AMREX_D_DECL(IndexType::CELL,
                                     IndexType::CELL,
                                     IndexType::CELL)));
 
@@ -759,7 +759,7 @@ main (int   argc,
             }
             else
             {
-                bl.push_back(Box(IntVect(D_DECL(0,-nRKh,0)),IntVect(D_DECL(num_inside-1,-nRKh+nRKsteps-1,0))));
+                bl.push_back(Box(IntVect(AMREX_D_DECL(0,-nRKh,0)),IntVect(AMREX_D_DECL(num_inside-1,-nRKh+nRKsteps-1,0))));
             }
         }
 
@@ -1257,8 +1257,8 @@ add_angle_to_surf(const Vector<MultiFab*>&  paths,
 
                     for (int d=0; d<BL_SPACEDIM; ++d)
                     {
-                        dx[d] = pth(IntVect(D_DECL(i,loPath,0)),xComp+d)
-                            -   pth(IntVect(D_DECL(i,hiPath,0)),xComp+d);
+                        dx[d] = pth(IntVect(AMREX_D_DECL(i,loPath,0)),xComp+d)
+                            -   pth(IntVect(AMREX_D_DECL(i,hiPath,0)),xComp+d);
                         mag += dx[d]*dx[d];
                     }
                     mag = std::sqrt(mag);
@@ -1411,27 +1411,27 @@ add_cold_strain_to_surf(const Vector<MultiFab*>&  paths,
                 // For each path, search for where TComp equals TVal
                 for (int i=0; i<Npaths; ++i)
                 {
-                    IntVect sIdx(D_DECL(i,0,0));
+                    IntVect sIdx(AMREX_D_DECL(i,0,0));
                     bool foundIt = false;
                     int lIdx=loPath, rIdx=lIdx+1;
-                    Real lVal = pth(IntVect(D_DECL(i,lIdx,0)),TComp), rVal=lVal;
+                    Real lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),TComp), rVal=lVal;
                     Real frac = 0.0;
                     
-                    if (pth(IntVect(D_DECL(i,loPath,0)),TComp) > pth(IntVect(D_DECL(i,loPath,0)),TComp))
+                    if (pth(IntVect(AMREX_D_DECL(i,loPath,0)),TComp) > pth(IntVect(AMREX_D_DECL(i,loPath,0)),TComp))
                         amrex::Abort("Path oriented backwards");
                     
-                    if (TVal > pth(IntVect(D_DECL(i,hiPath,0)),TComp))
+                    if (TVal > pth(IntVect(AMREX_D_DECL(i,hiPath,0)),TComp))
                     {
                         lIdx=hiPath-1;
                         rIdx=hiPath;
-                        lVal = pth(IntVect(D_DECL(i,lIdx,0)),TComp); rVal=lVal;
+                        lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),TComp); rVal=lVal;
                         frac = 1.0;
                     }
                     else if (TVal > lVal)
                     {
                         for (int j=loPath; (j<hiPath) && (!foundIt); ++j)
                         {
-                            rIdx = lIdx + 1;  rVal = pth(IntVect(D_DECL(i,rIdx,0)),TComp);
+                            rIdx = lIdx + 1;  rVal = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),TComp);
                             
                             if ( (TVal >= lVal) && (TVal < rVal) )
                             {
@@ -1446,8 +1446,8 @@ add_cold_strain_to_surf(const Vector<MultiFab*>&  paths,
                     }
 
                     // Interpolate strainComp to this location
-                    const Real& xL = pth(IntVect(D_DECL(i,lIdx,0)),strainComp);
-                    const Real& xR = pth(IntVect(D_DECL(i,rIdx,0)),strainComp);
+                    const Real& xL = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),strainComp);
+                    const Real& xR = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),strainComp);
                     my_altSurfData.push_back(xL + (xR-xL) * frac);
                 }
             }
@@ -1598,27 +1598,27 @@ add_thermal_thickness_to_surf(const Vector<MultiFab*>&  paths,
                 {
                     Real loLoc, hiLoc;
                     {
-                        IntVect sIdx(D_DECL(i,0,0));
+                        IntVect sIdx(AMREX_D_DECL(i,0,0));
                         bool foundIt = false;
                         int lIdx=loPath, rIdx=lIdx+1;
-                        Real lVal = pth(IntVect(D_DECL(i,lIdx,0)),thickComp), rVal=lVal;
+                        Real lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),thickComp), rVal=lVal;
                         Real frac = 0.0;
                         
-                        if (pth(IntVect(D_DECL(i,loPath,0)),thickComp) > pth(IntVect(D_DECL(i,loPath,0)),thickComp))
+                        if (pth(IntVect(AMREX_D_DECL(i,loPath,0)),thickComp) > pth(IntVect(AMREX_D_DECL(i,loPath,0)),thickComp))
                             amrex::Abort("Path oriented backwards");
                         
-                        if (loVal > pth(IntVect(D_DECL(i,hiPath,0)),thickComp))
+                        if (loVal > pth(IntVect(AMREX_D_DECL(i,hiPath,0)),thickComp))
                         {
                             lIdx=hiPath-1;
                             rIdx=hiPath;
-                            lVal = pth(IntVect(D_DECL(i,lIdx,0)),thickComp); rVal=lVal;
+                            lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),thickComp); rVal=lVal;
                             frac = 1.0;
                         }
                         else if (loVal > lVal)
                         {
                             for (int j=loPath; (j<hiPath) && (!foundIt); ++j)
                             {
-                                rIdx = lIdx + 1;  rVal = pth(IntVect(D_DECL(i,rIdx,0)),thickComp);
+                                rIdx = lIdx + 1;  rVal = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),thickComp);
                                 
                                 if ( (loVal >= lVal) && (loVal < rVal) )
                                 {
@@ -1642,8 +1642,8 @@ add_thermal_thickness_to_surf(const Vector<MultiFab*>&  paths,
                                 Real dd = 0;
                                 for (int d=0; d<BL_SPACEDIM; ++d)
                                 {
-                                    const Real& xL = pth(IntVect(D_DECL(i,j  ,0)),xComp+d);
-                                    const Real& xR = pth(IntVect(D_DECL(i,j+1,0)),xComp+d);
+                                    const Real& xL = pth(IntVect(AMREX_D_DECL(i,j  ,0)),xComp+d);
+                                    const Real& xR = pth(IntVect(AMREX_D_DECL(i,j+1,0)),xComp+d);
                                     dd += (xR-xL)*(xR-xL);
                                 }
                                 distance -= (j==lIdx ? (1.-frac) : 1.0) * std::sqrt(dd);
@@ -1656,8 +1656,8 @@ add_thermal_thickness_to_surf(const Vector<MultiFab*>&  paths,
                                 Real dd = 0;
                                 for (int d=0; d<BL_SPACEDIM; ++d)
                                 {
-                                    const Real& xL = pth(IntVect(D_DECL(i,j  ,0)),xComp+d);
-                                    const Real& xR = pth(IntVect(D_DECL(i,j+1,0)),xComp+d);
+                                    const Real& xL = pth(IntVect(AMREX_D_DECL(i,j  ,0)),xComp+d);
+                                    const Real& xR = pth(IntVect(AMREX_D_DECL(i,j+1,0)),xComp+d);
                                     dd += (xR-xL)*(xR-xL);
                                 }
                                 distance += (j==rIdx-1 ? frac : 1.0) * std::sqrt(dd);
@@ -1666,27 +1666,27 @@ add_thermal_thickness_to_surf(const Vector<MultiFab*>&  paths,
                         loLoc = distance;
                     }
                     {
-                        IntVect sIdx(D_DECL(i,0,0));
+                        IntVect sIdx(AMREX_D_DECL(i,0,0));
                         bool foundIt = false;
                         int lIdx=loPath, rIdx=lIdx+1;
-                        Real lVal = pth(IntVect(D_DECL(i,lIdx,0)),thickComp), rVal=lVal;
+                        Real lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),thickComp), rVal=lVal;
                         Real frac = 0.0;
                         
-                        if (pth(IntVect(D_DECL(i,loPath,0)),thickComp) > pth(IntVect(D_DECL(i,loPath,0)),thickComp))
+                        if (pth(IntVect(AMREX_D_DECL(i,loPath,0)),thickComp) > pth(IntVect(AMREX_D_DECL(i,loPath,0)),thickComp))
                             amrex::Abort("Path oriented backwards");
                         
-                        if (hiVal > pth(IntVect(D_DECL(i,hiPath,0)),thickComp))
+                        if (hiVal > pth(IntVect(AMREX_D_DECL(i,hiPath,0)),thickComp))
                         {
                             lIdx=hiPath-1;
                             rIdx=hiPath;
-                            lVal = pth(IntVect(D_DECL(i,lIdx,0)),thickComp); rVal=lVal;
+                            lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),thickComp); rVal=lVal;
                             frac = 1.0;
                         }
                         else if (hiVal > lVal)
                         {
                             for (int j=loPath; (j<hiPath) && (!foundIt); ++j)
                             {
-                                rIdx = lIdx + 1;  rVal = pth(IntVect(D_DECL(i,rIdx,0)),thickComp);
+                                rIdx = lIdx + 1;  rVal = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),thickComp);
                                 
                                 if ( (hiVal >= lVal) && (hiVal < rVal) )
                                 {
@@ -1710,8 +1710,8 @@ add_thermal_thickness_to_surf(const Vector<MultiFab*>&  paths,
                                 Real dd = 0;
                                 for (int d=0; d<BL_SPACEDIM; ++d)
                                 {
-                                    const Real& xL = pth(IntVect(D_DECL(i,j  ,0)),xComp+d);
-                                    const Real& xR = pth(IntVect(D_DECL(i,j+1,0)),xComp+d);
+                                    const Real& xL = pth(IntVect(AMREX_D_DECL(i,j  ,0)),xComp+d);
+                                    const Real& xR = pth(IntVect(AMREX_D_DECL(i,j+1,0)),xComp+d);
                                     dd += (xR-xL)*(xR-xL);
                                 }
                                 distance -= (j==lIdx ? (1.-frac) : 1.0) * std::sqrt(dd);
@@ -1724,8 +1724,8 @@ add_thermal_thickness_to_surf(const Vector<MultiFab*>&  paths,
                                 Real dd = 0;
                                 for (int d=0; d<BL_SPACEDIM; ++d)
                                 {
-                                    const Real& xL = pth(IntVect(D_DECL(i,j  ,0)),xComp+d);
-                                    const Real& xR = pth(IntVect(D_DECL(i,j+1,0)),xComp+d);
+                                    const Real& xL = pth(IntVect(AMREX_D_DECL(i,j  ,0)),xComp+d);
+                                    const Real& xR = pth(IntVect(AMREX_D_DECL(i,j+1,0)),xComp+d);
                                     dd += (xR-xL)*(xR-xL);
                                 }
                                 distance += (j==rIdx-1 ? frac : 1.0) * std::sqrt(dd);
@@ -1891,27 +1891,27 @@ build_surface_at_isoVal(const Vector<MultiFab*>&  paths,
                 // For each path, search for isoVal
                 for (int i=0; i<Npaths; ++i)
                 {
-                    IntVect sIdx(D_DECL(i,0,0));
+                    IntVect sIdx(AMREX_D_DECL(i,0,0));
                     bool foundIt = false;
                     int lIdx=loPath, rIdx=lIdx+1;
-                    Real lVal = pth(IntVect(D_DECL(i,lIdx,0)),isoComp), rVal=lVal;
+                    Real lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),isoComp), rVal=lVal;
                     Real frac = 0.0;
 
-                    if (pth(IntVect(D_DECL(i,loPath,0)),isoComp) > pth(IntVect(D_DECL(i,loPath,0)),isoComp))
+                    if (pth(IntVect(AMREX_D_DECL(i,loPath,0)),isoComp) > pth(IntVect(AMREX_D_DECL(i,loPath,0)),isoComp))
                         amrex::Abort("Path oriented backwards");
 
-                    if (isoVal > pth(IntVect(D_DECL(i,hiPath,0)),isoComp))
+                    if (isoVal > pth(IntVect(AMREX_D_DECL(i,hiPath,0)),isoComp))
                     {
                         lIdx=hiPath-1;
                         rIdx=hiPath;
-                        lVal = pth(IntVect(D_DECL(i,lIdx,0)),isoComp); rVal=lVal;
+                        lVal = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),isoComp); rVal=lVal;
                         frac = 1.0;
                     }
                     else if (isoVal > lVal)
                     {
                         for (int j=loPath; (j<hiPath) && (!foundIt); ++j)
                         {
-                            rIdx = lIdx + 1;  rVal = pth(IntVect(D_DECL(i,rIdx,0)),isoComp);
+                            rIdx = lIdx + 1;  rVal = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),isoComp);
 
                             if ( (isoVal >= lVal) && (isoVal < rVal) )
                             {
@@ -1929,15 +1929,15 @@ build_surface_at_isoVal(const Vector<MultiFab*>&  paths,
                     // Compute position at isoVal
                     for (int d=0; d<BL_SPACEDIM; ++d)
                     {
-                        const Real& xL = pth(IntVect(D_DECL(i,lIdx,0)),xComp+d);
-                        const Real& xR = pth(IntVect(D_DECL(i,rIdx,0)),xComp+d);
+                        const Real& xL = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),xComp+d);
+                        const Real& xR = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),xComp+d);
                         my_altSurfData.push_back(xL + (xR-xL) * frac);
                     }
                     // Compute other values at isoVal as well
                     for (int d=0; d<nComp; ++d)
                     {
-                        const Real& xL = pth(IntVect(D_DECL(i,lIdx,0)),comps[d]);
-                        const Real& xR = pth(IntVect(D_DECL(i,rIdx,0)),comps[d]);
+                        const Real& xL = pth(IntVect(AMREX_D_DECL(i,lIdx,0)),comps[d]);
+                        const Real& xR = pth(IntVect(AMREX_D_DECL(i,rIdx,0)),comps[d]);
                         my_altSurfData.push_back(xL + (xR-xL) * frac);
                     }
                     // set distance to base pt of stream line (isoComp == isoVal)
@@ -1949,8 +1949,8 @@ build_surface_at_isoVal(const Vector<MultiFab*>&  paths,
                             Real dd = 0;
                             for (int d=0; d<BL_SPACEDIM; ++d)
                             {
-                                const Real& xL = pth(IntVect(D_DECL(i,j  ,0)),xComp+d);
-                                const Real& xR = pth(IntVect(D_DECL(i,j+1,0)),xComp+d);
+                                const Real& xL = pth(IntVect(AMREX_D_DECL(i,j  ,0)),xComp+d);
+                                const Real& xR = pth(IntVect(AMREX_D_DECL(i,j+1,0)),xComp+d);
                                 dd += (xR-xL)*(xR-xL);
                             }
                             distance -= (j==lIdx ? (1.-frac) : 1.0) * std::sqrt(dd);
@@ -1963,8 +1963,8 @@ build_surface_at_isoVal(const Vector<MultiFab*>&  paths,
                             Real dd = 0;
                             for (int d=0; d<BL_SPACEDIM; ++d)
                             {
-                                const Real& xL = pth(IntVect(D_DECL(i,j  ,0)),xComp+d);
-                                const Real& xR = pth(IntVect(D_DECL(i,j+1,0)),xComp+d);
+                                const Real& xL = pth(IntVect(AMREX_D_DECL(i,j  ,0)),xComp+d);
+                                const Real& xR = pth(IntVect(AMREX_D_DECL(i,j+1,0)),xComp+d);
                                 dd += (xR-xL)*(xR-xL);
                             }
                             distance += (j==rIdx-1 ? frac : 1.0) * std::sqrt(dd);
@@ -2285,7 +2285,7 @@ dump_ml_streamline_data(const std::string&       outFile,
 
               for (int L=b.smallEnd()[1]; L<=b.bigEnd()[1]; ++L)
               {
-                const IntVect iv(D_DECL(i,L,0));
+                const IntVect iv(AMREX_D_DECL(i,L,0));
                 for (int n=sComp; n<nComp; ++n)
                 {
                   ofs << (*data[lev])[j](iv,n) << " ";

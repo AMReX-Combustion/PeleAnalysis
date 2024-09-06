@@ -611,11 +611,11 @@ main (int   argc,
         Box box;
         if (nc==1)
         {
-          box = Box(IntVect::TheZeroVector(),IntVect(D_DECL(nBins[0]-1,0,0)));
+          box = Box(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nBins[0]-1,0,0)));
         }
         else
         {
-          box = Box(IntVect::TheZeroVector(),IntVect(D_DECL(nBins[0]-1,nBins[1]-1,0)));
+          box = Box(IntVect::TheZeroVector(),IntVect(AMREX_D_DECL(nBins[0]-1,nBins[1]-1,0)));
         }
             
         FArrayBox outFab(box,1);

@@ -9,7 +9,7 @@ TOP := $(PELE_ANALYSIS_HOME)
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
 
-all: $(executable) 
+all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
 	@echo SUCCESS
 
@@ -45,7 +45,7 @@ ifeq ($(NEED_QSLIM),TRUE)
   GFX_ROOT       = $(QSLIM_LOC)/libgfx
   INCLUDE_LOCATIONS += $(QSLIM_TOOL) ${MIX_ROOT} ${GFX_ROOT}/include
   LIBRARY_LOCATIONS += ${MIX_ROOT} ${GFX_ROOT}/src
-  LIBRARIES += -lmix -lgfx 
+  LIBRARIES += -lmix -lgfx
   DEFINES += -DHAVE_CONFIG_H -DHAVE_BOOL
   VPATH_LOCATIONS += $(QSLIM_TOOL)
 endif
@@ -95,7 +95,7 @@ qslimclean:
 	@echo "==> Removing qslim library"
 	@cd $(QSLIM_LOC)/libgfx/src; $(MAKE) clean
 	@cd $(QSLIM_LOC)/mixkit/src; $(MAKE) clean
-	
+
 #-----------------------------------------------------------------------------
 # for debugging.  To see the value of a Makefile variable,
 # e.g. Fmlocs, simply do "make print-Fmlocs".  This will

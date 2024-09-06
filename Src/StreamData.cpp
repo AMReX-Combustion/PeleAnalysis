@@ -693,7 +693,7 @@ static void DoIt(const Vector<int>& comps,
       for (int n=0; n<comps.size(); ++n) {
         const FArrayBox& stream_fab = *(Cstream.getFab(node->amr_lev,node->box_idx,comps[n]));
         for (int j=stream.StreamIdxLo(); j<=stream.StreamIdxHi(); ++j) {
-          IntVect iv(D_DECL(local_node_id,j,0));
+          IntVect iv(AMREX_D_DECL(local_node_id,j,0));
           senddata[offsets[to_proc]++] = stream_fab(iv,0);
         }
       }
@@ -714,8 +714,8 @@ static void DoIt(const Vector<int>& comps,
 
   if (num_recv_nodes>0) {
       
-    Box d_box(IntVect(D_DECL(0,stream.StreamIdxLo(),0)),
-              IntVect(D_DECL(num_recv_nodes-1,stream.StreamIdxHi(),0)));
+    Box d_box(IntVect(AMREX_D_DECL(0,stream.StreamIdxLo(),0)),
+              IntVect(AMREX_D_DECL(num_recv_nodes-1,stream.StreamIdxHi(),0)));
       
     for (int n=0; n<comps.size(); ++n) {
         dest[comps[n]]->resize(d_box,1);
@@ -738,7 +738,7 @@ static void DoIt(const Vector<int>& comps,
         int local_node_id = global_to_local_node_ids[it1->first];
         for (int n=0; n<comps.size(); ++n) {
           for (int j=d_box.smallEnd()[1]; j<=d_box.bigEnd()[1]; ++j) {
-            IntVect idx(D_DECL(local_node_id,j,0));
+            IntVect idx(AMREX_D_DECL(local_node_id,j,0));
             (*dest[comps[n]])(idx,0) = *dest_loc++;
           }
         }

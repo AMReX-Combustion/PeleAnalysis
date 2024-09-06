@@ -46,7 +46,7 @@ EBASE		= template
 CEXE_sources += $(EBASE).cpp
 
 ifeq ($(EBASE),partStream)
-  NEED_PARTICLES = TRUE
+  USE_PARTICLES = TRUE
   CEXE_headers += StreamData.H    StreamPC.H
   CEXE_sources += StreamData.cpp  StreamPC.cpp
 endif
