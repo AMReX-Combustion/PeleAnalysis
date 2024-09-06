@@ -36,7 +36,7 @@ GetSeedLocations (const StreamParticleContainer& spc)
       for (MFIter mfi = spc.MakeMFIter(lev); mfi.isValid(); ++mfi)
       {
         const Box& tile_box  = mfi.tilebox();
-        if (BL_SPACEDIM<3 || tile_box.contains(IntVect(D_DECL(0,50,107)))) {
+        if (BL_SPACEDIM<3 || tile_box.contains(IntVect(AMREX_D_DECL(0,50,107)))) {
 
           mask.resize(tile_box,1);
           mask.setVal(1);
@@ -127,7 +127,7 @@ main (int   argc,
     ParmParse pp;
 
     std::string infile; pp.get("infile",infile);
-    Vector<std::string> inVarNames = {D_DECL("x_velocity", "y_velocity", "z_velocity")};
+    Vector<std::string> inVarNames = {AMREX_D_DECL("x_velocity", "y_velocity", "z_velocity")};
 
     PlotFileData pf(infile);
     int finestLevel = pf.finestLevel();
@@ -136,7 +136,7 @@ main (int   argc,
     Vector<DistributionMapping> dms(finestLevel+1);
     Vector<int> ratios(finestLevel);
 
-    Array<int,AMREX_SPACEDIM> is_per = {D_DECL(0, 0, 0)};
+    Array<int,AMREX_SPACEDIM> is_per = {AMREX_D_DECL(0, 0, 0)};
     RealBox rb(pf.probLo(),pf.probHi());
 
     int Nlev = finestLevel + 1;

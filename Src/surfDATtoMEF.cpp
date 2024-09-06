@@ -168,7 +168,7 @@ class FABdata
 public:
     FABdata(SIZET i, SIZET n)
         {fab.resize(Box(IntVect::TheZeroVector(),
-                        IntVect(D_DECL(i-1,0,0))),n);}
+                        IntVect(AMREX_D_DECL(i-1,0,0))),n);}
     Real& operator[](SIZET i) {return fab.dataPtr()[i];}
     FArrayBox fab;
     SIZET boxSize;

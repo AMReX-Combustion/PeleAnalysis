@@ -90,8 +90,8 @@ downsampleStreamData(const StreamData&                stream,
             {
                 int first_idx = map_baIdx_selectIdxPairs[box_id].front().first;
                 int last_idx = map_baIdx_selectIdxPairs[box_id].back().first;
-                Box bx(IntVect(D_DECL(first_idx,slo,0)),
-                       IntVect(D_DECL(last_idx,shi,0)));
+                Box bx(IntVect(AMREX_D_DECL(first_idx,slo,0)),
+                       IntVect(AMREX_D_DECL(last_idx,shi,0)));
                 bldst.push_back(bx);
             }
         }
@@ -171,7 +171,7 @@ write_tec_binary(const FArrayBox&     strm,
     Vector<Real> loc(BL_SPACEDIM);
     const Box& box = strm.box();
     const IntVect ivst = box.smallEnd();
-    const IntVect ivmid(D_DECL(ivst[0],0,ivst[2]));
+    const IntVect ivmid(AMREX_D_DECL(ivst[0],0,ivst[2]));
     
     int nLines = box.length(0);
     int Npts = box.length(1);
@@ -306,7 +306,7 @@ write_tec_ascii(const FArrayBox&     strm,
             osf << "ZONE T=" << label << " I=" << Npts << " F=POINT" << endl;;                    
             for (int j=0; j<Npts; ++j)
             {
-              IntVect ivt = ivst + IntVect(D_DECL(i,j,0));
+              IntVect ivt = ivst + IntVect(AMREX_D_DECL(i,j,0));
               for (int n=0; n<nComp; ++n)
                 osf << strm(ivt,n) << " ";
               osf << '\n';
@@ -495,8 +495,8 @@ main (int   argc,
     int slo = stream.StreamIdxLo();
     int shi = stream.StreamIdxHi();
 
-    Box finalBox(IntVect(D_DECL(0,slo,0)),
-                 IntVect(D_DECL(nLines-1,shi,0)));
+    Box finalBox(IntVect(AMREX_D_DECL(0,slo,0)),
+                 IntVect(AMREX_D_DECL(nLines-1,shi,0)));
     BoxArray finalBa(finalBox);
     DistributionMapping dmfinal(finalBa);
     MultiFab finalMF(finalBa,dmfinal,selectedNames.size(),0);
@@ -526,13 +526,13 @@ main (int   argc,
                     for (SelectionMapList::const_iterator it = line_map.begin(); it!=line_map.end(); ++it)
                     {
                         int old_local_idx = it->second;                
-                        Box srcBox(IntVect(D_DECL(old_local_idx,slo,0)),
-                                   IntVect(D_DECL(old_local_idx,shi,0)));
+                        Box srcBox(IntVect(AMREX_D_DECL(old_local_idx,slo,0)),
+                                   IntVect(AMREX_D_DECL(old_local_idx,shi,0)));
                         
                         int new_global_idx = it->first;
                         BL_ASSERT(new_global_idx < nLines);
-                        Box dstBox(IntVect(D_DECL(new_global_idx,slo,0)),
-                                   IntVect(D_DECL(new_global_idx,shi,0)));
+                        Box dstBox(IntVect(AMREX_D_DECL(new_global_idx,slo,0)),
+                                   IntVect(AMREX_D_DECL(new_global_idx,shi,0)));
                         
                         BL_ASSERT(srcFab.box().contains(srcBox));
                         BL_ASSERT(dstFab.box().contains(dstBox));
@@ -605,7 +605,7 @@ main (int   argc,
             {
                 for (int i=0; i<nLines; ++i)
                 {
-                    IntVect ivs(D_DECL(i,0.5*(slo+shi),0));
+                    IntVect ivs(AMREX_D_DECL(i,0.5*(slo+shi),0));
                     Real radius = 0;
                     for (int n=0; n<2; ++n) {
                         Real val = fab(ivs,n);

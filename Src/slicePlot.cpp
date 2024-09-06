@@ -110,7 +110,7 @@ void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
 
   Print() << Box(se,be) << std::endl;
 
-  IntVect img(D_DECL(box.length(d[0]) - 1,box.length(d[1]) - 1,0));
+  IntVect img(AMREX_D_DECL(box.length(d[0]) - 1,box.length(d[1]) - 1,0));
   image.resize(Box(IntVect::TheZeroVector(),img),1);
 
   IntVect div;
@@ -121,7 +121,7 @@ void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
     for (int j=se[d[1]]; j<=be[d[1]]; ++j) {
       div[d[0]] = i;
       div[d[1]] = j;
-      image(IntVect(D_DECL(i - se[d[0]],j - se[d[1]],0)),0) =
+      image(IntVect(AMREX_D_DECL(i - se[d[0]],j - se[d[1]],0)),0) =
         std::max(0,(int)(nvm1*std::min( (data(div,0) - data_min)/del,1.0))); 
     }
   }

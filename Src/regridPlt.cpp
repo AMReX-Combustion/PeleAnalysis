@@ -139,7 +139,7 @@ main (int   argc,
       levelSteps[lev] = 666;
       if (lev < Nlev-1) {
         int r = amrData.RefRatio()[lev];
-        refRatio[lev] = IntVect(D_DECL(r,r,r));
+        refRatio[lev] = IntVect(AMREX_D_DECL(r,r,r));
       }
       dat[lev] = fileData[lev];
     }

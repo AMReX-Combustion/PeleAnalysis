@@ -103,16 +103,16 @@ main (int   argc,
 
     int nCell = 64; pp.query("nCell",nCell);
     int max_grid_size = 32; pp.query("max_grid_size",max_grid_size);
-    Box domain(IntVect(D_DECL(0,0,0)),
-               //IntVect(D_DECL(nCell-1,nCell-1,nCell-1)));
-               IntVect(D_DECL(64-1,64-1,192-1)));
+    Box domain(IntVect(AMREX_D_DECL(0,0,0)),
+               //IntVect(AMREX_D_DECL(nCell-1,nCell-1,nCell-1)));
+               IntVect(AMREX_D_DECL(64-1,64-1,192-1)));
     BoxArray grids(domain);
     grids.maxSize(max_grid_size);
-    //RealBox probDomain({D_DECL(0,0,0)},{D_DECL(1,1,1)});
-    //RealBox probDomain({D_DECL(-0.0033,-0.0033,-0.0099)},{D_DECL(0.0033,0.0033,.0099)});
-    RealBox probDomain({D_DECL(0,0,0)},{D_DECL(0.03,0.03,.09)});
+    //RealBox probDomain({AMREX_D_DECL(0,0,0)},{AMREX_D_DECL(1,1,1)});
+    //RealBox probDomain({AMREX_D_DECL(-0.0033,-0.0033,-0.0099)},{AMREX_D_DECL(0.0033,0.0033,.0099)});
+    RealBox probDomain({AMREX_D_DECL(0,0,0)},{AMREX_D_DECL(0.03,0.03,.09)});
     
-    Array<int,AMREX_SPACEDIM> is_periodic = {D_DECL(0,0,0)};
+    Array<int,AMREX_SPACEDIM> is_periodic = {AMREX_D_DECL(0,0,0)};
     Geometry geom(domain,probDomain,0,is_periodic);
     const Real* dx = geom.CellSize();
     const Real* plo = geom.ProbLo();
@@ -129,12 +129,12 @@ main (int   argc,
       std::vector<Vec3ui> faceList;
 
       for (int node=0; node<nNodes; ++node) {
-        const IntVect iv(D_DECL(node,0,0));
-        vertList.push_back(Vec3f(D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
+        const IntVect iv(AMREX_D_DECL(node,0,0));
+        vertList.push_back(Vec3f(AMREX_D_DECL(nodes(iv,0),nodes(iv,1),nodes(iv,2))));
       }
       for (int elt=0; elt<nElts; ++elt) {
         int offset = elt * nodesPerElt;
-        faceList.push_back(Vec3ui(D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
+        faceList.push_back(Vec3ui(AMREX_D_DECL(faceData[offset]-1,faceData[offset+1]-1,faceData[offset+2]-1)));
       }
 
       const Box& vbox = distance[mfi].box();
