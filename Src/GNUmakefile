@@ -10,10 +10,15 @@ COMP          = gnu
 USE_MPI       = FALSE
 USE_OMP       = FALSE
 USE_CUDA      = FALSE
+USE_HDF5 = TRUE
+USE_HDF5_ZFP = TRUE
+HDF5_HOME = /../../HDF5-1.14.5-Linux/HDF_Group/HDF5/1.14.5
+ZFP_HOME= /../../zfp
+
 
 # Executable
 # Uncomment the desired exec
-EBASE		= template
+EBASE		= convert2hdf5
 #EBASE         = grad
 #EBASE		= jpdf
 #EBASE         = combinePlts
@@ -62,3 +67,5 @@ endif
 Blocs := .
 
 include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.Analysis
+
+
