@@ -121,6 +121,7 @@ main (int   argc,
     // ---------------------------------------------------------------------    
     
     std::string hdf5_compression{"ZLIB@9"};
+    pp.query("hdf5_compression",hdf5_compression);
     std::string outfile(getFileRoot(plotFileName) + "_hdf5");
     Print() << "Writing new data to " << outfile << std::endl;
     Vector<int> isteps(Nlev, 0);
