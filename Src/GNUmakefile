@@ -10,15 +10,11 @@ COMP          = gnu
 USE_MPI       = FALSE
 USE_OMP       = FALSE
 USE_CUDA      = FALSE
-USE_HDF5 = TRUE
-USE_HDF5_ZFP = TRUE
-HDF5_HOME = /../../HDF5-1.14.5-Linux/HDF_Group/HDF5/1.14.5
-ZFP_HOME= /../../zfp
-
 
 # Executable
 # Uncomment the desired exec
-EBASE		= convert2hdf5
+EBASE		= template
+#EBASE		= convert2hdf5
 #EBASE         = grad
 #EBASE		= jpdf
 #EBASE         = combinePlts
@@ -60,6 +56,13 @@ ifeq ($(EBASE),$(filter $(EBASE), isosurface buildDistance))
    NEED_DISTANCE = TRUE
 endif
 
+ifeq ($(EBASE),convert2hdf5)
+   USE_HDF5 = TRUE
+   USE_HDF5_ZFP = TRUE
+   HDF5_HOME = /path/to/hdf5
+   ZFP_HOME = /path/to/zfp
+endif
+
 ifeq ($(EBASE),decimateMEF) #make qslim first!
    NEED_QSLIM = TRUE
 endif
@@ -67,5 +70,3 @@ endif
 Blocs := .
 
 include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.Analysis
-
-
