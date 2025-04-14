@@ -14,6 +14,7 @@ USE_CUDA      = FALSE
 # Executable
 # Uncomment the desired exec
 EBASE		= template
+#EBASE		= convert2hdf5
 #EBASE         = grad
 #EBASE		= jpdf
 #EBASE         = combinePlts
@@ -53,6 +54,14 @@ endif
 
 ifeq ($(EBASE),$(filter $(EBASE), isosurface buildDistance))
    NEED_DISTANCE = TRUE
+endif
+
+ifeq ($(EBASE),convert2hdf5)
+   USE_HDF5 = TRUE
+   USE_HDF5_ZFP = TRUE
+   HDF5_HOME = /path/to/hdf5
+   ZFP_HOME = /path/to/zfp
+   H5Z_HOME = /path/to/h5z-zfp
 endif
 
 ifeq ($(EBASE),decimateMEF) #make qslim first!
