@@ -55,9 +55,7 @@ int main(int argc, char *argv[]) {
     amrex::Vector<int> is_per(AMREX_SPACEDIM, 0);
     int coord = 0;
 
-    // ---------------------------------------------------------------------
-    // Let's start the real work
-    // ---------------------------------------------------------------------
+    // Copy data
     amrex::Vector<amrex::MultiFab *> fileData(Nlev);
     amrex::Vector<amrex::Geometry> geoms(Nlev);
     const int nGrow = 1;
@@ -83,10 +81,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    // ---------------------------------------------------------------------
     // Write the results
-    // ---------------------------------------------------------------------
-
     std::string hdf5_compression{"ZLIB@9"};
     pp.query("hdf5_compression", hdf5_compression);
     std::string outfile(getFileRoot(plotFileName) + "_hdf5");
