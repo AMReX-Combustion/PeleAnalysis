@@ -9,7 +9,6 @@
 #include <AMReX_Interpolater.H>
 #include <AMReX_WritePlotFile.H>
 
-#include <AMReX_BLFort.H>
 #include <mechanism.h>
 #include <chemistry_file.H>
 #include <EOS.H>

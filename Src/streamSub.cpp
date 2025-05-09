@@ -271,7 +271,7 @@ ReadMF (MultiFab&          mf,
 {
     VisMF vismf(infile);
 
-    BL_ASSERT(comps.size()<=vismf.nComp());
+    AMREX_ASSERT(comps.size()<=vismf.nComp());
 
     const BoxArray& ba = vismf.boxArray();
 
@@ -286,7 +286,7 @@ ReadMF (MultiFab&          mf,
     {
         for (int j=0; j<comps.size(); ++j)
         {
-            BL_ASSERT(comps[j]>=0 && comps[j]<vismf.nComp());
+            AMREX_ASSERT(comps[j]>=0 && comps[j]<vismf.nComp());
         }
         
         for (MFIter mfi(mf); mfi.isValid(); ++mfi)

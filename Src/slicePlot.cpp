@@ -97,11 +97,11 @@ void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
 {
   const Box& box = data.box();
   const Real del = data_max - data_min;
-  BL_ASSERT(std::abs(del)>0.0);
+  AMREX_ASSERT(std::abs(del)>0.0);
   const int nvm1 = nVals-1;
   int cnt=0;
   int d[2];
-  for (int dir=0; dir<BL_SPACEDIM; ++dir)
+  for (int dir=0; dir<AMREX_SPACEDIM; ++dir)
     if (dir != slicedir)
       d[cnt++] = dir;
 
@@ -114,7 +114,7 @@ void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
   image.resize(Box(IntVect::TheZeroVector(),img),1);
 
   IntVect div;
-  if (slicedir>=0 && slicedir<BL_SPACEDIM)
+  if (slicedir>=0 && slicedir<AMREX_SPACEDIM)
       div[slicedir] = sliceloc;
 
   for (int i=se[d[0]]; i<=be[d[0]]; ++i) {

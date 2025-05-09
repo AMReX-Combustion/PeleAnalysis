@@ -35,7 +35,7 @@ GetSeedLocations (const StreamParticleContainer& spc, Vector<int>& faceData)
       for (MFIter mfi = spc.MakeMFIter(lev); mfi.isValid(); ++mfi)
       {
         const Box& tile_box  = mfi.tilebox();
-        if (BL_SPACEDIM<3 || tile_box.contains(IntVect(AMREX_D_DECL(0,50,107)))) {
+        if (AMREX_SPACEDIM<3 || tile_box.contains(IntVect(AMREX_D_DECL(0,50,107)))) {
 
           mask.resize(tile_box,1);
           mask.setVal(1);
@@ -97,8 +97,8 @@ GetSeedLocations (const StreamParticleContainer& spc, Vector<int>& faceData)
   }
   else if (pp.countval("seedLoc")>0)
   {
-    Vector<Real> loc(BL_SPACEDIM);
-    pp.getarr("seedLoc",loc,0,BL_SPACEDIM);
+    Vector<Real> loc(AMREX_SPACEDIM);
+    pp.getarr("seedLoc",loc,0,AMREX_SPACEDIM);
     locs.push_back({AMREX_D_DECL(loc[0], loc[1], loc[2])});
   }
   else
@@ -106,9 +106,9 @@ GetSeedLocations (const StreamParticleContainer& spc, Vector<int>& faceData)
     int seedRakeNum;
     pp.get("seedRakeNum",seedRakeNum);
     AMREX_ALWAYS_ASSERT(seedRakeNum >= 2);
-    Vector<Real> locL(BL_SPACEDIM), locR(BL_SPACEDIM);
-    pp.getarr("seedRakeL",locL,0,BL_SPACEDIM);
-    pp.getarr("seedRakeR",locR,0,BL_SPACEDIM);
+    Vector<Real> locL(AMREX_SPACEDIM), locR(AMREX_SPACEDIM);
+    pp.getarr("seedRakeL",locL,0,AMREX_SPACEDIM);
+    pp.getarr("seedRakeR",locR,0,AMREX_SPACEDIM);
 
     for (int i=0; i<seedRakeNum; ++i) {
       locs.push_back({AMREX_D_DECL(locL[0] + (i/double(seedRakeNum-1))*(locR[0] - locL[0]),

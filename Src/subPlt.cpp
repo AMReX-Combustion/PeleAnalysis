@@ -82,7 +82,7 @@ main (int   argc,
         pp.query("sComp",sComp);
         int nComp = amrData.NComp();
         pp.query("nComp",nComp);
-        BL_ASSERT(sComp+nComp <= amrData.NComp());
+        AMREX_ASSERT(sComp+nComp <= amrData.NComp());
         comps.resize(nComp);
         for (int i=0; i<nComp; ++i)
             comps[i] = sComp + i;
@@ -97,8 +97,8 @@ main (int   argc,
     if (int nx=pp.countval("box"))
     {
         pp.getarr("box",inBox,0,nx);
-        int d=BL_SPACEDIM;
-        BL_ASSERT(inBox.size()==2*d);
+        int d=AMREX_SPACEDIM;
+        AMREX_ASSERT(inBox.size()==2*d);
         subbox=Box(IntVect(AMREX_D_DECL(inBox[0],inBox[1],inBox[2])),
                    IntVect(AMREX_D_DECL(inBox[d],inBox[d+1],inBox[d+2])),
                    IndexType::TheCellType());
@@ -115,12 +115,12 @@ main (int   argc,
     Vector<std::string> subNames;
     Vector<int> fillComps;
    
-    Vector<Real> plo(BL_SPACEDIM), phi(BL_SPACEDIM);
+    Vector<Real> plo(AMREX_SPACEDIM), phi(AMREX_SPACEDIM);
     Vector<Box> psize(finestLevel+1);
     const IntVect ilo = subbox.smallEnd();
     const IntVect ihi = subbox.bigEnd();
 
-   for (int i =0 ; i< BL_SPACEDIM; i++) {
+   for (int i =0 ; i< AMREX_SPACEDIM; i++) {
        
        plo[i] = amrData.ProbLo()[i]+(ilo[i])*amrData.DxLevel()[finestLevel][i];
        phi[i] = amrData.ProbLo()[i]+(ihi[i]+1)*amrData.DxLevel()[finestLevel][i];
@@ -161,7 +161,7 @@ main (int   argc,
 
 static Vector< Vector<int> > contigLists(const Vector<int> orig)
 {
-    BL_ASSERT(orig.size() > 0);
+    AMREX_ASSERT(orig.size() > 0);
     Vector< Vector<int> > res(1);
     int mySet = 0;
     res[mySet].resize(1);

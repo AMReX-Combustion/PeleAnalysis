@@ -68,11 +68,11 @@ main (int   argc,
     string label;
     read_iso(infile,nodes,faceData,nElts,names,label);
     int nodesPerElt = faceData.size() / nElts;
-    BL_ASSERT(nodesPerElt*nElts == faceData.size());
+    AMREX_ASSERT(nodesPerElt*nElts == faceData.size());
 
     nElts = faceData.size() / nodesPerElt;
     int nCompMEF = nodes.nComp();
-    BL_ASSERT(nElts*nodesPerElt == faceData.size());
+    AMREX_ASSERT(nElts*nodesPerElt == faceData.size());
 
     Vector<int> comps;
     if (pp.countval("comps"))
@@ -87,7 +87,7 @@ main (int   argc,
         pp.query("sComp",sComp);
         int nc = 1;
         pp.query("nComp",nc);
-        BL_ASSERT(sComp+nc <= nCompMEF);
+        AMREX_ASSERT(sComp+nc <= nCompMEF);
         comps.resize(nc);
         for (int i=0; i<nc; ++i)
             comps[i] = sComp + i;
@@ -95,13 +95,13 @@ main (int   argc,
     int nComp = comps.size();
 
     Vector<Real> vals(nComp);
-    BL_ASSERT(pp.countval("vals")==nComp);
+    AMREX_ASSERT(pp.countval("vals")==nComp);
     pp.getarr("vals",vals,0,nComp);
 
     int nNodes = nodes.box().numPts();
     for (int j=0; j<nComp; ++j)
     {
-        BL_ASSERT(comps[j]<nCompMEF);
+        AMREX_ASSERT(comps[j]<nCompMEF);
         Real* dat=nodes.dataPtr(comps[j]);
         for (int i=0; i<nNodes; ++i)
             dat[i] = dat[i]*vals[j];
@@ -111,7 +111,7 @@ main (int   argc,
     {
         int numNew = pp.countval("newNames");
         int numNewComps = pp.countval("newComps");
-        BL_ASSERT(numNew==numNewComps);
+        AMREX_ASSERT(numNew==numNewComps);
 
         Vector<std::string> newNames(numNew);
         Vector<int> newComps(numNewComps);
@@ -119,7 +119,7 @@ main (int   argc,
         pp.getarr("newComps",newComps,0,newComps.size());
 
         for (int i=0; i<numNew; ++i) {
-            BL_ASSERT(newComps[i] <= names.size());
+            AMREX_ASSERT(newComps[i] <= names.size());
             names[newComps[i]] = newNames[i];
         }       
     }

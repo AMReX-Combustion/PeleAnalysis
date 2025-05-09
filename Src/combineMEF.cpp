@@ -109,7 +109,7 @@ main (int   argc,
     read_iso(infileL,nodesL,faceDataL,nEltsL,namesL,labelL);
     read_iso(infileR,nodesR,faceDataR,nEltsR,namesR,labelR);
     int nodesPerElt = faceDataL.size() / nEltsL;
-    BL_ASSERT(nodesPerElt*nElts == faceData.size());
+    AMREX_ASSERT(nodesPerElt*nElts == faceData.size());
 
     nEltsL = faceDataL.size() / nodesPerElt;
     nEltsR = faceDataR.size() / nodesPerElt;
@@ -120,9 +120,9 @@ main (int   argc,
     }
 
     int nCompMEFL = nodesL.nComp();
-    BL_ASSERT(nEltsL*nodesPerElt == faceDataL.size());
+    AMREX_ASSERT(nEltsL*nodesPerElt == faceDataL.size());
     int nCompMEFR = nodesR.nComp();
-    BL_ASSERT(nEltsR*nodesPerElt == faceDataR.size());
+    AMREX_ASSERT(nEltsR*nodesPerElt == faceDataR.size());
 
     Array<int> compsL;
     int nCompL = pp.countval("compsL");
@@ -137,7 +137,7 @@ main (int   argc,
         pp.query("sCompL",sCompL);
         nCompL = namesL.size();
         pp.query("nCompL",nCompL);
-        BL_ASSERT(sCompL+nCompL <= nCompMEFL);
+        AMREX_ASSERT(sCompL+nCompL <= nCompMEFL);
         compsL.resize(nCompL);
         for (int i=0; i<nCompL; ++i)
             compsL[i] = sCompL + i;
@@ -156,7 +156,7 @@ main (int   argc,
         pp.query("sCompR",sCompR);
         nCompR = namesR.size();
         pp.query("nCompR",nCompR);
-        BL_ASSERT(sCompR+nCompR <= nCompMEFR);
+        AMREX_ASSERT(sCompR+nCompR <= nCompMEFR);
         compsR.resize(nCompR);
         for (int i=0; i<nCompR; ++i)
             compsR[i] = sCompR + i;

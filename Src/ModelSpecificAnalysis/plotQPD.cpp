@@ -170,7 +170,7 @@ main (int   argc,
 
         // Increment volume-weighted sum of each reaction over all levels
         Real vol = 1;
-        for (int i=0; i<BL_SPACEDIM; ++i) {
+        for (int i=0; i<AMREX_SPACEDIM; ++i) {
           vol *= amrData.ProbSize()[i] / amrData.ProbDomain()[lev].length(i);
         }
 

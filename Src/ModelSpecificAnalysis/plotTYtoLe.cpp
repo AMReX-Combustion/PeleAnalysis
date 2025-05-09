@@ -9,7 +9,6 @@
 #include <AMReX_BCRec.H>
 #include <AMReX_Interpolater.H>
 
-#include <AMReX_BLFort.H>
 #include <mechanism.H>
 #include <PelePhysics.H>
 

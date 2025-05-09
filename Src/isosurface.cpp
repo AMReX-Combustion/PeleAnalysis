@@ -6,7 +6,6 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 
-#include <AMReX_BLFort.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
 #include <AMReX_PlotFileUtil.H>

@@ -226,8 +226,8 @@ build_nodeMap(const Vector<Vector<Vector<int> > >& inside_nodes)
         {
             for (int k=0; k<inside_nodes[i][j].size(); ++k)
             {
-                BL_ASSERT(inside_nodes[i][j][k]<=num_nodes);
-                BL_ASSERT(inside_nodes[i][j][k]>0);
+                AMREX_ASSERT(inside_nodes[i][j][k]<=num_nodes);
+                AMREX_ASSERT(inside_nodes[i][j][k]>0);
                 nodeMap[inside_nodes[i][j][k] - 1] = MLloc(i,j,k); // Remember that inside_nodes is 1-based
             }
         }
