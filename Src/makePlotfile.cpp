@@ -6,22 +6,41 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_PlotFileUtil.H>
 
-#include <AMReX_BLFort.H>
-
 using namespace amrex;
+
+static
+void
+print_usage (int,
+             char* argv[])
+{
+  std::cerr << "Utility to build 3D plotfile from list of 2D FABs";
+  std::cerr << "usage:\n";
+  std::cerr << argv[0] << " infile_head=<s> infile_tail=<s> outfile=<s> start=<i> end=<i> interval=<i> names=<s> probLo=<r> probHi=<r> [options] \n\tOptions:\n";
+  std::cerr << "\t     infile_head=<s> where s is the start of the fab names \n";
+  std::cerr << "\t     infile_tail=<s> where s is the end of the fab names\n";
+  std::cerr << "\t     outfile=<s> where s is the name of plotfile\n";
+  std::cerr << "\t     start=<i> where i is the starting number of the files\n";
+  std::cerr << "\t     end=<i> where i is the ending number of the files\n";
+  std::cerr << "\t     interval=<i> where i is the interval between files\n";
+  std::cerr << "\t     names=<s> where s is the name of the variables from the fab\n";
+  std::cerr << "\t     probLo=<r,r,(r)> is an array of size 2 or 3 to specify the bottom corner of the plotfile box. If 2 values given, the third is calculated based on number of planes.\n";
+  std::cerr << "\t     probHi=<r,r,r> is an array of 3 to specify top corner of plotfile box\n";  
+  std::cerr << "\t     time=<r> where r is time to give the plotfilee (DEF->0.0)\n";
+  std::cerr << "\t     verbose=<i> do you want it verbose? (0 or 1) (DEF->0)\n";
+  exit(1);
+}
+
 
 int main(int argc, char *argv[])
 {
   amrex::Initialize(argc, argv);
 
-  int nProcs = ParallelDescriptor::NProcs();
-  //if (nProcs>1)
-  //  amrex::Error("Not yet fully-implemented in parallel!");
+  ParmParse pp;  
 
-  int myProc = ParallelDescriptor::MyProc();
+  if (argc < 2 || pp.contains("help")) {
+    print_usage(argc,argv);
+  }
 
-  ParmParse pp;
-  
   bool verbose(false);
   if(pp.contains("verbose") || (pp.contains("v"))) {
     verbose = true;
@@ -36,20 +55,10 @@ int main(int argc, char *argv[])
   DataServices::SetBatchMode();
   Amrvis::FileType fileType(Amrvis::NEWPLT);
 
-  // read in list of fabs to load
-  //int nFiles=pp.countval("infile");
   int start,end,interval,nfiles;  
   std::string infile_head, infile_tail;
 
-  /*
-    std::string infile[nFiles];
-    if (verbose) std::cout << "infiles =";
-    for (int iFile=0; iFile<nFiles; iFile++) {
-      pp.get("infile",infile[iFile],iFile);
-      if (verbose) std::cout << " " << infile[iFile]; 
-    }
-    if (verbose) std::cout << std::endl;
-     */
+
   pp.get("infile_head",infile_head);
   pp.get("infile_tail",infile_tail);
   pp.get("start",start);
@@ -90,13 +99,6 @@ int main(int argc, char *argv[])
   amrex::Print() << "Getting geometry from file: "+infiletest << std::endl;
   FArrayBox fab;
 
-  //Box* boxptr = new Box[1];
-  /*Real* probLo = malloc(3*sizeof(Real));
-  probLo[0] = 0.0; probLo[1] = 0.0; probLo[2] = 0.0;
-  Real* probHi = malloc(3*sizeof(Real));
-  probHi[0] = 0.0; probHi[1] = 0.0; probHi[2] = 0.0;
-  Real* nx = malloc(3*sizeof(int));
-  nx[0] = 0; nx[1] = 0; nx[2] = 0;*/
   Vector<Real> probLo = {0.0,0.0,0.0};
   Vector<Real> probHi = {0.0,0.0,0.0};
   Vector<int> nx = {0,0,0};
@@ -115,26 +117,20 @@ int main(int argc, char *argv[])
     
     // figure out how big the full domain box needs to be
     const Box& box = fab.box();
-    std::cout << "fab.box().length = " << box.length() << std::endl;
-    //boxptr[0] = boxloc;
-    //ParallelDescriptor::Bcast(boxptr,1);
-    //}
-  //Box box = boxptr[0];
-
-  
-  // number of cells in each direction
-  // (assume stacking in z)
-    //int nx[3];
+    if (verbose) {
+      Print() << "fab.box().length = " << box.length() << std::endl;
+    }
     nx[0] = box.length(0);
     nx[1] = box.length(1);
     nx[2] = nfiles;
     int pCells=nx[0]*nx[1];
     long nCells=nx[0]*nx[1]*nx[2];
     
-    if (verbose) std::cout << "cells = "
-			   << nx[0] << " " << nx[1] << " " << nx[2] << " "
-			   << " (" << nCells << ")" << std::endl;
-    
+    if (verbose) {
+      Print() << "cells = "
+	      << nx[0] << " " << nx[1] << " " << nx[2] << " "
+	      << " (" << nCells << ")\n";
+    }
     // assign a physical size
     int calcz;
     if (pp.countval("probLo")==3) {
@@ -175,15 +171,12 @@ int main(int argc, char *argv[])
   ParallelDescriptor::ReduceRealSum(probLo.data(),3);
   ParallelDescriptor::ReduceRealSum(probHi.data(),3);
   ParallelDescriptor::ReduceIntSum(nx.data(),3);
-
-  //if (verbose)
-  Print() << "probLo = "  << probLo[0] << " " << probLo[1] << " " << probLo[2] << std::endl;
-  //if (verbose)
-  Print() << "probHi = "  << probHi[0] << " " << probHi[1] << " " << probHi[2] << std::endl;
-    
-  //if (verbose)
-  Print() << "nx = "   << nx[0] << " " << nx[1] << " " << nx[2] << std::endl;
-
+  
+  if (verbose) {
+    Print() << "probLo = "  << probLo[0] << " " << probLo[1] << " " << probLo[2] << std::endl;
+    Print() << "probHi = "  << probHi[0] << " " << probHi[1] << " " << probHi[2] << std::endl;
+    Print() << "nx = "   << nx[0] << " " << nx[1] << " " << nx[2] << std::endl;
+  }
   
   RealBox rb(probLo.data(),probHi.data()); // make real box for geometry 
   Vector<int> is_per(AMREX_SPACEDIM,0); //hard code to no periodicity for the minute
@@ -229,12 +222,7 @@ int main(int argc, char *argv[])
   }
   
   // And now the distibution mapping
-  /*
-  Vector<int> pmap(nBoxes);
-  for (int iBox=0; iBox<nBoxes; iBox++)
-    pmap[iBox] = iBox%nProcs; // maybe think about hacking this to parallelise this step
-  DistributionMapping domainDistMap(pmap);
-  */
+
   DistributionMapping domainDistMap(domainBoxArray);
   
   MultiFab *mf;
@@ -245,23 +233,20 @@ int main(int argc, char *argv[])
   if (verbose)
     std::cout << "Populating data:" << std::endl;
 
-  // how do we loop over the boxes in the multifab properly?
-  //int iFile=0;
   for (MFIter mfi(*mf); mfi.isValid(); ++mfi) {
     
     // destination fab
     FArrayBox& myFab = (*mf)[mfi];
     
     // load data
-    //std::cout << "MF idx = "+std::to_string(mfi.index()) << std::endl;
     int iFile=nfiles-myFab.smallEnd()[2]-1;
     int fileNum = start+iFile*interval;
-    std::string filenum_str = std::to_string(fileNum);
-    if (fileNum < 100000) {
-      filenum_str = "0"+filenum_str;
-    }
+
+    std::ostringstream oss;
+    oss << std::setw(6) << std::setfill('0') << fileNum;
+    std::string filenum_str = oss.str();
     
-    std::string infile_local = infile_head+filenum_str+infile_tail;//infile[nFiles-iFile-1].c_str()
+    std::string infile_local = infile_head+filenum_str+infile_tail;
     std::cout << "iFile = " << iFile << ": " <<  infile_local << std::endl;
     ifs.open(infile_local);
     fab.readFrom(ifs);
@@ -270,8 +255,6 @@ int main(int argc, char *argv[])
     IntVect shift(shiftvec);
     fab.shift(shift);
     const Box& inBox = fab.box();
-    //amrex::Print() << "inBox = " << inBox << std::endl;
-    //amrex::Print() << "myFab box= " << myFab.box() << std::endl;
     for (int dir=0; dir<2; dir++) {
       if (inBox.length(dir)!=nx[dir]) {
 	std::cerr << "file = " << infile_local << std::endl;
@@ -282,15 +265,13 @@ int main(int argc, char *argv[])
 
     // copy data
     myFab.copy(fab);
-    
-    //iFile++;
   }
-
+  
   // write the output plotfile
   // should be able to replace with modern call to writeplotfile
 
   if (verbose) {
-    std::cout << "*** writing plotfile " << std::endl;
+    Print() << "*** writing plotfile " << std::endl;
   }
   int levelSteps;
   WriteSingleLevelPlotfile(outfile,*mf,names, geoms,time,levelSteps);
