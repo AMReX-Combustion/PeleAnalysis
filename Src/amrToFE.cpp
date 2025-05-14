@@ -54,7 +54,7 @@ std::ostream& operator<< (std::ostream&  os, const Node& node)
 
 struct Element
 {
-#if (BL_SPACEDIM==2)
+#if (AMREX_SPACEDIM==2)
 #define MYLEN 4
     Element(const Node& a, const Node& b, const Node& c, const Node& d)
         {  n[0]=&a; n[1]=&b; n[2]=&c; n[3]=&d; }
@@ -209,7 +209,7 @@ Collate(Vector<Real>& NodeRaw,
 
 #if BL_USE_MPI
     const int IOProc = ParallelDescriptor::IOProcessorNumber();
-    BL_ASSERT(IOProc==0);
+    AMREX_ASSERT(IOProc==0);
     const int nProcs = ParallelDescriptor::NProcs(); 
     Vector<int> nmdataR(nProcs,0);
     Vector<int> offsetR(nProcs,0);
@@ -365,7 +365,7 @@ main (int   argc,
         pp.query("sComp",sComp);
         int nComp = amrData.NComp();
         pp.query("nComp",nComp);
-        BL_ASSERT(sComp+nComp <= amrData.NComp());
+        AMREX_ASSERT(sComp+nComp <= amrData.NComp());
         comps.resize(nComp);
         for (int i=0; i<nComp; ++i)
             comps[i] = sComp + i;
@@ -376,8 +376,8 @@ main (int   argc,
     {
         Vector<int> barr;
         pp.getarr("box",barr,0,nx);
-        int d=BL_SPACEDIM;
-        BL_ASSERT(barr.size()==2*d);
+        int d=AMREX_SPACEDIM;
+        AMREX_ASSERT(barr.size()==2*d);
         subbox=Box(IntVect(AMREX_D_DECL(barr[0],barr[1],barr[2])),
                    IntVect(AMREX_D_DECL(barr[d],barr[d+1],barr[d+2]))) & amrData.ProbDomain()[0];
 
@@ -406,7 +406,7 @@ main (int   argc,
 
         if (nGrowPer>0 && lev==0)
         {
-            for (int i=0; i<BL_SPACEDIM; ++i)
+            for (int i=0; i<AMREX_SPACEDIM; ++i)
             {
                 if (geom[lev]->isPeriodic(i))
                 {
@@ -567,12 +567,12 @@ main (int   argc,
             NodeFab& ifab = (*nodes[lev])[fai];                        
             Box box = ifab.box() & subboxArray[lev];
 
-            for (int dir=0; dir<BL_SPACEDIM; ++dir)
+            for (int dir=0; dir<AMREX_SPACEDIM; ++dir)
                 box.growHi(dir,-1);
 
             for (IntVect iv(box.smallEnd()); iv<=box.bigEnd(); box.next(iv))
             {
-#if (BL_SPACEDIM == 2)
+#if (AMREX_SPACEDIM == 2)
                 const Node& n1 = ifab(iv,0);
                 const Node& n2 = ifab(IntVect(iv).shift(BASISV(0)),0);
                 const Node& n3 = ifab(IntVect(iv).shift(IntVect::TheUnitVector()),0);
@@ -640,8 +640,8 @@ main (int   argc,
     {
         if (it->second>=nodeVect.size() || it->second<0)
             Print() << "Bad id: " << it->second << "  bad node: " << it->first << std::endl;
-        BL_ASSERT(it->second>=0);
-        BL_ASSERT(it->second<nodeVect.size());
+        AMREX_ASSERT(it->second>=0);
+        AMREX_ASSERT(it->second<nodeVect.size());
         nodeVect[it->second] = (*it).first;
     }
     std::cerr << "Final nodeVect built (" << nodeVect.size() << " nodes)" << endl;
@@ -669,7 +669,7 @@ main (int   argc,
             const Box& pd = amrData.ProbDomain()[lev];
             //const BoxArray& vba = amrData.boxArray(lev);
             Box shrunkenDomain = pd;
-            for (int i=0; i<BL_SPACEDIM; ++i)
+            for (int i=0; i<AMREX_SPACEDIM; ++i)
                 if (geom[lev]->isPeriodic(i))
                     shrunkenDomain.grow(i,-ng);
 
@@ -709,7 +709,7 @@ main (int   argc,
     std::cerr << "File data loaded" << endl;
 
     int nNodesFINAL = (connect_cc  ?  nodeVect.size() : nElts*MYLEN );
-    int nCompsFINAL = BL_SPACEDIM+comps.size();
+    int nCompsFINAL = AMREX_SPACEDIM+comps.size();
     FABdata tmpData(nNodesFINAL,nCompsFINAL);
     int tmpDatLen = nCompsFINAL*nNodesFINAL;
     std::cerr << "Final node data allocated (size=" << tmpDatLen << ")" << endl;
@@ -718,8 +718,8 @@ main (int   argc,
     Vector<Vector<Real> > dxLevel(Nlev);
     for (int i=0; i<Nlev; ++i)
     {
-        dxLevel[i].resize(BL_SPACEDIM);
-        for (int j=0; j<BL_SPACEDIM; ++j)
+        dxLevel[i].resize(AMREX_SPACEDIM);
+        for (int j=0; j<AMREX_SPACEDIM; ++j)
             dxLevel[i][j] = amrData.ProbSize()[j]/amrData.ProbDomain()[i].length(j);
     }
     const Vector<Real>& plo = amrData.ProbLo();
@@ -730,7 +730,7 @@ main (int   argc,
 #ifdef BIN_POINT
     Real* data = tmpData.dataPtr();
 #else /* BLOCK ordering */
-    Vector<Real*> fdat(comps.size()+BL_SPACEDIM);
+    Vector<Real*> fdat(comps.size()+AMREX_SPACEDIM);
     for (int i=0; i<fdat.size(); ++i)
         fdat[i] = tmpData.dataPtr(i);
 #endif
@@ -766,7 +766,7 @@ main (int   argc,
                     jGrid = j;
                 }
             }
-            BL_ASSERT(found_it);
+            AMREX_ASSERT(found_it);
         }
 	// Remember these for next time
 	levPrev = node.level;
@@ -792,10 +792,10 @@ main (int   argc,
             Real offset = (connect_cc ? 0.5 : 0);
 
 #ifdef BIN_POINT
-	  for (int dir=0; dir<BL_SPACEDIM; ++dir)
+	  for (int dir=0; dir<AMREX_SPACEDIM; ++dir)
             data[cnt++] = plo[dir] + (ivt[j][dir] + offset) * dx[dir];
 #else /* BLOCK ordering */
-	  for (int dir=0; dir<BL_SPACEDIM; ++dir)
+	  for (int dir=0; dir<AMREX_SPACEDIM; ++dir)
             fdat[dir][cnt] = plo[dir] + (ivt[j][dir] + offset) * dx[dir];
 #endif /* BIN_POINT */
 
@@ -806,7 +806,7 @@ main (int   argc,
           }
 #else /* BLOCK ordering */
 	  for (int n=0; n<comps.size(); ++n) {
-              fdat[n+BL_SPACEDIM][cnt] = (*fileData[node.level])[jGrid](iv,n);
+              fdat[n+AMREX_SPACEDIM][cnt] = (*fileData[node.level])[jGrid](iv,n);
           }
 	  cnt++;
 #endif /* BIN_POINT */
@@ -818,7 +818,7 @@ main (int   argc,
     //
     // Write output
     //
-    const int nState = BL_SPACEDIM + comps.size();
+    const int nState = AMREX_SPACEDIM + comps.size();
     std::string vars = AMREX_D_TERM("X"," Y"," Z");
     for (int j=0; j<comps.size(); ++j)
         vars += " " + amrData.PlotVarNames()[comps[j]];

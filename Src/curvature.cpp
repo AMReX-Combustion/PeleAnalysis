@@ -15,7 +15,6 @@
 #include <AMReX_MLMG.H>
 #include <AMReX_MLPoisson.H>
 #include <AMReX_MLABecLaplacian.H>
-#include <AMReX_BLFort.H>
 
 using namespace amrex;
 

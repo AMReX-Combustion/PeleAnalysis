@@ -211,12 +211,12 @@ main (int   argc,
     string label;
     read_iso(infile,nodes,faceData,nElts,names,label);
     int nodesPerElt = faceData.size() / nElts;
-    BL_ASSERT(nodesPerElt*nElts == faceData.size());
+    AMREX_ASSERT(nodesPerElt*nElts == faceData.size());
 
     nElts = faceData.size() / nodesPerElt;
     int nNodes = nodes.box().numPts();
     int nCompMEF = nodes.nComp();
-    BL_ASSERT(nElts*nodesPerElt == faceData.size());
+    AMREX_ASSERT(nElts*nodesPerElt == faceData.size());
 
     int areaComp=-1; pp.query("areaComp",areaComp); // Treated as an area, rather than computing here on the fly
     int comp=-1; pp.get("comp",comp); // Component to smooth

@@ -6,7 +6,6 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
-#include <AMReX_BLFort.H>
 #include <AMReX_MLMG.H>
 #include <AMReX_MLPoisson.H>
 #include <AMReX_MLABecLaplacian.H>

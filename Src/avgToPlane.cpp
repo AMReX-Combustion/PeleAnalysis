@@ -82,7 +82,7 @@ main (int   argc,
       pp.query("sComp",sComp);
       int nComp = amrData.NComp();
       pp.query("nComp",nComp);
-      BL_ASSERT(sComp+nComp <= amrData.NComp());
+      AMREX_ASSERT(sComp+nComp <= amrData.NComp());
       comps.resize(nComp);
       for (int i=0; i<nComp; ++i)
         comps[i] = sComp + i;
@@ -96,8 +96,8 @@ main (int   argc,
     {
       Vector<int> inBox;
       pp.getarr("box",inBox,0,nx);
-      int d=BL_SPACEDIM;
-      BL_ASSERT(inBox.size()==2*d);
+      int d=AMREX_SPACEDIM;
+      AMREX_ASSERT(inBox.size()==2*d);
       subbox=Box(IntVect(AMREX_D_DECL(inBox[0],inBox[1],inBox[2])),
                  IntVect(AMREX_D_DECL(inBox[d],inBox[d+1],inBox[d+2])),
                  IndexType::TheCellType());
@@ -105,12 +105,12 @@ main (int   argc,
 
     Vector<std::string> names(comps.size());
    
-    Vector<Real> plo(BL_SPACEDIM), phi(BL_SPACEDIM);
+    Vector<Real> plo(AMREX_SPACEDIM), phi(AMREX_SPACEDIM);
     Vector<Box> psize(finestLevel+1);
     const IntVect ilo = subbox.smallEnd();
     const IntVect ihi = subbox.bigEnd();
 
-    for (int i =0 ; i< BL_SPACEDIM; i++) {   
+    for (int i =0 ; i< AMREX_SPACEDIM; i++) {   
        plo[i] = amrData.ProbLo()[i]+(ilo[i])*amrData.DxLevel()[finestLevel][i];
        phi[i] = amrData.ProbLo()[i]+(ihi[i]+1)*amrData.DxLevel()[finestLevel][i];
     }
@@ -235,11 +235,11 @@ void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
 {
   const Box& box = data.box();
   const Real del = data_max - data_min;
-  BL_ASSERT(std::abs(del)>0.0);
+  AMREX_ASSERT(std::abs(del)>0.0);
   const int nvm1 = nVals-1;
   int cnt=0;
   int d[2];
-  for (int dir=0; dir<BL_SPACEDIM; ++dir)
+  for (int dir=0; dir<AMREX_SPACEDIM; ++dir)
     if (dir != slicedir)
       d[cnt++] = dir;
 
@@ -252,7 +252,7 @@ void pixelizeData(const FArrayBox& data, int slicedir, int sliceloc,
   image.resize(Box(IntVect::TheZeroVector(),img),1);
 
   IntVect div;
-  if (slicedir>=0 && slicedir<BL_SPACEDIM)
+  if (slicedir>=0 && slicedir<AMREX_SPACEDIM)
       div[slicedir] = sliceloc;
 
   for (int i=se[d[0]]; i<=be[d[0]]; ++i) {

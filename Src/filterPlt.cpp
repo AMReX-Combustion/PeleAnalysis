@@ -6,7 +6,6 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
-#include <AMReX_BLFort.H>
 #include <AMReX_FillPatchUtil.H>
 #include <Filter.H>
 #include <PltFileManager.H>

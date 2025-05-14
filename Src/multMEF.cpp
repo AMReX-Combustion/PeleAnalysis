@@ -107,11 +107,11 @@ main (int   argc,
     string label;
     read_iso(infile,nodes,faceData,nElts,names,label);
     int nodesPerElt = faceData.size() / nElts;
-    BL_ASSERT(nodesPerElt*nElts == faceData.size());
+    AMREX_ASSERT(nodesPerElt*nElts == faceData.size());
 
     nElts = faceData.size() / nodesPerElt;
     int nCompMEF = nodes.nComp();
-    BL_ASSERT(nElts*nodesPerElt == faceData.size());
+    AMREX_ASSERT(nElts*nodesPerElt == faceData.size());
 
     Array<int> comps;
     int nComp=0;
@@ -126,7 +126,7 @@ main (int   argc,
         pp.query("sComp",sComp);
         nComp = 1;
         pp.query("nComp",nComp);
-        BL_ASSERT(sComp+nComp <= nCompMEF);
+        AMREX_ASSERT(sComp+nComp <= nCompMEF);
         comps.resize(nComp);
         for (int i=0; i<nComp; ++i)
             comps[i] = sComp + i;
@@ -141,7 +141,7 @@ main (int   argc,
     int nNodes = nodes.box().numPts();
     for (int j=0; j<nComp; ++j)
     {
-        BL_ASSERT(comps[j]<nCompMEF);
+        AMREX_ASSERT(comps[j]<nCompMEF);
         Real* dat=nodes.dataPtr(comps[j]);
         for (int i=0; i<nNodes; ++i)
             datOut[i] *= dat[i];

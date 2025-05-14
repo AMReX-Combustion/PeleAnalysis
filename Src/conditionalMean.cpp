@@ -130,8 +130,8 @@ main (int   argc,
     {
         Vector<Real> barr;
         pp.getarr("bounds",barr,0,nx);
-        int d=BL_SPACEDIM;
-        BL_ASSERT(barr.size()==2*d);
+        int d=AMREX_SPACEDIM;
+        AMREX_ASSERT(barr.size()==2*d);
         bbll.resize(d);
         bbur.resize(d);
         for (int i=0; i<d; ++i)
@@ -177,10 +177,10 @@ main (int   argc,
 
             domain = amrData.ProbDomain()[0];
 
-            if (bbll.size()==BL_SPACEDIM  && bbur.size()==BL_SPACEDIM)
+            if (bbll.size()==AMREX_SPACEDIM  && bbur.size()==AMREX_SPACEDIM)
             {
                 // Find coarse-grid coordinates of bounding box, round outwardly
-                for (int i=0; i<BL_SPACEDIM; ++i) {
+                for (int i=0; i<AMREX_SPACEDIM; ++i) {
                     const Real dx = amrData.ProbSize()[i] / amrData.ProbDomain()[0].length(i);
                     domain.setSmall(i,
                                     std::max(domain.smallEnd()[i],
@@ -200,7 +200,7 @@ main (int   argc,
             {
                 int rat = amrData.RefRatio()[i];
                 weights[i] = weights[i+1];
-                for (int d=0; d<BL_SPACEDIM; ++d)
+                for (int d=0; d<AMREX_SPACEDIM; ++d)
                     weights[i] *= rat;
             }
         }

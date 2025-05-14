@@ -79,7 +79,7 @@ main (int   argc,
         pp.query("sComp",sComp);
         nComp = amrData.NComp();
         pp.query("nComp",nComp);
-        BL_ASSERT(sComp+nComp <= amrData.NComp());
+        AMREX_ASSERT(sComp+nComp <= amrData.NComp());
         comps.resize(nComp);
         for (int i=0; i<nComp; ++i)
             comps[i] = sComp + i;
@@ -129,8 +129,8 @@ main (int   argc,
 
     RealBox rb(&(amrData.ProbLo()[0]),
                &(amrData.ProbHi()[0]));
-    Vector<int> is_per(BL_SPACEDIM,1);
-    pp.queryarr("is_per",is_per,0,BL_SPACEDIM);
+    Vector<int> is_per(AMREX_SPACEDIM,1);
+    pp.queryarr("is_per",is_per,0,AMREX_SPACEDIM);
     int coord = 0;
 
     for (int lev=0; lev<Nlev; ++lev)

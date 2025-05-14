@@ -401,7 +401,7 @@ main (int   argc,
                     const int  *hi    = bx.hiVect(); 
                     const int   ix    = hi[0]-lo[0]+1;
                     const int   jx    = hi[1]-lo[1]+1;
-#if (BL_SPACEDIM==3)
+#if (AMREX_SPACEDIM==3)
                     const int   kx    = hi[2]-lo[2]+1;
                     const int  nCells = ix*jx*kx;
 #else
@@ -454,7 +454,7 @@ main (int   argc,
                         const int   ix    = hi[0]-lo[0]+1;
                         const int   jx    = hi[1]-lo[1]+1;
                         Real        Vol   = dx[0]*dx[1];
-#if (BL_SPACEDIM==3)
+#if (AMREX_SPACEDIM==3)
                         const int   kx    = hi[2]-lo[2]+1;
                         ;           Vol  *= dx[2];
                         for (int k=0; k<kx; k++) {
@@ -464,7 +464,7 @@ main (int   argc,
                                 Real y=probLo[1] + dx[1]*(0.5+(Real)(j+lo[1]));
                                 for (int i=0; i<ix; i++) {
                                     Real x=probLo[0] + dx[0]*(0.5+(Real)(i+lo[0]));
-#if (BL_SPACEDIM==3)
+#if (AMREX_SPACEDIM==3)
                                     int cell = (k*jx+j)*ix+i;
 #else
                                     int cell = j*ix+i;
@@ -505,7 +505,7 @@ main (int   argc,
                                     }
                                 } // i
                             } // j
-#if (BL_SPACEDIM==3)
+#if (AMREX_SPACEDIM==3)
                         } // k
 #endif
                     } // MFI
@@ -547,7 +547,7 @@ main (int   argc,
             }
             
             domainVol = 1;
-            for (int dd=0; dd<BL_SPACEDIM; ++dd) {
+            for (int dd=0; dd<AMREX_SPACEDIM; ++dd) {
                 domainVol *= probHi[dd]-probLo[dd];
             }
 

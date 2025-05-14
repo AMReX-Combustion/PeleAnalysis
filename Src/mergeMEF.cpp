@@ -191,7 +191,7 @@ merge_iso(FArrayBox&        nodesM,
             for (int j=0; j<nNodesM && !found; ++j)
             {
                 Real dist = 0;
-                for (int k=0; k<BL_SPACEDIM; ++k)
+                for (int k=0; k<AMREX_SPACEDIM; ++k)
                 {
                     Real dx = dptr[k][i] - dptrM[k][j];
                     dist += dx*dx;

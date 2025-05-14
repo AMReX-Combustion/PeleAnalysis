@@ -6,8 +6,6 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_PlotFileUtil.H>
 
-#include <AMReX_BLFort.H>
-
 using namespace amrex;
 #if AMREX_SPACEDIM==3
 void integrate1d(int dir, int dir1, int dir2, Vector<Vector<Vector<Real>>>& outdata, Vector<Real>& x, Vector<Real>& y, AmrData& amrData, Vector<MultiFab*> indata, int nVars, int finestLevel, int cComp, Real cMin, Real cMax, int avg) {

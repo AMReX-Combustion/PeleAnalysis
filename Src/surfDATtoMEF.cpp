@@ -246,7 +246,7 @@ main (int   argc,
             Vector<Real>& v = nodeVec[j];
             v.resize(nComp);
             tokens = Tokenize(buf,", ");
-            BL_ASSERT(tokens.size()==nComp);
+            AMREX_ASSERT(tokens.size()==nComp);
             for (int k=0; k<nComp; ++k)
             {
                 v[k] = atof(tokens[k].c_str());
@@ -263,7 +263,7 @@ main (int   argc,
         {
             Vector<SIZET>& e = eltVec[j];
             tokens = Tokenize(buf,", ");
-            BL_ASSERT(tokens.size()==nodesPerElt);
+            AMREX_ASSERT(tokens.size()==nodesPerElt);
             e.resize(nodesPerElt);
             for (int k=0; k<nodesPerElt; ++k)
                 e[k] = atoi(tokens[k].c_str());
@@ -337,7 +337,7 @@ writeBin(const Vector<string>&         names,
     for (SIZET i=0; i<nElts; ++i)
     {
         const Vector<SIZET>& elt = eltVec[i];
-        BL_ASSERT(elt.size()==nodesPerElt);
+        AMREX_ASSERT(elt.size()==nodesPerElt);
         for (int j=0; j<elt.size(); ++j)
             connData[cnt++] = elt[j];
     }

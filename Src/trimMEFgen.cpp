@@ -55,14 +55,14 @@ surface_area(const FArrayBox&   nodes,
              const Vector<int>& faceData,
              int                nodesPerElt)
 {
-    Vector<const Real*> dat(BL_SPACEDIM);
+    Vector<const Real*> dat(AMREX_SPACEDIM);
     for (int i=0; i<dat.size(); ++i)
         dat[i] = nodes.dataPtr(i);
 
-    BL_ASSERT(nodesPerElt==3); // not general enough for anything else
+    AMREX_ASSERT(nodesPerElt==3); // not general enough for anything else
     int nElts = faceData.size() / nodesPerElt;
     Real Area = 0;
-    Vector<Real> p0(BL_SPACEDIM), p1(BL_SPACEDIM), p2(BL_SPACEDIM);
+    Vector<Real> p0(AMREX_SPACEDIM), p1(AMREX_SPACEDIM), p2(AMREX_SPACEDIM);
     for (int k=0; k<nElts; ++k)
     {
         // set points of 
@@ -165,7 +165,7 @@ trim_surface(const Vector<int>&    comps,
     newNodes.clear(); // Make some space...not really necessary, but what the heck
 
     const int nElts = faceData.size() / nodesPerElt;
-    BL_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
+    AMREX_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
 
     // Remove elements that refer to removed nodes
     vector<int> newFaceData;
@@ -267,7 +267,7 @@ trim_surface_RXY(const string& sign,
     newNodes.clear(); // Make some space...not really necessary, but what the heck
 
     const int nElts = faceData.size() / nodesPerElt;
-    BL_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
+    AMREX_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
 
     // Remove elements that refer to removed nodes
     vector<int> newFaceData;
@@ -305,7 +305,7 @@ remove_unused_nodes(FArrayBox&   nodes,
     for (int i=0; i<faceData.size(); ++i)
     {
         int node = faceData[i]; // These are 1-based node numbers
-        BL_ASSERT(node<=nNodesOLD && node>0);
+        AMREX_ASSERT(node<=nNodesOLD && node>0);
         removeNode[node-1] = false; // Indexing here is zero-based
     }
 
@@ -342,7 +342,7 @@ remove_unused_nodes(FArrayBox&   nodes,
         newNodes.clear(); // Make some space...not really necessary, but what the heck
         
         const int nElts = faceData.size() / nodesPerElt;
-        BL_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
+        AMREX_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
         
         // Redefine elements with new numbering
         vector<int> newFaceData;
@@ -426,7 +426,7 @@ main (int   argc,
     string label;
     read_iso(infile,nodes,faceData,nElts,names,label);
     int nodesPerElt = faceData.size() / nElts;
-    BL_ASSERT(nodesPerElt*nElts == faceData.size());
+    AMREX_ASSERT(nodesPerElt*nElts == faceData.size());
 
     cout << "Surface area before: " << surface_area(nodes,faceData,nodesPerElt) << '\n';
 
@@ -439,12 +439,12 @@ main (int   argc,
 
         Vector<string> signs(nc);
         int ns = pp.countval("signs");
-        BL_ASSERT(ns==nc);
+        AMREX_ASSERT(ns==nc);
         pp.getarr("signs",signs,0,nc);
         
         Vector<Real> vals(nc);
         int nv = pp.countval("vals");
-        BL_ASSERT(nv==nc);
+        AMREX_ASSERT(nv==nc);
         pp.getarr("vals",vals,0,nc);
         
         trim_surface(comps,signs,vals,nodes,faceData,nodesPerElt);
@@ -459,7 +459,7 @@ main (int   argc,
     cout << "Surface area after: " << surface_area(nodes,faceData,nodesPerElt) << '\n';
 
     nElts = faceData.size() / nodesPerElt;
-    BL_ASSERT(nElts*nodesPerElt == faceData.size());
+    AMREX_ASSERT(nElts*nodesPerElt == faceData.size());
 
     Vector<int> remComps;
     int nrc = pp.countval("remComps");
@@ -485,7 +485,7 @@ main (int   argc,
                 newNames[cnt] = names[i];
                 newNodes.copy(nodes,i,cnt,1);
                 cnt++;
-                BL_ASSERT(cnt<nCompsNew);
+                AMREX_ASSERT(cnt<nCompsNew);
             }
         }
 

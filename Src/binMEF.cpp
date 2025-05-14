@@ -483,7 +483,7 @@ main (int   argc,
     vector<vector<Real> > binLO(nc);
     for (int j=0; j<nc; ++j)
     {
-      BL_ASSERT(nBins[j]>0);
+      AMREX_ASSERT(nBins[j]>0);
       binLO[j].resize(nBins[j]);
       for (int i=0; i<nBins[j]; ++i)
         binLO[j][i] = binMin[j]+i*dBin[j];

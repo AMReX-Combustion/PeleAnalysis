@@ -367,7 +367,7 @@ Vector<Segment> Segmentise(const Vector<Point>&  pts,
                           Real                  isoVal,
                           int                   isoComp)
 {
-   BL_ASSERT(elt.size()==3);
+   AMREX_ASSERT(elt.size()==3);
    Vector<PMapIt> vertlist(3);
 
    const int p0 = elt[0];
@@ -391,7 +391,7 @@ Vector<Segment> Segmentise(const Vector<Point>&  pts,
 
    Vector<Segment> segments(0);
    if (count > 0) {
-     BL_ASSERT(count == 2);
+     AMREX_ASSERT(count == 2);
      segments.resize(1);
      segments[0][0] = vertlist[0];
      segments[0][1] = vertlist[1];
@@ -406,11 +406,11 @@ Vector<Segment> Segmentise(const Vector<Point>&  pts,
 */
 Point VI_doIt(Real isoVal,int isoComp,const Vector<Point>& pts,int p1,int p2)
 {
-    BL_ASSERT(p1<pts.size() && p2<pts.size());
+    AMREX_ASSERT(p1<pts.size() && p2<pts.size());
     const Point& pt1 = pts[p1];
     const Point& pt2 = pts[p2];
 
-    BL_ASSERT(isoComp!=pts.size() && isoComp<pt1.size() && pt1.size()==pt2.size());
+    AMREX_ASSERT(isoComp!=pts.size() && isoComp<pt1.size() && pt1.size()==pt2.size());
 
     const Real valp1 = pt1[isoComp];
     const Real valp2 = pt2[isoComp];

@@ -207,11 +207,11 @@ main (int   argc,
     string label;
     read_iso(infile,nodes,faceData,nElts,names,label);
     int nodesPerElt = faceData.size() / nElts;
-    BL_ASSERT(nodesPerElt*nElts == faceData.size());
+    AMREX_ASSERT(nodesPerElt*nElts == faceData.size());
 
     nElts = faceData.size() / nodesPerElt;
     int nComp = nodes.nComp();
-    BL_ASSERT(nElts*nodesPerElt == faceData.size());
+    AMREX_ASSERT(nElts*nodesPerElt == faceData.size());
 
     int dir=0; pp.query("dir",dir);
     Array<Real> loc(1,0);
@@ -580,11 +580,11 @@ Segment::flip()
 */
 Point VI_doIt(Real isoVal,int isoComp,const vector<Point>& pts,int p1,int p2)
 {
-    BL_ASSERT(p1<pts.size() && p2<pts.size());
+    AMREX_ASSERT(p1<pts.size() && p2<pts.size());
     const Point& pt1 = pts[p1];
     const Point& pt2 = pts[p2];
 
-    BL_ASSERT(isoComp!=pts.size() && isoComp<pt1.size() && pt1.size()==pt2.size());
+    AMREX_ASSERT(isoComp!=pts.size() && isoComp<pt1.size() && pt1.size()==pt2.size());
 
     const Real valp1 = pt1[isoComp];
     const Real valp2 = pt2[isoComp];
@@ -639,7 +639,7 @@ Array<Segment> Segmentise(const vector<Point>&  pts,
                           Real                  isoVal,
                           int                   isoComp)
 {
-   BL_ASSERT(elt.size()==3);
+   AMREX_ASSERT(elt.size()==3);
    Array<PMapIt> vertlist(2);
    Array<Segment> segments;
 
