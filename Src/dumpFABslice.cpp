@@ -2,10 +2,7 @@
 #include <iostream>
 
 #include <AMReX_ParmParse.H>
-#include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
-#include <AMReX_MultiFabUtil.H>
-#include <AMReX_PlotFileUtil.H>
 
 using namespace amrex;
 
@@ -15,7 +12,11 @@ print_usage (int,
              char* argv[])
 {
   std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile infile=f1 [options] \n\tOptions:\n";
+  std::cerr << argv[0] << " infile infile=<s> [options] \n\tOptions:\n";
+  std::cerr << "\t     varNames=<s,s,...> variables to slice (will output individual planes), (OPT, will output all by default)\n";
+  std::cerr << "\t     dir=<i> direction to take slice (only needed for 3D)\n";
+  std::cerr << "\t     num=<i> slice number to take (only needed for 3D)\n";
+
   exit(1);
 }
 
@@ -41,7 +42,7 @@ main (int   argc,
       print_usage(argc,argv);
 
     if (pp.contains("verbose"))
-      AmrData::SetVerbose(false);
+      AmrData::SetVerbose(true);
 
     std::string plotFileName;
     pp.get("infile",plotFileName);
@@ -51,11 +52,11 @@ main (int   argc,
     if( ! dataServices.AmrDataOk()) {
       DataServices::Dispatch(DataServices::ExitRequest, NULL);
     }
-    int dir,num;
 #if AMREX_SPACEDIM == 2
-    dir = 2;
-    num = 0;
+    constexpr int dir = 2;
+    constexpr int num = 0;
 #else
+    int dir,num;
     pp.get("dir",dir);
     pp.get("num",num);
 #endif
@@ -71,11 +72,9 @@ main (int   argc,
       varNames.resize(numVars);
       pp.getarr("varNames",varNames);
       for (int n = 0; n < numVars; n++) {
-	//fabName = getFileRoot(plotFileName)+varNames[n]+".fab";
 	DataServices::Dispatch(DataServices::DumpSlicePlaneOneVar,&dataServices,dir,num,varNames[n]);	
       }
     } else {
-      //fabName = getFileRoot(plotFileName)+"allvars.fab";
       DataServices::Dispatch(DataServices::DumpSlicePlaneAllVars,&dataServices,dir,num);	
     }    
   }  

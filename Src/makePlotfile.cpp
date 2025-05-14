@@ -25,8 +25,8 @@ print_usage (int,
   std::cerr << "\t     names=<s> where s is the name of the variables from the fab\n";
   std::cerr << "\t     probLo=<r,r,(r)> is an array of size 2 or 3 to specify the bottom corner of the plotfile box. If 2 values given, the third is calculated based on number of planes.\n";
   std::cerr << "\t     probHi=<r,r,r> is an array of 3 to specify top corner of plotfile box\n";  
-  std::cerr << "\t     time=<r> where r is time to give the plotfilee (DEF->0.0)\n";
-  std::cerr << "\t     verbose=<i> do you want it verbose? (0 or 1) (DEF->0)\n";
+  std::cerr << "\t     time=<r> where r is time to give the plotfilee (OPT, DEF->0.0)\n";
+  std::cerr << "\t     verbose=<i> do you want it verbose? (0 or 1) (OPT, DEF->0)\n";
   exit(1);
 }
 
