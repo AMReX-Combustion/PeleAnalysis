@@ -40,6 +40,7 @@ EBASE		= template
 #EBASE		= decimateMEF
 #EBASE         = subPlt
 #EBASE         = partStream
+#EBASE		= stream2plt
 
 # tools that need review/combining/fixing/work
 #EBASE         = avgToPlane
@@ -51,6 +52,11 @@ ifeq ($(EBASE),partStream)
   USE_PARTICLES = TRUE
   CEXE_headers += StreamPC.H
   CEXE_sources += StreamPC.cpp
+endif
+
+ifeq ($(EBASE),stream2plt)
+  CEXE_headers += StreamData.H
+  CEXE_sources += StreamData.cpp
 endif
 
 ifeq ($(EBASE),$(filter $(EBASE), isosurface buildDistance))
