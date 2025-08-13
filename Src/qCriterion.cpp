@@ -45,7 +45,7 @@ main (int   argc,
     //std::string gradVar       = "temp";
     std::string infile        = "";  
     int finestLevel           = 1000;
-    //int nAuxVar               = 0;
+    int nAuxVar               = 0;
 
     // ---------------------------------------------------------------------
     // ParmParse
@@ -80,31 +80,33 @@ main (int   argc,
     //int idC = -1;
     //for (int i=0; i<plotVarNames.size(); ++i)
     //{
-    //  if (plotVarNames[i] == gradVar) idC = i;
+    //if (plotVarNames[i] == gradVar) idC = i;
     //}
     //if (idC<0) {
     //  Print() << "Cannot find " << gradVar << " data in pltfile \n";
     //}
     int ID_VEL_X, ID_VEL_Y, ID_VEL_Z;
-    Vector<int> ID_VEL_VEC = {ID_VEL_X, ID_VEL_Y, ID_VEL_Z};
+    std::string gradVar_vel_x = "x_velocity";
+    std::string gradVar_vel_y = "y_velocity";
+    std::string gradVar_vel_z = "z_velocity";
     for (int i=0; i<plotVarNames.size(); ++i) {
-      if (plotVarNames[i] == "x_velocity") ID_VEL_X = i;
-      else if (plotVarNames[i] == "y_velocity") ID_VEL_Y = i;
-      else if (plotVarNames[i] == "z_velocity") ID_VEL_Z = i;
+      if (plotVarNames[i] == gradVar_vel_x) ID_VEL_X = i;
+      else if (plotVarNames[i] == gradVar_vel_y) ID_VEL_Y = i;
+      else if (plotVarNames[i] == gradVar_vel_z) ID_VEL_Z = i;
     }
 
     // Auxiliary variables
-    //nAuxVar = pp.countval("Aux_Variables");
-    //Vector<std::string> AuxVar(nAuxVar);
-    //for(int ivar = 0; ivar < nAuxVar; ++ivar) { 
-    //     pp.get("Aux_Variables", AuxVar[ivar],ivar);
-    //}
+    nAuxVar = pp.countval("Aux_Variables");
+    Vector<std::string> AuxVar(nAuxVar);
+    for(int ivar = 0; ivar < nAuxVar; ++ivar) { 
+         pp.get("Aux_Variables", AuxVar[ivar],ivar);
+    }
 
     // ---------------------------------------------------------------------
     // Variables index management
     // ---------------------------------------------------------------------
-    //const int idCst = 0;
-    int nCompIn = AMREX_SPACEDIM;
+    const int idCst = 0;
+    int nCompIn = AMREX_SPACEDIM /*VEL*/;
     Vector<std::string> inVarNames(nCompIn);
     inVarNames[0] = plotVarNames[ID_VEL_X];
     inVarNames[1] = plotVarNames[ID_VEL_Y];
@@ -127,15 +129,11 @@ main (int   argc,
       destFillComps[i] = i;
     }
 
-    Vector<int> idGr(AMREX_SPACEDIM);
-    Print() << "!!! nCompIn " << nCompIn << "\n";
-    idGr[0] = nCompIn;
-    idGr[1] = nCompIn+3;
-#if AMREX_SPACEDIM==3
-    idGr[2] = nCompIn+6;
-#endif
+    const int idGr_vel_x = nCompIn + 0;
+    const int idGr_vel_y = nCompIn + 1;
+    const int idGr_vel_z = nCompIn + 2;
     //const int nCompOut = idGr + AMREX_SPACEDIM +1 ; // 1 component stores the ||gradT||
-    const int nCompOut = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM;
+    const int nCompOut = AMREX_SPACEDIM /*VEL*/ + AMREX_SPACEDIM * AMREX_SPACEDIM /*VEL_GRAD_TENSOR*/;
 
     // Check symmetry/periodicity in given coordinate direction
     Vector<int> sym_dir(AMREX_SPACEDIM,0);
@@ -148,13 +146,23 @@ main (int   argc,
         Print() << is_per[idim] << " ";
     }
     Print() << "\n";
-    BCRec gradVarBC;
+    BCRec vel_x_BC;
+    BCRec vel_y_BC;
+    BCRec vel_z_BC;
     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-        gradVarBC.setLo(idim,BCType::foextrap);
-        gradVarBC.setHi(idim,BCType::foextrap);
+        vel_x_BC.setLo(idim,BCType::foextrap);
+        vel_y_BC.setLo(idim,BCType::foextrap);
+        vel_z_BC.setLo(idim,BCType::foextrap);
+        vel_x_BC.setHi(idim,BCType::foextrap);
+        vel_y_BC.setHi(idim,BCType::foextrap);
+        vel_z_BC.setHi(idim,BCType::foextrap);
         if ( is_per[idim] ) {
-            gradVarBC.setLo(idim, BCType::int_dir);
-            gradVarBC.setHi(idim, BCType::int_dir);
+            vel_x_BC.setLo(idim, BCType::int_dir);
+            vel_y_BC.setLo(idim, BCType::int_dir);
+            vel_z_BC.setLo(idim, BCType::int_dir);
+            vel_x_BC.setHi(idim, BCType::int_dir);
+            vel_y_BC.setHi(idim, BCType::int_dir);
+            vel_z_BC.setHi(idim, BCType::int_dir);
         }
     }
 
@@ -170,7 +178,6 @@ main (int   argc,
     const int nGrow = 1;
 
     // Read data on all the levels
-    for (int jdim=0; jdim<AMREX_SPACEDIM; jdim++) {
     for (int lev=0; lev<Nlev; ++lev) {
 
       const BoxArray ba = amrData.boxArray(lev);
@@ -182,8 +189,9 @@ main (int   argc,
       Print() << "Reading data for level: " << lev << std::endl;
       amrData.FillVar(state[lev], lev, inVarNames, destFillComps);
 
-      state[lev].FillBoundary(ID_VEL_VEC[jdim],1,geoms[lev].periodicity());
-    }
+      state[lev].FillBoundary(ID_VEL_X,1,geoms[lev].periodicity());
+      state[lev].FillBoundary(ID_VEL_Y,1,geoms[lev].periodicity());
+      state[lev].FillBoundary(ID_VEL_Z,1,geoms[lev].periodicity());
     }
 
     // Get face-centered gradients from MLMG
@@ -192,8 +200,12 @@ main (int   argc,
     info.setConsolidation(1);
     info.setMetricTerm(false);
     info.setMaxCoarseningLevel(0);
-    MLPoisson poisson({geoms}, {grids}, {dmap}, info);
-    poisson.setMaxOrder(4);
+    MLPoisson poisson_vel_x({geoms}, {grids}, {dmap}, info);
+    MLPoisson poisson_vel_y({geoms}, {grids}, {dmap}, info);
+    MLPoisson poisson_vel_z({geoms}, {grids}, {dmap}, info);
+    poisson_vel_x.setMaxOrder(4);
+    poisson_vel_y.setMaxOrder(4);
+    poisson_vel_z.setMaxOrder(4);
     std::array<LinOpBCType, AMREX_SPACEDIM> lo_bc;
     std::array<LinOpBCType, AMREX_SPACEDIM> hi_bc;
     for (int idim = 0; idim< AMREX_SPACEDIM; idim++){
@@ -207,87 +219,100 @@ main (int   argc,
           }
        }
     }
-    poisson.setDomainBC(lo_bc, hi_bc);
+    poisson_vel_x.setDomainBC(lo_bc, hi_bc);
+    poisson_vel_y.setDomainBC(lo_bc, hi_bc);
+    poisson_vel_z.setDomainBC(lo_bc, hi_bc);
 
-// Need to apply the operator to ensure CF consistency with composite solve
-    int nGrowGrad = 0; // No need for ghost face on gradient
+    // Need to apply the operator to ensure CF consistency with composite solve
+    int nGrowGrad = 0;                   // No need for ghost face on gradient
+    Vector<Array<MultiFab,AMREX_SPACEDIM> > grad_vel_x(Nlev);
+    Vector<Array<MultiFab,AMREX_SPACEDIM> > grad_vel_y(Nlev);
+    Vector<Array<MultiFab,AMREX_SPACEDIM> > grad_vel_z(Nlev);
+    Vector<std::unique_ptr<MultiFab>> phi_vel_x;
+    Vector<std::unique_ptr<MultiFab>> phi_vel_y;
+    Vector<std::unique_ptr<MultiFab>> phi_vel_z;
+    Vector<MultiFab> laps_vel_x;
+    Vector<MultiFab> laps_vel_y;
+    Vector<MultiFab> laps_vel_z;
+    for (int lev = 0; lev < Nlev; ++lev) {
+      for (int idim = 0; idim <AMREX_SPACEDIM; idim++) {
+         const auto& ba = grids[lev];
+         grad_vel_x[lev][idim].define(amrex::convert(ba,IntVect::TheDimensionVector(idim)),
+                                dmap[lev], 1, nGrowGrad);
+         grad_vel_y[lev][idim].define(amrex::convert(ba,IntVect::TheDimensionVector(idim)),
+                                dmap[lev], 1, nGrowGrad);
+         grad_vel_z[lev][idim].define(amrex::convert(ba,IntVect::TheDimensionVector(idim)),
+                                dmap[lev], 1, nGrowGrad);
+      }    
+      phi_vel_x.push_back(std::make_unique<MultiFab> (state[lev],amrex::make_alias,ID_VEL_X,1));
+      phi_vel_y.push_back(std::make_unique<MultiFab> (state[lev],amrex::make_alias,ID_VEL_Y,1));
+      phi_vel_z.push_back(std::make_unique<MultiFab> (state[lev],amrex::make_alias,ID_VEL_Z,1));
+      poisson_vel_x.setLevelBC(lev, phi_vel_x[lev].get());
+      poisson_vel_y.setLevelBC(lev, phi_vel_y[lev].get());
+      poisson_vel_z.setLevelBC(lev, phi_vel_z[lev].get());
+      laps_vel_x.emplace_back(grids[lev], dmap[lev], 1, 1);
+      laps_vel_y.emplace_back(grids[lev], dmap[lev], 1, 1);
+      laps_vel_z.emplace_back(grids[lev], dmap[lev], 1, 1);
+    }
 
-    Vector<Array<MultiFab,AMREX_SPACEDIM>> grad_x_vel(Nlev);
-    Vector<Array<MultiFab,AMREX_SPACEDIM>> grad_y_vel(Nlev);
-    Vector<Array<MultiFab,AMREX_SPACEDIM>> grad_z_vel(Nlev);
-    std::array<Vector<Array<MultiFab,AMREX_SPACEDIM>>*, 3> grad_vel_ptrs = {
-        &grad_x_vel,
-        &grad_y_vel,
-        &grad_z_vel
-    };
+    MLMG mlmg_vel_x(poisson_vel_x);
+    MLMG mlmg_vel_y(poisson_vel_y);
+    MLMG mlmg_vel_z(poisson_vel_z);
+    mlmg_vel_x.apply(GetVecOfPtrs(laps_vel_x), GetVecOfPtrs(phi_vel_x));
+    mlmg_vel_y.apply(GetVecOfPtrs(laps_vel_y), GetVecOfPtrs(phi_vel_y));
+    mlmg_vel_z.apply(GetVecOfPtrs(laps_vel_z), GetVecOfPtrs(phi_vel_z));
+    mlmg_vel_x.getFluxes(GetVecOfArrOfPtrs(grad_vel_x), GetVecOfPtrs(phi_vel_x), MLMG::Location::FaceCenter);
+    mlmg_vel_y.getFluxes(GetVecOfArrOfPtrs(grad_vel_y), GetVecOfPtrs(phi_vel_y), MLMG::Location::FaceCenter);
+    mlmg_vel_z.getFluxes(GetVecOfArrOfPtrs(grad_vel_z), GetVecOfPtrs(phi_vel_z), MLMG::Location::FaceCenter);
 
-    for (int jdim = 0; jdim < AMREX_SPACEDIM; jdim++) {
-      Vector<std::unique_ptr<MultiFab>> phi;
-      Vector<MultiFab> laps;
-      for (int lev = 0; lev < Nlev; ++lev) {
-        for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
-          const auto& ba = grids[lev];
-          (*grad_vel_ptrs[jdim])[lev][idim].define(amrex::convert(ba,IntVect::TheDimensionVector(idim)),
-                                  dmap[lev], 1, nGrowGrad);
-        }
-        phi.push_back(std::make_unique<MultiFab> (state[lev],amrex::make_alias,ID_VEL_VEC[jdim],1));
-        poisson.setLevelBC(lev, phi[lev].get());
-        laps.emplace_back(grids[lev], dmap[lev], 1, 1);
-      }
-
-      MLMG mlmg(poisson);
-      mlmg.apply(GetVecOfPtrs(laps), GetVecOfPtrs(phi));
-      mlmg.getFluxes(GetVecOfArrOfPtrs((*grad_vel_ptrs[jdim])), GetVecOfPtrs(phi), MLMG::Location::FaceCenter);
-
-      for (int lev = 0; lev < Nlev; ++lev) {
+    for (int lev = 0; lev < Nlev; ++lev) {
         // Convert to cell avg gradient
-        MultiFab gradAlias(state[lev], amrex::make_alias, idGr[jdim], AMREX_SPACEDIM);
-        average_face_to_cellcenter(gradAlias, 0, GetArrOfConstPtrs((*grad_vel_ptrs[jdim])[lev]));
-        gradAlias.mult(-1.0);
+        MultiFab gradAlias_vel_x(state[lev], amrex::make_alias, idGr_vel_x, AMREX_SPACEDIM);
+        MultiFab gradAlias_vel_y(state[lev], amrex::make_alias, idGr_vel_y, AMREX_SPACEDIM);
+        MultiFab gradAlias_vel_z(state[lev], amrex::make_alias, idGr_vel_z, AMREX_SPACEDIM);
+        average_face_to_cellcenter(gradAlias_vel_x, 0, GetArrOfConstPtrs(grad_vel_x[lev]));
+        average_face_to_cellcenter(gradAlias_vel_y, 0, GetArrOfConstPtrs(grad_vel_y[lev]));
+        average_face_to_cellcenter(gradAlias_vel_z, 0, GetArrOfConstPtrs(grad_vel_z[lev]));
+        gradAlias_vel_x.mult(-1.0);
+        gradAlias_vel_y.mult(-1.0);
+        gradAlias_vel_z.mult(-1.0);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-       // for (MFIter mfi(state[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
-       // {    
-       //   const Box& bx = mfi.tilebox();
-       //   auto const& grad_a   = gradAlias.const_array(mfi);
-       //   auto const& gradMag  = state[lev].array(mfi,idGr[0]+AMREX_SPACEDIM*AMREX_SPACEDIM);
-       //   amrex::ParallelFor(bx, [=]
-       //   AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-       //   {    
-       //      gradMag(i,j,k) = std::sqrt(AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
-       //                                              + grad_a(i,j,k,1) * grad_a(i,j,k,1),
-       //                                              + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
-       //   });  
-       // }
-      }
+        //for (MFIter mfi(state[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        //{    
+        //   const Box& bx = mfi.tilebox();
+        //   auto const& grad_a   = gradAlias.const_array(mfi);
+        //   auto const& gradMag  = state[lev].array(mfi,idGr+AMREX_SPACEDIM);
+        //   amrex::ParallelFor(bx, [=]
+        //   AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        //   {    
+        //      gradMag(i,j,k) = std::sqrt(AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
+        //                                              + grad_a(i,j,k,1) * grad_a(i,j,k,1),
+        //                                              + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
+        //   });  
+        //} 
     }
 
     // ---------------------------------------------------------------------
     // Write the results
     // ---------------------------------------------------------------------
     Vector<std::string> nnames(nCompOut);
-    Print() << "!!! nCompOut = " << nCompOut << "\n";
     for (int i=0; i<nCompIn; ++i) {
       nnames[i] = inVarNames[i];
     }
-    for (int jdim=0; jdim<AMREX_SPACEDIM; jdim++) {
-      nnames[idGr[jdim] + 0] = inVarNames[jdim] + "_gx";
-      nnames[idGr[jdim] + 1] = inVarNames[jdim] + "_gy";
-#if AMREX_SPACEDIM==3
-      nnames[idGr[jdim] + 2] = inVarNames[jdim] + "_gz";
-#endif
-    }
-    for (int i=0; i<nnames.size(); i++) {
-      Print() << "!!!nnames(" << i << "): " << nnames[i] << "\n";
-    }
-//    nnames[idGr+0] = "x_velocity_gx";
-//    nnames[idGr+1] = "y_velocity_gy";
-//#if AMREX_SPACEDIM==3
-//    nnames[idGr+2] = "z_velocity_gz";
-//#endif
-    //nnames[idGr[2]+AMREX_SPACEDIM] = "test";
-    std::string outfile(getFileRoot(infile) + "_gt"); pp.query("outfile",outfile);
+    nnames[idGr_vel_x+0] = gradVar_vel_x + "_gx";
+    nnames[idGr_vel_x+1] = gradVar_vel_x + "_gy";
+    nnames[idGr_vel_x+2] = gradVar_vel_x + "_gz";
+    nnames[idGr_vel_y+0] = gradVar_vel_y + "_gx";
+    nnames[idGr_vel_y+1] = gradVar_vel_y + "_gy";
+    nnames[idGr_vel_y+2] = gradVar_vel_y + "_gz";
+    nnames[idGr_vel_z+0] = gradVar_vel_z + "_gx";
+    nnames[idGr_vel_z+1] = gradVar_vel_z + "_gy";
+    nnames[idGr_vel_z+2] = gradVar_vel_z + "_gz";
+    
+    //nnames[idGr+AMREX_SPACEDIM] = "||grad"+ gradVar+ "||";
+    std::string outfile(getFileRoot(infile) + "_qCriterion"); pp.query("outfile",outfile);
 
     Print() << "Writing new data to " << outfile << std::endl;
     Vector<int> isteps(Nlev, 0);
