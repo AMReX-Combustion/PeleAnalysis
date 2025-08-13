@@ -129,9 +129,9 @@ main (int   argc,
       destFillComps[i] = i;
     }
 
-    const int idGr_vel_x = nCompIn + 0;
-    const int idGr_vel_y = nCompIn + 1;
-    const int idGr_vel_z = nCompIn + 2;
+    const int idGr_vel_x = nCompIn + 0*AMREX_SPACEDIM;
+    const int idGr_vel_y = nCompIn + 1*AMREX_SPACEDIM;
+    const int idGr_vel_z = nCompIn + 2*AMREX_SPACEDIM;
     //const int nCompOut = idGr + AMREX_SPACEDIM +1 ; // 1 component stores the ||gradT||
     const int nCompOut = AMREX_SPACEDIM /*VEL*/ + AMREX_SPACEDIM * AMREX_SPACEDIM /*VEL_GRAD_TENSOR*/;
 
