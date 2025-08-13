@@ -287,30 +287,68 @@ main (int   argc,
            auto const& grad_vel_y_a   = gradAlias_vel_y.const_array(mfi);
            auto const& grad_vel_z_a   = gradAlias_vel_z.const_array(mfi);
            
-           MultiFab S_mf(state[lev].boxArray(),
-                         state[lev].DistributionMap(),
-                         9,
-                         0);
+           // Intermediates:
+           MultiFab S_mf(state[lev].boxArray(), state[lev].DistributionMap(), 9, 0);
            auto const& S_a = S_mf[mfi].array();
+           MultiFab S_abs_mf(state[lev].boxArray(), state[lev].DistributionMap(), 1, 0);
+           auto const& S_abs_a = S_abs_mf[mfi].array();
+           MultiFab Omega_mf(state[lev].boxArray(), state[lev].DistributionMap(), 9, 0);
+           auto const& Omega_a = Omega_mf[mfi].array();
+           MultiFab Omega_abs_mf(state[lev].boxArray(), state[lev].DistributionMap(), 1, 0);
+           auto const& Omega_abs_a = Omega_abs_mf[mfi].array();
+
            auto const& Q = state[lev].array(mfi, idQ);
 
            amrex::ParallelFor(bx, [=]
            AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-           {    
-             Q(i,j,k) = grad_vel_x_a(i,j,k,0)*grad_vel_x_a(i,j,k,0)
-                       + grad_vel_x_a(i,j,k,1)*grad_vel_x_a(i,j,k,1)
-                       + grad_vel_x_a(i,j,k,2)*grad_vel_x_a(i,j,k,2)
+           {
+              // Compute Strain Rate Tensor S_ij:
+              S_a(i,j,k,AMREX_SPACEDIM*0 + 0) = grad_vel_x_a(i,j,k,0);
+              S_a(i,j,k,AMREX_SPACEDIM*0 + 1) = 0.5 * (grad_vel_x_a(i,j,k,1) + grad_vel_y_a(i,j,k,0));
+              S_a(i,j,k,AMREX_SPACEDIM*0 + 2) = 0.5 * (grad_vel_x_a(i,j,k,2) + grad_vel_z_a(i,j,k,0));
+              
+              S_a(i,j,k,AMREX_SPACEDIM*1 + 0) = 0.5 * (grad_vel_y_a(i,j,k,0) + grad_vel_x_a(i,j,k,1));
+              S_a(i,j,k,AMREX_SPACEDIM*1 + 1) = grad_vel_y_a(i,j,k,1);
+              S_a(i,j,k,AMREX_SPACEDIM*1 + 2) = 0.5 * (grad_vel_y_a(i,j,k,2) + grad_vel_z_a(i,j,k,1));
 
-                       + grad_vel_y_a(i,j,k,0)*grad_vel_y_a(i,j,k,0)
-                       + grad_vel_y_a(i,j,k,1)*grad_vel_y_a(i,j,k,1)
-                       + grad_vel_y_a(i,j,k,2)*grad_vel_y_a(i,j,k,2)
+              S_a(i,j,k,AMREX_SPACEDIM*2 + 0) = 0.5 * (grad_vel_z_a(i,j,k,0) + grad_vel_x_a(i,j,k,2));
+              S_a(i,j,k,AMREX_SPACEDIM*2 + 1) = 0.5 * (grad_vel_z_a(i,j,k,1) + grad_vel_y_a(i,j,k,2));
+              S_a(i,j,k,AMREX_SPACEDIM*2 + 2) = grad_vel_z_a(i,j,k,2);
 
-                       + grad_vel_z_a(i,j,k,0)*grad_vel_z_a(i,j,k,0)
-                       + grad_vel_z_a(i,j,k,1)*grad_vel_z_a(i,j,k,1)
-                       + grad_vel_z_a(i,j,k,2)*grad_vel_z_a(i,j,k,2);
-             //gradMag(i,j,k) = std::sqrt(AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
-             //                                        + grad_a(i,j,k,1) * grad_a(i,j,k,1),
-             //                                        + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
+              S_abs_a(i,j,k) = S_a(i,j,k,AMREX_SPACEDIM*0 + 0)*S_a(i,j,k,AMREX_SPACEDIM*0 + 0)
+                             + S_a(i,j,k,AMREX_SPACEDIM*0 + 1)*S_a(i,j,k,AMREX_SPACEDIM*0 + 1)
+                             + S_a(i,j,k,AMREX_SPACEDIM*0 + 2)*S_a(i,j,k,AMREX_SPACEDIM*0 + 2)
+                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 0)*S_a(i,j,k,AMREX_SPACEDIM*1 + 0)
+                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 1)*S_a(i,j,k,AMREX_SPACEDIM*1 + 1)
+                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 2)*S_a(i,j,k,AMREX_SPACEDIM*1 + 2)
+                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 0)*S_a(i,j,k,AMREX_SPACEDIM*2 + 0)
+                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 1)*S_a(i,j,k,AMREX_SPACEDIM*2 + 1)
+                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 2)*S_a(i,j,k,AMREX_SPACEDIM*2 + 2);
+              
+              // Compute Vorticity Tensor Omega_ij:
+              Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0) = 0.0;
+              Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1) = 0.5 * (grad_vel_x_a(i,j,k,1) - grad_vel_y_a(i,j,k,0));
+              Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2) = 0.5 * (grad_vel_x_a(i,j,k,2) - grad_vel_z_a(i,j,k,0));
+              
+              Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0) = 0.5 * (grad_vel_y_a(i,j,k,0) - grad_vel_x_a(i,j,k,1));
+              Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1) = 0.0;
+              Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2) = 0.5 * (grad_vel_y_a(i,j,k,2) - grad_vel_z_a(i,j,k,1));
+
+              Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0) = 0.5 * (grad_vel_z_a(i,j,k,0) - grad_vel_x_a(i,j,k,2));
+              Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1) = 0.5 * (grad_vel_z_a(i,j,k,1) - grad_vel_y_a(i,j,k,2));
+              Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2) = 0.0;
+              
+              Omega_abs_a(i,j,k) = Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0)*Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1)*Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2)*Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0)*Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1)*Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2)*Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0)*Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1)*Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2)*Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2);
+              
+              Q(i,j,k) = 0.5*(Omega_abs_a(i,j,k) - S_abs_a(i,j,k));
            });  
         } 
     }
