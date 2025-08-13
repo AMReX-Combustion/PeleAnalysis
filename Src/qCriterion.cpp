@@ -132,8 +132,9 @@ main (int   argc,
     const int idGr_vel_x = nCompIn + 0*AMREX_SPACEDIM;
     const int idGr_vel_y = nCompIn + 1*AMREX_SPACEDIM;
     const int idGr_vel_z = nCompIn + 2*AMREX_SPACEDIM;
+    const int idQ = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM;
     //const int nCompOut = idGr + AMREX_SPACEDIM +1 ; // 1 component stores the ||gradT||
-    const int nCompOut = AMREX_SPACEDIM /*VEL*/ + AMREX_SPACEDIM * AMREX_SPACEDIM /*VEL_GRAD_TENSOR*/;
+    const int nCompOut = AMREX_SPACEDIM /*VEL*/ + AMREX_SPACEDIM * AMREX_SPACEDIM /*VEL_GRAD_TENSOR*/ + 1 /*Q*/;
 
     // Check symmetry/periodicity in given coordinate direction
     Vector<int> sym_dir(AMREX_SPACEDIM,0);
@@ -279,19 +280,39 @@ main (int   argc,
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        //for (MFIter mfi(state[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        //{    
-        //   const Box& bx = mfi.tilebox();
-        //   auto const& grad_a   = gradAlias.const_array(mfi);
-        //   auto const& gradMag  = state[lev].array(mfi,idGr+AMREX_SPACEDIM);
-        //   amrex::ParallelFor(bx, [=]
-        //   AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-        //   {    
-        //      gradMag(i,j,k) = std::sqrt(AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
-        //                                              + grad_a(i,j,k,1) * grad_a(i,j,k,1),
-        //                                              + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
-        //   });  
-        //} 
+        for (MFIter mfi(state[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {    
+           const Box& bx = mfi.tilebox();
+           auto const& grad_vel_x_a   = gradAlias_vel_x.const_array(mfi);
+           auto const& grad_vel_y_a   = gradAlias_vel_y.const_array(mfi);
+           auto const& grad_vel_z_a   = gradAlias_vel_z.const_array(mfi);
+           
+           MultiFab S_mf(state[lev].boxArray(),
+                         state[lev].DistributionMap(),
+                         9,
+                         0);
+           auto const& S_a = S_mf[mfi].array();
+           auto const& Q = state[lev].array(mfi, idQ);
+
+           amrex::ParallelFor(bx, [=]
+           AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+           {    
+             Q(i,j,k) = grad_vel_x_a(i,j,k,0)*grad_vel_x_a(i,j,k,0)
+                       + grad_vel_x_a(i,j,k,1)*grad_vel_x_a(i,j,k,1)
+                       + grad_vel_x_a(i,j,k,2)*grad_vel_x_a(i,j,k,2)
+
+                       + grad_vel_y_a(i,j,k,0)*grad_vel_y_a(i,j,k,0)
+                       + grad_vel_y_a(i,j,k,1)*grad_vel_y_a(i,j,k,1)
+                       + grad_vel_y_a(i,j,k,2)*grad_vel_y_a(i,j,k,2)
+
+                       + grad_vel_z_a(i,j,k,0)*grad_vel_z_a(i,j,k,0)
+                       + grad_vel_z_a(i,j,k,1)*grad_vel_z_a(i,j,k,1)
+                       + grad_vel_z_a(i,j,k,2)*grad_vel_z_a(i,j,k,2);
+             //gradMag(i,j,k) = std::sqrt(AMREX_D_TERM(  grad_a(i,j,k,0) * grad_a(i,j,k,0),
+             //                                        + grad_a(i,j,k,1) * grad_a(i,j,k,1),
+             //                                        + grad_a(i,j,k,2) * grad_a(i,j,k,2)));
+           });  
+        } 
     }
 
     // ---------------------------------------------------------------------
@@ -310,8 +331,10 @@ main (int   argc,
     nnames[idGr_vel_z+0] = gradVar_vel_z + "_gx";
     nnames[idGr_vel_z+1] = gradVar_vel_z + "_gy";
     nnames[idGr_vel_z+2] = gradVar_vel_z + "_gz";
-    
+
+    nnames[idQ] = "Q";
     //nnames[idGr+AMREX_SPACEDIM] = "||grad"+ gradVar+ "||";
+
     std::string outfile(getFileRoot(infile) + "_qCriterion"); pp.query("outfile",outfile);
 
     Print() << "Writing new data to " << outfile << std::endl;
