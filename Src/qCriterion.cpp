@@ -17,7 +17,7 @@ print_usage (int,
              char* argv[])
 {
   std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=<plotfilename> \n\tOptions:\n\tis_per=<L M N> gradVar=<name>\n";
+  std::cerr << argv[0] << " infile=<plotfilename> \n\tOptions:\n\tis_per=<L M N>";
   exit(1);
 }
 
@@ -41,7 +41,6 @@ main (int   argc,
     // ---------------------------------------------------------------------
     // Set defaults input values
     // ---------------------------------------------------------------------
-    //std::string gradVar       = "temp";
     std::string infile        = "";  
     int finestLevel           = 1000;
     int nAuxVar               = 0;
@@ -56,7 +55,6 @@ main (int   argc,
     }
 
     pp.get("infile",infile);
-    //pp.query("gradVar",gradVar);
     pp.query("finestLevel",finestLevel);
 
     // Initialize DataService
@@ -86,6 +84,7 @@ main (int   argc,
     }
     if (ID_VEL_X == -1 || ID_VEL_Y == -1 || ID_VEL_Z == -1) {
       std::cerr << "At least one velocity component was not found in the plt-file!\n";
+    }
 
     // Auxiliary variables
     nAuxVar = pp.countval("Aux_Variables");
@@ -104,6 +103,8 @@ main (int   argc,
     inVarNames[1] = plotVarNames[ID_VEL_Y];
     inVarNames[2] = plotVarNames[ID_VEL_Z];
 
+    // ----- AUXVAR TO BE IMPLEMENTED (allows to take aux variables from the infile
+    //                                 to the outfile for later use) -----
     //if (nAuxVar>0)
     //{
     //    inVarNames.resize(nCompIn+nAuxVar);
@@ -125,7 +126,6 @@ main (int   argc,
     const int idGr_vel_y = nCompIn + 1*AMREX_SPACEDIM;
     const int idGr_vel_z = nCompIn + 2*AMREX_SPACEDIM;
     const int idQ = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM;
-    //const int nCompOut = idGr + AMREX_SPACEDIM +1 ; // 1 component stores the ||gradT||
     const int nCompOut = AMREX_SPACEDIM /*VEL*/ + AMREX_SPACEDIM * AMREX_SPACEDIM /*VEL_GRAD_TENSOR*/ + 1 /*Q*/;
 
     // Check symmetry/periodicity in given coordinate direction
@@ -364,7 +364,6 @@ main (int   argc,
     nnames[idGr_vel_z+2] = gradVar_vel_z + "_gz";
 
     nnames[idQ] = "Q";
-    //nnames[idGr+AMREX_SPACEDIM] = "||grad"+ gradVar+ "||";
 
     std::string outfile(getFileRoot(infile) + "_qCriterion"); pp.query("outfile",outfile);
 
@@ -376,5 +375,4 @@ main (int   argc,
   }
   amrex::Finalize();
   return 0;
-}
 }
