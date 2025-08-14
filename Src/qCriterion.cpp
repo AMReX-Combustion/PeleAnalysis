@@ -1,4 +1,3 @@
-#include <string>
 #include <iostream>
 
 #include <AMReX_ParmParse.H>
@@ -76,16 +75,7 @@ main (int   argc,
     RealBox rb(&(amrData.ProbLo()[0]), 
                &(amrData.ProbHi()[0]));
 
-    // Gradient variable
-    //int idC = -1;
-    //for (int i=0; i<plotVarNames.size(); ++i)
-    //{
-    //if (plotVarNames[i] == gradVar) idC = i;
-    //}
-    //if (idC<0) {
-    //  Print() << "Cannot find " << gradVar << " data in pltfile \n";
-    //}
-    int ID_VEL_X, ID_VEL_Y, ID_VEL_Z;
+    int ID_VEL_X = -1, ID_VEL_Y = -1, ID_VEL_Z = -1;
     std::string gradVar_vel_x = "x_velocity";
     std::string gradVar_vel_y = "y_velocity";
     std::string gradVar_vel_z = "z_velocity";
@@ -94,6 +84,8 @@ main (int   argc,
       else if (plotVarNames[i] == gradVar_vel_y) ID_VEL_Y = i;
       else if (plotVarNames[i] == gradVar_vel_z) ID_VEL_Z = i;
     }
+    if (ID_VEL_X == -1 || ID_VEL_Y == -1 || ID_VEL_Z == -1) {
+      std::cerr << "At least one velocity component was not found in the plt-file!\n";
 
     // Auxiliary variables
     nAuxVar = pp.countval("Aux_Variables");
@@ -315,15 +307,15 @@ main (int   argc,
               S_a(i,j,k,AMREX_SPACEDIM*2 + 1) = 0.5 * (grad_vel_z_a(i,j,k,1) + grad_vel_y_a(i,j,k,2));
               S_a(i,j,k,AMREX_SPACEDIM*2 + 2) = grad_vel_z_a(i,j,k,2);
 
-              S_abs_a(i,j,k) = S_a(i,j,k,AMREX_SPACEDIM*0 + 0)*S_a(i,j,k,AMREX_SPACEDIM*0 + 0)
-                             + S_a(i,j,k,AMREX_SPACEDIM*0 + 1)*S_a(i,j,k,AMREX_SPACEDIM*0 + 1)
-                             + S_a(i,j,k,AMREX_SPACEDIM*0 + 2)*S_a(i,j,k,AMREX_SPACEDIM*0 + 2)
-                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 0)*S_a(i,j,k,AMREX_SPACEDIM*1 + 0)
-                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 1)*S_a(i,j,k,AMREX_SPACEDIM*1 + 1)
-                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 2)*S_a(i,j,k,AMREX_SPACEDIM*1 + 2)
-                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 0)*S_a(i,j,k,AMREX_SPACEDIM*2 + 0)
-                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 1)*S_a(i,j,k,AMREX_SPACEDIM*2 + 1)
-                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 2)*S_a(i,j,k,AMREX_SPACEDIM*2 + 2);
+              S_abs_a(i,j,k) = S_a(i,j,k,AMREX_SPACEDIM*0 + 0) * S_a(i,j,k,AMREX_SPACEDIM*0 + 0)
+                             + S_a(i,j,k,AMREX_SPACEDIM*0 + 1) * S_a(i,j,k,AMREX_SPACEDIM*0 + 1)
+                             + S_a(i,j,k,AMREX_SPACEDIM*0 + 2) * S_a(i,j,k,AMREX_SPACEDIM*0 + 2)
+                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 0) * S_a(i,j,k,AMREX_SPACEDIM*1 + 0)
+                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 1) * S_a(i,j,k,AMREX_SPACEDIM*1 + 1)
+                             + S_a(i,j,k,AMREX_SPACEDIM*1 + 2) * S_a(i,j,k,AMREX_SPACEDIM*1 + 2)
+                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 0) * S_a(i,j,k,AMREX_SPACEDIM*2 + 0)
+                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 1) * S_a(i,j,k,AMREX_SPACEDIM*2 + 1)
+                             + S_a(i,j,k,AMREX_SPACEDIM*2 + 2) * S_a(i,j,k,AMREX_SPACEDIM*2 + 2);
               
               // Compute Vorticity Tensor Omega_ij:
               Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0) = 0.0;
@@ -338,17 +330,18 @@ main (int   argc,
               Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1) = 0.5 * (grad_vel_z_a(i,j,k,1) - grad_vel_y_a(i,j,k,2));
               Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2) = 0.0;
               
-              Omega_abs_a(i,j,k) = Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0)*Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1)*Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2)*Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0)*Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1)*Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2)*Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0)*Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1)*Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1)
-                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2)*Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2);
+              Omega_abs_a(i,j,k) = Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0) * Omega_a(i,j,k,AMREX_SPACEDIM*0 + 0)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1) * Omega_a(i,j,k,AMREX_SPACEDIM*0 + 1)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2) * Omega_a(i,j,k,AMREX_SPACEDIM*0 + 2)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0) * Omega_a(i,j,k,AMREX_SPACEDIM*1 + 0)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1) * Omega_a(i,j,k,AMREX_SPACEDIM*1 + 1)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2) * Omega_a(i,j,k,AMREX_SPACEDIM*1 + 2)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0) * Omega_a(i,j,k,AMREX_SPACEDIM*2 + 0)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1) * Omega_a(i,j,k,AMREX_SPACEDIM*2 + 1)
+                                 + Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2) * Omega_a(i,j,k,AMREX_SPACEDIM*2 + 2);
               
-              Q(i,j,k) = 0.5*(Omega_abs_a(i,j,k) - S_abs_a(i,j,k));
+              // Compute Q-criterion:
+              Q(i,j,k) = 0.5 * (Omega_abs_a(i,j,k) - S_abs_a(i,j,k));
            });  
         } 
     }
@@ -383,4 +376,5 @@ main (int   argc,
   }
   amrex::Finalize();
   return 0;
+}
 }
