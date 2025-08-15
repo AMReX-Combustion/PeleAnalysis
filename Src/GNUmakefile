@@ -17,13 +17,13 @@ PRECISION     = DOUBLE
 
 # Compilation
 COMP          = gnu
-USE_MPI       = TRUE
+USE_MPI       = FALSE
 USE_OMP       = FALSE
 USE_CUDA      = FALSE
 
 # Executable
 # Uncomment the desired exec
-#EBASE		= template
+EBASE		= template
 #EBASE		= convert2hdf5
 #EBASE         = grad
 #EBASE		= jpdf
@@ -40,7 +40,7 @@ USE_CUDA      = FALSE
 #EBASE		= decimateMEF
 #EBASE         = subPlt
 #EBASE         = partStream
-EBASE		   = qCriterion
+#EBASE		   = qCriterion
 
 # tools that need review/combining/fixing/work
 #EBASE         = avgToPlane
