@@ -90,32 +90,28 @@ main (int   argc,
     nAuxVar = pp.countval("Aux_Variables");
     Vector<std::string> AuxVar(nAuxVar);
     for(int ivar = 0; ivar < nAuxVar; ++ivar) { 
-         pp.get("Aux_Variables", AuxVar[ivar],ivar);
+         pp.get("Aux_Variables", AuxVar[ivar], ivar);
     }
 
     // ---------------------------------------------------------------------
     // Variables index management
     // ---------------------------------------------------------------------
-    const int idCst = 0;
-    int nCompIn = AMREX_SPACEDIM /*VEL*/;
+    int nCompIn = AMREX_SPACEDIM /*velocities*/;
     Vector<std::string> inVarNames(nCompIn);
     inVarNames[0] = plotVarNames[ID_VEL_X];
     inVarNames[1] = plotVarNames[ID_VEL_Y];
     inVarNames[2] = plotVarNames[ID_VEL_Z];
 
-    // ----- AUXVAR TO BE IMPLEMENTED (allows to take aux variables from the infile
-    //                                 to the outfile for later use) -----
-    //if (nAuxVar>0)
-    //{
-    //    inVarNames.resize(nCompIn+nAuxVar);
-    //    for (int ivar=0; ivar<nAuxVar; ++ivar) {
-    //        if ( amrData.StateNumber(AuxVar[ivar]) < 0 ) {
-    //           amrex::Abort("Unknown auxiliary variable name: "+AuxVar[ivar]);
-    //        }
-    //        inVarNames[nCompIn] = AuxVar[ivar];
-    //        nCompIn ++;
-    //    } 
-    //}
+    if (nAuxVar>0)
+    {
+        for (int ivar=0; ivar<nAuxVar; ++ivar) {
+            if ( amrData.StateNumber(AuxVar[ivar]) < 0 ) {
+               amrex::Abort("Unknown auxiliary variable name: "+AuxVar[ivar]);
+            }
+            inVarNames.push_back(AuxVar[ivar]);
+        } 
+        nCompIn += nAuxVar;
+    }
 
     Vector<int> destFillComps(nCompIn);
     for (int i=0; i<nCompIn; ++i) {
@@ -126,7 +122,7 @@ main (int   argc,
     const int idGr_vel_y = nCompIn + 1*AMREX_SPACEDIM;
     const int idGr_vel_z = nCompIn + 2*AMREX_SPACEDIM;
     const int idQ = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM;
-    const int nCompOut = AMREX_SPACEDIM /*VEL*/ + AMREX_SPACEDIM * AMREX_SPACEDIM /*VEL_GRAD_TENSOR*/ + 1 /*Q*/;
+    const int nCompOut = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM + 1 /*Q*/;
 
     // Check symmetry/periodicity in given coordinate direction
     Vector<int> sym_dir(AMREX_SPACEDIM,0);
