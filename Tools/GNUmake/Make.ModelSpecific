@@ -3,13 +3,15 @@ PELE_PHYSICS_HOME ?= $(abspath $(lastword $(PELE_ANALYSIS_HOME)/Submodules/PeleP
 AMREX_HOME        ?= $(abspath $(lastword $(PELE_PHYSICS_HOME)/Submodules/amrex))
 SUNDIALS_HOME     ?= $(abspath $(lastword $(PELE_PHYSICS_HOME)/Submodules/sundials))
 
+BL_NO_FORT = TRUE
+
 TOP := $(PELE_ANALYSIS_HOME)
 
 USE_SUNDIALS = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
-all: $(executable) 
+all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
 	@echo SUCCESS
 #--------------------
@@ -48,7 +50,7 @@ ifdef Chemistry_Model
 
 endif
 
-PPSrcdirs := Utility/BlackBoxFunction Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics Transport Eos Reactions
+PPSrcdirs := Utility/BlackBoxFunction Utility/PMF Utility/TurbInflow Utility/PltFileManager Utility/Diagnostics Utility/Utilities Transport Eos Reactions
 PPdirs := Source $(ChemDir)
 Bpack += $(foreach dir, $(PPdirs), $(PELE_PHYSICS_HOME)/$(dir)/Make.package)
 Bpack += $(foreach dir, $(PPSrcdirs), $(PELE_PHYSICS_HOME)/Source/$(dir)/Make.package)
