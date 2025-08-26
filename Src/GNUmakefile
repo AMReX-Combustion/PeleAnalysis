@@ -41,6 +41,9 @@ EBASE		= template
 #EBASE         = subPlt
 #EBASE         = partStream
 #EBASE		= stream2plt
+#EBASE		= makePlotfile
+#EBASE		= dumpFABslice
+#EBASE		= turbfile
 
 # tools that need review/combining/fixing/work
 #EBASE         = avgToPlane
