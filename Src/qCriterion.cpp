@@ -122,11 +122,12 @@ main (int   argc,
     const int idGr_vel_y = nCompIn + 1*AMREX_SPACEDIM;
     const int idGr_vel_z = nCompIn + 2*AMREX_SPACEDIM;
     const int idQ = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM;
-    const int nCompOut = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM + 1 /*Q*/;
+    const int idQNorm = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM + 1 /*Q*/;
+    const int nCompOut = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM + 2 /*Q and Q_norm*/;
 
     // Check symmetry/periodicity in given coordinate direction
     Vector<int> sym_dir(AMREX_SPACEDIM,0);
-    pp.queryarr("sym_dir",sym_dir,0,AMREX_SPACEDIM);  
+    pp.queryarr("sym_dir",sym_dir,0,AMREX_SPACEDIM);
 
     Vector<int> is_per(AMREX_SPACEDIM,1);
     pp.queryarr("is_per",is_per,0,AMREX_SPACEDIM);
@@ -286,6 +287,7 @@ main (int   argc,
            auto const& Omega_abs_a = Omega_abs_mf[mfi].array();
 
            auto const& Q = state[lev].array(mfi, idQ);
+           auto const& Q_norm = state[lev].array(mfi, idQNorm);
 
            amrex::ParallelFor(bx, [=]
            AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -338,7 +340,8 @@ main (int   argc,
               
               // Compute Q-criterion:
               Q(i,j,k) = 0.5 * (Omega_abs_a(i,j,k) - S_abs_a(i,j,k));
-           });  
+              Q_norm(i,j,k) = (Omega_abs_a(i,j,k) - S_abs_a(i,j,k)) / (Omega_abs_a(i,j,k) + S_abs_a(i,j,k));
+           });
         } 
     }
 
@@ -360,6 +363,7 @@ main (int   argc,
     nnames[idGr_vel_z+2] = gradVar_vel_z + "_gz";
 
     nnames[idQ] = "Q";
+    nnames[idQNorm] = "Q_norm";
 
     std::string outfile(getFileRoot(infile) + "_qCriterion"); pp.query("outfile",outfile);
 
