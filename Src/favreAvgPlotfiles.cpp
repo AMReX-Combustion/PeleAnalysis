@@ -119,12 +119,12 @@ main (int   argc,
      Print() << " -> Combining " << nf << " files across " << nlevels << " levels" << std::endl;
 
      // Find density index:
-     variableNamesPlt = plt_file_data[0]->getVariableList();
-     int RHO_ID = -1;
+     Vector<std::string> variableNamesPlt = plt_file_data[0]->getVariableList();
+     int idRho = -1;
      for (int var = 0; var < nvar; ++var) {
-       if (variableNamesPlt[i] == "density") RHO_ID = var;
+       if (variableNamesPlt[var] == "density") idRho = var;
      }
-     if (RHO_ID == -1) amrex::Abort("Density not found in file with index 0: " + plotFileNames[0]);
+     if (idRho == -1) amrex::Abort("Density not found in file with index 0: " + plotFileNames[0]);
 
      // Loop over each input file to get union of boxes on each level
      // On any level with all same BoxArray, we use that without modification
@@ -181,9 +181,12 @@ main (int   argc,
 
      // Fillpatch tmp_data from each pltfile and add to running data
      Print() << "Fillpatching and combining..." << std::endl;
+     Vector<MultiFab> tmp_rho(nlevels);
+     Vector<MultiFab> running_rho(nlevels);
      for (int i = 0; i < plt_file_data.size(); ++i) {
        Print() << "   working on file " << plotFileNames[i] << " (" << i+1 << "/" << plt_file_data.size() << ")" << std::endl;
        for (int lev = 0; lev < nlevels; ++lev) {
+         plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], idRho, 0, 1, tmp_rho[lev], interp_type);
          if (all_vars) {
            plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], 0, 0, nvar, tmp_data[lev], interp_type);
          } else {
@@ -191,7 +194,11 @@ main (int   argc,
              plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[i][var], var, 1, tmp_data[lev], interp_type);
            }
          }
+         for (int var = 0; var < nvar; ++var) {
+           MultiFab::Multiply(tmp_data[lev], tmp_rho[lev], 0, var, 1, 0);
+         }
          MultiFab::Add(running_data[lev], tmp_data[lev], 0, 0, nvar, 0);
+         MultiFab::Add(running_rho[lev], tmp_rho[lev], 0, 0, 1, 0);
        }
        delete plt_file_data[i];
      }
