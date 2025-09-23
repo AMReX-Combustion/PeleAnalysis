@@ -164,6 +164,8 @@ main (int   argc,
      // Create the data structures to read in the data and keep running sums
      Vector<MultiFab> running_data(nlevels);
      Vector<MultiFab> tmp_data(nlevels);
+     Vector<MultiFab> tmp_rho(nlevels);
+     Vector<MultiFab> running_rho(nlevels);
      Vector<IntVect> refRatios(nlevels-1);
      for (int lev = 0; lev < nlevels; ++lev) {
        if (!boxarray_all_same[lev]) {
@@ -172,7 +174,10 @@ main (int   argc,
        DistributionMapping dmap = DistributionMapping(combined_boxes[lev]);
        tmp_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
        running_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
+       tmp_rho[lev].define(combined_boxes[lev], dmap, 1, 0);
+       running_rho[lev].define(combined_boxes[lev], dmap, 1, 0);
        running_data[lev].setVal(0.0);
+       running_rho[lev].setVal(0.0);
        if (lev > 0) {
          int rr = int(level_geometries[lev-1].CellSize(0) / level_geometries[lev].CellSize(0));
          refRatios[lev-1] = {AMREX_D_DECL(rr,rr,rr)};
@@ -181,8 +186,6 @@ main (int   argc,
 
      // Fillpatch tmp_data from each pltfile and add to running data
      Print() << "Fillpatching and combining..." << std::endl;
-     Vector<MultiFab> tmp_rho(nlevels);
-     Vector<MultiFab> running_rho(nlevels);
      for (int i = 0; i < plt_file_data.size(); ++i) {
        Print() << "   working on file " << plotFileNames[i] << " (" << i+1 << "/" << plt_file_data.size() << ")" << std::endl;
        for (int lev = 0; lev < nlevels; ++lev) {
