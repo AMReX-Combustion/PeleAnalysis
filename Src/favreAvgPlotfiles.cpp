@@ -207,6 +207,10 @@ main (int   argc,
      Real factor = 1.0 / Real(nf);
      for (int lev = 0; lev < nlevels; ++lev) {
        running_data[lev].mult(factor);
+       running_rho[lev].mult(factor);
+       for (int var = 0; var < nvar; ++var) {
+         MultiFab::Divide(running_data[lev], running_rho[lev], 0, var, 1, 0);
+       }
      }
 
      // Save the final plt file
