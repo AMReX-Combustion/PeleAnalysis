@@ -163,20 +163,29 @@ main (int   argc,
 
      // Create the data structures to read in the data and keep running sums
      Vector<MultiFab> running_data(nlevels);
-     Vector<MultiFab> tmp_data(nlevels);
-     Vector<MultiFab> tmp_rho(nlevels);
+     Vector<MultiFab> running_data2(nlevels);
      Vector<MultiFab> running_rho(nlevels);
+     Vector<MultiFab> tmp_data(nlevels);
+     Vector<MultiFab> tmp_data2(nlevels);
+     Vector<MultiFab> tmp_rho(nlevels);
+     Vector<MultiFab> variance(nlevels);
+     Vector<MultiFab> combined_data(nlevels);
      Vector<IntVect> refRatios(nlevels-1);
      for (int lev = 0; lev < nlevels; ++lev) {
        if (!boxarray_all_same[lev]) {
          combined_boxes[lev].maxSize(output_max_grid_size);
        }
        DistributionMapping dmap = DistributionMapping(combined_boxes[lev]);
-       tmp_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
        running_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
-       tmp_rho[lev].define(combined_boxes[lev], dmap, 1, 0);
+       running_data2[lev].define(combined_boxes[lev], dmap, nvar, 0);
        running_rho[lev].define(combined_boxes[lev], dmap, 1, 0);
+       tmp_data[lev].define(combined_boxes[lev], dmap, nvar, 0);
+       tmp_data2[lev].define(combined_boxes[lev], dmap, nvar, 0);
+       tmp_rho[lev].define(combined_boxes[lev], dmap, 1, 0);
+       variance[lev].define(combined_boxes[lev], dmap, nvar, 0);
+       combined_data[lev].define(combined_boxes[lev], dmap, nvar*2, 0);
        running_data[lev].setVal(0.0);
+       running_data2[lev].setVal(0.0);
        running_rho[lev].setVal(0.0);
        if (lev > 0) {
          int rr = int(level_geometries[lev-1].CellSize(0) / level_geometries[lev].CellSize(0));
@@ -197,10 +206,14 @@ main (int   argc,
              plt_file_data[i]->fillPatchFromPlt(lev, level_geometries[lev], var_idxs[i][var], var, 1, tmp_data[lev], interp_type);
            }
          }
+         MultiFab::Copy(tmp_data2[lev], tmp_data[lev], 0, 0, nvar, 0);
          for (int var = 0; var < nvar; ++var) {
            MultiFab::Multiply(tmp_data[lev], tmp_rho[lev], 0, var, 1, 0);
+           MultiFab::Multiply(tmp_data2[lev], tmp_data2[lev], var, var, 1, 0);
+           MultiFab::Multiply(tmp_data2[lev], tmp_rho[lev], 0, var, 1, 0);
          }
          MultiFab::Add(running_data[lev], tmp_data[lev], 0, 0, nvar, 0);
+         MultiFab::Add(running_data2[lev], tmp_data2[lev], 0, 0, nvar, 0);
          MultiFab::Add(running_rho[lev], tmp_rho[lev], 0, 0, 1, 0);
        }
        delete plt_file_data[i];
@@ -210,16 +223,41 @@ main (int   argc,
      Real factor = 1.0 / Real(nf);
      for (int lev = 0; lev < nlevels; ++lev) {
        running_data[lev].mult(factor);
+       running_data2[lev].mult(factor);
        running_rho[lev].mult(factor);
        for (int var = 0; var < nvar; ++var) {
          MultiFab::Divide(running_data[lev], running_rho[lev], 0, var, 1, 0);
+         MultiFab::Divide(running_data2[lev], running_rho[lev], 0, var, 1, 0);
        }
+       // Compute variance using variance decomposition formula (i.e., var(p) = favre(p^2) - favre(p)^2)
+       MultiFab::Copy(variance[lev], running_data[lev], 0, 0, nvar, 0);
+       MultiFab::Multiply(variance[lev], running_data[lev], 0, 0, nvar, 0);
+       variance[lev].mult(-1.0);
+       MultiFab::Add(variance[lev], running_data2[lev], 0, 0, nvar, 0);
+     }
+
+     for (int var = 0; var < nvar; var++) variableNames.push_back(variableNames[var] + "_var");
+
+     // Combine MultiFabs running_data and variance
+     for (int lev = 0; lev < nlevels; ++lev) {
+       DistributionMapping dmap = DistributionMapping(combined_boxes[lev]);
+       MultiFab::Copy(combined_data[lev], running_data[lev], 0, 0, nvar, 0);
+       MultiFab::Copy(combined_data[lev], variance[lev], 0, nvar, nvar, 0);
      }
 
      // Save the final plt file
      Print() << "Saving final plt file..." << std::endl;
      Vector<int> stepidx(nlevels,0);
-     WriteMultiLevelPlotfile(outfile,nlevels, GetVecOfConstPtrs(running_data),variableNames,level_geometries,0.0,stepidx,refRatios);
+     WriteMultiLevelPlotfile(
+       outfile, 
+       nlevels, 
+       GetVecOfConstPtrs(combined_data), 
+       variableNames, 
+       level_geometries, 
+       0.0, 
+       stepidx, 
+       refRatios
+     );
      Print() << "Done." << std::endl;
    }
    amrex::Finalize();
