@@ -17,7 +17,13 @@ print_usage (int,
              char* argv[])
 {
   std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=<plotfilename> \n\tOptions:\n\tis_per=<L M N>";
+  std::cerr << argv[0] << " infile=<plotfilename>"
+                       << "\n\tOptions:"
+                       << "\n\tfinestLevel=[DEFAULT: finestLevel]"
+                       << "\n\tAux_Variables=<auxVarName0 auxVarName1 ...>"
+                       << "\n\tis_per=[DEFAULT: 0 0 0]\t\t\t\t(spatial directions of periodicity (0: non-periodic, 1: periodic))"
+                       << "\n\tsym_dir=[DEFAULT: 0 0 0]\t\t\t(spatial directions of symmetry (0: non-symmetric, 1: symmetric))"
+                       << "\n\toutfile=[DEFAULT: infile+\"_qCriterion\"]\n";
   exit(1);
 }
 
