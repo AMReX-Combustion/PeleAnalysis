@@ -73,7 +73,3 @@ mesh = meshio.Mesh(points=vertices,
 print('Saving mesh object...')
 # Just change the extension to '.vtk'
 mesh.write('.'.join(mef_file.split('.')[:-1] + ['vtk']))
-
-
-
-
