@@ -34,6 +34,8 @@ main (int   argc,
 {
   amrex::Initialize(argc,argv);
   {
+    static_assert(AMREX_SPACEDIM == 3, "This tool must be compiled with DIM = 3");
+
     if (argc < 2) {
       print_usage(argc,argv);
     }
