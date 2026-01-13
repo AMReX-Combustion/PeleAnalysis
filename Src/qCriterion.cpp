@@ -121,9 +121,9 @@ main (int   argc,
     const int idGr_vel_x = nCompIn + 0*AMREX_SPACEDIM;
     const int idGr_vel_y = nCompIn + 1*AMREX_SPACEDIM;
     const int idGr_vel_z = nCompIn + 2*AMREX_SPACEDIM;
-    const int idQ = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM;
-    const int idQNorm = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM + 1 /*Q*/;
-    const int nCompOut = nCompIn + AMREX_SPACEDIM*AMREX_SPACEDIM + 2 /*Q and Q_norm*/;
+    const int idQ = nCompIn + 3*AMREX_SPACEDIM;
+    const int idQNorm = nCompIn + 3*AMREX_SPACEDIM + 1 /*Q*/;
+    const int nCompOut = nCompIn + 3*AMREX_SPACEDIM + 2 /*Q and Q_norm*/;
 
     // Check symmetry/periodicity in given coordinate direction
     Vector<int> sym_dir(AMREX_SPACEDIM,0);
