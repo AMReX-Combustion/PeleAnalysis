@@ -2237,6 +2237,7 @@ main (int   argc,
       pp.query("computeArea",computeArea);
       if (computeArea && (AMREX_SPACEDIM==3))  {
         Real Area = 0;
+#if AMREX_SPACEDIM==3
         for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
           const Element& elt = *it;
           if (elt.size()==3) {
@@ -2259,6 +2260,24 @@ main (int   argc,
                     -(p1[1] - p0[1])*(p2[0]-p0[0]), 2) );
           }
         }
+#elif AMREX_SPACEDIM==2
+        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
+          const Element& elt = *it;
+          if (elt.size()==2) {
+            if (elt[0]>=sortedNodes.size() || elt[1]>=sortedNodes.size()) {
+              std::cerr << "Accessing node past end: " << elt[0] << ", " << elt[1] << std::endl;
+            }
+
+            const Real* p0 = sortedNodes[elt[0]]->m_vec;
+            const Real* p1 = sortedNodes[elt[1]]->m_vec;
+
+            Area += 0.5*sqrt(
+              pow(( p1[0] - p0[0]), 2)
+
+              + pow(( p1[1] - p0[1]), 2) );
+          }
+        }
+#endif
         Print() << "Total area = " << Area << '\n';
       }
     } // IOProc

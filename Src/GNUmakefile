@@ -7,12 +7,10 @@ PELE_ANALYSIS_HOME = ..
 # to link PeleAnalysis to your versions of PELE_PHYSICS_HOME and AMREX_HOME used by 
 # PeleLMeX or PeleC, make the following lines to point to the respective directories.
 #
-# PELE_PHYSICS_HOME = ../../PeleLMeX/Submodules/PelePhysics
-# AMREX_HOME = ../../PeleLMeX/Submodules/PelePhysics/Submodules/amrex
 
 # AMReX
 DEBUG	      = FALSE
-DIM	      = 3
+DIM	      = 2
 PRECISION     = DOUBLE
 
 # Compilation
@@ -23,31 +21,50 @@ USE_CUDA      = FALSE
 
 # Executable
 # Uncomment the desired exec
-EBASE		= template
-#EBASE		= convert2hdf5
-#EBASE      = grad
-#EBASE		= jpdf
-#EBASE      = combinePlts
-#EBASE      = isosurface
-#EBASE      = flattenAMRFile
-#EBASE      = filterPlt
-#EBASE      = curvature
-#EBASE      = surfMEFtoDAT
-#EBASE      = surfDATtoMEF
-#EBASE      = amrToFE
-#EBASE      = conditionalMean
-#EBASE		= isosurface
-#EBASE		= decimateMEF
-#EBASE      = subPlt
-#EBASE      = partStream
-#EBASE		= qCriterion
-#EBASE		= stream2plt
-#EBASE		= makePlotfile
-#EBASE		= dumpFABslice
-#EBASE		= turbfile
+#EBASE   = template
+#EBASE   = amrToFE
+#EBASE   = avgPlotfiles.cpp
+#EBASE   = avgToPlane
+#EBASE   = convert2hdf5
+#EBASE   = checkIso.cpp
+#EBASE   = combineMEF
+#EBASE   = combinePlts
+#EBASE   = conditionalMean
+#EBASE   = curvature
+#EBASE   = decimateMEF
+#EBASE   = dumpFABslice
+#EBASE   = filterPlt
+#EBASE   = flattenAMRFile
+#EBASE   = grad
+#EBASE   = integral
+#EBASE   = interp
+#EBASE   = isoMEF
+#EBASE   = isosurface
+#EBASE   = jpdf
+#EBASE   = isosurface
+#EBASE   = makePlotfile
+#EBASE   = mergeMEF
+#EBASE   = multMEF
+#EBASE   = partStream
+#EBASE   = qCriterion
+#EBASE   = regridPlt
+#EBASE   = rmsVel
+#EBASE   = scaleMEF
+#EBASE   = sliceMEF
+#EBASE   = smoothMEF
+#EBASE   = stream2plt
+#EBASE   = streamBinTubeStats
+#EBASE   = StreamData
+#EBASE   = StreamPC
+#EBASE   = subPlt
+#EBASE   = surfMEFtoDAT
+#EBASE   = surfDATtoMEF
+#EBASE   = trimMEFgen
+#EBASE   = turbfile
 
 # tools that need review/combining/fixing/work
-#EBASE         = avgToPlane
+#EBASE   = avgToPlane
+
 
 
 CEXE_sources += $(EBASE).cpp
@@ -80,5 +97,8 @@ ifeq ($(EBASE),decimateMEF) #make qslim first!
 endif
 
 Blocs := .
+
+PELE_PHYSICS_HOME = ../../PelePhysics
+AMREX_HOME = ../../PelePhysics/Submodules/amrex
 
 include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.Analysis
