@@ -7,6 +7,9 @@ PELE_ANALYSIS_HOME = ..
 # to link PeleAnalysis to your versions of PELE_PHYSICS_HOME and AMREX_HOME used by 
 # PeleLMeX or PeleC, make the following lines to point to the respective directories.
 #
+#PELE_PHYSICS_HOME = ../../PelePhysics
+#AMREX_HOME = ../../PelePhysics/Submodules/amrex
+
 
 # AMReX
 DEBUG	      = FALSE
@@ -97,8 +100,5 @@ ifeq ($(EBASE),decimateMEF) #make qslim first!
 endif
 
 Blocs := .
-
-PELE_PHYSICS_HOME = ../../PelePhysics
-AMREX_HOME = ../../PelePhysics/Submodules/amrex
 
 include $(PELE_ANALYSIS_HOME)/Tools/GNUmake/Make.Analysis
