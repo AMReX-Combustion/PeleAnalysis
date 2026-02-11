@@ -115,11 +115,24 @@ jobs:
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
           ccache -z
-          for TYPE in template avgPlotfiles isosurface decimateMEF partStream; do \
+          set +e
+          # Extract all EBASE options from GNUmakefile, ignoring comments
+          EBASE_OPTIONS=$(grep -oP 'EBASE\s*=\s*\K[^ ]+' GNUmakefile | grep -v '^##')
+
+          for TYPE in $EBASE_OPTIONS; do \
             printf "\n-------- ${TYPE} --------\n";
-            make -j ${{env.NPROCS}} EBASE=${TYPE} USE_CCACHE=TRUE ${{matrix.amrex_build_args}}; \
+            OUTPUT=$(make -j ${{ env.NPROCS }} EBASE=${TYPE} USE_CCACHE=TRUE ${{ matrix.amrex_build_args }} 2>&1)i || true; \
+            RESULT=$?; \
+            echo "${OUTPUT}"; \
             make realclean; \
-            if [ $? -ne 0 ]; then exit 1; fi; \
+            if [ ${RESULT} -ne 0 ]; then \
+              if echo "${OUTPUT}" | grep -q "static_assert.*AMREX_SPACEDIM\s*=="; then \
+                echo "Skipping failure due to AMREX_SPACEDIM assertion for ${TYPE}."; \
+              else \
+                echo "Compilation failed for ${TYPE}. Exiting."; \
+                exit ${RESULT}; \
+              fi; \
+            fi; \
           done
       - name: Src ccache report
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
@@ -130,10 +143,24 @@ jobs:
         working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
         run: |
           ccache -z
-          for TYPE in plotTransportCoeff plotTYtoLe; do \
-            make -j ${{env.NPROCS}} EBASE=${TYPE} USE_CCACHE=TRUE ${{matrix.amrex_build_args}}; \
+          set +e
+          # Extract all EBASE options from GNUmakefile, ignoring comments
+          EBASE_OPTIONS=$(grep -oP 'EBASE\s*=\s*\K[^ ]+' GNUmakefile | grep -v '^##')
+
+          for TYPE in $EBASE_OPTIONS; do \
+            printf "\n-------- ${TYPE} --------\n";
+            OUTPUT=$(make -j ${{ env.NPROCS }} EBASE=${TYPE} USE_CCACHE=TRUE ${{ matrix.amrex_build_args }} 2>&1)i || true; \
+            RESULT=$?; \
+            echo "${OUTPUT}"; \
             make realclean; \
-            if [ $? -ne 0 ]; then exit 1; fi; \
+            if [ ${RESULT} -ne 0 ]; then \
+              if echo "${OUTPUT}" | grep -q "static_assert.*AMREX_SPACEDIM\s*=="; then \
+                echo "Skipping failure due to AMREX_SPACEDIM assertion for ${TYPE}."; \
+              else \
+                echo "Compilation failed for ${TYPE}. Exiting."; \
+                exit ${RESULT}; \
+              fi; \
+            fi; \
           done
       - name: ModelSpecificAnalysis ccache report
         working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}

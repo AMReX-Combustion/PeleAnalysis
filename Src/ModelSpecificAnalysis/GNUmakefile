@@ -1,4 +1,14 @@
+# PELE_ANALYSIS_HOME should be pointing to the home directory of your PeleAnalysis clone. 
+# If the relative path does not compile, try using the absolute path.
 PELE_ANALYSIS_HOME = ../..
+
+# If you recursively cloned the repository, you should not need to set the paths for 
+# PELE_PHYSICS_HOME and AMREX_HOME. If you chose to not recursively clone, or you want 
+# to link PeleAnalysis to your versions of PELE_PHYSICS_HOME and AMREX_HOME used by 
+# PeleLMeX or PeleC, make the following lines to point to the respective directories.
+#
+#PELE_PHYSICS_HOME = ../../../PelePhysics
+#AMREX_HOME = ../../../PelePhysics/Submodules/amrex
 
 # AMReX
 DIM        = 3
@@ -15,11 +25,15 @@ USE_CUDA   = FALSE
 USE_HIP    = FALSE
 TINY_PROFILE = FALSE
 
-EBASE=bruno
-EBASE=plotXtoY
-EBASE=plotYtoX
-EBASE=testQPDtools
-EBASE=plotTransportCoeff
+#EBASE=plotQPD
+#EBASE=plotTYtoLe
+#EBASE=plotTransportCoeff
+#EBASE=plotXtoY
+#EBASE=plotYtoX
+#EBASE=testQPDtools
+
+# tools that need review/combining/fixing/work. Comment with double ## t escape from CI.
+##EBASE=testTsolve
 
 CEXE_sources += $(EBASE).cpp
 

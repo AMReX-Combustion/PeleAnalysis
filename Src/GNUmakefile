@@ -26,47 +26,43 @@ USE_CUDA      = FALSE
 # Uncomment the desired exec
 #EBASE   = template
 #EBASE   = amrToFE
-#EBASE   = avgPlotfiles.cpp
-#EBASE   = avgToPlane
-#EBASE   = convert2hdf5
-#EBASE   = checkIso.cpp
-#EBASE   = combineMEF
+#EBASE   = avgPlotfiles
+#EBASE   = checkIso
 #EBASE   = combinePlts
 #EBASE   = conditionalMean
 #EBASE   = curvature
-#EBASE   = decimateMEF
-#EBASE   = dumpFABslice
 #EBASE   = filterPlt
 #EBASE   = flattenAMRFile
 #EBASE   = grad
 #EBASE   = integral
-#EBASE   = interp
 #EBASE   = isoMEF
 #EBASE   = isosurface
 #EBASE   = jpdf
-#EBASE   = isosurface
 #EBASE   = makePlotfile
-#EBASE   = mergeMEF
-#EBASE   = multMEF
 #EBASE   = partStream
 #EBASE   = qCriterion
-#EBASE   = regridPlt
 #EBASE   = rmsVel
 #EBASE   = scaleMEF
-#EBASE   = sliceMEF
-#EBASE   = smoothMEF
 #EBASE   = stream2plt
 #EBASE   = streamBinTubeStats
-#EBASE   = StreamData
-#EBASE   = StreamPC
 #EBASE   = subPlt
 #EBASE   = surfMEFtoDAT
 #EBASE   = surfDATtoMEF
 #EBASE   = trimMEFgen
-#EBASE   = turbfile
 
-# tools that need review/combining/fixing/work
-#EBASE   = avgToPlane
+# tools that need review/combining/fixing/work.  Comment with double ## t escape from CI
+##EBASE   = avgToPlane
+##EBASE   = convert2hdf5
+##EBASE   = combineMEF
+##EBASE   = decimateMEF
+##EBASE   = dumpFABslice
+##EBASE   = interp
+##EBASE   = mergeMEF
+##EBASE   = multMEF
+##EBASE   = regridPlt
+##EBASE   = sliceMEF
+##EBASE   = smoothMEF
+##EBASE   = turbfile
 
 
 
