@@ -29,20 +29,34 @@ print_usage (int,
 {
   std::cerr << "usage:\n";
   std::cerr << argv[0] << " inputs infile=<s> isoCompName=<s> isoVal=<v> [options] \n\tOptions:\n";
-  std::cerr << "\t     infile=<s> where <s> is a pltfile\n";
-  std::cerr << "\t     isoCompName=<s> where <s> is the quantity being contoured\n";
-  std::cerr << "\t     isoVal=<v> where <v> is an isopleth value\n";
-  std::cerr << "\t     Choosing quantities to interp to surface: \n";
-  std::cerr << "\t       comps=int comp list [overrides sComp/nComp]\n";
-  std::cerr << "\t       sComp=start comp[DEF->0]\n";
-  std::cerr << "\t       nComp=number of comps[DEF->all]\n";
-  std::cerr << "\t     finestLevel=<n> finest level to use in pltfile[DEF->all]\n";
-  std::cerr << "\t     writeSurf=<1,0> output surface [DEF->1]\n";
-  std::cerr << "\t     surfFormat=<MEF,XDMF> output surface format [DEF->MEF]\n";
-  std::cerr << "\t     outfile_base=<s> base name of output file [DEF->gen'd]\n";
-  std::cerr << "\t     build_distance_function=<t,f> create cc signed distance function [DEF->f]\n";
-  std::cerr << "\t     rm_external_elements=<t,f> remove elts beyond what is needed for watertight surface [DEF->t]\n";
-exit(1);
+  std::cerr << "\t\t#------------------- IO CONTROL -----------------------------------------------------------\n";
+  std::cerr << "\t\tinfile = plt00000                          # Plot file for surface construction\n";
+  std::cerr << "\t\toutfile_base = plt00000_surf               # DEF: infile+isoCompName+time+isoval; Base name for output files\n";
+  std::cerr << "\t\tdistance.outfile = plt00000_distance       # DEF: distance; Name of output distance file, see build_distance_function.\n";
+  std::cerr << "\t\twriteSurf = 1                              # [0, 1], DEF: 1; Flag to write surface file.\n";
+  std::cerr << "\t\tsurfFormat = MEF                           # [MEF, XDMF], DEF: MEF; MEF (Marcs Element Format) is used by other PeleAnalysis tools.\n";
+  std::cerr << "\t\tsurface_is_large = 0                       # [0, 1], DEF: 0; Option for memory-intense surfaces. If the surface is large, write data to disk/clear mem/read up into a single fab.\n";
+  std::cerr << "\t\tchunk_size = 32768                         # Int, DEF: 32768; Only relevant if surface_is_large = 1.\n";
+  std::cerr << "\t\ttmpFile = isoTEMPFILE                      # DEF: isoTEMPFILE; Only relevant if surface_is_large = 1.\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- GRID CONTROL ---------------------------------------------------------\n";
+  std::cerr << "\t\tfinestLevel = 1                            # DEF: finest level of plot file; Sets the finest level to read.\n";
+  std::cerr << "\t\tis_per = 1 1 0                             # Sets case periodicity for correct connectivity and area calculation.\n";
+  std::cerr << "\t\tnGrow = 1                                  # DEF: 1; Grow cells.\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- VARIABLES ------------------------------------------------------------\n";
+  std::cerr << "\t\tisoCompName = 'Y_(H2)'                     # Set the variable name for isosurface computation.\n";
+  std::cerr << "\t\tisoVal = 0.001                             # Set the iso value for isosurface computation.\n";
+  std::cerr << "\t\t#comps = HeatRelease                       # Optional: Additional values to map on the surface.\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Options ------------------------------------------------------------\n";
+  std::cerr << "\t\tcomputeArea = 1                            # [0, 1], DEF: 0; Compute surface area (length in 2D) of isosurface.\n";
+  std::cerr << "\t\trm_external_elements = true                # [true, false], DEF: true; Remove nodes outside of g1box before merging set with master list.\n";
+  std::cerr << "\t\tbuild_distance_function = false            # [true, false], DEF: false; create cc signed distance function.\n";
+  std::cerr << "\t\tdmax = 1e-3                                # DEF: dx of coarse level; Maximum distance from surface for build_distance_function.\n";
+  std::cerr << "\t\tverbose = 1                                # [0, 1], DEF: 0; Verbosity\n";
+  std::cerr << "\t\t#collate = 1                                # [0, 1], DEF: 1; Communicate node and element info from all procs to IOProc.\n";
+  exit(1);
 }
 
 // A struct defining an edge as two IntVects (left & right)
@@ -1311,38 +1325,32 @@ main (int   argc,
     string isoCompName = isoCompName_DEF;
     pp.query("isoCompName",isoCompName);
 
-    // Plotfile fields to read in
-    Vector<int> pltComps;
-    if (int nc = pp.countval("comps")) {
-      pltComps.resize(nc);
-      pp.getarr("comps",pltComps,0,nc);
-    } else {
-      int pltsComp = 0;
-      pp.query("sComp",pltsComp);
-      int pltnComp = 1;
-      pp.query("nComp",pltnComp);
-      AMREX_ASSERT(pltsComp+pltnComp <= pf.nComp());
-      pltComps.resize(pltnComp);
-      for (int i=0; i<pltnComp; ++i) {
-        pltComps[i] = pltsComp + i;
-      }
-    }
+    int nComp = pp.countval("comps");
+    Vector<std::string> varnames(nComp);
+    pp.queryarr("comps",varnames);
 
     int isoComp = -1;
     const Vector<std::string>& pltNames = pf.varNames();
-    Vector<string> varnames(pltComps.size()); // names of variables to get
     for (int i=0; i<varnames.size(); ++i) {
-      if (pltComps[i]>=pltNames.size()) {
-        Abort("At least one of the components requested is not in pltfile");
+      int pvar;
+      for (pvar = 0; pvar < pltNames.size(); ++pvar) {
+        if (varnames[i] == pltNames[pvar]) {
+            break;
+        }
       }
-      varnames[i] = pltNames[pltComps[i]];
+      if (pvar == pltNames.size()) {
+          amrex::Abort("Variable '" + varnames[i] + "' not found in file");
+      }
       if (varnames[i]==isoCompName) isoComp = AMREX_SPACEDIM + i;
     }
     if (isoComp<AMREX_SPACEDIM) {
-      Abort("isoCompName not in list of variables to read in");
+      varnames.push_back(isoCompName);
+      isoComp = AMREX_SPACEDIM + nComp;
+      nComp++;
     }
 
-    const int nComp = pltComps.size();
+    AMREX_ASSERT(isoComp!=-1);
+    AMREX_ASSERT(nComp==varnames.size());
 
     int finestLevel = pf.finestLevel();
     pp.query("finestLevel",finestLevel);
@@ -1730,7 +1738,7 @@ main (int   argc,
     ParallelDescriptor::Barrier();
     if (build_distance_function) {
       std::string outfile("distance");
-      pp.query("outfile",outfile);
+      pp.query("distance.outfile",outfile);
       Vector<int> levelSteps(Nlev);
       Vector<IntVect> refRatio(Nlev-1);
       Vector<const MultiFab*> ptrs(Nlev);
@@ -1771,7 +1779,7 @@ main (int   argc,
     }
 
     // Prepare floating point and integer data for MPI communication (make two arrays to pass around)
-    const int nReal = (pltComps.size()+AMREX_SPACEDIM)*nodeSet.size();
+    const int nReal = (nComp+AMREX_SPACEDIM)*nodeSet.size();
     Vector<Real> nodeRaw(nReal);
     for (long i = 0; i < sortedNodes.size(); ++i)
     {
@@ -1888,6 +1896,125 @@ main (int   argc,
       const Real uniq_time = end_time_uniq - strt_time_uniq;
       Print() << "Uniquify time: " << uniq_time << '\n';
 
+      // Compute area of isosurface
+      const Real strt_time_arout = ParallelDescriptor::second();
+
+      bool computeArea = false;
+      pp.query("computeArea",computeArea);
+      if (computeArea)  {
+        // Create a vector of periodic dims for reduced loop size
+        int is_per_sum = 0;
+        for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+            is_per_sum += is_per[idim];
+        }
+        Vector<int> is_per_dim(is_per_sum,0);
+        int is_per_dim_ix = 0;
+        for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+            if (is_per[idim]==1) {
+              is_per_dim[is_per_dim_ix] = idim;
+              is_per_dim_ix++;
+            }
+        }
+        Real Area = 0;
+#if AMREX_SPACEDIM==3
+        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
+          const Element& elt = *it;
+          if (elt.size()==3) {
+            if (elt[0]>=sortedNodes.size() || elt[1]>=sortedNodes.size() || elt[2]>=sortedNodes.size()) {
+              std::cerr << "Accessing node past end: " << elt[0] << ", " << elt[1] << ", " << elt[2] << std::endl;
+            }
+
+            const Real* p0 = sortedNodes[elt[0]]->m_vec;
+            const Real* p1 = sortedNodes[elt[1]]->m_vec;
+            const Real* p2 = sortedNodes[elt[2]]->m_vec;
+
+            // Construction two vectores vecp0p1 (from p0 to p1) and vecp0p2 (from p0 to p2)
+            // Area of triangle is 0.5 ||vecp0p1 x vecp0p2||
+
+            Vector<Real> vecp0p1(AMREX_SPACEDIM);
+            Vector<Real> vecp0p2(AMREX_SPACEDIM);
+
+            for (int i=0; i<AMREX_SPACEDIM; ++i) {
+              vecp0p1[i] = p1[i] - p0[i];
+              vecp0p2[i] = p2[i] - p0[i];
+            }
+
+            
+            if (geoms[0].isAnyPeriodic()) {  // Only enter the loop if periodic
+              int per_dim = 0;
+              for (int i = 0; i < is_per_dim.size(); ++i) {
+                per_dim = is_per_dim[i];
+                if (vecp0p1[per_dim]>(0.5*pf.probSize()[per_dim])){
+                  vecp0p1[per_dim] -= pf.probSize()[per_dim];
+                } else if (vecp0p1[per_dim]<(-0.5*pf.probSize()[per_dim])){
+                  vecp0p1[per_dim] += pf.probSize()[per_dim];
+                }
+                if (vecp0p2[per_dim]>(0.5*pf.probSize()[per_dim])){
+                  vecp0p2[per_dim] -= pf.probSize()[per_dim];
+                } else if (vecp0p2[per_dim]<(-0.5*pf.probSize()[per_dim])){
+                  vecp0p2[per_dim] += pf.probSize()[per_dim];
+                }
+              }
+            }
+            
+
+            Area += 0.5*sqrt(
+              pow( vecp0p1[1]*vecp0p2[2]
+                  -vecp0p1[2]*vecp0p2[1], 2)
+
+              + pow( vecp0p1[2]*vecp0p2[0]
+                    -vecp0p1[0]*vecp0p2[2], 2)
+
+              + pow( vecp0p1[0]*vecp0p2[1]
+                    -vecp0p1[1]*vecp0p2[0], 2) );
+          }
+        }
+#elif AMREX_SPACEDIM==2
+        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
+          const Element& elt = *it;
+          if (elt.size()==2) {
+            if (elt[0]>=sortedNodes.size() || elt[1]>=sortedNodes.size()) {
+              std::cerr << "Accessing node past end: " << elt[0] << ", " << elt[1] << std::endl;
+            }
+            const Real* p0 = sortedNodes[elt[0]]->m_vec;
+            const Real* p1 = sortedNodes[elt[1]]->m_vec;
+
+            Vector<Real> vecp0p1(AMREX_SPACEDIM);
+
+            for (int i=0; i<AMREX_SPACEDIM; ++i) {
+              vecp0p1[i] = p1[i] - p0[i];
+            }
+
+            if (geoms[0].isAnyPeriodic()) {  // Only enter the loop if periodic
+              int per_dim = 0;
+              for (int i = 0; i < is_per_dim.size(); ++i) {
+                per_dim = is_per_dim[i];
+                if (vecp0p1[per_dim]>(0.5*pf.probSize()[per_dim])){
+                  vecp0p1[per_dim] -= pf.probSize()[per_dim];
+                } else if (vecp0p1[per_dim]<(-0.5*pf.probSize()[per_dim])){
+                  vecp0p1[per_dim] += pf.probSize()[per_dim];
+                }
+              }
+            }
+
+            Area += sqrt(
+              pow( vecp0p1[0], 2)
+              + pow( vecp0p1[1], 2) );
+          }
+          
+        }
+#endif
+        Print() << "Total area = " << Area << '\n';
+        std::string outarea_string = infile + "_" + "area";
+        std::ofstream areastream(outarea_string);
+        areastream << Area;
+        areastream.close();
+      }
+
+      const Real end_time_arout = ParallelDescriptor::second();
+      const Real arout_time = end_time_arout - strt_time_arout;
+      std::cout << "Area calculation time: " << arout_time << '\n';
+
       const Real strt_time_sout = ParallelDescriptor::second();
       bool writeSurf = true;
       pp.query("writeSurf",writeSurf);
@@ -1910,17 +2037,17 @@ main (int   argc,
             }
           }
           // Get back some memory
-          //eltSet.clear();
+          eltSet.clear();
 
           int nNodeSize = sortedNodes[0]->m_size;
 
           // If the surface is large, write data to disk/clear mem/read up into a single fab
           bool surface_is_large = false;
           pp.query("surface_is_large",surface_is_large);
-          int chunk_size = 32768;
-          pp.query("chunk_size",chunk_size);
           FABdata* tmpDataP;
           if (surface_is_large) {
+            int chunk_size = 32768;
+            pp.query("chunk_size",chunk_size);
             std::string tmpFile="isoTEMPFILE";
             pp.query("tmpFile",tmpFile);
             std::ofstream ost;
@@ -2232,58 +2359,6 @@ main (int   argc,
       const Real sout_time = end_time_sout - strt_time_sout;
       std::cout << "Surface output time: " << sout_time << '\n';
 
-      // Compute area of isosurface
-
-      bool computeArea = false;
-      pp.query("computeArea",computeArea);
-      if (computeArea)  {
-        Real Area = 0;
-#if AMREX_SPACEDIM==3
-        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
-          const Element& elt = *it;
-          if (elt.size()==3) {
-            if (elt[0]>=sortedNodes.size() || elt[1]>=sortedNodes.size() || elt[2]>=sortedNodes.size()) {
-              std::cerr << "Accessing node past end: " << elt[0] << ", " << elt[1] << ", " << elt[2] << std::endl;
-            }
-
-            const Real* p0 = sortedNodes[elt[0]]->m_vec;
-            const Real* p1 = sortedNodes[elt[1]]->m_vec;
-            const Real* p2 = sortedNodes[elt[2]]->m_vec;
-
-            Area += 0.5*sqrt(
-              pow(( p1[1] - p0[1])*(p2[2]-p0[2])
-                  -(p1[2] - p0[2])*(p2[1]-p0[1]), 2)
-
-              + pow(( p1[2] - p0[2])*(p2[0]-p0[0])
-                    -(p1[0] - p0[0])*(p2[2]-p0[2]), 2)
-
-              + pow(( p1[0] - p0[0])*(p2[1]-p0[1])
-                    -(p1[1] - p0[1])*(p2[0]-p0[0]), 2) );
-          }
-        }
-#elif AMREX_SPACEDIM==2
-        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
-          const Element& elt = *it;
-          if (elt.size()==2) {
-            if (elt[0]>=sortedNodes.size() || elt[1]>=sortedNodes.size()) {
-              std::cerr << "Accessing node past end: " << elt[0] << ", " << elt[1] << std::endl;
-            }
-            const Real* p0 = sortedNodes[elt[0]]->m_vec;
-            const Real* p1 = sortedNodes[elt[1]]->m_vec;
-
-            Area += sqrt(
-              pow(( p1[0] - p0[0]), 2)
-              + pow(( p1[1] - p0[1]), 2) );
-          }
-          
-        }
-#endif
-        Print() << "Total area = " << Area << '\n';
-        std::string outarea_string = infile + "_" + "area";
-        std::ofstream areastream(outarea_string);
-        areastream << Area;
-        areastream.close();
-      }
     } // IOProc
   }
   amrex::Finalize();

@@ -1,0 +1,45 @@
+# Example input file for streamBinTubeStats
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000_streamBin               # streamBin dir produced by partStreams
+writeSurface = 0                          # [0, 1] DEF: 1; Write a file with information (coords, avg, int, der) for each node (stream start point) and connectivity.
+writeBasic = 1                            # [0, 1] DEF: 0; Like writeSurface, but without connectivity. Simplifys output for matlab and reduces disk size for large surfaces.
+writeTecplotSurfaceFromStream = 0         # [0, 1] DEF: 0; Like writeSurface, but before any operation (I guess this is a debug option).
+writeStreamsToMatlab = 0                  # [0, 1] DEF: 0; Write all stream data to matlab file.
+dumpPKZstreams = 0                        # [0, 1] DEF: 0; Output for principalCurvatureZone (PKZ) tool.
+
+#------------------- Domain control ----------------------------------------------------
+is_per = 1 1 0                            # Sets case periodicity for correct volume calculation in periodic cases
+domain_size = 0.1 0.1 0.1                 # Sets domain size for correct volume calculation in periodic cases. Only needed if case has periodicity.
+
+#------------------- Operation control ----------------------------------------------------
+#avgComps = temp                          # list of variables to average
+#intComps = HeatRelease                   # list of variables to integrate
+derComps = flameThickness flameSpeed # principalCurvatureZone reactionZoneThickness   # derived stream statisitics
+fuelName = H2                             # DEF: H2; Fuel name for improved default file ad var naming
+getEbar = 0                               # [0, 1] DEF: 0; calc Ebar (see DOI 10.1016/j.combustflame.2023.112811)
+
+#------------------- Options for flameThickness -------------------------------------------
+# Calculates local thermal flame thickness as l_f,loc = (prodTemp - reacTemp) / max(tempGrad) on each tube
+reacTemp = 300                            # Reactant temperature (from 1D)
+prodTemp = 1425                           # Product temperature (from 1D)
+tempGradVar = "||gradtemp||"              # DEF: ModGradTemp, temperature gradient variable name
+
+#------------------- Options for flameSpeed -----------------------------------------------
+# Calculates local flame speed as s_l,loc = (integral(FCRVar)) / (rhoY * area) on each stream. area is the tubes' element area on the surface
+rhoY = 0.011                              # Densitiy in the unburned times (Y_b - Y_u) for FCRVar from 1D
+FCRVar = "I_R(H2)"                        # Name of the fuel source term 
+maxVolFac = 5.0                           # DEF: -1.0; Factor to cap large volumes in regions with diverging streams for numerical stability. 
+                                          # Limits the maximum volume during integration to maxVolFac times the volume of the element at the isosurface. maxVolFac = -1.0 means no capping. 
+                                          # Value not always needed. Check convergence! Ballpark: >5.0 but also depends on nSteps in partStreams.
+#percOfMean = -1.0                         # Deprecated. DEF: -1.0; Path shortening parameter for 'splaying' regions. Computes the mean area to volume ratios and shortenes paths that are below a certain percentage of this value.
+
+#------------------- Options for principalCurvatureZone -----------------------------------
+#pkzLength = 1.293e-5                      # Basically the flame thickness. It's used to define when we have flat flame (FF in regions where |k| < 1/2*pkzLength).
+#pkzMkVar = MeanCurvature_prog_H2          # DEF: "MeanCurvature_prog_"+fuelName; Mean curvature
+#pkzGkVar = GaussianCurvature_prog_H2      # DEF: "GaussianCurvature_prog_"+fuelName; Gaussian curvature
+
+#------------------- Options for reactionZoneThickness ------------------------------------
+# Calculates local reaction thickness as l_r,loc = (integral(rztVar)) / max(rztVar) on each tube
+#rztVar = "I_R(H2)"                        # DEF: HeatRelease; Variable name for reaction thickness calculation.
+

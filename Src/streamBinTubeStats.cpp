@@ -17,23 +17,52 @@ print_usage (int,
              char* argv[])
 {
   std::cerr << "usage:\n";
-  std::cerr << argv[0] << " inputs infile=<s> isoCompName=<s> isoVal=<v> [options] \n\tOptions:\n";
-  std::cerr << "\t     infile=<s> where <s> is a stream.bin file\n";
-  std::cerr << "\t     writeStreamsToMatlab\n";
-  std::cerr << "\t     writeTecplotSurfaceFromStream\n";
-  std::cerr << "\t     writeBasic\n";
-  std::cerr << "\t     avgComps: list of variables to average\n";
-  std::cerr << "\t     intComps: list of variables to integrate\n";
-  std::cerr << "\t     derComps: derived values. Can be:\n";
-  std::cerr << "\t     --> flameThickness\n";
-  std::cerr << "\t            reacTemp\n";
-  std::cerr << "\t            prodTemp\n";
-  std::cerr << "\t            tempGradVar\n";
-  std::cerr << "\t     --> principalCurvatureZone\n";
-  std::cerr << "\t            pkzLength\n";
-  std::cerr << "\t            pkzMkVar\n";
-  std::cerr << "\t            pkzGkVar\n";
-exit(1);
+  std::cerr << argv[0] << " inputs infile=<s> [options] \n\tOptions:\n";
+  std::cerr << "\t\t# Example input file for streamBinTubeStats\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- IO CONTROL -----------------------------------------------------------\n";
+  std::cerr << "\t\tinfile = plt00000_streamBin               # streamBin dir produced by partStreams\n";
+  std::cerr << "\t\twriteSurface = 0                          # [0, 1] DEF: 1; Write a file with information (coords, avg, int, der) for each node (stream start point) and connectivity.\n";
+  std::cerr << "\t\twriteBasic = 1                            # [0, 1] DEF: 0; Like writeSurface, but without connectivity. Simplifys output for matlab and reduces disk size for large surfaces.\n";
+  std::cerr << "\t\twriteTecplotSurfaceFromStream = 0         # [0, 1] DEF: 0; Like writeSurface, but before any operation (I guess this is a debug option).\n";
+  std::cerr << "\t\twriteStreamsToMatlab = 0                  # [0, 1] DEF: 0; Write all stream data to matlab file.\n";
+  std::cerr << "\t\tdumpPKZstreams = 0                        # [0, 1] DEF: 0; Output for principalCurvatureZone (PKZ) tool.\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Domain control ----------------------------------------------------\n";
+  std::cerr << "\t\tis_per = 1 1 0                            # Sets case periodicity for correct volume calculation in periodic cases\n";
+  std::cerr << "\t\tdomain_size = 0.1 0.1 0.1                 # Sets domain size for correct volume calculation in periodic cases. Only needed if case has periodicity.\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Operation control ----------------------------------------------------\n";
+  std::cerr << "\t\t#avgComps = temp                          # list of variables to average\n";
+  std::cerr << "\t\t#intComps = HeatRelease                   # list of variables to integrate\n";
+  std::cerr << "\t\tderComps = flameThickness flameSpeed # principalCurvatureZone reactionZoneThickness   # derived stream statisitics\n";
+  std::cerr << "\t\tfuelName = H2                             # DEF: H2; Fuel name for improved default file ad var naming\n";
+  std::cerr << "\t\tgetEbar = 0                               # [0, 1] DEF: 0; calc Ebar (see DOI 10.1016/j.combustflame.2023.112811)\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Options for flameThickness -------------------------------------------\n";
+  std::cerr << "\t\t# Calculates local thermal flame thickness as l_f,loc = (prodTemp - reacTemp) / max(tempGrad) on each tube\n";
+  std::cerr << "\t\treacTemp = 300                            # Reactant temperature (from 1D)\n";
+  std::cerr << "\t\tprodTemp = 1425                           # Product temperature (from 1D)\n";
+  std::cerr << "\t\ttempGradVar = '||gradtemp||'              # DEF: ModGradTemp, temperature gradient variable name\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Options for flameSpeed -----------------------------------------------\n";
+  std::cerr << "\t\t# Calculates local flame speed as s_l,loc = (integral(FCRVar)) / (rhoY * area) on each stream. area is the tubes element area on the surface\n";
+  std::cerr << "\t\trhoY = 0.011                              # Densitiy in the unburned times (Y_b - Y_u) for FCRVar from 1D\n";
+  std::cerr << "\t\tFCRVar = 'I_R(H2)'                        # Name of the fuel source term\n";
+  std::cerr << "\t\tmaxVolFac =                               # DEF: -1.0; Factor to cap large volumes in regions with diverging streams for numerical stability.\n";
+  std::cerr << "\t\t                                          # Limits the maximum volume during integration to maxVolFac times the volume of the element at the isosurface. maxVolFac = -1.0 means no capping.\n";
+  std::cerr << "\t\t                                          # Value not always needed. Check convergence! Ballpark: >5.0 but also depends on nSteps in partStreams.\n";
+  std::cerr << "\t\tpercOfMean = -1.0                         # Deprecated. DEF: -1.0; Path shortening parameter for 'splaying' regions. Computes the mean area to volume ratios and shortenes paths that are below a certain percentage of this value.\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Options for principalCurvatureZone -----------------------------------\n";
+  std::cerr << "\t\t#pkzLength = 1.293e-5                      # Basically the flame thickness. It's used to define when we have flat flame (FF in regions where |k| < 1/2*pkzLength).\n";
+  std::cerr << "\t\t#pkzMkVar = MeanCurvature_prog_H2          # DEF: 'MeanCurvature_prog_'+fuelName; Mean curvature\n";
+  std::cerr << "\t\t#pkzGkVar = GaussianCurvature_prog_H2      # DEF: 'GaussianCurvature_prog_'+fuelName; Gaussian curvature\n";
+  std::cerr << "\t\t\n";
+  std::cerr << "\t\t#------------------- Options for reactionZoneThickness ------------------------------------\n";
+  std::cerr << "\t\t# Calculates local reaction thickness as l_r,loc = (integral(rztVar)) / max(rztVar) on each tube\n";
+  std::cerr << "\t\t#rztVar = 'I_R(H2)'                        # DEF: HeatRelease; Variable name for reaction thickness calculation.\n";
+  exit(1);
 }
 
 int
@@ -68,7 +97,47 @@ main (int   argc,
   pp.query("writeBasic",writeBasic);
   int writeSurface= 1;
   pp.query("writeSurface", writeSurface);
-  
+    
+  IntVect pp_is_per;
+  pp.getarr("is_per",pp_is_per);
+  Array<int,AMREX_SPACEDIM> is_per = {AMREX_D_DECL(pp_is_per[0],pp_is_per[1],pp_is_per[2])};
+  Print() << "Periodicity assumed for this case: ";
+  for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+    Print() << is_per[idim] << " ";
+  }
+  Print() << std::endl;
+
+  // Create a vector of periodic dims for reduced loop size
+  int is_per_sum = 0;
+  for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+      is_per_sum += is_per[idim];
+  }
+  Vector<int> is_per_dim(is_per_sum,0);
+  int is_per_dim_ix = 0;
+  for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+      if (is_per[idim]==1) {
+        is_per_dim[is_per_dim_ix] = idim;
+        is_per_dim_ix++;
+      }
+  }
+
+  // Get domain size for periodicy treatment
+  Vector<Real> pp_domain_size(AMREX_SPACEDIM, -1.0);
+  pp.queryarr("domain_size",pp_domain_size);
+  Array<Real, AMREX_SPACEDIM> domain_size = {AMREX_D_DECL(pp_domain_size[0],pp_domain_size[1],pp_domain_size[2])};
+  Print() << "Domain size assumed for this case: ";
+  for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+    Print() << domain_size[idim] << " ";
+  }
+  Print() << std::endl;
+
+  // Peroiodicity only works with domain size  
+  AMREX_ALWAYS_ASSERT(AMREX_D_TERM(
+         ((is_per[0] == 0) || (domain_size[0] != -1.0)), 
+      && ((is_per[1] == 0) || (domain_size[1] != -1.0)), 
+      && ((is_per[2] == 0) || (domain_size[2] != -1.0))));
+
+
   std::string fuelName="H2";
   pp.query("fuelName",fuelName);
   // declare size and data holders
@@ -273,11 +342,11 @@ main (int   argc,
     Array<dim3,AMREX_SPACEDIM> elt1,elt2;
     for (int d1=0; d1<AMREX_SPACEDIM; d1++) { // three components of location
       for (int d2=0; d2<AMREX_SPACEDIM; d2++) {
-	elt1[d1][d2] = streamData[sIdx[iElt][d1]][nPtsOnStream*d2+surfPt];
+        elt1[d1][d2] = streamData[sIdx[iElt][d1]][nPtsOnStream*d2+surfPt];
       }
     }
     // find area
-    eltArea[iElt] = elt_area(elt1); //(A,B,C)
+    eltArea[iElt] = elt_area(elt1,is_per_dim,domain_size); //(A,B,C)
     // keep a running total
     surfaceArea+=eltArea[iElt];
     
@@ -289,7 +358,7 @@ main (int   argc,
 	  elt2[d1][d2] = streamData[sIdx[iElt][d1]][nPtsOnStream*d2+iPt]; 
 	}
       }
-      Real vol = wedge_volume(elt1,elt2);
+      Real vol = wedge_volume(elt1,elt2,is_per_dim,domain_size);
       eltVol[iElt] += vol;
       totalVol += vol;
     }
@@ -322,6 +391,7 @@ main (int   argc,
   int numFixedElts = 0;
   Real ds=-1.0;
   //calc streamLength from first stream of first element (should all be the same)?
+  //TODO: Only the same if steps are taken in physical space, not prog_var space
   for (int iElt=0; iElt<nElts-1; iElt++) {
     Real s1 = 0.0;
     Real s2 = 0.0;
@@ -368,7 +438,7 @@ main (int   argc,
       }
     }
     for (iInt=0; iInt<nInt; iInt++) {
-      surfInt[iElt][iInt] = calcIntegral(intIdx[iInt],nPtsOnStream,localStreamData,areaLoc);
+      surfInt[iElt][iInt] = calcIntegral(intIdx[iInt],nPtsOnStream,localStreamData,areaLoc,is_per_dim,domain_size);
     }
     int outComp;
     for (iDerFlag=0; iDerFlag<nDerFlag; iDerFlag++) {
@@ -384,7 +454,7 @@ main (int   argc,
      }
      if (derCompsIn[iDerFlag]=="reactionZoneThickness") {
        outComp=derIdxOut[iDerFlag][0];
-       surfDer[iElt][outComp] = calcIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData,areaLoc)/calcMax(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData);
+       surfDer[iElt][outComp] = calcIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData,areaLoc,is_per_dim,domain_size)/calcMax(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData);
        if (std::isfinite(surfDer[iElt][outComp])) {
 	 filedelta += surfDer[iElt][outComp]*areaLoc;
        } else {
@@ -395,9 +465,9 @@ main (int   argc,
        outComp = derIdxOut[iDerFlag][0];
        // cap the volume of element that can contribute to the integral
        if (maxVolFac>0.) {
-	 surfDer[iElt][outComp] = calcCappedIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData,areaLoc,maxVolFac)/rhoY;
+	 surfDer[iElt][outComp] = calcCappedIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData,areaLoc,maxVolFac,is_per_dim,domain_size)/rhoY;
        } else {
-	 surfDer[iElt][outComp] = calcIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData,areaLoc)/rhoY;
+	 surfDer[iElt][outComp] = calcIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,localStreamData,areaLoc,is_per_dim,domain_size)/rhoY;
        }
 
        // sum for mean
@@ -455,7 +525,7 @@ main (int   argc,
 		    nPtsOnReducedStream -= 1;
 		  }
 		  outComp = derIdxOut[iDerFlag][0];
-		  surfDer[iElt][outComp] = calcAdjustedIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,nPtsOnReducedStream,localStreamData,areaLoc)/rhoY;
+		  surfDer[iElt][outComp] = calcAdjustedIntegral(derIdxIn[iDerFlag][0],nPtsOnStream,nPtsOnReducedStream,localStreamData,areaLoc,is_per_dim,domain_size)/rhoY;
 		  outComp = derIdxOut[iDerFlag][1];
 		  surfDer[iElt][outComp] = 1;
 		} else {
@@ -516,7 +586,7 @@ main (int   argc,
   
   int zoneComp = -1;
   int thermalThicknessComp = -1;
-  int reactionZoneThicknessComp = -1;
+  //int reactionZoneThicknessComp = -1;
   for (iDerFlag=0; iDerFlag<nDerFlag; iDerFlag++) {
     if (derCompsIn[iDerFlag]=="principalCurvatureZones") {
       zoneComp = derIdxOut[iDerFlag][2];
@@ -627,7 +697,7 @@ main (int   argc,
 
   
   //dump characteristic values for this file
-  std::string filename=infile+"/characteristics.dat";
+  std::string filename=infile+"/characteristics_"+fuelName+".dat";
 
   std::ofstream os(filename.c_str(),std::ios::out);
   
@@ -687,7 +757,8 @@ main (int   argc,
   // write basic
   if (writeBasic) {
     Print() << "Writing basic file ..." << std::endl;
-    writeSurfaceBasic(infile,
+    std::string prefix=infile+ "_" + fuelName; 
+    writeSurfaceBasic(prefix,
 		      nElts, eltArea,  eltVol,  surfLocs,
 		      nAvg,  avgComps, surfAvg,
 		      nInt,  intComps, surfInt,
@@ -740,7 +811,12 @@ Real calcMax(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_SPACEDIM>& 
 // calculate the integral over the stream tube
 //
 
-Real calcIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_SPACEDIM>& streamData, Real eltArea)
+Real calcIntegral(int compIdx, 
+                  int nPtsOnStream, 
+                  Array<Vector<Real>,AMREX_SPACEDIM>& streamData, 
+                  Real eltArea,
+                  const Vector<int>& is_per_dim, 
+                  const Array<Real,AMREX_SPACEDIM>& domain_size)
 {
   Real integral = 0.;
   
@@ -756,7 +832,7 @@ Real calcIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_SPACED
       val1[d1] = streamData[d1][nPtsOnStream*compIdx+iPt-1];
       val2[d1] = streamData[d1][nPtsOnStream*compIdx+iPt];
     }
-    integral += wedge_volume_int(elt1,val1,elt2,val2);
+    integral += wedge_volume_int(elt1,val1,elt2,val2,is_per_dim,domain_size);
   } 
   integral /= eltArea;
   return integral;
@@ -766,19 +842,21 @@ Real calcIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_SPACED
 // calculate the integral, but cap the contribution by max volume
 //
 
-Real calcCappedIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_SPACEDIM>& streamData, Real eltArea, Real maxVolFac)
+Real calcCappedIntegral(int compIdx, 
+                        int nPtsOnStream, 
+                        Array<Vector<Real>,AMREX_SPACEDIM>& streamData, 
+                        Real eltArea, 
+                        Real maxVolFac, 
+                        const Vector<int>& is_per_dim, 
+                        const Array<Real,AMREX_SPACEDIM>& domain_size)
 {
-  Real integral = 0.;
 
-  // integrate
-  //dim3 A,B,C,D,E,F;
   Array<dim3,AMREX_SPACEDIM> elt1, elt2;
-  dim3 val1,val2;
   // get reference volume at the surface
   // the surface is the mid point of the stream
   int surfPt = (nPtsOnStream-1)/2; // stream data location counts from zero
   // Now let's get the average volume of the two elements either side of the surface
-  Real refVol(0.);
+  Real refVol = 0.;
   for (int iPt=0; iPt<2; iPt++) {
     for (int d1=0; d1<AMREX_SPACEDIM; d1++) { // three components of location
       for (int d2=0; d2<AMREX_SPACEDIM; d2++) {
@@ -786,17 +864,22 @@ Real calcCappedIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_
 	elt2[d1][d2] = streamData[d1][nPtsOnStream*d2+surfPt+iPt];
       }
     }
-    refVol += 0.5*wedge_volume(elt1,elt2);
+    refVol += 0.5*wedge_volume(elt1,elt2,is_per_dim,domain_size);
   }
   // set the maxVol to the factor passed in times this reference volume
   Real maxVol = maxVolFac*refVol;
 
+  Real integral = 0.;
+  
+  // integrate
+  //dim3 A,B,C,D,E,F;
+  dim3 val1,val2;
   // now do the integral, capping by volFac
   for (int iPt=1; iPt<nPtsOnStream; iPt++) {
     for (int d1=0; d1<AMREX_SPACEDIM; d1++) { // three components of location
       for (int d2=0; d2<AMREX_SPACEDIM; d2++) {
-	elt1[d1][d2] = streamData[d1][nPtsOnStream*d2+surfPt+iPt-1];
-	elt2[d1][d2] = streamData[d1][nPtsOnStream*d2+surfPt+iPt];
+	elt1[d1][d2] = streamData[d1][nPtsOnStream*d2+iPt-1];
+	elt2[d1][d2] = streamData[d1][nPtsOnStream*d2+iPt];
       }
       val1[d1] = streamData[d1][nPtsOnStream*compIdx+iPt-1];
       val2[d1] = streamData[d1][nPtsOnStream*compIdx+iPt];           
@@ -805,9 +888,9 @@ Real calcCappedIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_
     // if volume of the element is bigger than the maximum reference volume,
     // then cap the contribution to the integral with volFac...
     // (should probably check that total consumption doesn't get missed)
-    Real myVol = wedge_volume(elt1,elt2);
+    Real myVol = wedge_volume(elt1,elt2,is_per_dim,domain_size);
     Real volFac = min(myVol,maxVol)/(myVol+1.e-40);
-    integral += volFac*wedge_volume_int(elt1,val1,elt2,val2);
+    integral += volFac*wedge_volume_int(elt1,val1,elt2,val2,is_per_dim,domain_size);
   } 
   integral /= eltArea;
   return integral;
@@ -818,7 +901,13 @@ Real calcCappedIntegral(int compIdx, int nPtsOnStream, Array<Vector<Real>,AMREX_
 //
 
 
-Real calcAdjustedIntegral(int compIdx, int nPtsOnStream, int nPtsOnReducedStream, Array<Vector<Real>,AMREX_SPACEDIM>& streamData, Real eltArea)
+Real calcAdjustedIntegral(int compIdx, 
+                          int nPtsOnStream, 
+                          int nPtsOnReducedStream, 
+                          Array<Vector<Real>,AMREX_SPACEDIM>& streamData, 
+                          Real eltArea,
+                          const Vector<int>& is_per_dim, 
+                          const Array<Real,AMREX_SPACEDIM>& domain_size)
 {
   Real integral = 0.;
   int diff = (nPtsOnStream - nPtsOnReducedStream)/2;
@@ -834,7 +923,7 @@ Real calcAdjustedIntegral(int compIdx, int nPtsOnStream, int nPtsOnReducedStream
       val1[d1] = streamData[d1][nPtsOnStream*compIdx+iPt-1];
       val2[d1] = streamData[d1][nPtsOnStream*compIdx+iPt];
     }
-    integral += wedge_volume_int(elt1,val1,elt2,val2);
+    integral += wedge_volume_int(elt1,val1,elt2,val2,is_per_dim,domain_size);
   } 
   integral /= eltArea;
   return integral;
@@ -893,7 +982,7 @@ void readStreamBin(std::string infile,
   // read variable names
   variableNames.resize(nComps);
   variableNames = parseVarNames(*is);
-  if (nComps!=variableNames.size())
+  if (nComps!=static_cast<int>(variableNames.size()))
     Abort("nComps != variableNames.size()");
 
   // connectivity data
@@ -903,8 +992,7 @@ void readStreamBin(std::string infile,
   std::getline(ifs,dummy);
   faceData.resize(fds);
   ifs.read((char*)faceData.dataPtr(),sizeof(int)*faceData.size());
-
-  nElts = fds/3;
+  nElts = fds/static_cast<int>(AMREX_SPACEDIM);
   Print() << "nElts = " << nElts << std::endl;
 
   // close header
@@ -1013,7 +1101,7 @@ writeSurfaceFromStreamTecplot(std::string infile,
   }
 
   for (int iElt=0; iElt<nElts; iElt++) {
-    int offset=iElt*3;
+    int offset=iElt*static_cast<int>(AMREX_SPACEDIM);
     os << faceData[offset] << " "
        << faceData[offset+1] << " "
        << faceData[offset+2] << std::endl;
@@ -1054,7 +1142,11 @@ writeSurfaceTecplot(std::string infile,
   os << "ZONE T=\"streamBinTubeSurface\""
      << " N=" << nElts*AMREX_SPACEDIM
      << " E=" << nElts
+#if AMREX_SPACEDIM == 2
+     << " F=FEPOINT ET=LINSEG"
+#else
      << " F=FEPOINT ET=TRIANGLE"
+#endif
      << std::endl;
 
   // write averages
@@ -1082,8 +1174,16 @@ writeSurfaceTecplot(std::string infile,
   }
 
   // write connectivity
-  for (int iElt=1; iElt<3*nElts;)
-    os << iElt++ << " " << iElt++ << " " << iElt++ << std::endl;
+  int fds = nElts*static_cast<int>(AMREX_SPACEDIM);
+
+  for (int iElt=1; iElt<fds;){
+    os << iElt << " ";
+    ++iElt;
+    os << iElt++ << " ";
+    ++iElt;
+    os << iElt++ << std::endl;
+    ++iElt;
+  }
 
   os.close();
 }
@@ -1092,16 +1192,28 @@ writeSurfaceTecplot(std::string infile,
 // write all the surface quantities to a tecplot file
 //
 void
-writeSurfaceBasic(std::string infile,
+writeSurfaceBasic(std::string prefix,
 		  int nElts, Vector<Real>&        eltArea,  Vector<Real>&        eltVol,
 		  Vector<Array<dim3,AMREX_SPACEDIM>>& surfLocs,
 		  int nAvg,  Vector<std::string>& avgComps, Vector<Vector<Real>>& surfAvg,
 		  int nInt,  Vector<std::string>& intComps, Vector<Vector<Real>>& surfInt,
 		  int nDer,  Vector<std::string>& derComps, Vector<Vector<Real>>& surfDer)
 {
-  std::string filename=infile+"_binVolInt_basic.dat";
+  std::string filename=prefix+"_binVolInt_basic.dat";
 
   std::ofstream os(filename.c_str(),std::ios::out);
+  #if AMREX_SPACEDIM == 2
+  std::string vars("VARIABLES = X Y area volume");
+#else
+  std::string vars("VARIABLES = X Y Z area volume");
+#endif
+  for (int iAvg=0; iAvg<nAvg; iAvg++)
+    vars += " " + avgComps[iAvg] + "_avg";
+  for (int iInt=0; iInt<nInt; iInt++)
+    vars += " " + intComps[iInt] + "_volInt";
+  for (int iDer=0; iDer<nDer; iDer++)
+    vars += " " + derComps[iDer];
+  os << vars << std::endl;
 
   // write averages
   os << std::setprecision(12);
@@ -1130,27 +1242,74 @@ writeSurfaceBasic(std::string infile,
   os.close();
 }
 
+// -----------------------------------------------------------------------------
+// Helper: correct vector for periodicity
+// -----------------------------------------------------------------------------
+
+void correct_per(Vector<dim3>& vecs, 
+                 const Vector<int>& is_per_dim, 
+                 const Array<Real,AMREX_SPACEDIM>& domain_size)
+{
+  int per_dim = 0;
+  for (int j = 0; j<vecs.size(); j++) {
+    dim3& vec = vecs[j];
+    for (int i = 0; i < is_per_dim.size(); ++i) {
+      per_dim = is_per_dim[i];
+      if (vec[per_dim]>(0.5*domain_size[per_dim])){
+        vec[per_dim] -= domain_size[per_dim];
+      } else if (vec[per_dim]<(-0.5*domain_size[per_dim])){
+        vec[per_dim] += domain_size[per_dim];
+      }
+    }
+  }
+
+  return;
+}
+
 #if AMREX_SPACEDIM == 2
 // -----------------------------------------------------------------------------
 // Helper: area of triangle (2D)
 // -----------------------------------------------------------------------------
-Real triArea(const dim3& A, const dim3& B, const dim3& C)
+Real triArea(const dim3& A, const dim3& B, const dim3& C, 
+             const Vector<int>& is_per_dim, 
+             const Array<Real,AMREX_SPACEDIM>& domain_size)
 {
-  return half * std::abs((B[0]-A[0])*(C[1]-A[1]) - (C[0]-A[0])*(B[1]-A[1]));
+  Vector<dim3> vecs (2);
+  dim3& vecAB = vecs[0];
+  dim3& vecAC = vecs[1];
+
+  for (int i=0; i<AMREX_SPACEDIM; ++i) {
+    vecAB[i] = B[i] - A[i];
+    vecAC[i] = C[i] - A[i];
+  }
+
+  correct_per(vecs, is_per_dim, domain_size);
+
+  return half * std::abs(vecAB[0]*vecAC[1] - vecAC[0]*vecAB[1]);
 }
 #else
 // -----------------------------------------------------------------------------
 // Helper: volume of tetrahedron (3D)
 // -----------------------------------------------------------------------------
 Real tetVol(const dim3& A, const dim3& B,
-	    const dim3& C, const dim3& D)
-{
-  dim3 V1, V2, V3, cross;
+	          const dim3& C, const dim3& D, 
+            const Vector<int>& is_per_dim, 
+            const Array<Real,AMREX_SPACEDIM>& domain_size)
+{ 
+  Vector<dim3> vecs (3);
+  dim3& V1 = vecs[0];
+  dim3& V2 = vecs[1];
+  dim3& V3 = vecs[2];
+
+  dim3 cross;
   for (int i=0;i<3;++i) {
     V1[i] = B[i]-A[i];
     V2[i] = C[i]-A[i];
     V3[i] = D[i]-A[i];
   }
+
+  correct_per(vecs,is_per_dim,domain_size);
+
   cross[0] = V2[1]*V3[2] - V2[2]*V3[1];
   cross[1] = V2[2]*V3[0] - V2[0]*V3[2];
   cross[2] = V2[0]*V3[1] - V2[1]*V3[0];
@@ -1160,8 +1319,57 @@ Real tetVol(const dim3& A, const dim3& B,
 #endif
 
 
+Real elt_area(const Array<dim3,AMREX_SPACEDIM>& elt, 
+              const Vector<int>& is_per_dim, 
+              const Array<Real,AMREX_SPACEDIM>& domain_size) {
+#if AMREX_SPACEDIM == 2
+  // Line segment length
+  Vector<dim3> vecs (1);
+  dim3& V1 = vecs[0];
+
+  for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+    V1[i] = elt[1][i] - elt[0][i];
+  }
+
+  correct_per(vecs, is_per_dim, domain_size);
+
+  Real sum = 0;
+  for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+    sum += V1[i]*V1[i];
+  }
+  return std::sqrt(sum);
+#else
+  // Triangle area
+  Vector<dim3> vecs (2);
+  dim3& V1 = vecs[0];
+  dim3& V2 = vecs[1];
+  dim3 cross;
+
+  for (int i=0; i<AMREX_SPACEDIM; ++i) {
+    V1[i] = elt[1][i] - elt[0][i]; // B-A
+    V2[i] = elt[2][i] - elt[0][i]; // C-A
+  }
+  
+  correct_per(vecs, is_per_dim, domain_size);
+  
+  // Cross product
+  cross[0] = V1[1]*V2[2] - V2[1]*V1[2];
+  cross[1] = V1[2]*V2[0] - V2[2]*V1[0];
+  cross[2] = V1[0]*V2[1] - V2[0]*V1[1];
+  
+  Real result = 0;
+  for (int i=0; i<3; ++i) {
+    result += cross[i]*cross[i];
+  }
+  return 0.5 * std::sqrt(result);
+#endif
+}
+
+
 Real wedge_volume(const Array<dim3,AMREX_SPACEDIM>& elt1,
-                  const Array<dim3,AMREX_SPACEDIM>& elt2)
+                  const Array<dim3,AMREX_SPACEDIM>& elt2,
+                  const Vector<int>& is_per_dim, 
+                  const Array<Real,AMREX_SPACEDIM>& domain_size)
 {
 #if AMREX_SPACEDIM == 2
   // 2D: quadrilateral / parallelogram
@@ -1170,7 +1378,7 @@ Real wedge_volume(const Array<dim3,AMREX_SPACEDIM>& elt1,
   const dim3& B = elt1[1];
   const dim3& C = elt2[0];
   const dim3& D = elt2[1];	
-  return triArea(A,B,C) + triArea(A,C,D);
+  return triArea(A,B,C,is_per_dim,domain_size) + triArea(A,C,D,is_per_dim,domain_size);
 #else
   // 3D: triangular prism / wedge
   // elt1 = [A,B,C], elt2 = [D,E,F]
@@ -1181,41 +1389,9 @@ Real wedge_volume(const Array<dim3,AMREX_SPACEDIM>& elt1,
   const dim3& E = elt2[1];
   const dim3& F = elt2[2];
   
-  return tetVol(A,B,C,E) + tetVol(A,D,E,F) + tetVol(A,C,E,F);
+  return tetVol(A,B,C,E,is_per_dim,domain_size) + tetVol(A,D,E,F,is_per_dim,domain_size) + tetVol(A,C,E,F,is_per_dim,domain_size);
 #endif
 }
-
-Real elt_area(const Array<dim3,AMREX_SPACEDIM>& elt) {
-#if AMREX_SPACEDIM == 2
-  // Line segment length
-  Real sum = 0;
-  for (size_t i = 0; i < AMREX_SPACEDIM; ++i) {
-    Real d = elt[1][i] - elt[0][i];
-    sum += d*d;
-  }
-  return std::sqrt(sum);
-#else
-  // Triangle area
-  dim3 R1, R2, R3;
-
-  for (int i=0; i<AMREX_SPACEDIM; ++i) {
-    R1[i] = elt[1][i] - elt[0][i]; // B-A
-    R2[i] = elt[2][i] - elt[0][i]; // C-A
-  }
-  
-  // Cross product
-  R3[0] = R1[1]*R2[2] - R2[1]*R1[2];
-  R3[1] = R1[2]*R2[0] - R2[2]*R1[0];
-  R3[2] = R1[0]*R2[1] - R2[0]*R1[1];
-  
-  Real result = 0;
-  for (int i=0; i<3; ++i) {
-    result += R3[i]*R3[i];
-  }
-  return 0.5 * std::sqrt(result);
-#endif
-}
-
 
 
 // -----------------------------------------------------------------------------
@@ -1226,7 +1402,9 @@ Real elt_area(const Array<dim3,AMREX_SPACEDIM>& elt) {
 Real wedge_volume_int(const Array<dim3,AMREX_SPACEDIM>& elt1,
                       const dim3& val1,
                       const Array<dim3,AMREX_SPACEDIM>& elt2,
-                      const dim3& val2)
+                      const dim3& val2,
+                      const Vector<int>& is_per_dim, 
+                      const Array<Real,AMREX_SPACEDIM>& domain_size)
 {
 #if AMREX_SPACEDIM == 2
   const dim3& A = elt1[0];
@@ -1238,10 +1416,10 @@ Real wedge_volume_int(const Array<dim3,AMREX_SPACEDIM>& elt1,
   Real vC = val2[0], vD = val2[1];
   
   // Sub-areas like sub-tetrahedra in 3D
-  Real area_ABC = triArea(A,B,C);
-  Real area_ACD = triArea(A,C,D);
-  Real area_ABD = triArea(A,B,D);
-  Real area_BCD = triArea(B,C,D);
+  Real area_ABC = triArea(A,B,C,is_per_dim,domain_size);
+  Real area_ACD = triArea(A,C,D,is_per_dim,domain_size);
+  Real area_ABD = triArea(A,B,D,is_per_dim,domain_size);
+  Real area_BCD = triArea(B,C,D,is_per_dim,domain_size);
   
   // Integrals over sub-triangles
   Real int_1 = (vA+vB+vC) * area_ABC / 3.0;
@@ -1250,7 +1428,7 @@ Real wedge_volume_int(const Array<dim3,AMREX_SPACEDIM>& elt1,
   Real int_4 = (vB+vC+vD) * area_BCD / 3.0;
   
   // Average contributions for higher-order accuracy
-  return quarter * (int_1 + int_2 + int_3 + int_4);
+  return half * (int_1 + int_2 + int_3 + int_4);
 #else
   // 3D wedge: A,B,C bottom; D,E,F top
   const dim3& A = elt1[0]; const Real vA = val1[0];
@@ -1261,18 +1439,18 @@ Real wedge_volume_int(const Array<dim3,AMREX_SPACEDIM>& elt1,
   const dim3& F = elt2[2]; const Real vF = val2[2];
   
   // replicate old trusted method
-  const Real vol_EABC = tetVol(A,B,C,E);
-  const Real vol_ADEF = tetVol(A,D,E,F);
-  const Real vol_ACEF = tetVol(C,E,F,A);
-  const Real vol_DABC = tetVol(A,B,C,D);
-  const Real vol_FABC = tetVol(A,B,C,F);
-  const Real vol_BDEF = tetVol(B,D,E,F);
-  const Real vol_CDEF = tetVol(C,D,E,F);
-  const Real vol_ACED = tetVol(C,E,D,A);
-  const Real vol_BCDF = tetVol(B,C,D,F);
-  const Real vol_BCDE = tetVol(B,C,D,E);
-  const Real vol_ABDF = tetVol(B,D,F,A);
-  const Real vol_ABEF = tetVol(B,E,F,A);
+  const Real vol_EABC = tetVol(A,B,C,E,is_per_dim,domain_size);
+  const Real vol_ADEF = tetVol(A,D,E,F,is_per_dim,domain_size);
+  const Real vol_ACEF = tetVol(C,E,F,A,is_per_dim,domain_size);
+  const Real vol_DABC = tetVol(A,B,C,D,is_per_dim,domain_size);
+  const Real vol_FABC = tetVol(A,B,C,F,is_per_dim,domain_size);
+  const Real vol_BDEF = tetVol(B,D,E,F,is_per_dim,domain_size);
+  const Real vol_CDEF = tetVol(C,D,E,F,is_per_dim,domain_size);
+  const Real vol_ACED = tetVol(C,E,D,A,is_per_dim,domain_size);
+  const Real vol_BCDF = tetVol(B,C,D,F,is_per_dim,domain_size);
+  const Real vol_BCDE = tetVol(B,C,D,E,is_per_dim,domain_size);
+  const Real vol_ABDF = tetVol(B,D,F,A,is_per_dim,domain_size);
+  const Real vol_ABEF = tetVol(B,E,F,A,is_per_dim,domain_size);
   
   const Real int_1 = ((vD+vA+vB+vC)*vol_DABC +
 		      (vB+vD+vE+vF)*vol_BDEF +

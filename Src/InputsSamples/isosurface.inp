@@ -1,0 +1,29 @@
+# Example input file for streamBinTubeStats
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Plot file for surface construction
+outfile_base = plt00000_surf               # DEF: infile+isoCompName+time+isoval; Base name for output files
+distance.outfile = plt00000_distance       # DEF: distance; Name of output distance file, see build_distance_function.
+writeSurf = 1                              # [0, 1], DEF: 1; Flag to write surface file.
+surfFormat = MEF                           # [MEF, XDMF], DEF: MEF; MEF (Marcs Element Format) is used by other PeleAnalysis tools.
+surface_is_large = 0                       # [0, 1], DEF: 0; Option for memory-intense surfaces. If the surface is large, write data to disk/clear mem/read up into a single fab.
+chunk_size = 32768                         # Int, DEF: 32768; Only relevant if surface_is_large = 1.
+tmpFile = isoTEMPFILE                      # DEF: isoTEMPFILE; Only relevant if surface_is_large = 1.
+
+#------------------- GRID CONTROL ---------------------------------------------------------
+finestLevel = 1                            # DEF: finest level of plot file; Sets the finest level to read.
+is_per = 1 1 0                             # Sets case periodicity for correct connectivity and area calculation.
+nGrow = 1                                  # DEF: 1; Grow cells.
+
+#------------------- VARIABLES ------------------------------------------------------------
+isoCompName = "Y_(H2)"                     # Set the variable name for isosurface computation.
+isoVal = 0.001                             # Set the iso value for isosurface computation.
+#comps = HeatRelease                       # Optional: Additional values to map on the surface.
+
+#------------------- Options ------------------------------------------------------------
+computeArea = 1                            # [0, 1], DEF: 0; Compute surface area (length in 2D) of isosurface.
+rm_external_elements = true                # [true, false], DEF: true; Remove nodes outside of g1box before merging set with master list.
+build_distance_function = false            # [true, false], DEF: false; create cc signed distance function.
+dmax = 1e-3                                # DEF: dx of coarse level; Maximum distance from surface for build_distance_function.
+verbose = 1                                # [0, 1], DEF: 0; Verbosity
+#collate = 1                                # [0, 1], DEF: 1; Communicate node and element info from all procs to IOProc.
