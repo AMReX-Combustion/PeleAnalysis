@@ -31,6 +31,7 @@ USE_CUDA      = FALSE
 #EBASE   = combinePlts
 #EBASE   = conditionalMean
 #EBASE   = curvature
+#EBASE   = diffPlts
 #EBASE   = filterPlt
 #EBASE   = flattenAMRFile
 #EBASE   = grad
