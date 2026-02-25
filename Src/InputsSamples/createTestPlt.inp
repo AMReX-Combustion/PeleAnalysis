@@ -1,0 +1,91 @@
+# AMReX Grid Parameters
+amr.n_cell = 64 64 64
+amr.max_grid_size = 32
+amr.ngrow = 0
+
+# Geometry
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+
+# Output
+plotfile_name = plt_test
+
+# Field definitions
+field.names = const_field plane_step plane_smooth double_plane_step double_plane_smooth circle_step circle_smooth spherical_shell_step spherical_shell_smooth sine_field
+
+# Constant field
+const_field.type = constant
+const_field.value = 5.0
+
+# Plane step function (vertical split at x=0.5)
+plane_step.type = plane_step
+plane_step.axis = 0              # 0=x, 1=y, 2=z
+plane_step.position = 0.5        # Position along axis
+plane_step.value_left = 1.0      # Value on left/below
+plane_step.value_right = 0.0     # Value on right/above
+
+# Plane with smooth transition
+plane_smooth.type = plane_smooth
+plane_smooth.axis = 1            # y-axis
+plane_smooth.position = 0.5
+plane_smooth.value_left = 2.0
+plane_smooth.value_right = -1.0
+plane_smooth.smooth_width = 0.2  # Transition width
+
+# Double plane step function (vertical split at x=0.5)
+double_plane_step.type = double_plane_step
+double_plane_step.axis = 0              # 0=x, 1=y, 2=z
+double_plane_step.position = 0.5        # Position along axis
+double_plane_step.position_second = 0.6 # Position of second plane along axis
+double_plane_step.value_inside = 1.0      # Value on left/below
+double_plane_step.value_outside = 0.0     # Value on right/above
+
+# Double plane with smooth transition
+double_plane_smooth.type = double_plane_smooth
+double_plane_smooth.axis = 1            # y-axis
+double_plane_smooth.position = 0.5
+double_plane_smooth.position_second = 0.6
+double_plane_smooth.value_inside = 2.0
+double_plane_smooth.value_outside = -1.0
+double_plane_smooth.smooth_width = 0.2  # Transition width
+
+# Circle/Sphere step function
+circle_step.type = sphere_step   # or circle_step for 2D
+circle_step.center = 0.5 0.5 0.5
+circle_step.radius = 0.25
+circle_step.value_inside = 10.0
+circle_step.value_outside = 0.0
+
+# Circle/Sphere with smooth transition
+circle_smooth.type = sphere_smooth
+circle_smooth.center = 0.3 0.7 0.5
+circle_smooth.radius = 0.15
+circle_smooth.value_inside = 1.0
+circle_smooth.value_outside = 0.0
+circle_smooth.smooth_width = 0.1
+
+# Ring/Spherical shell step function
+spherical_shell_step.type = spherical_shell_step   # or circle_step for 2D
+spherical_shell_step.center = 0.5 0.5 0.5
+spherical_shell_step.radius_inner = 0.1
+spherical_shell_step.radius_outer = 0.3
+spherical_shell_step.value_inside = 10.0
+spherical_shell_step.value_outside = 0.0
+
+# Ring/Spherical shell with smooth transition
+spherical_shell_smooth.type = spherical_shell_smooth
+spherical_shell_smooth.center = 0.5 0.5 0.5
+spherical_shell_smooth.radius_inner = 0.1
+spherical_shell_smooth.radius_outer = 0.3
+spherical_shell_smooth.value_inside = 10.0
+spherical_shell_smooth.value_outside = 0.0
+spherical_shell_smooth.smooth_width = 0.1
+
+# Sine function
+sine_field.type = sine
+sine_field.frequency = 2.0 3.0 1.0  # Frequency in each direction
+sine_field.phase = 0.0 0.0 0.0      # Phase shift
+sine_field.amplitude = 1.0
+sine_field.offset = 0.0

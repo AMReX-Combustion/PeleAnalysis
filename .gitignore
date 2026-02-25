@@ -31,6 +31,25 @@ TAGS
 # vi
 *.sw[a-z]
 
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.filters
+*.vcxproj.user
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+._*
+
+
 # catalyst/libsim
 
 *.vth

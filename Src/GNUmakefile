@@ -30,6 +30,7 @@ USE_CUDA      = FALSE
 #EBASE   = checkIso
 #EBASE   = combinePlts
 #EBASE   = conditionalMean
+#EBASE   = createTestPlt
 #EBASE   = curvature
 #EBASE   = diffPlts
 #EBASE   = filterPlt
