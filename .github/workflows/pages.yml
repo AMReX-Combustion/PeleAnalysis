@@ -30,9 +30,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install sphinx
+          # pip install sphinx
           # If you have a requirements file for your docs, use one of these instead:
-          # pip install -r Docs/requirements.txt
+          pip install -r Docs/requirements.txt
           # pip install -r requirements.txt
 
       - name: Build docs
