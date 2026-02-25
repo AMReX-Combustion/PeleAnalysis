@@ -32,17 +32,17 @@ jobs:
         run: |
           pip install sphinx
           # If you have a requirements file for your docs, use one of these instead:
-          # pip install -r docs/requirements.txt
+          # pip install -r Docs/requirements.txt
           # pip install -r requirements.txt
 
       - name: Build docs
         run: make html
-        working-directory: docs
+        working-directory: Docs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/build/html
+          path: Docs/build/html
 
   deploy:
     needs: build
