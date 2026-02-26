@@ -19,18 +19,18 @@ jobs:
 #
 ## TODO:
 #
-#  Formatting:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Clone
-#        uses: actions/checkout@v4
-#      - name: Check formatting
-#        uses: DoozyX/clang-format-lint-action@v0.18.2
-#        with:
-#          source: './Source ./Testing ./Mechanisms'
-#          exclude: '.'
-#          extensions: 'H,h,cpp'
-#          clangFormatVersion: 18
+  Formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+      - name: Check formatting
+        uses: DoozyX/clang-format-lint-action@v0.18.1
+        with:
+          source: './Src'
+          exclude: '.'
+          extensions: 'H,h,cpp'
+          clangFormatVersion: 18
 #
 #  Codespell:
 #    runs-on: ubuntu-latest
