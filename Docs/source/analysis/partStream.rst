@@ -1,8 +1,8 @@
 .. highlight:: bash
 
 
-stream
-******
+partStream
+**********
 
 Given a plotfile containing a vector field and an MEF file containing
 a collection of "seed" points, create "streamlines" eminating from the
@@ -33,7 +33,7 @@ Tool Options
 ############
 
 Seed points
-***********
+~~~~~~~~~~~
 
 ::
 
@@ -54,7 +54,7 @@ user. Currently, there are four options to initialize the seed points:
 4. `seedRakeNum` places `seedRakeNum` evenly spaced seed points along a line segment between two endpoints `seedRakeL` and `seedRakeR`.
 
 Integration options
-*******************
+~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -94,7 +94,7 @@ number of such intervals, `nRK`.
 
 
 Algorithm details
-*****************
+~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -182,7 +182,7 @@ streamline generated with the above strategy, and interpolate a set of
 fields onto the streamlines.
 
 Output formats
-**************
+~~~~~~~~~~~~~~
 
 ::
 
