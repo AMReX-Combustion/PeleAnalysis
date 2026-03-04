@@ -55,39 +55,39 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        comp: [gnu, llvm] # TODO: cuda, hip, sycl
-        python-version: ['3.11']
-        poetry-version: ['1.4.2']
+        comp: [gnu, llvm, gnu-debug]  # TODO: cuda, hip, sycl
+        dim: [2, 3]
         include:
           - comp: gnu
             amrex_build_args: 'COMP=gnu'
-            dependency_cmds:
           - comp: gnu-debug
             amrex_build_args: 'COMP=gnu DEBUG=TRUE'
-            dependency_cmds:
           - comp: llvm
             amrex_build_args: 'COMP=llvm'
-            dependency_cmds:
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{matrix.python-version}}
       - name: Clone PeleAnalysis
         uses: actions/checkout@v4
         with:
-          path: PeleAnalysis-${{matrix.comp}}
+          path: PeleAnalysis-${{matrix.comp}}-${{matrix.dim}}d
           submodules: recursive
       - name: Set Environment Variables
         run: |
-          echo "PELE_ANALYSIS_HOME=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}" >> $GITHUB_ENV
-          echo "BASE_WORKING_DIRECTORY=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}/Src" >> $GITHUB_ENV
-          echo "MODELSPECIFIC_WORKING_DIRECTORY=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}/Src/ModelSpecificAnalysis" >> $GITHUB_ENV
+          echo "PELE_ANALYSIS_HOME=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}-${{matrix.dim}}d" >> $GITHUB_ENV
+          echo "BASE_WORKING_DIRECTORY=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}-${{matrix.dim}}d/Src" >> $GITHUB_ENV
+          echo "MODELSPECIFIC_WORKING_DIRECTORY=${{github.workspace}}/PeleAnalysis-${{matrix.comp}}-${{matrix.dim}}d/Src/ModelSpecificAnalysis" >> $GITHUB_ENV
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+
+          # Tools known to only support specific dimensions.
+          # List tools here instead of relying on static_assert grep.
+          # Format: space-separated tool names.
+          echo "EXPECTED_2D_FAILURES=qCriterion" >> $GITHUB_ENV
+          echo "EXPECTED_3D_FAILURES=''" >> $GITHUB_ENV
+
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -97,9 +97,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ccache
-          key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.comp}}-git-${{github.sha}}
+          key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.comp}}-${{matrix.dim}}d-git-${{github.sha}}
           restore-keys: |
-               ccache-${{github.workflow}}-${{github.job}}-${{matrix.comp}}-git-
+               ccache-${{github.workflow}}-${{github.job}}-${{matrix.comp}}-${{matrix.dim}}d-git-
       - name: Dependency (qslim)
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
@@ -111,57 +111,73 @@ jobs:
         run: |
           cmake --version
           make TPL ${{matrix.amrex_build_args}};
+
       - name: Test (Src)
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
           ccache -z
           set +e
-          # Extract all EBASE options from GNUmakefile, ignoring comments
-          EBASE_OPTIONS=$(grep -oP 'EBASE\s*=\s*\K[^ ]+' GNUmakefile | grep -v '^##')
+          EBASE_OPTIONS=$(grep -oP '^#(?!#)\s*EBASE\s*=\s*\K[^ ]+' GNUmakefile)
+          DIM=${{matrix.dim}}
+          EXPECTED_FAILURES=$([ "$DIM" = "2" ] && echo "$EXPECTED_2D_FAILURES" || echo "$EXPECTED_3D_FAILURES")
 
-          for TYPE in $EBASE_OPTIONS; do \
-            printf "\n-------- ${TYPE} --------\n";
-            OUTPUT=$(make -j ${{ env.NPROCS }} EBASE=${TYPE} USE_CCACHE=TRUE ${{ matrix.amrex_build_args }} 2>&1)i || true; \
-            RESULT=$?; \
-            echo "${OUTPUT}"; \
-            make realclean; \
-            if [ ${RESULT} -ne 0 ]; then \
-              if echo "${OUTPUT}" | grep -q "static_assert.*AMREX_SPACEDIM\s*=="; then \
-                echo "Skipping failure due to AMREX_SPACEDIM assertion for ${TYPE}."; \
-              else \
-                echo "Compilation failed for ${TYPE}. Exiting."; \
-                exit ${RESULT}; \
-              fi; \
-            fi; \
+          build_and_check() {
+            local TYPE=$1
+            if [[ " $EXPECTED_FAILURES " == *" $TYPE "* ]]; then
+              echo "Skipping ${TYPE}: known unsupported for DIM=${DIM}."
+              return 0
+            fi
+            printf "\n-------- ${TYPE} (DIM=${DIM}) --------\n"
+            OUTPUT=$(make -j ${{ env.NPROCS }} EBASE=${TYPE} USE_CCACHE=TRUE DIM=${DIM} ${{ matrix.amrex_build_args }} 2>&1)
+            RESULT=$?
+            echo "${OUTPUT}"
+            make realclean
+            if [ ${RESULT} -ne 0 ]; then
+              echo "ERROR: Compilation failed for ${TYPE} (DIM=${DIM})."
+              exit ${RESULT}
+            fi
+          }
+
+          for TYPE in $EBASE_OPTIONS; do
+            build_and_check "${TYPE}"
           done
+
       - name: Src ccache report
         working-directory: ${{env.BASE_WORKING_DIRECTORY}}
         run: |
           ccache -s
           du -hs ${HOME}/.cache/ccache
+
       - name: Test (ModelSpecificAnalysis)
         working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
         run: |
           ccache -z
           set +e
-          # Extract all EBASE options from GNUmakefile, ignoring comments
-          EBASE_OPTIONS=$(grep -oP 'EBASE\s*=\s*\K[^ ]+' GNUmakefile | grep -v '^##')
+          EBASE_OPTIONS=$(grep -oP '^#(?!#)\s*EBASE\s*=\s*\K[^ ]+' GNUmakefile)
+          DIM=${{matrix.dim}}
+          EXPECTED_FAILURES=$([ "$DIM" = "2" ] && echo "$EXPECTED_2D_FAILURES" || echo "$EXPECTED_3D_FAILURES")
 
-          for TYPE in $EBASE_OPTIONS; do \
-            printf "\n-------- ${TYPE} --------\n";
-            OUTPUT=$(make -j ${{ env.NPROCS }} EBASE=${TYPE} USE_CCACHE=TRUE ${{ matrix.amrex_build_args }} 2>&1)i || true; \
-            RESULT=$?; \
-            echo "${OUTPUT}"; \
-            make realclean; \
-            if [ ${RESULT} -ne 0 ]; then \
-              if echo "${OUTPUT}" | grep -q "static_assert.*AMREX_SPACEDIM\s*=="; then \
-                echo "Skipping failure due to AMREX_SPACEDIM assertion for ${TYPE}."; \
-              else \
-                echo "Compilation failed for ${TYPE}. Exiting."; \
-                exit ${RESULT}; \
-              fi; \
-            fi; \
+          build_and_check() {
+            local TYPE=$1
+            if [[ " $EXPECTED_FAILURES " == *" $TYPE "* ]]; then
+              echo "Skipping ${TYPE}: known unsupported for DIM=${DIM}."
+              return 0
+            fi
+            printf "\n-------- ${TYPE} (DIM=${DIM}) --------\n"
+            OUTPUT=$(make -j ${{ env.NPROCS }} EBASE=${TYPE} USE_CCACHE=TRUE DIM=${DIM} ${{ matrix.amrex_build_args }} 2>&1)
+            RESULT=$?
+            echo "${OUTPUT}"
+            make realclean
+            if [ ${RESULT} -ne 0 ]; then
+              echo "ERROR: Compilation failed for ${TYPE} (DIM=${DIM})."
+              exit ${RESULT}
+            fi
+          }
+
+          for TYPE in $EBASE_OPTIONS; do
+            build_and_check "${TYPE}"
           done
+
       - name: ModelSpecificAnalysis ccache report
         working-directory: ${{env.MODELSPECIFIC_WORKING_DIRECTORY}}
         run: |
