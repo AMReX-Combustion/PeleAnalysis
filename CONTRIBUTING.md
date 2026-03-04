@@ -28,7 +28,7 @@ push the new branch to your fork)::
 
 Source code files can be automatically formatted to adhere to the appropriate formatting rules using ``clang-format``. To format all files, use the command:
 
-        find Src \( -name "*.cpp" -o -name "*.H" \) -exec clang-format -i {} +
+    find Src \( -name "*.cpp" -o -name "*.H" \) -exec clang-format -i {} +
 
 from within the PeleAnalysis base directory. You can also format files individually using ``clang-format -i /path/to/file``. Adherence to this format is checked for all PRs.
 

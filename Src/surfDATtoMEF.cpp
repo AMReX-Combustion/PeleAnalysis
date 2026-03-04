@@ -14,6 +14,23 @@ using namespace amrex;
 
 #define SIZET int
 
+static void
+print_usage(int, char* argv[])
+{
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        DAT file\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
+}
+
 static bool
 isNumberLine(const std::string& line)
 {
@@ -179,6 +196,14 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
 
+  if (argc < 2) {
+    print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
+    print_usage(argc, argv);
+  }
+
   ParmParse pp;
 
   std::string infile;
@@ -202,9 +227,6 @@ main(int argc, char* argv[])
   int nComp = names.size();
 
   map<std::string, std::string> zoneParams = GetZoneParams(ifs, nComp, buf);
-
-  Real areaEps = 1.e-12;
-  pp.query("areaEps", areaEps);
 
   int zoneID = 0;
   while (zoneParams.size() > 0) {

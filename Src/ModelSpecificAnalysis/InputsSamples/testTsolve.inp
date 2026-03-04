@@ -1,0 +1,11 @@
+# Example input file for testTsolve
+# Verifies EOS temperature solver consistency via a round-trip T -> H -> T.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00500                          # Input AMReX plot file (must contain Y(...) and temp)
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2                            # DEF: finest level in file; Finest AMR level to process
+
+#------------------- Additional Flags -----------------------------------------------------
+# verbose                                  # Uncomment to enable verbose AMReX data loading output

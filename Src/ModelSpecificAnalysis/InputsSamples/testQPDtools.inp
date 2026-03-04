@@ -1,0 +1,6 @@
+# Example input file for testQPDtools
+# Prints a full structural summary of the compiled chemical mechanism.
+# No plot file is required -- all output comes from the compiled mechanism.
+
+#------------------- Mechanism Inspection Options -----------------------------------------
+trElem = C                                 # DEF: C; Element to use for QPD edge graph construction

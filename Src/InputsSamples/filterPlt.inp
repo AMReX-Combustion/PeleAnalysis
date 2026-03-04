@@ -1,0 +1,15 @@
+# Example input file for filterPlt
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000		          # pltfile to filter
+
+#------------------- Operation control ----------------------------------------------------
+variables = temp HeatRelease              # DEF: all possible, list of variable names to filter
+max_filter_level = 4			  # DEF: 1000, max level to consider for filtering
+filter_type = 1				  # DEF: 1, filter type as defined in PeleC (1->box, 2->Gaussian, etc)
+base_fgr = 2				  # DEF: 2,is the desired filter to grid ratio on the base level, must be even
+same_fgr_all_levels = false		  # DEF: false, if true the same filter to grid ratio is kept on all levels (rather than absolute filter width)
+
+max_grid_size = 32			  # DEF: 32, output max_grid_size. 
+interp_type = 1				  # DEF: 1, determines the type of interpolation when FillPatching: 0 -> piecewise constant, 1 -> cell cons linear
+

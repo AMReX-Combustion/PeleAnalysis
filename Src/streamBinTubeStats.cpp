@@ -13,103 +13,19 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " inputs infile=<s> [options] \n\tOptions:\n";
-  std::cerr << "\t\t# Example input file for streamBinTubeStats\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- IO CONTROL "
-               "-----------------------------------------------------------\n";
-  std::cerr << "\t\tinfile = plt00000_streamBin               # streamBin dir "
-               "produced by partStreams\n";
-  std::cerr << "\t\twriteSurface = 0                          # [0, 1] DEF: 1; "
-               "Write a file with information (coords, avg, int, der) for each "
-               "node (stream start point) and connectivity.\n";
-  std::cerr << "\t\twriteBasic = 1                            # [0, 1] DEF: 0; "
-               "Like writeSurface, but without connectivity. Simplifys output "
-               "for matlab and reduces disk size for large surfaces.\n";
-  std::cerr << "\t\twriteTecplotSurfaceFromStream = 0         # [0, 1] DEF: 0; "
-               "Like writeSurface, but before any operation (I guess this is a "
-               "debug option).\n";
-  std::cerr << "\t\twriteStreamsToMatlab = 0                  # [0, 1] DEF: 0; "
-               "Write all stream data to matlab file.\n";
-  std::cerr << "\t\tdumpPKZstreams = 0                        # [0, 1] DEF: 0; "
-               "Output for principalCurvatureZone (PKZ) tool.\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- Domain control "
-               "----------------------------------------------------\n";
-  std::cerr << "\t\tis_per = 1 1 0                            # Sets case "
-               "periodicity for correct volume calculation in periodic cases\n";
-  std::cerr << "\t\tdomain_size = 0.1 0.1 0.1                 # Sets domain "
-               "size for correct volume calculation in periodic cases. Only "
-               "needed if case has periodicity.\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- Operation control "
-               "----------------------------------------------------\n";
-  std::cerr << "\t\t#avgComps = temp                          # list of "
-               "variables to average\n";
-  std::cerr << "\t\t#intComps = HeatRelease                   # list of "
-               "variables to integrate\n";
-  std::cerr
-    << "\t\tderComps = flameThickness flameSpeed # principalCurvatureZone "
-       "reactionZoneThickness   # derived stream statisitics\n";
-  std::cerr << "\t\tfuelName = H2                             # DEF: H2; Fuel "
-               "name for improved default file ad var naming\n";
-  std::cerr << "\t\tgetEbar = 0                               # [0, 1] DEF: 0; "
-               "calc Ebar (see DOI 10.1016/j.combustflame.2023.112811)\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- Options for flameThickness "
-               "-------------------------------------------\n";
-  std::cerr << "\t\t# Calculates local thermal flame thickness as l_f,loc = "
-               "(prodTemp - reacTemp) / max(tempGrad) on each tube\n";
-  std::cerr << "\t\treacTemp = 300                            # Reactant "
-               "temperature (from 1D)\n";
-  std::cerr << "\t\tprodTemp = 1425                           # Product "
-               "temperature (from 1D)\n";
-  std::cerr << "\t\ttempGradVar = '||gradtemp||'              # DEF: "
-               "ModGradTemp, temperature gradient variable name\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- Options for flameSpeed "
-               "-----------------------------------------------\n";
-  std::cerr << "\t\t# Calculates local flame speed as s_l,loc = "
-               "(integral(FCRVar)) / (rhoY * area) on each stream. area is the "
-               "tubes element area on the surface\n";
-  std::cerr << "\t\trhoY = 0.011                              # Densitiy in "
-               "the unburned times (Y_b - Y_u) for FCRVar from 1D\n";
-  std::cerr << "\t\tFCRVar = 'I_R(H2)'                        # Name of the "
-               "fuel source term\n";
-  std::cerr << "\t\tmaxVolFac =                               # DEF: -1.0; "
-               "Factor to cap large volumes in regions with diverging streams "
-               "for numerical stability.\n";
-  std::cerr
-    << "\t\t                                          # Limits the maximum "
-       "volume during integration to maxVolFac times the volume of the element "
-       "at the isosurface. maxVolFac = -1.0 means no capping.\n";
-  std::cerr << "\t\t                                          # Value not "
-               "always needed. Check convergence! Ballpark: >5.0 but also "
-               "depends on nSteps in partStreams.\n";
-  std::cerr << "\t\tpercOfMean = -1.0                         # Deprecated. "
-               "DEF: -1.0; Path shortening parameter for 'splaying' regions. "
-               "Computes the mean area to volume ratios and shortenes paths "
-               "that are below a certain percentage of this value.\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- Options for principalCurvatureZone "
-               "-----------------------------------\n";
-  std::cerr << "\t\t#pkzLength = 1.293e-5                      # Basically the "
-               "flame thickness. It's used to define when we have flat flame "
-               "(FF in regions where |k| < 1/2*pkzLength).\n";
-  std::cerr << "\t\t#pkzMkVar = MeanCurvature_prog_H2          # DEF: "
-               "'MeanCurvature_prog_'+fuelName; Mean curvature\n";
-  std::cerr << "\t\t#pkzGkVar = GaussianCurvature_prog_H2      # DEF: "
-               "'GaussianCurvature_prog_'+fuelName; Gaussian curvature\n";
-  std::cerr << "\t\t\n";
-  std::cerr << "\t\t#------------------- Options for reactionZoneThickness "
-               "------------------------------------\n";
-  std::cerr << "\t\t# Calculates local reaction thickness as l_r,loc = "
-               "(integral(rztVar)) / max(rztVar) on each tube\n";
-  std::cerr
-    << "\t\t#rztVar = 'I_R(H2)'                        # DEF: HeatRelease; "
-       "Variable name for reaction thickness calculation.\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile produced by partStreams\n"
+            << "  is_per=INT INT INT Periodicity of the case\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 int
@@ -122,13 +38,13 @@ main(int argc, char* argv[])
 
   if (argc < 2) {
     print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
+    print_usage(argc, argv);
   }
 
   ParmParse pp;
-
-  if (pp.contains("help")) {
-    print_usage(argc, argv);
-  }
 
   // read infile name from inputs
   std::string infile;

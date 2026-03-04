@@ -1,0 +1,21 @@
+# Example input file for isoTrim
+# This tool trims a 3D isosurface mesh based on field-value or radial criteria.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile  = plt00000_surf.mef                      # Input MEF isosurface file to be processed
+outfile = plt00000_surf_trimmed.mef              # Output file for the processed isosurface
+
+#------------------- Field-Value Trimming -------------------------------------------------
+comps   = 3 4                              # Component indices to use for trimming
+signs   = gt lt                            # Comparison operators for each component (lt,le,gt,ge,eq)
+vals    = 0.5 1.0                          # Threshold values; nodes satisfying condition are removed
+
+#------------------- Radial Trimming ------------------------------------------------------
+RXY      = 0.05                            # Radial threshold: trim based on r = sqrt(x^2 + y^2)
+sign_RXY = lt                              # Comparison operator for radial trim (lt,le,gt,ge,eq)
+
+#------------------- Output Control -------------------------------------------------------
+remComps = 5 6                             # Component indices to drop from the output file
+
+#------------------- Diagnostics ----------------------------------------------------------
+do_area_stats = true                       # DEF: false, Print min/max triangle areas across the surface

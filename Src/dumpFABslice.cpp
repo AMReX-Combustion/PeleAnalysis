@@ -9,14 +9,22 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile infile=<s> [options] \n\tOptions:\n";
-  std::cerr << "\t     varNames=<s,s,...> variables to slice (will output "
-               "individual planes), (OPT, will output all by default)\n";
-  std::cerr << "\t     dir=<i> direction to take slice (only needed for 3D)\n";
-  std::cerr << "\t     num=<i> slice number to take (only needed for 3D)\n";
+  std::cerr
+    << "Usage:\n"
+    << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
 
-  exit(1);
+    << "Required arguments:\n"
+    << "  infile=FILE        List of AMReX plotfiles to average\n\n"
+#if AMREX_SPACEDIM == 3
+    << "  dir=<i>                  Direction to take slice (0=x, 1=y, 2=z)\n"
+    << "  num=<i>                  Plane index along dir to extract\n"
+#endif
+    << "Options:\n"
+    << "  -h, --help         Show this help message\n\n"
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+    << "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
@@ -31,13 +39,16 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
   {
-    if (argc < 2)
+    if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
+
     // declare ParmParse
     ParmParse pp;
-
-    if (pp.contains("help"))
-      print_usage(argc, argv);
 
     if (pp.contains("verbose"))
       AmrData::SetVerbose(true);
@@ -72,7 +83,7 @@ main(int argc, char* argv[])
       for (int n = 0; n < numVars; n++) {
         DataServices::Dispatch(
           DataServices::DumpSlicePlaneOneVar, &dataServices, dir, num,
-          varNames[n]);
+          &varNames[n]);
       }
     } else {
       DataServices::Dispatch(

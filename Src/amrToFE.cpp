@@ -110,44 +110,26 @@ static void
 print_usage(int, char* argv[])
 {
   std::cerr
-    << endl
-    << " usage:" << endl
-    << endl
-    << "    " << argv[0] << " [ParmParse input file] [additional keyword=input]"
-    << endl
-    << endl
-    << "       The first argument is a file name unless it contains an =."
-    << endl
-    << "       With no arguments prints this help." << endl
-    << endl
-    << " keywords:" << endl
-    << endl
-    << "    box = int list of two subbox coords, LL and UR  (default all)"
-    << endl
-    << "    comps = integer comp list  (overrides sComp and nComp)" << endl
-    << "    finestLevel = <#> finest level to use  (default all)" << endl
-    << "    help = <anything> prints this help" << endl
-    << "    infile = <plotfile>  (required)" << endl
-    << "    nComp = <#> number of comps  (default all)" << endl
-    << "    nGrowPer = <#> number of lev-0 cells by which to" << endl
-    << "               extend periodic boundaries  (default 0)" << endl
-    << "    outType = tec (default) or flt" << endl
-    << "    sComp = start comp  (default 0)" << endl
-    << "    connect_cc = Generate flattened structure by connecting cells "
-       "centers,"
-    << "                 otherwise, generate node at all cell corners and copy "
-       "cc"
-    << "                 value out (default 1)" << endl
-    << endl
-    << " if nGrowPer > 1 then these additional keywords are needed:" << endl
-    << endl
-    << "    geometry.coord_sys = <0 Cartesion, 1 rz>" << endl
-    << "    geometry.is_periodic = <0, false or 1, true for each axis>" << endl
-    << "    geometry.prob_lo = <lower limits for the axes>" << endl
-    << "    geometry.prob_hi = <upper limits for the axes>" << endl
-    << endl;
-  Finalize();
-  exit(1);
+    << "Usage:\n"
+    << "  " << argv[0] << " infile=FILE outfile=FILE vars=LIST [OPTIONS]\n\n"
+
+    << "Required arguments:\n"
+    << "  infile=FILE        AMReX plotfile\n"
+    << "  outfile=FILE       Output finite-element file\n"
+    << "  vars=LIST          Variables to export (comma-separated)\n\n"
+
+    << "Options:\n"
+    << "  finestLevel=N      Finest AMR level to process (default: all)\n"
+    << "  nghost=N           Number of ghost cells (default: 0)\n"
+    << "  format=TYPE        Output format (e.g. vtk, exodus, fe)\n"
+    << "  region=BOX         Subregion selection (lo:hi per direction)\n"
+    << "  stride=N           Sampling stride (default: 1)\n"
+    << "  -h, --help         Show this help message\n\n"
+
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+    << "the documentation.\n";
+
+  std::exit(1);
 }
 
 static BoxArray

@@ -1,0 +1,11 @@
+# Example input file for combinePlts
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infiles = plt00000 plt00001 plt00002      # pltfiles to combine
+outfile = plt_combined			  # Name of output file
+
+#------------------- Operation control ----------------------------------------------------
+vars = temp HeatRelease       	          # DEF: all possible, list of variables to include in combine
+finestLevel = 4				  # DEF: -1, gets finest level by defaults, or max level user sets to consider for combine 
+is_per = 1 1 0                            # DEF: 0 0 0, sets case periodicity 
+

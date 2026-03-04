@@ -1,0 +1,35 @@
+# Example input file for partStream
+# This tool constructs streams, starting form a set of locations, following a vector field.
+
+#------------------- INPUT CONTROL --------------------------------------------------------
+infile = plt00000                          # Plot file for particle stream construction
+vectorField = Y(H2)_gx Y(H2)_gy Y(H2)_gy   # Names of gradient vector components.
+vars = I_R(H2)                             # Variables to map on the streams
+
+#------------------- OUTPUT CONTROL -------------------------------------------------------
+outfile = plt00000                         # DEF: infile; Name base of putput files
+writeParticles = 0                         # [0, 1], DEF: 0; Write particles as plt file (Not sure how this looks in the end.)
+particlefile = plt00000_particles          # DEF: outfile + "_particles"; Name of writeParticles output file/dir
+writeStreams = 0                           # [0, 1], DEF: 0; Write streamlines in Tecplot ascii format.
+streamfile = plt00000_stream               # DEF: outfile + "_stream"; Name of writeStreams output file/dir
+writeStreamBin                             # [0, 1], DEF: 0; Write streamlines as binary.
+streamBinfile = plt00000_streamBin         # DEF: outfile + "_streamBin"; Name of writeStreamBin output file/dir
+
+#------------------- GRID CONTROL ---------------------------------------------------------
+finestLevel = 1                            # DEF: finest level of plot file; Sets the finest level to read.
+is_per = 1 1 0                             # Sets case periodicity
+nGrow = 1                                  # DEF: 1; Grow cells.
+
+#------------------- INTEGRATION OPTIONS --------------------------------------------------
+Nsteps = 400                               # DEF: 50; Number of steps in each direction. Length of stream will be 2*Nsteps-1.
+hRK = 0.1                                  # DEF: 0.1; Step size in physical length, given as fraction onf the finest level cell size.
+cSpace = 0                                 # [0, 1], DEF: 0; If 1, steps are equidistant in cSpace.
+
+#------------------- SEED POINTS ----------------------------------------------------------
+oneSeedPerCell = 0                         # [0, 1], DEF: 0; If 1, places one particle in each cell. Can get very expensive/large for 3D files.
+isoFile = plt00000_surf.mef                # DEF: None; If provided, places one particles in each node of the surface.
+seedLoc = 0.1 0.0 0.3                      # DEF: None; If provided, places a single particle in the given location.
+seedRakeNum = 10                           # DEF: None; If provided, places seedRakeNum evenly spaced seed points along a line segment between two endpoints seedRakeL and seedRakeR.
+seedRakeL = 0.0 0.0 0.0                    # Left endpoint for seedRake. Requires AMREX_SPACEDIM real.
+seedRakeR = 0.5 0.5 0.5                    # Rigth endpoint for seedRake. Requires AMREX_SPACEDIM real.
+

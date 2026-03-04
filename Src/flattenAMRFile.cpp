@@ -8,15 +8,21 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=<s> [options] \n\tOptions:\n";
-  std::cerr << "\t     infile=<s> where <s> is a pltfile\n";
-  std::cerr << "\t     output_file=<s> where <s> is the flatten pltfile\n";
-  std::cerr << "\t     output_level=<s> where <s> is the level of infile kept "
-               "in output_file [DEF->0]\n";
-  std::cerr << "\t     output_max_grid_size=<s> where <s> is the flatten "
-               "max_grid_size [DEF->64]\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n\n"
+
+            << "Options:\n"
+            << "  finestLevel=N      Level to flatten to\n"
+            << "                      (default: 0)\n"
+            << "  outfile=FILE       Output flattened plotfile\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
@@ -33,15 +39,13 @@ main(int argc, char* argv[])
   {
     if (argc < 2) {
       print_usage(argc, argv);
-    }
-    // ---------------------------------------------------------------------
-    // ParmParse
-    // ---------------------------------------------------------------------
-    ParmParse pp;
-
-    if (pp.contains("help")) {
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
       print_usage(argc, argv);
     }
+
+    ParmParse pp;
 
     int verbose = 0;
     pp.query("verbose", verbose);

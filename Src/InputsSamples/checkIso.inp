@@ -1,0 +1,6 @@
+# Example input file for checkIso
+#
+# This tool checks the correctness of an isofile, i.e., the consistent numbering of edges.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+isoFile = plt00000_surf                    # Isosurface file to check

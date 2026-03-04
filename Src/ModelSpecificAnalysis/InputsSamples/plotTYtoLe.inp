@@ -1,0 +1,11 @@
+# Example input file for plotYTtoLe
+# Computes per-species Lewis numbers from an AMReX/PeleLMeX plot file.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00500    # Input AMReX plot file (must contain Y(...), temp, density)
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2      # DEF: finest level in file; Finest AMR level to process
+
+#------------------- Additional Flags -----------------------------------------------------
+# verbose            # Uncomment to enable verbose AMReX data loading output

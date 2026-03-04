@@ -7,8 +7,8 @@ PELE_ANALYSIS_HOME = ../..
 # to link PeleAnalysis to your versions of PELE_PHYSICS_HOME and AMREX_HOME used by 
 # PeleLMeX or PeleC, make the following lines to point to the respective directories.
 #
-#PELE_PHYSICS_HOME = ../../../PelePhysics
-#AMREX_HOME = ../../../PelePhysics/Submodules/amrex
+# PELE_PHYSICS_HOME = $(abspath ../../../PelePhysics)
+# AMREX_HOME = $(abspath ../../../PelePhysics/Submodules/amrex)
 
 # AMReX
 DIM        = 3
@@ -31,9 +31,8 @@ TINY_PROFILE = FALSE
 #EBASE=plotXtoY
 #EBASE=plotYtoX
 #EBASE=testQPDtools
+#EBASE=testTsolve
 
-# tools that need review/combining/fixing/work. Comment with double ## t escape from CI.
-##EBASE=testTsolve
 
 CEXE_sources += $(EBASE).cpp
 

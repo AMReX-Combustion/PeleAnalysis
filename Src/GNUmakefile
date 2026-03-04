@@ -27,14 +27,17 @@ USE_CUDA      = FALSE
 #EBASE   = template
 #EBASE   = amrToFE
 #EBASE   = avgPlotfiles
+#EBASE   = avgToPlane
 #EBASE   = checkIso
 #EBASE   = combinePlts
 #EBASE   = conditionalMean
-#EBASE   = createTestPlt
+#EBASE   = convert2hdf5
 #EBASE   = curvature
 #EBASE   = diffPlts
+#EBASE   = dumpFABslice
 #EBASE   = filterPlt
 #EBASE   = flattenAMRFile
+#EBASE   = generateTestPlt
 #EBASE   = grad
 #EBASE   = integral
 #EBASE   = isoMEF
@@ -43,6 +46,7 @@ USE_CUDA      = FALSE
 #EBASE   = makePlotfile
 #EBASE   = partStream
 #EBASE   = qCriterion
+#EBASE   = regridPlt
 #EBASE   = rmsVel
 #EBASE   = scaleMEF
 #EBASE   = stream2plt
@@ -51,20 +55,15 @@ USE_CUDA      = FALSE
 #EBASE   = surfMEFtoDAT
 #EBASE   = surfDATtoMEF
 #EBASE   = trimMEFgen
+#EBASE   = turbfile
 
 # tools that need review/combining/fixing/work.  Comment with double ## t escape from CI
-##EBASE   = avgToPlane
-##EBASE   = convert2hdf5
 ##EBASE   = combineMEF
 ##EBASE   = decimateMEF
-##EBASE   = dumpFABslice
-##EBASE   = interp
 ##EBASE   = mergeMEF
 ##EBASE   = multMEF
-##EBASE   = regridPlt
 ##EBASE   = sliceMEF
 ##EBASE   = smoothMEF
-##EBASE   = turbfile
 
 
 
@@ -87,10 +86,10 @@ endif
 
 ifeq ($(EBASE),convert2hdf5)
    USE_HDF5 = TRUE
-   USE_HDF5_ZFP = TRUE
-   HDF5_HOME = /path/to/hdf5
-   ZFP_HOME = /path/to/zfp
-   H5Z_HOME = /path/to/h5z-zfp
+   USE_HDF5_ZFP = FALSE
+   HDF5_HOME = $(HDF5_DIR) # /path/to/hdf5
+   ZFP_HOME = $(ZFP_DIR)  # /path/to/zfp
+   H5Z_HOME = $(H5Z_DIR) # /path/to/h5z-zfp
 endif
 
 ifeq ($(EBASE),decimateMEF) #make qslim first!

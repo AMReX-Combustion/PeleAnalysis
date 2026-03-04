@@ -11,31 +11,19 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "Utility to build 3D plotfile from list of 2D FABs";
-  std::cerr << "usage:\n";
-  std::cerr
-    << argv[0]
-    << " infile_head=<s> infile_tail=<s> outfile=<s> start=<i> end=<i> "
-       "interval=<i> names=<s> probLo=<r> probHi=<r> [options] \n\tOptions:\n";
-  std::cerr
-    << "\t     infile_head=<s> where s is the start of the fab names \n";
-  std::cerr << "\t     infile_tail=<s> where s is the end of the fab names\n";
-  std::cerr << "\t     outfile=<s> where s is the name of plotfile\n";
-  std::cerr << "\t     start=<i> where i is the starting number of the files\n";
-  std::cerr << "\t     end=<i> where i is the ending number of the files\n";
-  std::cerr << "\t     interval=<i> where i is the interval between files\n";
-  std::cerr
-    << "\t     names=<s> where s is the name of the variables from the fab\n";
-  std::cerr << "\t     probLo=<r,r,(r)> is an array of size 2 or 3 to specify "
-               "the bottom corner of the plotfile box. If 2 values given, the "
-               "third is calculated based on number of planes.\n";
-  std::cerr << "\t     probHi=<r,r,r> is an array of 3 to specify top corner "
-               "of plotfile box\n";
-  std::cerr << "\t     time=<r> where r is time to give the plotfilee (OPT, "
-               "DEF->0.0)\n";
-  std::cerr
-    << "\t     verbose=<i> do you want it verbose? (0 or 1) (OPT, DEF->0)\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE outfile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        Input data file\n"
+            << "  outfile=FILE       Output AMReX plotfile\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 int
@@ -43,11 +31,15 @@ main(int argc, char* argv[])
 {
   amrex::Initialize(argc, argv);
 
-  ParmParse pp;
-
-  if (argc < 2 || pp.contains("help")) {
+  if (argc < 2) {
+    print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
     print_usage(argc, argv);
   }
+
+  ParmParse pp;
 
   bool verbose(false);
   if (pp.contains("verbose") || (pp.contains("v"))) {

@@ -18,6 +18,26 @@
 
 using namespace amrex;
 
+static void
+print_usage(int, char* argv[])
+{
+  std::cerr << "Usage:\n"
+            << "  " << argv[0]
+            << " infile=FILE isoCompName=NAME isoVal=VALUE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n"
+            << "  isoCompName=NAME   Component used for curvature evaluation\n"
+            << "  isoVal=VALUE       Isovalue\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
+}
+
 std::string
 getFileRoot(const std::string& infile)
 {
@@ -30,12 +50,15 @@ main(int argc, char* argv[])
 {
   amrex::Initialize(argc, argv);
   {
+    if (argc < 2) {
+      print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
 
-    // if (argc < 2)
-    //    print_usage(argc,argv);
-
-    // if (pp.contains("help"))
-    //    print_usage(argc,argv);
+    ParmParse pp;
 
     // ---------------------------------------------------------------------
     // Set defaults input values
@@ -45,7 +68,6 @@ main(int argc, char* argv[])
     Real progMax = -1.0e20;
     int finestLevel = 1000;
     int verbose = 0;
-    int floorIt = 0;
     int useFileMinMax = 1;
     bool do_strain = false;
     bool do_gaussCurv = false;
@@ -56,11 +78,6 @@ main(int argc, char* argv[])
     bool do_smooth = false;
     Real smooth_time = 1.0e-7;
     int nAuxVar = 0;
-
-    // ---------------------------------------------------------------------
-    // ParmParse
-    // ---------------------------------------------------------------------
-    ParmParse pp;
 
     // IO
     pp.query("verbose", verbose);
@@ -75,7 +92,6 @@ main(int argc, char* argv[])
     pp.query("progressName", progressName);
     pp.query("progMin", progMin);
     pp.query("progMax", progMax);
-    pp.query("floorIt", floorIt);
     pp.query("useFileMinMax", useFileMinMax);
 
     // Clip results outside the flame front ? ( C ~ 0 or C ~ 1)
@@ -130,29 +146,27 @@ main(int argc, char* argv[])
     }
     Real progMinlvl = 1.0e20;
     Real progMaxlvl = -1.0e20;
-    if (useFileMinMax || floorIt) {
-      if (useFileMinMax) {
-        for (int lev = 0; lev < Nlev; ++lev) {
-          amrData.MinMax(
-            amrData.ProbDomain()[lev], progressName, lev, progMinlvl,
-            progMaxlvl);
-          progMin = std::min(progMin, progMinlvl);
-          progMax = std::max(progMax, progMaxlvl);
-        }
-        ParallelDescriptor::ReduceRealMin(progMin);
-        ParallelDescriptor::ReduceRealMax(progMax);
+
+    if (useFileMinMax) {
+      for (int lev = 0; lev < Nlev; ++lev) {
+        amrData.MinMax(
+          amrData.ProbDomain()[lev], progressName, lev, progMinlvl, progMaxlvl);
+        progMin = std::min(progMin, progMinlvl);
+        progMax = std::max(progMax, progMaxlvl);
       }
+      ParallelDescriptor::ReduceRealMin(progMin);
+      ParallelDescriptor::ReduceRealMax(progMax);
+    }
 
-      Print() << "progressName = " << progressName
-              << " at index: " << amrData.StateNumber(progressName) << "\n";
-      Print() << "useFileMinMax = " << useFileMinMax << "\n";
-      Print() << "Min/Max = " << progMin << " / " << progMax << "\n";
+    Print() << "progressName = " << progressName
+            << " at index: " << amrData.StateNumber(progressName) << "\n";
+    Print() << "useFileMinMax = " << useFileMinMax << "\n";
+    Print() << "Min/Max = " << progMin << " / " << progMax << "\n";
 
-      ParallelDescriptor::Barrier();
+    ParallelDescriptor::Barrier();
 
-      if (progMin >= progMax) {
-        amrex::Abort("progMin must be less than progMax");
-      }
+    if (progMin >= progMax) {
+      amrex::Abort("progMin must be less than progMax");
     }
 
     // ---------------------------------------------------------------------

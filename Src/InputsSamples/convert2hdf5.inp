@@ -1,0 +1,14 @@
+# Example input file for convert2hdf5
+# Converts an AMReX plot file to HDF5 format with optional compression.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00500                          # Input AMReX plot file
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2                            # DEF: all levels in file; Finest AMR level to convert
+
+#------------------- HDF5 Options ---------------------------------------------------------
+hdf5_compression = ZLIB@9                  # DEF: ZLIB@9; Compression filter string.
+                                           # ZLIB@N: lossless deflate, N in [1,9]
+                                           # ZFP@rate: lossy ZFP compression (requires USE_HDF5_ZFP=TRUE)
+                                           # NONE: no compression

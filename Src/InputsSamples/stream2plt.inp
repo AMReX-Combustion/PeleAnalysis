@@ -1,0 +1,43 @@
+# Example input file for stream2plt
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt000000                         # Plt-file name.
+outfile = plt000000_stream                 # DEF: "<infile>_stream"; outfile name.
+finestLevel = 2                            # DEF: finestLevel; Level up to which to
+                                           # compute streamlines.
+
+is_per = 0 1 0                             # DEF: 0 0 0; Periodicity (0: non-periodic,
+                                           # 1: periodic).
+sym_dir = 0 0 0                            # DEF: 0 0 0; Symmetry (0: non-symmetric,
+                                           # 1: symmetric).
+
+#-------------------- Variables -----------------------------------------------------------
+comps = 0 1 2                              # IDs of variables to use.
+sComp = 0                                  # If comps is not used, starting component.
+nComp = 3                                  # Number of variables if comps unused.
+
+distComp = 0                               # Component used for distance filtering.
+distVal = 0.0                              # Distance threshold.
+
+maxComps = 0                               # Components used for max filtering.
+maxVals = 1.0                              # Maximum allowed values.
+maxSgns = 1                                # Sign selector (1: > , -1: <).
+
+minComps = 0                               # Components used for min filtering.
+minVals = 0.0                              # Minimum allowed values.
+minSgns = 1                                # Sign selector.
+
+compAt = 0                                 # Component evaluated at condition.
+atComps = 0                                # Component used for comparison.
+valAt = 0.0                                # Reference value.
+atVal = 0.0                                # Comparison threshold.
+atSgns = 1                                 # Sign selector.
+
+#--------------- Additional Settings ------------------------------------------------------
+no_filter = true                           # DEF: false; Explicitly shut off all filters.
+nLines = 100                               # DEF: 0; Number of streamlines to extract.
+
+RXY = 0.0                                  # Radial filter value.
+RXYsgn = 1                                 # Radial filter sign.
+
+Aux_Variables = Y_H2                       # DEF: ""; Auxiliary variables copied to output

@@ -1,0 +1,12 @@
+# Example input file for avgPlotfiles
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infiles = plt00000 plt00001 plt00002      # pltfiles to average
+outfile = plt_averaged			  # DEF: plt_averaged, Name of output file
+
+#------------------- Operation control ----------------------------------------------------
+variables = temp HeatRelease              # DEF: all possible, list of variable names to average
+output_max_level = 4			  # DEF: 1000, max level to consider for average
+output_max_grid_size = 32		  # DEF: 32, output max_grid_size. If all BoxArrays are the same, this is ignored
+interp_type = 1				  # DEF: 1, determines the type of interpolation when FillPatching: 0 -> piecewise constant, 1 -> cell cons linear
+

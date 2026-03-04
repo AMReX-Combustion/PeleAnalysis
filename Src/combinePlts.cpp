@@ -12,9 +12,20 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infiles=<> outfile=<> vars=<>";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=LIST outfile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=LIST        List of AMReX plotfiles to combine\n"
+            << "  outfile=FILE       Output combined plotfile\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 int
@@ -22,8 +33,13 @@ main(int argc, char* argv[])
 {
   amrex::Initialize(argc, argv);
 
-  if (argc < 2)
+  if (argc < 2) {
     print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
+    print_usage(argc, argv);
+  }
 
   ParmParse pp;
 
@@ -65,7 +81,7 @@ main(int argc, char* argv[])
   int Nlev = finestLevel + 1;
 
   // setting up periodicity
-  Vector<int> is_per(AMREX_SPACEDIM, 1);
+  Vector<int> is_per(AMREX_SPACEDIM, 0);
   pp.queryarr("is_per", is_per, 0, AMREX_SPACEDIM);
   Print() << "Periodicity assumed for this case: ";
   for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {

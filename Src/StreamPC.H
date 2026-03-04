@@ -46,7 +46,7 @@ public:
 
   void WriteStreamAsTecplot(const std::string& outfile);
 
-  bool RK4(
+  bool RungeKutta4(
     dim3& x,
     amrex::Real hrk,
     const amrex::FArrayBox& v,

@@ -1,0 +1,27 @@
+# Example input file for avgToPlane
+# Projects an AMReX plot file along a chosen direction and writes a PPM image.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile  = plt00500                         # Input AMReX plot file
+palette = palettes/rainbow.pal             # Binary palette file (256 RGB triplets, required)
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2                            # DEF: finest level in file; Level used for projection
+
+#------------------- Projection Options ---------------------------------------------------
+dir = 2                                    # DEF: 0; Direction to project along (0=x, 1=y, 2=z)
+
+#------------------- Spatial Subsetting ---------------------------------------------------
+box = 0 0 0 127 127 127                    # DEF: full domain; Index-space bounds at finestLevel
+
+#------------------- Variable Selection ---------------------------------------------------
+comps = 3                                  # Specific component index to render (overrides sComp/nComp)
+# sComp = 0                                # DEF: 0; Start component (used if comps not set)
+# nComp = 1                                # DEF: all; Number of components (used if comps not set)
+
+#------------------- Colour Scale ---------------------------------------------------------
+min = 0.0                                  # DEF: data minimum; Lower bound of colour scale
+max = 1.0                                  # DEF: data maximum; Upper bound of colour scale
+
+#------------------- Grid Options ---------------------------------------------------------
+max_grid_size = 32                         # DEF: 32; Internal box size for parallel decomposition

@@ -6,20 +6,24 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_PlotFileUtil.H>
 
-#if AMREX_SPACEDIM == 2
-extern "C" {
-void FLIPROWSY(const Real* dat, ARLIM_P(lo), ARLIM_P(hi));
-};
-#endif
-
 using namespace amrex;
 
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " ifile=<pltfile> ofile=<turbname>\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " ifile=FILE ofile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n"
+            << "  ofile=FILE       Output directory name\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 static void
@@ -49,16 +53,18 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
 
-  if (argc < 2)
+  if (argc < 2) {
     print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
+    print_usage(argc, argv);
+  }
 
   if (ParallelDescriptor::NProcs() > 1) {
     Abort("Not suitable for parallel");
   }
   ParmParse pp;
-
-  if (pp.contains("help"))
-    print_usage(argc, argv);
 
   if (pp.contains("verbose"))
     AmrData::SetVerbose(true);
@@ -177,7 +183,20 @@ main(int argc, char* argv[])
     //
     // Write the FAB to the data file after flipping rows in Y direction.
     //
-    FLIPROWSY(xfab.dataPtr(), ARLIM(xfab.loVect()), ARLIM(xfab.hiVect()));
+    {
+      const Box& box = xfab.box();
+      const int ylo = box.smallEnd(1);
+      const int yhi = box.bigEnd(1);
+      const int xlo = box.smallEnd(0);
+      const int xhi = box.bigEnd(0);
+
+      for (int x = xlo; x <= xhi; x++) {
+        for (int y = ylo; y < ylo + (yhi - ylo + 1) / 2; y++) {
+          int ymirror = yhi - (y - ylo);
+          std::swap(xfab(IntVect(x, y), 0), xfab(IntVect(x, ymirror), 0));
+        }
+      }
+    }
     xfab.writeOn(ifsd);
 #elif AMREX_SPACEDIM == 3
 

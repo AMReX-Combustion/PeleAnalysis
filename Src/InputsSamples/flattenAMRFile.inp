@@ -1,0 +1,8 @@
+# Example input file for flattenAMRFile
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Input file (plt file).
+outfile = plt00000_flatten                 # DEF: "<infile>_flatten"; Output file 
+                                           # (plt file).
+output_level = 0                           # DEF: 0; AMR level of output file.
+output_max_grid_size = 64                  # DEF: 64; Max grid size of output file.

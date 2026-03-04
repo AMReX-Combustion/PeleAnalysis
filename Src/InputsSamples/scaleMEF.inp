@@ -1,0 +1,17 @@
+# Example input file for scaleMEF
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt000000                         # Plt-file name (input).
+outfile = plt000000_scaled                 # Plt-file name (output).
+
+#-------------------- Variables -----------------------------------------------------------
+comps = 0 1 2                              # DEF: all; IDs of variables to include.
+sComp = 0                                  # DEF: 0; ID of start variable (if not 
+                                           # specified in comps).
+nComp = 3                                  # DEF: 1; Number of variables (if not specified
+                                           # in comps).
+vals = 42 42 42                            # Factor to be multiplied with comps.
+newNames = x_velocity_new \                # Names to assign to newly computed variables.
+           y_velocity_new \                # 
+           z_velocity_new                  #
+newComps = 3 4 5                           # IDs to assign to newly computed variables.

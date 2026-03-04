@@ -12,21 +12,20 @@ using namespace amrex;
 const bool verbose_DEF = false;
 
 static void
-PrintUsage(const char* progName)
+print_usage(int, char* argv[])
 {
-  cout << '\n';
-  cout << "Usage:" << '\n';
-  cout << progName << '\n';
-  cout << "    infile=inFileName" << '\n';
-  cout << "   [outfile=outFileName <defaults to <inFileName>_section>]" << '\n';
-  cout << "   [-sComp=N <defaults to 0, unless \"comps\" used]" << '\n';
-  cout << "   [-nComp=N <defaults to all in <inFileName>, unless comps used]"
-       << '\n';
-  cout << "   [-comps=\"N1 N2 N3...\"]" << '\n';
-  cout << "   [-help]" << '\n';
-  cout << "   [-verbose]" << '\n';
-  cout << '\n';
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 static Vector<Vector<int>> contigLists(const Vector<int> orig);
@@ -34,15 +33,18 @@ static Vector<Vector<int>> contigLists(const Vector<int> orig);
 int
 main(int argc, char* argv[])
 {
-  if (argc == 1)
-    PrintUsage(argv[0]);
-
   Initialize(argc, argv);
   {
-    ParmParse pp;
 
-    if (pp.contains("help"))
-      PrintUsage(argv[0]);
+    if (argc < 2) {
+      print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
+
+    ParmParse pp;
 
     FArrayBox::setFormat(FABio::FAB_IEEE_32);
     //

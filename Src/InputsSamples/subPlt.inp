@@ -1,0 +1,17 @@
+# Example input file for subPlt (plot file section tool)
+# Extracts a spatial subregion and/or variable subset from an AMReX plot file.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile      = plt00500                     # Input AMReX plot file
+outfile     = plt00500_section             # DEF: <infile>_section; Output plot file name
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2                            # DEF: finest level in file; Finest AMR level to include
+
+#------------------- Spatial Subsetting ---------------------------------------------------
+box = 32 0 0 64 128 128                    # DEF: full domain; lo and hi index bounds (ix,iy,iz iX,iY,iZ)
+
+#------------------- Variable Selection ---------------------------------------------------
+comps = 0 1 4 7                            # Specific component indices to extract (overrides sComp/nComp)
+# sComp = 0                                # DEF: 0; Start component index (used if comps not set)
+# nComp = 4                                # DEF: all components; Number of components (used if comps not set)

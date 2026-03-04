@@ -1,0 +1,32 @@
+# Example input file for amrToFE
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Plot file
+finestLevel = 0                            # DEF: finest level of plot file; Sets the 
+                                           # finest level to read.
+doBin = true                               # [true, false], DEF: true; infile format
+                                           # (true: ".plt", false: ".dat")
+
+#------------------- Variables ------------------------------------------------------------
+sComp = 0                                  # DEF: 0; Start variable.
+nComp = 3                                  # DEF: All; Number of variables.
+comps = 0 1 2                              # Overrides sComp and nComp
+
+#----------------- Additional options ----------------------------------------------------
+box = -0.05 -0.05 -0.05 0.05 0.05 0.05     # DEF: all; int list of two subbox coords,
+                                           # LL and UR.
+nGrowPer = 0                               # DEF: 0; Number of lev-0 cells by which to 
+                                           # extend periodic boundaries.
+outType = tec                              # [tec, flt], DEF: tec; Outfile type.
+connect_cc = true                          # [false, true], DEF: true; Generate 
+                                           # flattened structure by connecting cell 
+                                           # centers, otherwise, generate node at all 
+                                           # cell corners and copy cc value out.
+
+#------------ Mandatory, if (nGrowPer > 1) -----------------------------------------------
+geometry.coord_sys = 0                     # [0, 1]; Coordinate system. 
+                                           # 0: Cartesian, 1: rz.
+geometry.is_periodic = 0 0 0               # [0, 1] [0, 1] [0, 1]; Periodicity; 
+                                           # 0: non-periodic, 1: periodic.
+geometry.prob_lo = -0.1 -0.1 -0.1          # Lower limits for axes.
+geometry.prob_hi =  0.1  0.1  0.1          # Upper limits for axes.     

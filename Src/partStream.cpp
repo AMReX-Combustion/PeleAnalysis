@@ -4,19 +4,39 @@
 #include <StreamPC.H>
 
 using namespace amrex;
+
+static void
+print_usage(int, char* argv[])
+{
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE seedFile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n"
+            << "  seedFile=FILE      Particle seed locations\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
+}
+
 static Vector<Vector<Real>>
 GetSeedLocations(const StreamParticleContainer& spc, Vector<int>& faceData)
 {
   Vector<Vector<Real>> locs;
 
   ParmParse pp;
-  int nc = pp.countval("oneSeedPerCell");
+  int nc = 0;
+  nc = pp.query("oneSeedPerCell", nc);
   int ni = pp.countval("isoFile");
   int ns = pp.countval("seedLoc");
   int nrL = pp.countval("seedRakeL");
   int nrR = pp.countval("seedRakeR");
   AMREX_ALWAYS_ASSERT(
-    (nc > 0) ^ ((ni > 0) ^ ((ns > 0) ^ ((nrL > 0) && nrR > 0))));
+    (nc > 0) ^ ((ni > 0) ^ ((ns > 0) ^ ((nrL > 0) && (nrR > 0)))));
   if (nc > 0) {
     int finestLevel = spc.numLevels() - 1;
     std::vector<std::pair<int, Box>> isects;
@@ -33,26 +53,21 @@ GetSeedLocations(const StreamParticleContainer& spc, Vector<int>& faceData)
       }
       for (MFIter mfi = spc.MakeMFIter(lev); mfi.isValid(); ++mfi) {
         const Box& tile_box = mfi.tilebox();
-        if (
-          AMREX_SPACEDIM < 3 ||
-          tile_box.contains(IntVect(AMREX_D_DECL(0, 50, 107)))) {
-
-          mask.resize(tile_box, 1);
-          mask.setVal(1);
-          if (lev < finestLevel) {
-            isects = baf.intersections(tile_box);
-            for (const auto& p : isects) {
-              mask.setVal(0, p.second, 0, 1);
-            }
+        mask.resize(tile_box, 1);
+        mask.setVal(1);
+        if (lev < finestLevel) {
+          isects = baf.intersections(tile_box);
+          for (const auto& p : isects) {
+            mask.setVal(0, p.second, 0, 1);
           }
+        }
 
-          for (IntVect iv = tile_box.smallEnd(); iv <= tile_box.bigEnd();
-               tile_box.next(iv)) {
-            if (mask(iv, 0) > 0) {
-              locs.push_back({AMREX_D_DECL(
-                plo[0] + (iv[0] + 0.5) * dx[0], plo[1] + (iv[1] + 0.5) * dx[1],
-                plo[2] + (iv[2] + 0.5) * dx[2])});
-            }
+        for (IntVect iv = tile_box.smallEnd(); iv <= tile_box.bigEnd();
+             tile_box.next(iv)) {
+          if (mask(iv, 0) > 0) {
+            locs.push_back({AMREX_D_DECL(
+              plo[0] + (iv[0] + 0.5) * dx[0], plo[1] + (iv[1] + 0.5) * dx[1],
+              plo[2] + (iv[2] + 0.5) * dx[2])});
           }
         }
       }
@@ -91,7 +106,7 @@ GetSeedLocations(const StreamParticleContainer& spc, Vector<int>& faceData)
     faceData.resize(nElts * nodesPerElt);
     ifs.read((char*)faceData.dataPtr(), sizeof(int) * faceData.size());
     ifs.close();
-  } else if (pp.countval("seedLoc") > 0) {
+  } else if (ns > 0) {
     Vector<Real> loc(AMREX_SPACEDIM);
     pp.getarr("seedLoc", loc, 0, AMREX_SPACEDIM);
     locs.push_back({AMREX_D_DECL(loc[0], loc[1], loc[2])});
@@ -118,6 +133,14 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
   {
+    if (argc < 2) {
+      print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
+
     ParmParse pp;
 
     std::string infile;
@@ -129,6 +152,8 @@ main(int argc, char* argv[])
     pp.getarr("vars", inVarNames);
     PlotFileData pf(infile);
     int finestLevel = pf.finestLevel();
+    pp.query("finestLevel", finestLevel);
+
     Vector<Geometry> geoms(finestLevel + 1);
     Vector<BoxArray> grids(finestLevel + 1);
     Vector<DistributionMapping> dms(finestLevel + 1);

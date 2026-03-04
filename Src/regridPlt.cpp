@@ -14,15 +14,26 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=<name> outfile=<> [options] \n\tOptions:\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE outfile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE    Input AMReX plotfile\n"
+            << "  outfile=FILE   Output regridded plotfile\n\n"
+
+            << "Options:\n"
+            << "  -h, --help     Show this help message\n\n"
+
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
 getFileRoot(const std::string& infile)
 {
-  vector<std::string> tokens = Tokenize(infile, std::string("/"));
+  std::vector<std::string> tokens = Tokenize(infile, std::string("/"));
   return tokens[tokens.size() - 1];
 }
 
@@ -31,13 +42,15 @@ main(int argc, char* argv[])
 {
   amrex::Initialize(argc, argv);
   {
-    if (argc < 2)
+    if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
 
     ParmParse pp;
-
-    if (pp.contains("help"))
-      print_usage(argc, argv);
 
     if (pp.contains("verbose"))
       AmrData::SetVerbose(true);
@@ -98,7 +111,7 @@ main(int argc, char* argv[])
 
     for (int lev = 0; lev < Nlev; ++lev) {
       for (int i = 0; i < comps.size(); ++i) {
-        fileData[lev]->copy(amrData.GetGrids(lev, comps[i]), 0, i, 1);
+        fileData[lev]->ParallelCopy(amrData.GetGrids(lev, comps[i]), 0, i, 1);
         if (ParallelDescriptor::IOProcessor())
           std::cerr << "After GetGrids: " << amrData.PlotVarNames()[comps[i]]
                     << std::endl;

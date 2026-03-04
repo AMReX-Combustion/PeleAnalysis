@@ -5,6 +5,26 @@
 
 using namespace amrex;
 
+static void
+print_usage(int, char* argv[])
+{
+  std::cerr
+    << "Usage:\n"
+    << "  " << argv[0] << " infile=FILE palette=FILE [OPTIONS]\n\n"
+
+    << "Required arguments:\n"
+    << "  infile=FILE    Input AMReX plotfile\n"
+    << "  palette=FILE   Binary colour palette file (256 RGB triplets)\n\n"
+
+    << "Options:\n"
+    << "  -h, --help     Show this help message\n\n"
+
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+    << "the documentation.\n";
+
+  std::exit(1);
+}
+
 void STORE_PPM_STR(
   const std::string& file,
   int width,
@@ -31,14 +51,6 @@ static std::string PPM(".ppm");
 static std::string PGM(".pgm");
 static std::string FABF(".fab");
 
-static void
-print_usage(int, char* argv[])
-{
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=f1 [options] \n\tOptions:\n";
-  exit(1);
-}
-
 std::string
 getFileRoot(const std::string& infile)
 {
@@ -60,13 +72,15 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
   {
-    if (argc < 2)
+    if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
 
     ParmParse pp;
-
-    if (pp.contains("help"))
-      print_usage(argc, argv);
 
     // Open plotfile header and create an amrData object pointing into it
     std::string plotFileName;
@@ -156,68 +170,56 @@ main(int argc, char* argv[])
       for (int i = 0; i < comps.size(); ++i) {
         names[i] = amrData.PlotVarNames()[comps[i]];
         if (ParallelDescriptor::IOProcessor())
-          std::cout << "Filling " << names[i] << " on level " << finestLevel
-                    << std::endl;
+          Print() << "Filling " << names[i] << " on level " << finestLevel
+                  << std::endl;
 
         mf_full.ParallelCopy(
           amrData.GetGrids(finestLevel, comps[i], subbox), 0, 0, 1);
         amrData.FlushGrids(comps[i]);
 
+        mf_flat.setVal(0);
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(mf_full, false); mfi.isValid();
-             ++mfi) // do not tile, to avoid race on += below
-        {
-          auto const& full_fab = mf_full[mfi];
-          Array4<Real const> const& full_arr = full_fab.const_array();
-
+        // No tiling: avoid write races on the projected (flat) FAB
+        for (MFIter mfi(mf_full, false); mfi.isValid(); ++mfi) {
           const Box& tile_box = mfi.tilebox();
           Box flat_box = ProjectBox(tile_box, dir, loc);
-          auto& flat_fab = mf_flat[mfi];
-          Array4<Real> const& flat_arr = flat_fab.array();
 
-          AMREX_LAUNCH_HOST_DEVICE_FUSIBLE_LAMBDA(tile_box, thread_box, {
-            const auto lo = lbound(thread_box);
-            const auto hi = ubound(thread_box);
+          Array4<Real const> full_arr = mf_full[mfi].const_array();
+          Array4<Real> flat_arr = mf_flat[mfi].array();
 
-            if (dir == 0) {
-              int ilo = flat_box.smallEnd(dir);
-              for (int k = lo.z; k <= hi.z; ++k) {
-                for (int j = lo.y; j <= hi.y; ++j) {
-                  for (int i = lo.x; i <= hi.x; ++i) {
-                    flat_arr(ilo, j, k) += full_arr(i, j, k);
-                  }
-                }
-              }
-            } else if (dir == 1) {
-              int jlo = flat_box.smallEnd(dir);
-              for (int k = lo.z; k <= hi.z; ++k) {
-                for (int j = lo.y; j <= hi.y; ++j) {
-                  for (int i = lo.x; i <= hi.x; ++i) {
-                    flat_arr(i, jlo, k) += full_arr(i, j, k);
-                  }
-                }
-              }
-            } else if (dir == 2) {
-              int klo = flat_box.smallEnd(dir);
-              for (int k = lo.z; k <= hi.z; ++k) {
-                for (int j = lo.y; j <= hi.y; ++j) {
-                  for (int i = lo.x; i <= hi.x; ++i) {
-                    flat_arr(i, j, klo) += full_arr(i, j, k);
-                  }
-                }
-              }
-            }
-          });
+          const auto lo = lbound(tile_box);
+          const auto hi = ubound(tile_box);
+
+          if (dir == 0) {
+            const int ilo = flat_box.smallEnd(dir);
+            for (int k = lo.z; k <= hi.z; ++k)
+              for (int j = lo.y; j <= hi.y; ++j)
+                for (int i = lo.x; i <= hi.x; ++i)
+                  flat_arr(ilo, j, k) += full_arr(i, j, k);
+          } else if (dir == 1) {
+            const int jlo = flat_box.smallEnd(dir);
+            for (int k = lo.z; k <= hi.z; ++k)
+              for (int j = lo.y; j <= hi.y; ++j)
+                for (int i = lo.x; i <= hi.x; ++i)
+                  flat_arr(i, jlo, k) += full_arr(i, j, k);
+          } else if (dir == 2) {
+            const int klo = flat_box.smallEnd(dir);
+            for (int k = lo.z; k <= hi.z; ++k)
+              for (int j = lo.y; j <= hi.y; ++j)
+                for (int i = lo.x; i <= hi.x; ++i)
+                  flat_arr(i, j, klo) += full_arr(i, j, k);
+          }
         }
         res_mf.ParallelAdd(mf_flat, 0, i, 1);
       }
 
       if (ParallelDescriptor::IOProcessor()) {
         FArrayBox& data = res_mf[0];
-        Real data_min = data.min();
-        Real data_max = data.max();
+        Real data_min = data.min<RunOn::Host>();
+        Real data_max = data.max<RunOn::Host>();
         pp.query("min", data_min);
         pp.query("max", data_max);
 
@@ -270,22 +272,22 @@ pixelizeData(
   IntVect img(AMREX_D_DECL(box.length(d[0]) - 1, box.length(d[1]) - 1, 0));
   image.resize(Box(IntVect::TheZeroVector(), img), 1);
 
+  Array4<Real const> data_arr = data.const_array();
+  Array4<int> img_arr = image.array();
+
   IntVect div;
-  if (slicedir >= 0 && slicedir < AMREX_SPACEDIM)
-    div[slicedir] = sliceloc;
+  div[slicedir] = sliceloc;
 
   for (int i = se[d[0]]; i <= be[d[0]]; ++i) {
     for (int j = se[d[1]]; j <= be[d[1]]; ++j) {
       div[d[0]] = i;
       div[d[1]] = j;
-      image(IntVect(AMREX_D_DECL(i - se[d[0]], j - se[d[1]], 0)), 0) = std::max(
-        0, (int)(nvm1 * std::min((data(div, 0) - data_min) / del, 1.0)));
+      const Real normed =
+        (data_arr(div[0], div[1], div[2], 0) - data_min) / del;
+      img_arr(i - se[d[0]], j - se[d[1]], 0, 0) =
+        std::max(0, static_cast<int>(nvm1 * std::min(normed, 1.0_rt)));
     }
   }
-  // BaseFab<int> imageRev(image.box(), 1);
-  // imageRev.copy(image);
-  // int rMult(1);
-  // image.copyRev(image.box(), imageRev, image.box(), 1, &rMult);
 }
 
 #include <cstdlib>

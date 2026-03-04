@@ -15,28 +15,19 @@ static void
 print_usage(int, char* argv[])
 {
   std::cerr
-    << "Utility to average pltfiles on same domain but with non-matching AMR";
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=<s> [options] \n\tOptions:\n";
-  std::cerr << "\t     infile=<s> where s is a pltfile \n";
-  std::cerr
-    << "\t     variables=<s1 s2 s3> where <s1> <s2> and <s3> are variable "
-       "names to select for combined pltfile [DEF-> all possible]\n";
-  std::cerr << "\t     max_filter_level=<int> where <int> is the max "
-               "refinement level to filter, zero-indexed [DEF->1000]\n";
-  std::cerr << "\t     filter_type=<int> where <int> is the filter type as "
-               "defined in PeleC (1->box, 2->Gaussian, etc) [DEF->1000]\n";
-  std::cerr << "\t     base_fgr=<int> where <int> is the desired filter to "
-               "grid ratio on the base level, must be even [DEF->2]\n";
-  std::cerr << "\t     same_fgr_all_levels=<bool> where if true the same "
-               "filter to grid ratio is kept on all levels (rather than "
-               "absolute filter width) [DEF->false]\n";
-  std::cerr << "\t     max_grid_size=<int> where <int> is the AMReX "
-               "max_grid_size for the output [DEF->32]\n";
-  std::cerr << "\t     interp_type=<int> where this determines the type of "
-               "interpolation when FillPatching: 0 -> piecewise constant, 1 -> "
-               "cell cons linear [DEF->1]\n";
-  exit(1);
+    << "Usage:\n"
+    << "  " << argv[0] << " infile=FILE vars=LIST [OPTIONS]\n\n"
+
+    << "Required arguments:\n"
+    << "  infile=FILE        AMReX plotfile\n"
+    << "  vars=LIST          Comma-separated list of variables to filter\n\n"
+
+    << "Options:\n"
+    << "  -h, --help         Show this help message\n\n"
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+    << "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
@@ -67,14 +58,16 @@ main(int argc, char** argv)
 {
 
   amrex::Initialize(argc, argv);
-  // ---------------------------------------------------------------------
-  // ParmParse
-  // ---------------------------------------------------------------------
-  amrex::ParmParse pp;
 
-  if (argc < 2 || pp.contains("help")) {
+  if (argc < 2) {
+    print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
     print_usage(argc, argv);
   }
+
+  amrex::ParmParse pp;
 
   std::string infile = "";
   int finestLevel = 1000;

@@ -1,0 +1,6 @@
+# Example input file for surfMEFtoDAT
+# This tool converts a surface in MEF format to DAT format.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000_surf.mef                 # Surface file in MEF format to convert.
+outfile = plt00000_surf.dat                # DEF: infile as .dat; Output file name.

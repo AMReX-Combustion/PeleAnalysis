@@ -8,25 +8,19 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr
-    << "Utility to average pltfiles on same domain but with non-matching AMR";
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << "infiles=<s1 s2 s3> [options] \n\tOptions:\n";
-  std::cerr
-    << "\t     infiles=<s1 s2 s3> where <s1> <s2> amnd <s3> are pltfiles\n";
-  std::cerr << "\t     outfile=<s> where <s> is the output pltfile\n";
-  std::cerr
-    << "\t     variables=<s1 s2 s3> where <s1> <s2> and <s3> are variable "
-       "names to select for combined pltfile [DEF-> all possible]\n";
-  std::cerr << "\t     output_max_level=<s> where <s> is the max refinement "
-               "level to combine, zero-indexed [DEF->1000]\n";
-  std::cerr
-    << "\t     output_max_grid_size=<s> where <s> is the output max_grid_size. "
-       "If all BoxArrays are the same, this is ignored. [DEF->32]\n";
-  std::cerr << "\t     interp_type=<int> where this determines the type of "
-               "interpolation when FillPatching: 0 -> piecewise constant, 1 -> "
-               "cell cons linear [DEF->1]\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=LIST outfile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=LIST        List of AMReX plotfiles to average\n"
+            << "  outfile=FILE       Output averaged plotfile\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 int
@@ -36,15 +30,13 @@ main(int argc, char* argv[])
   {
     if (argc < 2) {
       print_usage(argc, argv);
-    }
-    // ---------------------------------------------------------------------
-    // ParmParse
-    // ---------------------------------------------------------------------
-    ParmParse pp;
-
-    if (pp.contains("help")) {
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
       print_usage(argc, argv);
     }
+
+    ParmParse pp;
 
     // Arbitrary number of input files will be combined and averaged
     int nf = pp.countval("infiles");
@@ -56,7 +48,7 @@ main(int argc, char* argv[])
     std::string outfile("plt_averaged");
     pp.query("outfile", outfile);
 
-    // Vairables to keep - will keep all if not specified
+    // Variables to keep - will keep all if not specified
     int nvar = pp.countval("variables");
     Vector<std::string> variableNames;
     pp.queryarr("variables", variableNames, 0, nvar);

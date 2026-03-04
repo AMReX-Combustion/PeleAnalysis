@@ -1,0 +1,8 @@
+# Example input file for turbfile
+
+#------------------- IO CONTROL -----------------------------------------------------------
+ifile = plt00000		        # pltfile to read for creating the inflow file
+ofile = turbInflow			# Name of output directory including /HDR and /DAT
+
+#------------------- Operation control ----------------------------------------------------
+dir = 2			                # DEF: AMREX_SPACEDIM -1, sets normal direction of inflow plane

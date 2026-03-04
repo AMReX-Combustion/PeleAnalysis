@@ -1,0 +1,29 @@
+# Example input file for integral
+# This tool integrates 2D or 3D files in the requested direction(s).
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Plot file for surface construction
+finestLevel = 0                            # DEF: finest level of plot file; Sets the finest level to read.
+
+#------------------- Variables ------------------------------------------------------------
+vars = I_R(H2)                             # Variables to integrate
+cVar = Y(H2)                               # Set variable to restrict integrated region.
+cMin = 1e-5                                # Cell below this value (for cVar) are skipped for integral
+cMax = 0.0111                              # Cell above this value (for cVar) are skipped for integral
+
+#------------------- Integral options -----------------------------------------------------
+integralDimension = 3                      # [1, 2, 3]; Integral dimension up to AMREX_SPACEDIM. For integralDimension<AMREX_SPACEDIM additional flags for the direction must be provided.
+avg = 0                                    # [0, 1], DEF: 0; If 1, devides the integral by the area.
+
+#---------- Only relevant for integralDimension = 1 -------------------------
+dir = 0                                    # [0, 1, 2], up to AMREX_SPACEDIM-1. Dimansion along which to integrate.
+
+#---------- Only relevant for integralDimension = 2 and AMREX_SPACEDIM=3 ----
+dir1 = 0                                   # [0, 1, 2]. First dimesion along which to integrate.
+dir2 = 1                                   # [0, 1, 2]. First dimesion along which to integrate.
+
+#----------------- Additional options ----------------------------------------------------
+format = dat                               # [dat, ppm], DEF: dat; Option to create a ppm (portable pixmap) image file. Only available for AMREX_SPACEDIM=3 and integralDimension=1
+useminmax1 = -1e5 1e5                      # Minimum and maximum for normalization in ppm. Need to provide 2 values for each integrated var.
+#useminmax2 = -2e5 4e5                      # Minimum and maximum for normalization in ppm. Need to provide 2 values for each integrated var.
+goPastMax = 0                              # [0, 1], DEF: 1; For format = ppm, specify behaviour over vMax. 0: cap, 1: extra color scale over magenta to white.

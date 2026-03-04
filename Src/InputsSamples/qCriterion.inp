@@ -1,0 +1,16 @@
+# Example input file for qCriterion
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt000000                         # Plt-file name.
+finestLevel = 2                            # DEF: finestLevel; Level up to which to 
+                                           # compute q-criterion.
+is_per = 0 1 0                             # DEF: 0 0 0; Periodicity (0: non-periodic,
+                                           # 1: periodic).
+sym_dir = 0 0 0                            # DEF: 0 0 0; Summetry (0: non-symmetric, 1: 
+                                           # symmetric).
+outfile = plt000000_qCriterion             # DEF: "<infile>_qCriterion"; outfile name.
+
+#-------------------- Variables -----------------------------------------------------------
+Aux_Variables = Y_H2                       # DEF: "". Auxialiary variables to take from
+                                           # from input file and store in output file 
+                                           # without change.

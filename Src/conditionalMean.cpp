@@ -13,21 +13,21 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr
-    << argv[0] << " infile=<filename>\n"
-    << "   binComp=i            : Variable id number to condition on\n"
-    << "   AvgComps=j k l       : Variable id numbers to average\n"
-    << "   min=m;  max=m        : min/max values for bins%i\n"
-    << "   nBins=n              : Number of bins in PDF (default=64)\n"
-    << "   finestLevel=n        : Finest level at which to evaluate PDF\n"
-    << "   outSuffix=str        : Suffix to add to the pltfile name as an alt "
-       "dir for results (default="
-       ")\n"
-    << "   aja=true/false       : Put the header in a separate file for "
-       "gnuplot/matlab (default=false)\n"
-    << "   infile= plt1 plt2    : List of plot files" << std::endl;
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0]
+            << " infile=FILE condCompName=NAME avgCompName=NAME [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n"
+            << "  condCompName=NAME  Conditioning variable\n"
+            << "  avgCompName=NAME   Component to average\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 typedef BaseFab<int> IntFab;
@@ -38,13 +38,15 @@ main(int argc, char* argv[])
 {
   amrex::Initialize(argc, argv);
 
-  if (argc < 2)
+  if (argc < 2) {
     print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
+    print_usage(argc, argv);
+  }
 
   ParmParse pp;
-
-  if (pp.contains("help"))
-    print_usage(argc, argv);
 
   bool isioproc = ParallelDescriptor::IOProcessor();
   int ioproc = ParallelDescriptor::IOProcessorNumber();
@@ -114,11 +116,6 @@ main(int argc, char* argv[])
   pp.get("binMax", binMax);
   if (binMax <= binMin)
     amrex::Abort("Bad bin min,max");
-
-  bool floor = false;
-  pp.query("floor", floor);
-  bool ceiling = false;
-  pp.query("ceiling", ceiling);
 
   Real domainVol = -1;
   Vector<int> weights;

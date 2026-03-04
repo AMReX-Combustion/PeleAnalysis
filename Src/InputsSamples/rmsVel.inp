@@ -1,0 +1,8 @@
+# Example input file for rmsVel 
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infiles = plt00000 plt00001 plt00002      # pltfiles to compute fluctuations over
+
+#------------------- Operation control ----------------------------------------------------
+finestLevel = 4				  # DEF: -1, gets finest level by defaults, or max level user sets to consider for rms calculation
+

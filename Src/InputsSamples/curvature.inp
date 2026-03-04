@@ -1,0 +1,32 @@
+# Example input file for curvature
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Input file (plt file).
+outfile = plt00000_curvature               # DEF: "<infile>_K"; Output file (plt file).
+finestLevel = 0                            # DEF: finest level of plot file; Sets the 
+                                           # finest level to read.
+
+#------------------- Variables ------------------------------------------------------------
+Aux_Variables = 2 3 4                      # DEF: ""; Variable IDs to be taken from input 
+                                           # file over to output file without change.
+progressName = Y_H2                        # Name of progress variable
+progMin = 0.0                              # Limit progress variable to progMin.
+progMax = 1.0                              # Limit progress variable to progMax.
+useFileMinMax = false                      # [true, false]; For bining, use min and max 
+                                           # of progress variable in file.
+threshold_prog = false                     # [true, false], DEF: false; Clip results 
+                                           # outside flame front (C~0 or C~1).
+threshold_value = 0.01                     # Threshold value.
+
+#------------------- Curvature ------------------------------------------------------------
+do_gaussCurv = true                        # [true, false]; Compute gaussian curvature. 
+do_smooth = true                           # [true, false], DEF: false; Do progress 
+                                           # variable smooting.
+smoothing_time = 1.0e-7                    # DEF: 1.0e-7; Smoothing time. 
+
+#--------------------- Strain -------------------------------------------------------------
+do_strain = true                           # [true, false], DEF: false; Compute strain.
+getStrainTensor = true                     # [true, false], DEF: false; If compute strain
+                                           # is 'true', compute strain tensor.
+do_velnormal = true                        # [true, false]; Compute normal velocity and 
+                                           # write to file.                            

@@ -1,0 +1,67 @@
+# USAGE: make -j <nprocs> -f GNUmakefile.all [target(s)]
+# 	example: make -j 24 -f GNUmakefile.all grad integral qCriterion
+# 	example: make -j 24 -f GNUmakefile.all all
+
+AMREX_HOME = ../../PelePhysics/Submodules/amrex
+PELE_PHYSICS_HOME = ../../PelePhysics
+PELE_ANALYSIS_HOME = ..
+
+DEBUG = FALSE
+DIM = 3
+PRECISION = DOUBLE
+
+COMP = gnu
+USE_MPI = FALSE
+USE_OMP = FALSE
+USE_CUDA = FALSE
+
+TARGETS = \
+    amrToFE \
+    avgPlotfiles \
+    avgToPlane \
+    checkIso \
+    combinePlts \
+    conditionalMean \
+    convert2hdf5 \
+    curvature \
+    diffPlts \
+    dumpFABslice \
+    filterPlt \
+    flattenAMRFile \
+    generateTestPlt \
+    grad \
+    integral \
+    isoMEF \
+    isosurface \
+    jpdf \
+    makePlotfile \
+    partStream \
+    qCriterion \
+    regridPlt \
+    rmsVel \
+    scaleMEF \
+    stream2plt \
+    streamBinTubeStats \
+    subPlt \
+    surfDATtoMEF \
+    surfMEFtoDAT \
+    template \
+    trimMEFgen \
+
+.NOTPARALLEL:
+
+.PHONY: all
+
+all: $(TARGETS)
+
+$(TARGETS):
+	+$(MAKE) \
+       AMREX_HOME=$(AMREX_HOME) \
+       PELE_PHYSICS_HOME=$(PELE_PHYSICS_HOME) \
+       PELE_ANALYSIS_HOME=$(PELE_ANALYSIS_HOME) \
+       DEBUG=$(DEBUG) \
+       DIM=$(DIM) \
+       PRECISION=$(PRECISION) \
+       COMP=$(COMP) \
+       USE_MPI=$(USE_MPI) USE_OMP=$(USE_OMP) USE_CUDE=$(USE_CUDE) \
+       EBASE=$@

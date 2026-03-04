@@ -1,0 +1,20 @@
+# Example input file for flattenAMRFile
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile_head = plane                        # Head (prefix) of FAB-files.
+infile_tail = .zslice.0.Level_0.fab        # Tail (suffix) of FAB-files.
+outfile = output                           # Output plt-file name.
+start = 0                                  # Start index for input file (%06d integer 
+                                           # between infile_head and infile_tail).
+end = 10                                   # End index for input file (%06d integer 
+                                           # between infile_head and infile_tail).
+interval = 1                               # Index interval (%06d integer between 
+                                           # infile_head and infile_tail).
+probLo = -0.05 -0.05 -0.05                 # Bottom box corner (if two values are given, 
+                                           # third is computed based on number of planes).
+probHi = 0.05 0.05 0.05                    # Top box corner (if two values are given, 
+                                           # third is computed based on number of planes).
+time = 0.0                                 # Physical time to assign to plt-file.
+
+#-------------------- Variables -----------------------------------------------------------
+names = x_velocity y_velocity z_velocity   # DEF: all. Names of variables to include.

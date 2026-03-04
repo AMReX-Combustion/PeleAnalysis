@@ -1,0 +1,5 @@
+# Example input file for ModelSpecificAnalysis/plotYtoX
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt000000                         # Plt-file name.
+finestLevel = 2                            # DEF: plotfile finest level.

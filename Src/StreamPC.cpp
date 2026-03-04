@@ -115,7 +115,7 @@ StreamParticleContainer::SetParticleLocation(const int a_streamLoc)
 }
 
 static void
-vnrml(Vector<Real>& vec, int dir)
+VectorNormalize(Vector<Real>& vec, int dir)
 {
   static Real eps = 1.e24;
   Real mag = std::sqrt(
@@ -129,7 +129,7 @@ vnrml(Vector<Real>& vec, int dir)
 }
 
 static bool
-ntrpv(
+InterpolateVector(
   const dim3 x,
   const FArrayBox& gfab,
   const Real* dx,
@@ -184,7 +184,7 @@ ntrpv(
 }
 
 bool
-StreamParticleContainer::RK4(
+StreamParticleContainer::RungeKutta4(
   dim3& x,
   Real hrk,
   const FArrayBox& v,
@@ -198,7 +198,7 @@ StreamParticleContainer::RK4(
   Vector<Real> vec(AMREX_SPACEDIM);
   dim3 k1, k2, k3, k4;
   dim3 xx = x;
-  if (!ntrpv(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
+  if (!InterpolateVector(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
     return false;
   // before normalising vec, lets grab |grad vec|
 
@@ -206,23 +206,24 @@ StreamParticleContainer::RK4(
   // in cspace, dt = min(0.95*dxLev,hrk/|gradC|) - min stops going too far in
   // one step and breaking things
 
-  Real dt =
-    (cSpace == 0)
-      ? hrk * dxFine
-      : min(
-          0.95 * dx[0],
-          hrk / std::sqrt(AMREX_D_TERM(
-                  vec[0] * vec[0], +vec[1] * vec[1], +vec[2] * vec[2])));
+  Real dt;
+  if (cSpace == 0) {
+    dt = hrk * dxFine;
+  } else {
+    Real abs_grad = std::sqrt(
+      AMREX_D_TERM(vec[0] * vec[0], +vec[1] * vec[1], +vec[2] * vec[2]));
+    dt = min(0.95 * dx[0], hrk / abs_grad);
+  }
 
   // convert gradC to gradC / |gradC| (will also clip to zero if barely any
   // gradient)
-  vnrml(vec, dir);
+  VectorNormalize(vec, dir);
 
   for (int d = 0; d < AMREX_SPACEDIM; ++d) {
     k1[d] = vec[d] * dt;
     xx[d] = x[d] + k1[d] * 0.5;
   }
-  if (!ntrpv(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
+  if (!InterpolateVector(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
     return false;
   // update dt if using cspace
   if (cSpace != 0) {
@@ -231,13 +232,13 @@ StreamParticleContainer::RK4(
       hrk / std::sqrt(AMREX_D_TERM(
               vec[0] * vec[0], +vec[1] * vec[1], +vec[2] * vec[2])));
   }
-  vnrml(vec, dir);
+  VectorNormalize(vec, dir);
 
   for (int d = 0; d < AMREX_SPACEDIM; ++d) {
     k2[d] = vec[d] * dt;
     xx[d] = x[d] + k2[d] * 0.5;
   }
-  if (!ntrpv(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
+  if (!InterpolateVector(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
     return false;
   if (cSpace != 0) {
     dt = min(
@@ -245,13 +246,13 @@ StreamParticleContainer::RK4(
       hrk / std::sqrt(AMREX_D_TERM(
               vec[0] * vec[0], +vec[1] * vec[1], +vec[2] * vec[2])));
   }
-  vnrml(vec, dir);
+  VectorNormalize(vec, dir);
 
   for (int d = 0; d < AMREX_SPACEDIM; ++d) {
     k3[d] = vec[d] * dt;
     xx[d] = x[d] + k3[d];
   }
-  if (!ntrpv(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
+  if (!InterpolateVector(xx, v, dx, plo, phi, vec, AMREX_SPACEDIM))
     return false;
 
   if (cSpace != 0) {
@@ -260,7 +261,7 @@ StreamParticleContainer::RK4(
       hrk / std::sqrt(AMREX_D_TERM(
               vec[0] * vec[0], +vec[1] * vec[1], +vec[2] * vec[2])));
   }
-  vnrml(vec, dir);
+  VectorNormalize(vec, dir);
 
   const Real third = 1. / 3.;
   const Real sixth = 1. / 6.;
@@ -328,7 +329,7 @@ StreamParticleContainer::ComputeNextLocation(
         const int dir = p.idata(1);
         dim3 x = {AMREX_D_DECL(p.pos(0), p.pos(1), p.pos(2))};
         if (p.id() > 0) {
-          if (!RK4(x, a_hRK, v, dx, plo, phi, dir, a_cSpace, dxFine)) {
+          if (!RungeKutta4(x, a_hRK, v, dx, plo, phi, dir, a_cSpace, dxFine)) {
             Abort("bad RK");
           }
         }
@@ -374,7 +375,8 @@ StreamParticleContainer::InterpDataAtLocation(
           Vector<Real> ntrpvOut(fcomp); // components in infile
 
           // interpolate all data to particle location
-          ntrpv(x, v, dx, plo, phi, ntrpvOut, fcomp); // components in infile
+          InterpolateVector(
+            x, v, dx, plo, phi, ntrpvOut, fcomp); // components in infile
 
           // copy the interpolated data to the particle
           // first DIM components are particle location

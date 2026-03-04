@@ -1,0 +1,23 @@
+# Example input file for regridPlt
+# Regrids an AMReX plot file to a uniform box decomposition.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile  = plt00500                         # Input AMReX plot file
+outfile = plt00500_rg                      # Output regridded plot file
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2                            # DEF: all levels in file; Finest AMR level to regrid
+
+#------------------- Grid Options ---------------------------------------------------------
+max_grid_size = 128                        # DEF: 128; Maximum box size in each dimension after regridding
+
+#------------------- Variable Selection ---------------------------------------------------
+comps = 0 1 4 7                            # Specific component indices to write (overrides sComp/nComp)
+# sComp = 0                                # DEF: 0; Start component (used if comps not set)
+# nComp = 4                                # DEF: all; Number of components (used if comps not set)
+
+#------------------- Domain Options -------------------------------------------------------
+is_per = 1 1 0                             # DEF: 1 1 1; Periodicity flags per dimension (1=periodic)
+
+#------------------- Additional Flags -----------------------------------------------------
+# verbose                                  # Uncomment to enable verbose output during loading

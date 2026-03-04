@@ -1,0 +1,21 @@
+# Example input file for plotQPD
+# Computes a Quasi-Planar Diagram (QPD) of atomic fluxes through the chemical mechanism.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile      = plt00500                     # Input AMReX plot file (must contain X(...), temp, density)
+QPDfileName = plt00500_QPD.dat             # DEF: <infile>_QPD.dat; Output QPD data file
+QPDlabel    = plt00500                     # DEF: <infile>; Label written to header of output file
+
+#------------------- AMR Control ----------------------------------------------------------
+finestLevel = 2                            # DEF: finest level in file; Finest AMR level to process
+
+#------------------- QPD Options ----------------------------------------------------------
+QPDatom     = C                            # DEF: C; Atom to track through the reaction network
+scaleNorm   = 1.0                          # Optional additional scale factor applied to normalisation
+
+#------------------- Fuel Species Diagnostics ---------------------------------------------
+fuelSpec    = CH4                          # If set, prints edge contributions for this species to screen
+
+#------------------- Additional Flags -----------------------------------------------------
+dump_edges                                 # Uncomment to print all edges to screen before computation
+# verbose                                  # Uncomment to enable verbose AMReX data loading output

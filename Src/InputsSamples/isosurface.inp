@@ -1,4 +1,5 @@
-# Example input file for streamBinTubeStats
+# Example input file for isosurface
+# This tool calculates the isosurface based on a given variable and iso value.
 
 #------------------- IO CONTROL -----------------------------------------------------------
 infile = plt00000                          # Plot file for surface construction

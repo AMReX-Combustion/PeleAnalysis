@@ -15,11 +15,19 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr
-    << argv[0]
-    << " infile=<plotfilename> \n\tOptions:\n\tis_per=<L M N> gradVar=<name>\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE compName=NAME [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n"
+            << "  compName=NAME      Component for gradient evaluation\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
@@ -36,27 +44,21 @@ main(int argc, char* argv[])
   {
     if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
     }
 
-    // ---------------------------------------------------------------------
-    // Set defaults input values
-    // ---------------------------------------------------------------------
-    std::string gradVar = "temp";
+    std::string gradVar = "";
     std::string infile = "";
     int finestLevel = 1000;
     int nAuxVar = 0;
 
-    // ---------------------------------------------------------------------
-    // ParmParse
-    // ---------------------------------------------------------------------
     ParmParse pp;
 
-    if (pp.contains("help")) {
-      print_usage(argc, argv);
-    }
-
     pp.get("infile", infile);
-    pp.query("gradVar", gradVar);
+    pp.get("gradVar", gradVar);
     pp.query("finestLevel", finestLevel);
 
     // Initialize DataService
@@ -123,7 +125,7 @@ main(int argc, char* argv[])
     Vector<int> sym_dir(AMREX_SPACEDIM, 0);
     pp.queryarr("sym_dir", sym_dir, 0, AMREX_SPACEDIM);
 
-    Vector<int> is_per(AMREX_SPACEDIM, 1);
+    Vector<int> is_per(AMREX_SPACEDIM, 0);
     pp.queryarr("is_per", is_per, 0, AMREX_SPACEDIM);
     Print() << "Periodicity assumed for this case: ";
     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {

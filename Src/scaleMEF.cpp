@@ -19,6 +19,24 @@ using std::ofstream;
 using std::string;
 using std::vector;
 
+static void
+print_usage(int, char* argv[])
+{
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE outfile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n"
+            << "  outfile=FILE       AMReX plotfile\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
+}
+
 void read_iso(
   const std::string& infile,
   FArrayBox& nodes,
@@ -55,6 +73,14 @@ int
 main(int argc, char* argv[])
 {
   amrex::Initialize(argc, argv);
+
+  if (argc < 2) {
+    print_usage(argc, argv);
+  } else if (
+    (std::strcmp(argv[1], "-h") == 0) ||
+    (std::strcmp(argv[1], "--help") == 0)) {
+    print_usage(argc, argv);
+  }
 
   ParmParse pp;
 

@@ -14,17 +14,18 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=<plotfilename>"
-            << "\n\tOptions:"
-            << "\n\tfinestLevel=[DEFAULT: finestLevel]"
-            << "\n\tAux_Variables=<auxVarName0 auxVarName1 ...>"
-            << "\n\tis_per=[DEFAULT: 0 0 0]\t\t\t\t(spatial directions of "
-               "periodicity (0: non-periodic, 1: periodic))"
-            << "\n\tsym_dir=[DEFAULT: 0 0 0]\t\t\t(spatial directions of "
-               "symmetry (0: non-symmetric, 1: symmetric))"
-            << "\n\toutfile=[DEFAULT: infile+\"_qCriterion\"]\n";
-  exit(1);
+  std::cerr << "Usage:\n"
+            << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
+
+            << "Required arguments:\n"
+            << "  infile=FILE        AMReX plotfile\n\n"
+
+            << "Options:\n"
+            << "  -h, --help         Show this help message\n\n"
+            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+            << "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
@@ -44,6 +45,10 @@ main(int argc, char* argv[])
 
     if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
     }
 
     // ---------------------------------------------------------------------
@@ -57,10 +62,6 @@ main(int argc, char* argv[])
     // ParmParse
     // ---------------------------------------------------------------------
     ParmParse pp;
-
-    if (pp.contains("help")) {
-      print_usage(argc, argv);
-    }
 
     pp.get("infile", infile);
     pp.query("finestLevel", finestLevel);
