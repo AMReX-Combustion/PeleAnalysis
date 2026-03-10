@@ -30,7 +30,7 @@ Source code files can be automatically formatted to adhere to the appropriate fo
 
     find Src \( -name "*.cpp" -o -name "*.H" \) -exec clang-format -i {} +
 
-from within the PeleAnalysis base directory. You can also format files individually using ``clang-format -i /path/to/file``. Adherence to this format is checked for all PRs.
+from within the PeleAnalysis base directory. You can also format files individually using ``clang-format -i /path/to/file``. Adherence to this format is checked for all PRs. Currently, the CI is running with version `18.1`.
 
 Beyond that, as much as possible, `PeleAnalysis` adheres to [AMReX Coding Style](https://github.com/AMReX-Codes/amrex/blob/development/CONTRIBUTING.md#amrex-coding-style-guide)
 and we are encouraging contributors to follow those guidelines.

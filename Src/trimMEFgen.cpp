@@ -11,14 +11,6 @@
 
 using namespace amrex;
 
-using std::cerr;
-using std::cout;
-using std::endl;
-using std::map;
-using std::ofstream;
-using std::string;
-using std::vector;
-
 static void
 print_usage(int, char* argv[])
 {
@@ -42,16 +34,16 @@ void read_iso(
   FArrayBox& nodes,
   Vector<int>& faceData,
   int& nElts,
-  vector<string>& names,
-  string& label);
+  std::vector<std::string>& names,
+  std::string& label);
 
 void write_iso(
   const std::string& outfile,
   const FArrayBox& nodes,
   const Vector<int>& faceData,
   int nElts,
-  const vector<string>& names,
-  const string& label);
+  const std::vector<std::string>& names,
+  const std::string& label);
 
 static std::vector<std::string>
 parseVarNames(std::istream& is)
@@ -77,18 +69,20 @@ surface_area(
   for (int i = 0; i < dat.size(); ++i)
     dat[i] = nodes.dataPtr(i);
 
-  AMREX_ASSERT(nodesPerElt == 3); // not general enough for anything else
   int nElts = faceData.size() / nodesPerElt;
   Real Area = 0;
   Vector<Real> p0(AMREX_SPACEDIM), p1(AMREX_SPACEDIM), p2(AMREX_SPACEDIM);
   for (int k = 0; k < nElts; ++k) {
     // set points of
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
       p0[i] = dat[i][faceData[k * nodesPerElt + 0] - 1];
       p1[i] = dat[i][faceData[k * nodesPerElt + 1] - 1];
+#if AMREX_SPACEDIM == 3
       p2[i] = dat[i][faceData[k * nodesPerElt + 2] - 1];
+#endif
     }
 
+#if AMREX_SPACEDIM == 3
     Area +=
       0.5 *
       sqrt(
@@ -105,187 +99,130 @@ surface_area(
         pow(
           (p1[0] - p0[0]) * (p2[1] - p0[1]) - (p1[1] - p0[1]) * (p2[0] - p0[0]),
           2));
+#elif AMREX_SPACEDIM == 2
+    Area += sqrt(pow(p0[0] - p1[0], 2) + pow(p0[1] - p1[1], 2));
+#endif
   }
   return Area;
 }
 
-void
-trim_surface(
-  const Vector<int>& comps,
-  const Vector<string>& signs,
-  const Vector<Real>& vals,
-  FArrayBox& nodes,
-  Vector<int>& faceData,
-  int nodesPerElt)
+int
+find_comp(const std::vector<std::string>& names, const std::string& comp)
 {
-  const Box& nbox = nodes.box();
-  const int nc = comps.size();
-  Vector<Real*> dat(nc);
-  for (int i = 0; i < nc; ++i)
-    dat[i] = nodes.dataPtr(comps[i]);
-
-  int cnt = 0;
-  int cnt_new = 0;
-  vector<int> nodeIdx;
-  for (IntVect iv = nbox.smallEnd(); iv <= nbox.bigEnd();
-       nbox.next(iv), cnt++) {
-    bool remove_this_node = false;
-    for (int i = 0; i < nc; ++i) {
-      const Real data = dat[i][cnt];
-      if (signs[i] == "lt") {
-        remove_this_node |= (data < vals[i]);
-      } else if (signs[i] == "le") {
-        remove_this_node |= (data <= vals[i]);
-      } else if (signs[i] == "gt") {
-        remove_this_node |= (data > vals[i]);
-      } else if (signs[i] == "ge") {
-        remove_this_node |= (data >= vals[i]);
-      } else if (signs[i] == "eq") {
-        remove_this_node |= (data == vals[i]);
-      } else {
-        cout << "i,signs[i] " << i << "," << signs[i] << endl;
-        amrex::Abort("Bad signs data. Use one of [lt,le,gt,ge,eq]");
-      }
-    }
-
-    nodeIdx.push_back(remove_this_node ? -1 : cnt_new++);
+  for (int i = 0; i < names.size(); ++i) {
+    if (names[i] == comp)
+      return i;
   }
-  int nNodesNEW = cnt_new;
-
-  // Build new nodes structure with bad points removed
-  Box newBox(IntVect::TheZeroVector(), (nNodesNEW - 1) * amrex::BASISV(0));
-  int nNodesOLD = nbox.numPts();
-  int nComp = nodes.nComp();
-  FArrayBox newNodes(newBox, nComp);
-  Vector<Real*> odp(nComp);
-  Vector<Real*> ndp(nComp);
-  for (int j = 0; j < nComp; ++j) {
-    odp[j] = nodes.dataPtr(j);
-    ndp[j] = newNodes.dataPtr(j);
-  }
-  cnt_new = 0;
-  for (int i = 0; i < nNodesOLD; ++i) {
-    int newNode = nodeIdx[i];
-    if (newNode >= 0)
-      for (int j = 0; j < nComp; ++j)
-        ndp[j][newNode] = odp[j][i];
-  }
-  nodes.resize(newBox, nComp);
-  nodes.copy(newNodes);
-  newNodes.clear(); // Make some space...not really necessary, but what the heck
-
-  const int nElts = faceData.size() / nodesPerElt;
-  AMREX_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
-
-  // Remove elements that refer to removed nodes
-  vector<int> newFaceData;
-  cnt_new = 0;
-  for (int i = 0; i < nElts; ++i) {
-    int offset = nodesPerElt * i;
-    bool eltGood = true;
-    for (int j = 0; j < nodesPerElt; ++j)
-      eltGood &=
-        (nodeIdx[faceData[offset + j] - 1] >=
-         0); // Remember that faceData is 1-based
-
-    if (eltGood) {
-      int new_offset = nodesPerElt * cnt_new;
-      for (int j = 0; j < nodesPerElt; ++j)
-        newFaceData.push_back(
-          nodeIdx[faceData[offset + j] - 1] +
-          1); // Make sure new faceData is 1-based
-      cnt_new++;
-    }
-  }
-
-  faceData.resize(cnt_new * nodesPerElt);
-  for (int i = 0; i < faceData.size(); ++i)
-    faceData[i] = newFaceData[i];
+  Print() << "comp: " << comp << std::endl;
+  amrex::Abort("Component not found in names.");
+  return -1; // unreachable, but suppresses compiler warning
 }
 
 void
-trim_surface_RXY(
-  const string& sign,
-  Real radius,
+trim_surface(
+  const Vector<std::string>& comps,
+  const Vector<std::string>& signs,
+  const Vector<Real>& vals,
   FArrayBox& nodes,
   Vector<int>& faceData,
-  int nodesPerElt)
+  const int nodesPerElt,
+  const std::vector<std::string> names,
+  const int rmBound)
 {
   const Box& nbox = nodes.box();
   const Real* xdat = nodes.dataPtr(0);
   const Real* ydat = nodes.dataPtr(1);
+#if AMREX_SPACEDIM == 3
+  const Real* zdat = nodes.dataPtr(2);
+#endif
+
+  // Include the radius to the comp logic as comp = -1
+  const int nc = comps.size();
+  Vector<const Real*> dat(nc);
+  for (int i = 0; i < nc; ++i) {
+    if (
+      comps[i] == "RXY" || comps[i] == "RXZ" || comps[i] == "RYZ" ||
+      comps[i] == "RXYZ") {
+      // RXY, RXZ, RYZ, and RXYZ do not have a corresponding comp.
+      // Inserting a nullptr here and catching it later.
+      dat[i] = nullptr;
+    } else {
+      dat[i] = nodes.dataPtr(find_comp(names, comps[i]));
+    }
+  }
 
   int cnt = 0;
-  int cnt_new = 0;
-  vector<int> nodeIdx;
+  std::vector<bool> removeNode(nbox.numPts(), false);
   for (IntVect iv = nbox.smallEnd(); iv <= nbox.bigEnd();
        nbox.next(iv), cnt++) {
-    Real x = xdat[cnt];
-    Real y = ydat[cnt];
-    Real r = std::sqrt(x * x + y * y);
-    bool remove_this_node = false;
-
-    if (sign == "lt") {
-      remove_this_node = (r < radius);
-    } else if (sign == "le") {
-      remove_this_node |= (r <= radius);
-    } else if (sign == "gt") {
-      remove_this_node |= (r > radius);
-    } else if (sign == "ge") {
-      remove_this_node |= (r >= radius);
-    } else if (sign == "eq") {
-      remove_this_node |= (r == radius);
-    } else {
-      cout << "sign_RXY: " << sign << endl;
-      amrex::Abort("Bad sign data.  Use one of [lt,le,gt,ge,eq]");
+    for (int i = 0; i < nc; ++i) {
+      Real data;
+      if (comps[i] == "RXY") {
+        Real x = xdat[cnt];
+        Real y = ydat[cnt];
+        data = std::sqrt(x * x + y * y);
+#if AMREX_SPACEDIM == 3
+      } else if (comps[i] == "RXZ") {
+        Real x = xdat[cnt];
+        Real z = zdat[cnt];
+        data = std::sqrt(x * x + z * z);
+      } else if (comps[i] == "RYZ") {
+        Real y = ydat[cnt];
+        Real z = zdat[cnt];
+        data = std::sqrt(y * y + z * z);
+      } else if (comps[i] == "RXYZ") {
+        Real x = xdat[cnt];
+        Real y = ydat[cnt];
+        Real z = zdat[cnt];
+        data = std::sqrt(x * x + y * y + z * z);
+#endif
+      } else {
+        data = dat[i][cnt];
+      }
+      if (signs[i] == "lt") {
+        removeNode[cnt] = removeNode[cnt] || (data < vals[i]);
+      } else if (signs[i] == "le") {
+        removeNode[cnt] = removeNode[cnt] || (data <= vals[i]);
+      } else if (signs[i] == "gt") {
+        removeNode[cnt] = removeNode[cnt] || (data > vals[i]);
+      } else if (signs[i] == "ge") {
+        removeNode[cnt] = removeNode[cnt] || (data >= vals[i]);
+      } else if (signs[i] == "eq") {
+        removeNode[cnt] = removeNode[cnt] || (data == vals[i]);
+      } else {
+        Print() << "i,signs[i] " << i << "," << signs[i] << std::endl;
+        amrex::Abort("Bad signs data. Use one of [lt,le,gt,ge,eq]");
+      }
     }
-
-    nodeIdx.push_back(remove_this_node ? -1 : cnt_new++);
   }
-  int nNodesNEW = cnt_new;
 
-  // Build new nodes structure with bad points removed
-  Box newBox(IntVect::TheZeroVector(), (nNodesNEW - 1) * amrex::BASISV(0));
-  int nNodesOLD = nbox.numPts();
-  int nComp = nodes.nComp();
-  FArrayBox newNodes(newBox, nComp);
-  Vector<Real*> odp(nComp);
-  Vector<Real*> ndp(nComp);
-  for (int j = 0; j < nComp; ++j) {
-    odp[j] = nodes.dataPtr(j);
-    ndp[j] = newNodes.dataPtr(j);
-  }
-  cnt_new = 0;
-  for (int i = 0; i < nNodesOLD; ++i) {
-    int newNode = nodeIdx[i];
-    if (newNode >= 0)
-      for (int j = 0; j < nComp; ++j)
-        ndp[j][newNode] = odp[j][i];
-  }
-  nodes.resize(newBox, nComp);
-  nodes.copy(newNodes);
-  newNodes.clear(); // Make some space...not really necessary, but what the heck
-
+  // Only remove elements that have nodes that fall into the trim criterion
+  // Unsued nodes will be purged by remove_unused_nodes
   const int nElts = faceData.size() / nodesPerElt;
   AMREX_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
 
-  // Remove elements that refer to removed nodes
-  vector<int> newFaceData;
-  cnt_new = 0;
+  std::vector<int> newFaceData;
+  int cnt_new = 0;
   for (int i = 0; i < nElts; ++i) {
     int offset = nodesPerElt * i;
-    bool eltGood = true;
-    for (int j = 0; j < nodesPerElt; ++j)
-      eltGood &=
-        (nodeIdx[faceData[offset + j] - 1] >=
-         0); // Remember that faceData is 1-based
-
+    bool eltGood;
+    if (rmBound == 0) {
+      // Remove element only if ALL nodes violate the criterion
+      eltGood = false;
+      for (int j = 0; j < nodesPerElt; ++j)
+        eltGood |= !removeNode[faceData[offset + j] - 1];
+    } else {
+      // Remove element if ANY node violates the criterion (default)
+      eltGood = true;
+      for (int j = 0; j < nodesPerElt; ++j)
+        eltGood &= !removeNode[faceData[offset + j] - 1];
+    }
     if (eltGood) {
       int new_offset = nodesPerElt * cnt_new;
       for (int j = 0; j < nodesPerElt; ++j)
         newFaceData.push_back(
-          nodeIdx[faceData[offset + j] - 1] +
-          1); // Make sure new faceData is 1-based
+          faceData[offset + j]); // faceData is already 1-based, no remapping
+                                 // needed
       cnt_new++;
     }
   }
@@ -341,7 +278,7 @@ remove_unused_nodes(FArrayBox& nodes, Vector<int>& faceData, int nodesPerElt)
     AMREX_ASSERT(nElts * nodesPerElt == faceData.size()); // Idiot check
 
     // Redefine elements with new numbering
-    vector<int> newFaceData;
+    std::vector<int> newFaceData;
     cnt_new = 0;
     for (int i = 0; i < nElts; ++i) {
       int offset = nodesPerElt * i;
@@ -350,7 +287,7 @@ remove_unused_nodes(FArrayBox& nodes, Vector<int>& faceData, int nodesPerElt)
         if (
           nodeIdx[faceData[offset + j] - 1] < 0 ||
           nodeIdx[faceData[offset + j] - 1] >= nNodesOLD)
-          std::cout << "messed up" << std::endl;
+          Print() << "messed up" << std::endl;
 
         newFaceData.push_back(
           nodeIdx[faceData[offset + j] - 1] +
@@ -363,9 +300,9 @@ remove_unused_nodes(FArrayBox& nodes, Vector<int>& faceData, int nodesPerElt)
     for (int i = 0; i < faceData.size(); ++i)
       faceData[i] = newFaceData[i];
 
-    if (ParallelDescriptor::IOProcessor())
-      std::cout << "Removed " << nNodesOLD - nNodesNEW << " unusued nodes"
-                << std::endl;
+    Print() << "Input surf has " << nNodesOLD << " nodes\n";
+    Print() << "Output surf has " << nNodesNEW << " nodes\n";
+    Print() << "Removed " << nNodesOLD - nNodesNEW << " unusued nodes\n";
   }
 }
 
@@ -421,53 +358,60 @@ main(int argc, char* argv[])
   ParmParse pp;
 
   int nElts;
-  string infile;
+  std::string infile;
   pp.get("infile", infile);
-  string outfile;
+  std::string outfile;
   pp.get("outfile", outfile);
 
   FArrayBox nodes;
   Vector<int> faceData;
-  vector<string> names;
-  string label;
+  std::vector<std::string> names;
+  std::string label;
   read_iso(infile, nodes, faceData, nElts, names, label);
   int nodesPerElt = faceData.size() / nElts;
   AMREX_ASSERT(nodesPerElt * nElts == faceData.size());
 
-  cout << "Surface area before: " << surface_area(nodes, faceData, nodesPerElt)
-       << '\n';
+  Print() << "Surface area before: "
+          << surface_area(nodes, faceData, nodesPerElt) << '\n';
+  Print() << "WARNING: Area is not periodicity-safe\n";
 
-  Vector<int> comps;
   int nc = pp.countval("comps");
-  if (nc > 0) {
-    comps.resize(nc);
-    pp.getarr("comps", comps, 0, nc);
 
-    Vector<string> signs(nc);
-    int ns = pp.countval("signs");
-    AMREX_ASSERT(ns == nc);
-    pp.getarr("signs", signs, 0, nc);
+  Vector<std::string> comps(nc);
+  Vector<std::string> signs(nc);
+  Vector<Real> vals(nc);
+  int rmBound = 1;
 
-    Vector<Real> vals(nc);
-    int nv = pp.countval("vals");
-    AMREX_ASSERT(nv == nc);
-    pp.getarr("vals", vals, 0, nc);
-
-    trim_surface(comps, signs, vals, nodes, faceData, nodesPerElt);
+  if (nc == 0) {
+    amrex::Abort("No triming target in inputs...");
   }
 
-  Real RXY = -1;
-  pp.query("RXY", RXY);
-  if (RXY >= 0) {
-    string sign_RXY;
-    pp.get("sign_RXY", sign_RXY);
-    trim_surface_RXY(sign_RXY, RXY, nodes, faceData, nodesPerElt);
-  }
-  cout << "Surface area after: " << surface_area(nodes, faceData, nodesPerElt)
-       << '\n';
+  comps.resize(nc);
+  pp.getarr("comps", comps, 0, nc);
+
+  int ns = pp.countval("signs");
+  AMREX_ALWAYS_ASSERT(ns == nc);
+  pp.getarr("signs", signs, 0, nc);
+
+  int nv = pp.countval("vals");
+  AMREX_ALWAYS_ASSERT(nv == nc);
+  pp.getarr("vals", vals, 0, nc);
+  pp.query("rmBound", rmBound);
+
+  trim_surface(
+    comps, signs, vals, nodes, faceData, nodesPerElt, names, rmBound);
+
+  Print() << "Surface area after: "
+          << surface_area(nodes, faceData, nodesPerElt) << '\n';
+  Print() << "WARNING: Area is not periodicity-safe\n";
 
   nElts = faceData.size() / nodesPerElt;
   AMREX_ASSERT(nElts * nodesPerElt == faceData.size());
+
+  if (nElts <= 0) {
+    Print() << "No surface left. Stopping here...\n";
+    return 1;
+  }
 
   Vector<int> remComps;
   int nrc = pp.countval("remComps");
@@ -478,7 +422,7 @@ main(int argc, char* argv[])
     int nCompsNew = names.size() - nrc;
     FArrayBox newNodes(nodes.box(), nCompsNew);
     int cnt = 0;
-    Vector<string> newNames(nCompsNew);
+    Vector<std::string> newNames(nCompsNew);
     for (int i = 0; i < names.size(); ++i) {
       bool keepThisComp = true;
       for (int j = 0; j < remComps.size(); ++j) {
@@ -504,6 +448,8 @@ main(int argc, char* argv[])
   bool do_area_stats = false;
   pp.query("do_area_stats", do_area_stats);
   if (do_area_stats) {
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+      AMREX_SPACEDIM == 3, "do_area_stats only implemented for 3D");
     Vector<Real> area(nElts);
 
     int idX = 0;
@@ -523,8 +469,8 @@ main(int argc, char* argv[])
       area_max = std::max(area_max, area[i]);
     }
 
-    cout << "  Triangle area min, max: " << area_min << " , " << area_max
-         << '\n';
+    Print() << "  Triangle area min, max: " << area_min << " , " << area_max
+            << '\n';
   }
 
   remove_unused_nodes(nodes, faceData, nodesPerElt);
@@ -541,8 +487,8 @@ write_iso(
   const FArrayBox& nodes,
   const Vector<int>& faceData,
   int nElts,
-  const vector<string>& names,
-  const string& label)
+  const std::vector<std::string>& names,
+  const std::string& label)
 {
   // Rotate data to vary quickest on component
   int nCompSurf = nodes.nComp();
@@ -563,7 +509,7 @@ write_iso(
 
   std::ofstream ofs;
   ofs.open(outfile.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
-  ofs << label << endl;
+  ofs << label << std::endl;
   for (int i = 0; i < nCompSurf; ++i) {
     ofs << names[i];
     if (i < nCompSurf - 1)
@@ -572,7 +518,7 @@ write_iso(
       ofs << std::endl;
   }
   int nodesPerElt = faceData.size() / nElts;
-  ofs << nElts << " " << nodesPerElt << endl;
+  ofs << nElts << " " << nodesPerElt << std::endl;
   tnodes.writeOn(ofs);
   ofs.write((char*)faceData.dataPtr(), sizeof(int) * faceData.size());
   ofs.close();
@@ -584,8 +530,8 @@ read_iso(
   FArrayBox& nodes,
   Vector<int>& faceData,
   int& nElts,
-  vector<string>& names,
-  string& label)
+  std::vector<std::string>& names,
+  std::string& label)
 {
   std::ifstream ifs;
   ifs.open(infile.c_str(), std::ios::in | std::ios::binary);
