@@ -8,3 +8,8 @@ updates:
     allow:
       - dependency-name: "Submodules/PelePhysics"
       - dependency-name: "Submodules/qslim"
+
+  - package-ecosystem: github-actions
+    schedule:
+        interval: "monthly"
+    directory: /
