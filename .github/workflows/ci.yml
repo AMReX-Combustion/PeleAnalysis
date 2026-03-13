@@ -23,7 +23,7 @@ jobs:
 #    runs-on: ubuntu-latest
 #    steps:
 #      - name: Clone
-#        uses: actions/checkout@v4
+#        uses: actions/checkout@v6
 #      - name: Check formatting
 #        uses: DoozyX/clang-format-lint-action@v0.18.2
 #        with:
@@ -36,7 +36,7 @@ jobs:
 #    runs-on: ubuntu-latest
 #    steps:
 #      - name: Clone
-#        uses: actions/checkout@v4
+#        uses: actions/checkout@v6
 #        with:
 #          submodules: false
 #      - name: Python
@@ -69,12 +69,12 @@ jobs:
             amrex_build_args: 'COMP=llvm'
             dependency_cmds:
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
       - name: Clone PeleAnalysis
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: PeleAnalysis-${{matrix.comp}}
           submodules: recursive
