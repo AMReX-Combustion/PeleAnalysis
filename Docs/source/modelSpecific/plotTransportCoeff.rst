@@ -2,6 +2,9 @@
 
 plotTransportCoeff
 ******************
+.. warning::
+   The compiling process requires absolute paths to PelePhysics in the GNUmakefile.
+
 Evaluate and output all mixture transport coefficients from an AMReX plot file produced by a reacting flow solver such as PeleLMeX. The tool reads species mass fractions, temperature, and density at each AMR level, calls the PelePhysics transport library to compute the full set of transport coefficients, and writes the results as a new AMReX plot file. This tool is closely related to :doc:`plotTYtoLe`, which derives Lewis numbers from the same transport coefficients; here the raw coefficients are written directly without further post-processing.
 
 The following transport coefficients are computed and written for each grid point:
