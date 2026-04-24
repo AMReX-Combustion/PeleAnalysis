@@ -1,0 +1,8 @@
+# Round-trip test, pass 2 of 2: subtract varB from sum  (6 - 2 = 4 = varA)
+# The result component "recovered" must equal the original varA = 4.0.
+infile     = plt_t8a_add
+inVarAName = sum
+inVarBName = varB
+outVarName = recovered
+operator   = subtract
+outfile    = plt_t8b_sub

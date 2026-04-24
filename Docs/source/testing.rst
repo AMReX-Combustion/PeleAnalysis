@@ -34,11 +34,15 @@ Available suites
    * - :doc:`jpdf <testing/jpdf>`
      - Joint PDFs and 2D conditional means
      - 8 scenarios; 2D + 3D serial + 3D MPI (2 and 4 ranks)
+   * - :doc:`arithmetics <testing/arithmetics>`
+     - Binary field arithmetic (add, subtract, multiply, divide)
+     - 15 assertions; round-trip value verification; 3D serial + MPI
 
 .. toctree::
    :hidden:
 
    testing/jpdf
+   testing/arithmetics
 
 Adding a new suite
 ##################

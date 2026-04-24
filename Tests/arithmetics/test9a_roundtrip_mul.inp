@@ -1,0 +1,8 @@
+# Round-trip test, pass 1 of 2: multiply varA * varB  (4 * 2 = 8)
+# Pass 2 divides the result by varB to recover varA.
+infile     = plt_arith
+inVarAName = varA
+inVarBName = varB
+outVarName = prod
+operator   = multiply
+outfile    = plt_t9a_mul

@@ -1,0 +1,7 @@
+infile         = plt_arith_divzero
+inVarAName     = varA
+inVarBName     = varB
+outVarName     = quot
+operator       = divide
+checkDivByZero = 0
+outfile        = plt_t6_divzero_skip

@@ -1,0 +1,6 @@
+infile     = plt_arith
+inVarAName = varA
+inVarBName = varB
+outVarName = sum
+operator   = add
+outfile    = plt_custom_output

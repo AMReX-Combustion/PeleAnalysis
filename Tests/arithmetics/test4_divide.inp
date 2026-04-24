@@ -1,0 +1,6 @@
+infile     = plt_arith
+inVarAName = varA
+inVarBName = varB
+outVarName = quot
+operator   = divide
+outfile    = plt_t4_divide

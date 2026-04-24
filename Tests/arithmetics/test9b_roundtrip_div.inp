@@ -1,0 +1,8 @@
+# Round-trip test, pass 2 of 2: divide prod by varB  (8 / 2 = 4 = varA)
+# The result component "recovered" must equal the original varA = 4.0.
+infile     = plt_t9a_mul
+inVarAName = prod
+inVarBName = varB
+outVarName = recovered
+operator   = divide
+outfile    = plt_t9b_div

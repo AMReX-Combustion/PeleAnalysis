@@ -1,0 +1,11 @@
+# Example input file for arithmetics
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt57000                       # input pltfile
+outfile = plt57000_sum                  # DEF: <infile>_<operator>, output pltfile
+
+#------------------- Operation control ----------------------------------------------------
+operator = add                          # arithmetic operator: add, subtract, multiply, divide
+inVarAName = Y(O2)                      # name of variable A as in <infile>
+inVarBName = Y(H2)                      # name of variable B as in <infile>
+outVarName = sum                        # name of output variable as in <outfile>

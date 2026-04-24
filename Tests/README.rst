@@ -34,6 +34,11 @@ Available suites
      - Joint PDFs and 2D conditional means
      - 8 scenarios: all output formats, condMean, conditioning modes 0/1/2,
        norm_cVal, temporal averaging; 2D + 3D serial + 3D MPI (2 and 4 ranks)
+   * - ``arithmetics/``
+     - Binary field arithmetic (add, subtract, multiply, divide)
+     - 15 assertions: all four operators, divide-by-zero detection/bypass,
+       output naming, round-trip value verification, error handling, 3D MPI
+       (2 and 4 ranks)
 
 Adding a new suite
 ##################

@@ -1,0 +1,6 @@
+infile     = plt_arith
+inVarAName = varA
+inVarBName = varB
+outVarName = prod
+operator   = multiply
+outfile    = plt_t3_multiply

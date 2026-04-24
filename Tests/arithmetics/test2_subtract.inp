@@ -1,0 +1,6 @@
+infile     = plt_arith
+inVarAName = varA
+inVarBName = varB
+outVarName = diff
+operator   = subtract
+outfile    = plt_t2_subtract

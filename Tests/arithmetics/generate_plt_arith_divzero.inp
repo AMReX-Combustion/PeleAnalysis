@@ -1,0 +1,27 @@
+# Generate test plotfile plt_arith_divzero for arithmetics divide-by-zero tests.
+# varA = 4.0 constant, varB = plane_step with the left half = 0.0.
+#
+# Used to test:
+#   operator=divide checkDivByZero=1  →  abort (zeros present in varB)
+#   operator=divide checkDivByZero=0  →  succeeds despite zeros
+
+amr.n_cell        = 8 8 8
+amr.max_grid_size = 8
+amr.ngrow         = 0
+geometry.coord_sys   = 0
+geometry.prob_lo     = 0.0 0.0 0.0
+geometry.prob_hi     = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_arith_divzero
+
+field.names = varA varB
+
+varA.type  = constant
+varA.value = 4.0
+
+# Hard step at x=0.5: 0.0 on the left half, 2.0 on the right half
+varB.type          = plane_step
+varB.axis          = 0
+varB.position      = 0.5
+varB.value_left    = 0.0
+varB.value_right   = 2.0

@@ -1,0 +1,26 @@
+# Generate test plotfile plt_arith for arithmetics tests.
+# Two constant fields on an 8x8x8 domain in [0,1]^3.
+#
+# varA = 4.0, varB = 2.0 everywhere.
+# Expected results:
+#   add      → sum      = 6.0
+#   subtract → diff     = 2.0
+#   multiply → prod     = 8.0
+#   divide   → quot     = 2.0
+
+amr.n_cell        = 8 8 8
+amr.max_grid_size = 8
+amr.ngrow         = 0
+geometry.coord_sys   = 0
+geometry.prob_lo     = 0.0 0.0 0.0
+geometry.prob_hi     = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_arith
+
+field.names = varA varB
+
+varA.type  = constant
+varA.value = 4.0
+
+varB.type  = constant
+varB.value = 2.0
