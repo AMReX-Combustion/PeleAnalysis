@@ -1,0 +1,15 @@
+# Test 4: useminmax overrides auto-detected range, forcing out-of-range clamping
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+#
+# var_plane auto-range is [0.0, 1.0]. By setting useminmax1 = -0.5 0.5, the
+# right half of the domain (var_plane=1.0) maps to bin index 24, which is
+# clamped to bin 15. Verbose output must report v1g > 0.
+# The plotfile Header axis-range line for var1 should read -0.5 and 0.5.
+
+infile      = plt_jpdf_A
+vars        = var_plane var_sine
+nBins       = 16
+outSuffix   = _test4
+useminmax1  = -0.5 0.5
+
+output_plotfile = 1

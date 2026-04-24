@@ -1,0 +1,30 @@
+# Test 6: do_conditioning=2 — effective conditioning value is c(1-c)
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+#
+# cVar=1 selects var_sine as the conditioning variable.
+# do_conditioning=2 forces norm_cVal=1 automatically.
+#
+# Execution order in the code:
+#   1. Normalise:  cVal = (var_sine - cNormMin) / (cNormMax - cNormMin)
+#   2. Apply c(1-c): cVal = cVal * (1 - cVal)   → range [0, 0.25]
+#   3. Accept cell if cVal in [cMin, cMax]
+#
+# With cNormMin=0.0, cNormMax=1.0: step 1 maps var_sine ∈ [0,1] → [0,1]
+# With cMin=0.1, cMax=0.25: step 3 keeps cells where c(1-c) >= 0.1,
+#   i.e., var_sine in roughly [0.13, 0.87] — middle portion, tails excluded.
+#
+# Expected: JPDF bins for var_sine near 0 or 1 are zero (tails excluded).
+# sum(PDF) = 1.0 after the normalization fix.
+
+infile          = plt_jpdf_A
+vars            = var_plane var_sine
+nBins           = 16
+outSuffix       = _test6
+do_conditioning = 2
+cVar            = 1
+cNormMin        = 0.0
+cNormMax        = 1.0
+cMin            = 0.1
+cMax            = 0.25
+
+output_plotfile = 1

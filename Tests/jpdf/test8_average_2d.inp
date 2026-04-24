@@ -1,0 +1,13 @@
+# Test 8 (2D): Temporal averaging over two identical 2D plotfiles
+# Requires: plt_jpdf_A_2d and plt_jpdf_B_2d (generated with generate_plt_A/B_2d.inp)
+#
+# The averaged PDF should match the per-file PDFs to floating-point precision.
+
+infile     = plt_jpdf_A_2d plt_jpdf_B_2d
+vars       = var_plane var_sine
+nBins      = 16
+outSuffix  = _2d_t8
+do_average = 1
+
+output_plotfile = 1
+output_gnuplot  = 1

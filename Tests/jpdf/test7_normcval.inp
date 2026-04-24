@@ -1,0 +1,27 @@
+# Test 7: norm_cVal=1 with do_conditioning=1 — conditioning on a normalised variable
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+#
+# cVar=2 selects var_cond (y-axis step, values exactly 0.0 or 1.0).
+# norm_cVal=1 normalises the conditioning variable before the range check:
+#   norm_cVal_value = (var_cond - cNormMin) / (cNormMax - cNormMin) = var_cond
+# cMin=0.9, cMax=1.1 retains only cells where normalised var_cond >= 0.9,
+# i.e., the back half of the domain (var_cond=1.0).
+#
+# Expected: 3 JPDF pairs written. The (var_plane, var_sine) PDF looks the same
+# as test5 but conditioning is applied along y instead of x: the full range of
+# var_plane and var_sine is covered, but only from the back y half.
+# After the normalization fix, sum(PDF) = 1.0.
+
+infile          = plt_jpdf_A
+vars            = var_plane var_sine var_cond
+nBins           = 16
+outSuffix       = _test7
+do_conditioning = 1
+cVar            = 2
+norm_cVal       = 1
+cNormMin        = 0.0
+cNormMax        = 1.0
+cMin            = 0.9
+cMax            = 1.1
+
+output_plotfile = 1

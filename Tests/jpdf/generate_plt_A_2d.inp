@@ -1,0 +1,34 @@
+# Generate test plotfile plt_jpdf_A_2d for 2D jpdf tests
+# Same three fields as generate_plt_A.inp, adapted for 2D geometry.
+
+amr.n_cell        = 16 16
+amr.max_grid_size = 16
+amr.ngrow         = 0
+geometry.coord_sys   = 0
+geometry.prob_lo     = 0.0 0.0
+geometry.prob_hi     = 1.0 1.0
+geometry.is_periodic = 0 0
+plotfile_name = plt_jpdf_A_2d
+
+field.names = var_plane var_sine var_cond
+
+# Hard step at x=0.5: exactly 0.0 (left half) or 1.0 (right half)
+var_plane.type        = plane_step
+var_plane.axis        = 0
+var_plane.position    = 0.5
+var_plane.value_left  = 0.0
+var_plane.value_right = 1.0
+
+# Sine in x with one full period, range approx [0, 1]
+var_sine.type      = sine
+var_sine.frequency = 1.0 0.0
+var_sine.phase     = 0.0 0.0
+var_sine.amplitude = 0.5
+var_sine.offset    = 0.5
+
+# Hard step at y=0.5: 0.0 (bottom) or 1.0 (top); independent of x-axis fields
+var_cond.type        = plane_step
+var_cond.axis        = 1
+var_cond.position    = 0.5
+var_cond.value_left  = 0.0
+var_cond.value_right = 1.0

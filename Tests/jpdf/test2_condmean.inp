@@ -1,0 +1,14 @@
+# Test 2: 2D conditional mean with an independent conditioning variable
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+#
+# var_cond is a y-axis step, independent of var_plane and var_sine (both x-axis).
+# Expected: condMean(var_cond | var_plane, var_sine) ≈ 0.5 everywhere the PDF is
+# non-zero, because equal volume of var_cond=0 and var_cond=1 cells falls in each bin.
+
+infile        = plt_jpdf_A
+vars          = var_plane var_sine
+condMean_vars = var_cond
+nBins         = 16
+outSuffix     = _test2
+
+output_matlab = 1

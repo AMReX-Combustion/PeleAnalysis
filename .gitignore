@@ -64,3 +64,11 @@ TAGS
 plt*
 chk*
 
+# Visual Studio Code settings
+.vscode/
+._*
+
+.claude
+
+# jpdf test run outputs
+testrun

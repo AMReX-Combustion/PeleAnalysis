@@ -1,0 +1,14 @@
+# Test 1: Basic JPDF with all six output formats enabled
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+
+infile    = plt_jpdf_A
+vars      = var_plane var_sine
+nBins     = 16
+outSuffix = _test1
+
+output_plotfile = 1
+output_gnuplot  = 1
+output_matlab   = 1
+output_tecplot  = 1
+output_fab      = 1
+output_scatter  = 1

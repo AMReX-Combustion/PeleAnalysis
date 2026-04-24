@@ -1,0 +1,46 @@
+# Example input file for jpdf
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000 plt00001                 # Plot file(s); multiple files can be listed for averaging
+outSuffix = _jpdf                          # DEF: "jpdf"; Suffix appended to infile path for output directory
+finestLevel = 2                            # DEF: finest level of plot file; Sets the finest level to read.
+
+#------------------- OUTPUT FORMATS -------------------------------------------------------
+output_plotfile = 1                        # [0, 1], DEF: 1; Write JPDFs as AMReX plotfile
+output_matlab   = 0                        # [0, 1], DEF: 0; Write JPDFs in MATLAB format (.dat)
+output_gnuplot  = 0                        # [0, 1], DEF: 0; Write JPDFs in gnuplot format (.gpd)
+output_tecplot  = 0                        # [0, 1], DEF: 0; Write JPDFs in Tecplot format (.tpd)
+output_fab      = 0                        # [0, 1], DEF: 0; Write JPDFs as FAB binary (.fab)
+output_scatter  = 0                        # [0, 1], DEF: 0; Write non-zero bins as scatter plot (.dat)
+
+#------------------- VARIABLES ------------------------------------------------------------
+vars = Y(H2O) temp                         # List of variables; JPDF computed for each unique pair (min. 2)
+nBins = 64                                 # DEF: 64; Number of bins per direction in JPDF
+
+#useminmax1 = 0.0 1.0                      # Override auto min/max for variable 1 (index starts at 1)
+#useminmax2 = 0.0 3000.0                   # Override auto min/max for variable 2
+
+#------------------- 2D CONDITIONAL MEAN -------------------------------------------------
+# condMean_vars computes the mean of each listed variable conditioned simultaneously on
+# both JPDF axes (v1 and v2). For each bin (i,j) of the v1-v2 plane, the tool computes
+#   <condMean_var | v1_i, v2_j>  =  sum( condMean_var * dV ) / sum( dV )
+# where the sums run over all cells whose v1 and v2 values fall in that bin.
+# This is a 2D conditional mean; use the conditionalMean tool for 1D conditioning.
+# Variables listed here may overlap with vars; duplicates are not loaded twice.
+condMean_vars = Y(OH)                      # Variable(s) to average conditioned on the 2D JPDF grid
+
+#------------------- AVERAGING ------------------------------------------------------------
+do_average = 1                             # [0, 1], DEF: 0; Accumulate JPDFs across all infiles and write
+                                           # a single time-averaged result to JPDFAverage<outSuffix>
+
+#------------------- CONDITIONING --------------------------------------------------------
+# Restricts which cells contribute to the PDF. This is independent of condMean_vars.
+do_conditioning = 0                        # [0, 1, 2], DEF: 0; 0: no conditioning
+                                           #   1: only cells where cMin <= cVar <= cMax contribute
+                                           #   2: effective value is c(1-c); normalisation is forced
+#cVar = 0                                  # DEF: 0; Index in 'vars' of the conditioning variable
+#cMin = 0.0                                # DEF: 0.0; Min value of conditioning variable
+#cMax = 1.0                                # DEF: 1.0; Max value of conditioning variable
+#norm_cVal = 0                             # [0, 1], DEF: 0; Normalise cVar to [0,1] before cMin/cMax check
+#cNormMin = 0.0                            # DEF: 0.0; Min value for normalisation
+#cNormMax = 1.0                            # DEF: 1.0; Max value for normalisation

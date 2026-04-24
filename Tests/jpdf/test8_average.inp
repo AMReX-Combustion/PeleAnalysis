@@ -1,0 +1,20 @@
+# Test 8: Temporal averaging over two identical plotfiles
+# Requires: plt_jpdf_A and plt_jpdf_B (generated with generate_plt_A/B.inp)
+#
+# plt_jpdf_A and plt_jpdf_B contain identical fields. The averaged PDF should
+# match the per-file PDFs to floating-point precision because the accumulator
+# collects 2x the per-file volume, then divides by domainVol * nPlotFiles = 2.
+#
+# Expected outputs:
+#   plt_jpdf_A_test8/  — per-file result for plt_jpdf_A
+#   plt_jpdf_B_test8/  — per-file result for plt_jpdf_B
+#   JPDFAverage_test8/ — time-averaged result (must equal per-file PDF)
+
+infile     = plt_jpdf_A plt_jpdf_B
+vars       = var_plane var_sine
+nBins      = 16
+outSuffix  = _test8
+do_average = 1
+
+output_plotfile = 1
+output_gnuplot  = 1

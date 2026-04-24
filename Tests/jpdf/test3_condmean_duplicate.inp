@@ -1,0 +1,17 @@
+# Test 3: condMean_vars variable already present in vars — deduplication logic
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+#
+# var_cond appears in both vars (index 2) and condMean_vars.
+# Expected: the code detects the duplicate and maps ix_condMean[0] = 2 without
+# loading var_cond twice. Verbose output must include:
+#   "condMeanVar 'var_cond' already on position 2"
+# Three JPDF pairs are written (var_plane-var_sine, var_plane-var_cond,
+# var_sine-var_cond), each with an associated condMean file.
+
+infile        = plt_jpdf_A
+vars          = var_plane var_sine var_cond
+condMean_vars = var_cond
+nBins         = 16
+outSuffix     = _test3
+
+output_matlab = 1

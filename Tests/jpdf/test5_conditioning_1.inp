@@ -1,0 +1,21 @@
+# Test 5: do_conditioning=1 — include only cells in a given variable range
+# Requires: plt_jpdf_A (generated with generate_plt_A.inp)
+#
+# cVar=0 selects var_plane as the conditioning variable.
+# var_plane takes values 0.0 or 1.0; cMin=0.9, cMax=1.1 retains only the right
+# half of the domain (var_plane=1.0). The JPDF should be non-zero only in the
+# bin column for var_plane=1.0 (bin 15 after max-clamping).
+#
+# NOTE: After the normalization fix, sum(PDF) = 1.0. Before the fix, sum ≈ 0.5
+# because domainVol was used instead of the total contributed volume.
+
+infile          = plt_jpdf_A
+vars            = var_plane var_sine
+nBins           = 16
+outSuffix       = _test5
+do_conditioning = 1
+cVar            = 0
+cMin            = 0.9
+cMax            = 1.1
+
+output_plotfile = 1
