@@ -1,0 +1,28 @@
+# T4 — plane_step on all three axes; range must be [0, 1]
+amr.n_cell = 16 16 16
+amr.max_grid_size = 16
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t4_planes
+
+field.names = px py pz
+
+px.type = plane_step
+px.axis = 0
+px.position = 0.5
+px.value_left = 1.0
+px.value_right = 0.0
+
+py.type = plane_step
+py.axis = 1
+py.position = 0.5
+py.value_left = 1.0
+py.value_right = 0.0
+
+pz.type = plane_step
+pz.axis = 2
+pz.position = 0.5
+pz.value_left = 1.0
+pz.value_right = 0.0

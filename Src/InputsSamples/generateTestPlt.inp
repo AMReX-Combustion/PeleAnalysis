@@ -1,19 +1,44 @@
 # AMReX Grid Parameters
-amr.n_cell = 64 64 64
-amr.max_grid_size = 32
-amr.ngrow = 0
+amr.n_cell = 64 64 64        # Number of cells along each axis at level 0
+amr.max_grid_size = 32       # Maximum box side length (cells) per MPI rank
+amr.ngrow = 0                # Ghost-cell layers (0 = none)
 
 # Geometry
-geometry.coord_sys = 0
+geometry.coord_sys = 0       # 0 = Cartesian, 1 = cylindrical/RZ (2D only)
 geometry.prob_lo = 0.0 0.0 0.0
 geometry.prob_hi = 1.0 1.0 1.0
-geometry.is_periodic = 0 0 0
+geometry.is_periodic = 0 0 0 # Periodic boundary flags per axis
 
 # Output
-plotfile_name = plt_test
+plotfile_name = plt_test      # Directory name written by the tool
+
+# --- Multilevel AMR (set amr.max_level = 0 or omit for single-level output) ---
+amr.max_level = 2            # Number of refinement levels above the base grid
+amr.ref_ratio = 2 2          # Refinement ratio per level transition (one entry per transition)
+amr.blocking_factor = 8      # Minimum box size used during grid generation
+amr.grid_eff = 0.7           # Clustering efficiency threshold (higher = fewer but larger boxes)
+amr.n_error_buf = 2 2        # Buffer cells (coarse index space) added around tagged regions, per level
+
+# List of refinement indicators — each entry below defines one criterion
+amr.refinement_indicators = sphere_box gthan adjd
+
+# Box region: refine the central sphere region up to level 2
+amr.sphere_box.in_box_lo = 0.2 0.2 0.2
+amr.sphere_box.in_box_hi = 0.8 0.8 0.8
+amr.sphere_box.max_level = 2
+
+# Value criterion: refine where circle_step > 5.0, up to level 2
+amr.gthan.value_greater = 5.0
+amr.gthan.field_name    = circle_step
+amr.gthan.max_level     = 2
+
+# Adjacent-difference criterion: refine the plane_step interface up to level 2
+amr.adjd.adjacent_difference_greater = 0.4
+amr.adjd.field_name                  = plane_step
+amr.adjd.max_level                   = 2
 
 # Field definitions
-field.names = const_field plane_step plane_smooth double_plane_step double_plane_smooth circle_step circle_smooth spherical_shell_step spherical_shell_smooth sine_field
+field.names = const_field plane_step plane_smooth double_plane_step double_plane_smooth circle_step circle_smooth spherical_shell_step spherical_shell_smooth sine_field cylinder_step cylinder_smooth
 
 # Constant field
 const_field.type = constant
@@ -34,11 +59,11 @@ plane_smooth.value_left = 2.0
 plane_smooth.value_right = -1.0
 plane_smooth.smooth_width = 0.2  # Transition width
 
-# Double plane step function (vertical split at x=0.5)
+# Double plane step function (slab between x=0.3 and x=0.7)
 double_plane_step.type = double_plane_step
 double_plane_step.axis = 0              # 0=x, 1=y, 2=z
-double_plane_step.position = 0.5        # Position along axis
-double_plane_step.position_second = 0.6 # Position of second plane along axis
+double_plane_step.position = 0.3        # Position along axis
+double_plane_step.position_second = 0.7 # Position of second plane along axis
 double_plane_step.value_inside = 1.0      # Value on left/below
 double_plane_step.value_outside = 0.0     # Value on right/above
 
@@ -49,7 +74,7 @@ double_plane_smooth.position = 0.5
 double_plane_smooth.position_second = 0.6
 double_plane_smooth.value_inside = 2.0
 double_plane_smooth.value_outside = -1.0
-double_plane_smooth.smooth_width = 0.2  # Transition width
+double_plane_smooth.smooth_width = 0.05
 
 # Circle/Sphere step function
 circle_step.type = sphere_step   # or circle_step for 2D
@@ -81,7 +106,7 @@ spherical_shell_smooth.radius_inner = 0.1
 spherical_shell_smooth.radius_outer = 0.3
 spherical_shell_smooth.value_inside = 10.0
 spherical_shell_smooth.value_outside = 0.0
-spherical_shell_smooth.smooth_width = 0.1
+spherical_shell_smooth.smooth_width = 0.05
 
 # Sine function
 sine_field.type = sine
@@ -89,3 +114,20 @@ sine_field.frequency = 2.0 3.0 1.0  # Frequency in each direction
 sine_field.phase = 0.0 0.0 0.0      # Phase shift
 sine_field.amplitude = 1.0
 sine_field.offset = 0.0
+
+# Infinite cylinder step (axis along z; radial distance in x-y plane)
+cylinder_step.type = cylinder_step
+cylinder_step.axis = 2               # Cylinder axis: 0=x, 1=y, 2=z
+cylinder_step.center = 0.5 0.5 0.5  # Point on the cylinder axis
+cylinder_step.radius = 0.3
+cylinder_step.value_inside = 1.0
+cylinder_step.value_outside = 0.0
+
+# Infinite cylinder with smooth radial transition
+cylinder_smooth.type = cylinder_smooth
+cylinder_smooth.axis = 2             # Cylinder axis: 0=x, 1=y, 2=z
+cylinder_smooth.center = 0.5 0.5 0.5
+cylinder_smooth.radius = 0.3
+cylinder_smooth.value_inside = 1.0
+cylinder_smooth.value_outside = 0.0
+cylinder_smooth.smooth_width = 0.1  # Transition width around radius

@@ -1,0 +1,13 @@
+# T15 — cylindrical/RZ coordinate system (coord_sys=1), 2D build
+# Verifies that coord_sys=1 is accepted and the plotfile Header records spacedim=2
+# and coord_sys=1, matching the format produced by PeleLMeX 2D RZ simulations.
+amr.n_cell = 16 16
+geometry.coord_sys = 1
+geometry.prob_lo = 0.0 0.0
+geometry.prob_hi = 1.0 1.0
+geometry.is_periodic = 0 0
+plotfile_name = plt_t15_rz
+
+field.names = cfield
+cfield.type = constant
+cfield.value = 2.71828

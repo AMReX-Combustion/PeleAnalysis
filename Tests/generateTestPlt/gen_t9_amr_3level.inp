@@ -1,0 +1,21 @@
+# T9 — 3-level InBox refinement → Level_0, Level_1, Level_2
+amr.n_cell = 32 32 32
+amr.max_grid_size = 32
+amr.max_level = 2
+amr.ref_ratio = 2 2
+amr.grid_eff = 0.7
+amr.blocking_factor = 4
+amr.n_error_buf = 1 1
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t9_3level
+
+amr.refinement_indicators = mybox
+amr.mybox.in_box_lo = 0.25 0.25 0.25
+amr.mybox.in_box_hi = 0.75 0.75 0.75
+
+field.names = cfield
+cfield.type = constant
+cfield.value = 1.0

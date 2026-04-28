@@ -1,0 +1,16 @@
+# err3 — refinement indicator references a non-existent field; tool must abort
+amr.n_cell = 8 8 8
+amr.max_level = 1
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_err3
+
+amr.refinement_indicators = gthan
+amr.gthan.value_greater = 0.5
+amr.gthan.field_name = no_such_field
+
+field.names = myfield
+myfield.type = constant
+myfield.value = 1.0

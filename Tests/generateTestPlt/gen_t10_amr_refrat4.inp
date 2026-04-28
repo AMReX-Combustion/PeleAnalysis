@@ -1,0 +1,21 @@
+# T10 — ref_ratio=4 InBox refinement → 2 levels
+amr.n_cell = 16 16 16
+amr.max_grid_size = 32
+amr.max_level = 1
+amr.ref_ratio = 4
+amr.grid_eff = 0.7
+amr.blocking_factor = 4
+amr.n_error_buf = 1
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t10_refrat4
+
+amr.refinement_indicators = mybox
+amr.mybox.in_box_lo = 0.3 0.3 0.3
+amr.mybox.in_box_hi = 0.7 0.7 0.7
+
+field.names = cfield
+cfield.type = constant
+cfield.value = 1.0

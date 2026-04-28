@@ -1,0 +1,13 @@
+# T13 — output_name override; plotfile header must contain "Y(OH)", not "myvar"
+amr.n_cell = 8 8 8
+amr.max_grid_size = 8
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t13_output_name
+
+field.names = myvar
+myvar.type = constant
+myvar.value = 1.0
+myvar.output_name = Y(OH)

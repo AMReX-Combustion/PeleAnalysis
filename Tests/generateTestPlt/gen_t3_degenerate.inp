@@ -1,0 +1,43 @@
+# T3 — five degenerate configurations that all produce 5.0 everywhere
+amr.n_cell = 8 8 8
+amr.max_grid_size = 8
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t3_degen
+
+field.names = c1 c2 c3 c4 c5
+
+# constant directly
+c1.type = constant
+c1.value = 5.0
+
+# sphere centered far outside domain → all cells are "outside"
+c2.type = sphere_step
+c2.center = 100.0 100.0 100.0
+c2.radius = 1.0
+c2.value_inside = 99.0
+c2.value_outside = 5.0
+
+# ring with radii far outside domain → all cells are "outside"
+c3.type = ring_step
+c3.center = 0.5 0.5 0.5
+c3.radius_inner = 100.0
+c3.radius_outer = 200.0
+c3.value_inside = 99.0
+c3.value_outside = 5.0
+
+# double_plane with both planes outside [0,1] → all cells are "outside"
+c4.type = double_plane_step
+c4.axis = 0
+c4.position = 2.0
+c4.position_second = 3.0
+c4.value_inside = 99.0
+c4.value_outside = 5.0
+
+# sine with zero amplitude → offset only
+c5.type = sine
+c5.amplitude = 0.0
+c5.offset = 5.0
+c5.frequency = 1.0 1.0 1.0

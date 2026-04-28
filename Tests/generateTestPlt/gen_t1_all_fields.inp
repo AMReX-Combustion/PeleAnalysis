@@ -1,0 +1,75 @@
+# T1 — all 10 field types, single-level, structural check only
+amr.n_cell = 16 16 16
+amr.max_grid_size = 16
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t1_all_fields
+
+field.names = const_f plane_s plane_sm dplane_s dplane_sm circle_s circle_sm shell_s shell_sm sine_f
+
+const_f.type = constant
+const_f.value = 1.0
+
+plane_s.type = plane_step
+plane_s.axis = 0
+plane_s.position = 0.5
+plane_s.value_left = 1.0
+plane_s.value_right = 0.0
+
+plane_sm.type = plane_smooth
+plane_sm.axis = 1
+plane_sm.position = 0.5
+plane_sm.value_left = 2.0
+plane_sm.value_right = -1.0
+plane_sm.smooth_width = 0.2
+
+dplane_s.type = double_plane_step
+dplane_s.axis = 0
+dplane_s.position = 0.3
+dplane_s.position_second = 0.7
+dplane_s.value_inside = 1.0
+dplane_s.value_outside = 0.0
+
+dplane_sm.type = double_plane_smooth
+dplane_sm.axis = 1
+dplane_sm.position = 0.3
+dplane_sm.position_second = 0.7
+dplane_sm.value_inside = 2.0
+dplane_sm.value_outside = -1.0
+dplane_sm.smooth_width = 0.05
+
+circle_s.type = sphere_step
+circle_s.center = 0.5 0.5 0.5
+circle_s.radius = 0.25
+circle_s.value_inside = 10.0
+circle_s.value_outside = 0.0
+
+circle_sm.type = sphere_smooth
+circle_sm.center = 0.5 0.5 0.5
+circle_sm.radius = 0.25
+circle_sm.value_inside = 1.0
+circle_sm.value_outside = 0.0
+circle_sm.smooth_width = 0.1
+
+shell_s.type = spherical_shell_step
+shell_s.center = 0.5 0.5 0.5
+shell_s.radius_inner = 0.1
+shell_s.radius_outer = 0.3
+shell_s.value_inside = 10.0
+shell_s.value_outside = 0.0
+
+shell_sm.type = spherical_shell_smooth
+shell_sm.center = 0.5 0.5 0.5
+shell_sm.radius_inner = 0.1
+shell_sm.radius_outer = 0.3
+shell_sm.value_inside = 10.0
+shell_sm.value_outside = 0.0
+shell_sm.smooth_width = 0.05
+
+sine_f.type = sine
+sine_f.frequency = 1.0 1.0 1.0
+sine_f.phase = 0.0 0.0 0.0
+sine_f.amplitude = 1.0
+sine_f.offset = 0.0

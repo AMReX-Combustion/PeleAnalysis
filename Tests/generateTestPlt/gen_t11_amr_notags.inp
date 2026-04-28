@@ -1,0 +1,24 @@
+# T11 — threshold above any possible value → no cells tagged → 1 level only
+amr.n_cell = 16 16 16
+amr.max_grid_size = 16
+amr.max_level = 1
+amr.ref_ratio = 2
+amr.grid_eff = 0.7
+amr.blocking_factor = 4
+amr.n_error_buf = 1
+geometry.coord_sys = 0
+geometry.prob_lo = 0.0 0.0 0.0
+geometry.prob_hi = 1.0 1.0 1.0
+geometry.is_periodic = 0 0 0
+plotfile_name = plt_t11_notags
+
+amr.refinement_indicators = gthan
+amr.gthan.value_greater = 1000.0
+amr.gthan.field_name = sphere
+
+field.names = sphere
+sphere.type = sphere_step
+sphere.center = 0.5 0.5 0.5
+sphere.radius = 0.3
+sphere.value_inside = 1.0
+sphere.value_outside = 0.0
