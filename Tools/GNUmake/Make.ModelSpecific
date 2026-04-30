@@ -70,7 +70,7 @@ include $(PELE_PHYSICS_HOME)/ThirdParty/Make.ThirdParty
 #---------------------
 # PeleAnalysis sources
 #---------------------
-Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util
+Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util/mech_util/
 Bpack += $(foreach dir, $(Bdirs), $(dir)/Make.package)
 Blocs += $(foreach dir, $(Bdirs), $(dir))
 $(info $${Bpack} is [${Bpack}])

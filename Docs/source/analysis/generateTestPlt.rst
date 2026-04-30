@@ -1,4 +1,5 @@
 .. highlight:: bash
+
 ******************************************
 generateTestPlt
 ******************************************
@@ -96,6 +97,7 @@ Available criterion types
 .. note::
 
    Value-based criteria evaluate the analytic field expression at cell centres. They do not depend on data stored in the plotfile and can therefore be used at any refinement level without first filling a coarser level.
+
 ::
 
    #------------------- Output ----------------------------------------------------------

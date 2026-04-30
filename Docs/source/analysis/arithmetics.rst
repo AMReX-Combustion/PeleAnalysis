@@ -16,7 +16,7 @@ Usage
    arithmetics3d.gnu.MPI.OMP.ex infile=FILE inVarAName=NAME inVarBName=NAME outVarName=NAME operator=add [OPTIONS]
 
 Parameters
-~~~~~~~~~
+~~~~~~~~~~
 
 ``infile``
    Path to the AMReX plotfile.

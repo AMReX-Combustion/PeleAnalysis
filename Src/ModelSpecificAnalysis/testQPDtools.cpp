@@ -12,7 +12,7 @@
 #include <util.H>
 
 using namespace amrex;
-using namespace analysis_util;
+using namespace mech_util;
 
 static void
 print_usage(int, char* argv[])

@@ -1,37 +1,37 @@
 #include <string>
 #include <iostream>
-#include <set>
 
-#include <AMReX_ParmParse.H>
+#include <AMReX_AmrData.H>
 #include <AMReX_MultiFab.H>
-#include <AMReX_DataServices.H>
-#include <AMReX_PlotFileUtil.H>
+#include <AMReX_ParmParse.H>
+
+#include <analysis_util.H>
 
 using namespace amrex;
 
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "Usage:\n"
-            << "  " << argv[0] << " infile=FILE [OPTIONS]\n\n"
+  std::cerr
+    << "Usage:\n"
+    << "  " << argv[0] << " infile=FILE vars=\"VAR1 VAR2 ...\" [OPTIONS]\n\n"
 
-            << "Required arguments:\n"
-            << "  infile=FILE        AMReX plotfile\n\n"
+    << "Required arguments:\n"
+    << "  infile=FILE        AMReX plotfile to read\n"
+    << "  vars=\"...\"         Space-separated list of variable names to "
+       "process\n\n"
 
-            << "Options:\n"
-            << "  -h, --help         Show this help message\n\n"
+    << "Options:\n"
+    << "  finestLevel=N      Cap AMR levels (default: all levels in file)\n"
+    << "  is_per=\"1 1 1\"     Periodicity flags per dimension (default: all "
+       "1)\n"
+    << "  verbose            Enable verbose plotfile I/O\n"
+    << "  -h, --help         Show this help message\n\n"
 
-            << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
-            << "the documentation.\n";
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+    << "the documentation.\n";
 
   std::exit(1);
-}
-
-std::string
-getFileRoot(const std::string& infile)
-{
-  std::vector<std::string> tokens = Tokenize(infile, std::string("/"));
-  return tokens[tokens.size() - 1];
 }
 
 int
@@ -39,11 +39,9 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
   {
-    if (argc < 2) {
-      print_usage(argc, argv);
-    } else if (
-      (std::strcmp(argv[1], "-h") == 0) ||
-      (std::strcmp(argv[1], "--help") == 0)) {
+    if (
+      argc < 2 || std::strcmp(argv[1], "-h") == 0 ||
+      std::strcmp(argv[1], "--help") == 0) {
       print_usage(argc, argv);
     }
     ParmParse pp;
@@ -51,84 +49,60 @@ main(int argc, char* argv[])
     if (pp.contains("verbose"))
       AmrData::SetVerbose(true);
 
-    std::string plotFileName;
-    pp.get("infile", plotFileName);
-    DataServices::SetBatchMode();
-    Amrvis::FileType fileType(Amrvis::NEWPLT);
+    std::string infile;
+    pp.get("infile", infile);
 
-    DataServices dataServices(plotFileName, fileType);
-    if (!dataServices.AmrDataOk()) {
-      DataServices::Dispatch(DataServices::ExitRequest, NULL);
-      // ^^^ this calls ParallelDescriptor::EndParallel() and exit()
+    Vector<std::string> vars;
+    const int nvars = pp.countval("vars");
+    if (nvars == 0) {
+      amrex::Abort("template: 'vars' is required — specify the variable names "
+                   "to process.\n"
+                   "  Example: vars=\"density velocity_x\"");
     }
-    AmrData& amrData = dataServices.AmrDataRef();
+    pp.getarr("vars", vars, 0, nvars);
 
-    int finestLevel = amrData.FinestLevel();
-    pp.query("finestLevel", finestLevel);
-    int Nlev = finestLevel + 1;
+    int p_finestLevel = 1000;
+    pp.query("finestLevel", p_finestLevel);
 
     Vector<int> is_per(AMREX_SPACEDIM, 1);
     pp.queryarr("is_per", is_per, 0, AMREX_SPACEDIM);
-    Print() << "Periodicity assumed for this case: ";
-    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-      Print() << is_per[idim] << " ";
-    }
 
-    RealBox rb(&(amrData.ProbLo()[0]), &(amrData.ProbHi()[0]));
+    // -------------------------------------------------------------------------
+    // Read plotfile
+    // -------------------------------------------------------------------------
+    auto data = analysis_util::read_plotfile(
+      infile, vars, p_finestLevel,
+      /*n_grow=*/0, is_per);
 
-    Vector<MultiFab> outdata(Nlev);
-    Vector<Geometry> geoms(Nlev);
+    Print() << "Read " << data.n_lev << " level(s) from " << infile << "\n";
 
-    int nGrow = 0;
-    int nComp = amrData.NComp();
-
-    Vector<std::string> inNames = amrData.PlotVarNames();
-    Vector<std::string> outNames = amrData.PlotVarNames();
-
-    Vector<int> destFillComps(nComp);
-    for (int i = 0; i < nComp; ++i)
-      destFillComps[i] = i;
-
-    for (int lev = 0; lev < Nlev; ++lev) {
-
-      const BoxArray ba = amrData.boxArray(lev);
-      const DistributionMapping dm(ba);
-
-      outdata[lev] = MultiFab(ba, dm, nComp, nGrow);
-      MultiFab indata(ba, dm, nComp, nGrow);
-
-      int coord = 0;
-      geoms[lev] =
-        Geometry(amrData.ProbDomain()[lev], &rb, coord, &(is_per[0]));
-
-      Print() << "Reading data for level " << lev << std::endl;
-      amrData.FillVar(indata, lev, inNames, destFillComps);
-      Print() << "Data has been read for level " << lev << std::endl;
-
+    // -------------------------------------------------------------------------
+    // Process data (modify data.mf in-place)
+    // -------------------------------------------------------------------------
+    const int nComp = static_cast<int>(vars.size());
+    for (int lev = 0; lev < data.n_lev; ++lev) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-      for (MFIter mfi(indata, TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+      for (MFIter mfi(data.mf[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi) {
         const Box& bx = mfi.tilebox();
-        auto const& out_a = outdata[lev].array(mfi);
-        auto const& in_a = indata.array(mfi);
+        auto const& a = data.mf[lev].array(mfi);
         amrex::ParallelFor(
           bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            // Do something funky
-            for (int n = 0; n < nComp; n++) {
-              out_a(i, j, k, n) = in_a(i, j, k, n);
+            for (int n = 0; n < nComp; ++n) {
+              a(i, j, k, n) = a(i, j, k, n); // replace with actual computation
             }
           });
       }
     }
 
-    std::string outfile(getFileRoot(plotFileName) + "_temp");
-    Print() << "Writing new data to " << outfile << std::endl;
-    Vector<int> isteps(Nlev, 0);
-    Vector<IntVect> refRatios(Nlev - 1, {AMREX_D_DECL(2, 2, 2)});
-    amrex::WriteMultiLevelPlotfile(
-      outfile, Nlev, GetVecOfConstPtrs(outdata), outNames, geoms, 0.0, isteps,
-      refRatios);
+    // -------------------------------------------------------------------------
+    // Write output
+    // -------------------------------------------------------------------------
+    const std::string outfile = analysis_util::get_file_root(infile) + "_temp";
+    Print() << "Writing new data to " << outfile << "\n";
+    analysis_util::write_plotfile(
+      outfile, data.mf, vars, data.geoms, data.time);
   }
   Finalize();
   return 0;

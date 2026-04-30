@@ -72,3 +72,6 @@ chk*
 
 # jpdf test run outputs
 testrun
+
+# AMReX crash backtraces
+Backtrace.*

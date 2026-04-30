@@ -8,12 +8,14 @@ PeleAnalysis documentation
 
    basics/data
    basics/template
+   basics/analysis_util
 
 .. toctree::
    :maxdepth: 2
    :caption: Analysis:
 
    analysis/amrToFE
+   analysis/arithmetics
    analysis/avgPlotfiles
    analysis/avgToPlane
    analysis/checkIso

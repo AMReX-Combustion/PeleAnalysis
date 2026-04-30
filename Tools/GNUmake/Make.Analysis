@@ -31,6 +31,17 @@ Blocs += $(foreach dir, $(Adirs), $(AMREX_HOME)/Src/$(dir))
 #--------------------
 #PeleAnalysis sources
 #--------------------
+ifeq ($(USE_UTILS), TRUE)
+   Bdirs +=  $(PELE_ANALYSIS_HOME)/Tools/Util/
+   Bpack += $(foreach dir, $(Bdirs), $(dir)/Make.package)
+   Blocs += $(foreach dir, $(Bdirs), $(dir))
+   $(info $${Bpack} is [${Bpack}])
+endif
+include $(Bpack)
+
+INCLUDE_LOCATIONS += $(Blocs)
+VPATH_LOCATIONS   += $(Blocs)
+
 
 ifeq ($(NEED_DISTANCE),TRUE)
   SDF_LOC = $(PELE_ANALYSIS_HOME)/Tools/SDFGen

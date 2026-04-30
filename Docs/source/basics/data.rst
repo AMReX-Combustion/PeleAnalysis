@@ -17,7 +17,7 @@ Plotfiles
 ---------
 
 Plotfiles are the standard format for reading data from a Pele
-simulation. Their format is discussed in the `AMReX documentation
+simulation. Their format is discussed in the `AMReX documentation's IO section
 <https://amrex-codes.github.io/amrex/docs_html/IO.html>`_. For a
 multi-level AMR calculation, a plotfile contains an ASCII ``Header``
 file and one subfolder for each refinement level.  There may also be a

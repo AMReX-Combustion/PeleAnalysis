@@ -10,7 +10,7 @@
 #include <PelePhysics.H>
 
 using namespace amrex;
-using namespace analysis_util;
+using namespace mech_util;
 
 typedef std::list<Edge> EdgeList;
 
