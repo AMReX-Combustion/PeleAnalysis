@@ -30,6 +30,7 @@ USE_CUDA      = FALSE
 #EBASE   = avgPlotfiles
 #EBASE   = avgToPlane
 #EBASE   = checkIso
+#EBASE   = ciao2plt
 #EBASE   = combinePlts
 #EBASE   = conditionalMean
 #EBASE   = convert2hdf5
@@ -95,6 +96,24 @@ ifeq ($(EBASE),convert2hdf5)
    HDF5_HOME = $(HDF5_DIR) # /path/to/hdf5
    ZFP_HOME = $(ZFP_DIR)  # /path/to/zfp
    H5Z_HOME = $(H5Z_DIR) # /path/to/h5z-zfp
+endif
+
+ifeq ($(EBASE),ciao2plt)
+  # Serial build: use HDF5_DIR.
+  # MPI build: use HDF5_PAR_DIR (parallel HDF5, compiled with MPI support).
+  # If HDF5_PAR_DIR is not set, HDF5_DIR is used for both modes.
+  # Library names are the same (-lhdf5 -lhdf5_cpp); only the installation path differs.
+  # On some systems the parallel build uses distinct names (e.g. -lhdf5_par); override
+  # LIBRARIES manually in that case.
+  ifeq ($(USE_MPI),TRUE)
+    HDF5_CUR_DIR ?= $(HDF5_PAR_DIR)
+    HDF5_CUR_DIR ?= $(HDF5_DIR)
+  else
+    HDF5_CUR_DIR = $(HDF5_DIR)
+  endif
+  LIBRARIES += -lhdf5 -lhdf5_hl -lz -lhdf5_cpp
+  INCLUDE_LOCATIONS += $(HDF5_CUR_DIR)/include
+  LIBRARY_LOCATIONS += $(HDF5_CUR_DIR)/lib
 endif
 
 ifeq ($(EBASE),decimateMEF) #make qslim first!

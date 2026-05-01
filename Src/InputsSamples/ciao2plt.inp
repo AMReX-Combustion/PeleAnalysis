@@ -1,0 +1,28 @@
+# Example input file for ciao2plt
+# Converts a CIAO (NGA2) HDF5 file to an AMReX single-level plotfile.
+# The tool discovers the mesh group name automatically and reads time
+# and periodicity from the file when available.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile  = SJ_H2_000000.h5                  # Input CIAO HDF5 file (required)
+outfile = plt_SJ_H2_000000                 # DEF: plt_<stem>; output plotfile directory
+
+#------------------- Field selection -------------------------------------------------------
+vars = T RHO OH H2O                        # DEF: all fields; space-separated list of
+                                           # field names to read from cv_data_real or
+                                           # scalars/SC. Omit this line to convert all
+                                           # available fields.
+
+#------------------- Grid control ----------------------------------------------------------
+max_grid_size = 32                         # DEF: 32; maximum AMReX box size used when
+                                           # decomposing the single-level domain
+
+#------------------- Periodicity fallback --------------------------------------------------
+per = 0 0 0                                # DEF: 0 0 0; periodicity flags (x y z).
+                                           # Only used when the file does not contain
+                                           # geometry/sd_info/xper|yper|zper.
+
+#------------------- Coordinate system fallback --------------------------------------------
+coord_sys = 0                              # DEF: 0 (Cartesian); 1 = cylindrical/RZ.
+                                           # Only used when the file does not contain
+                                           # geometry/sd_info/icyl. DIM=2 required for 1.

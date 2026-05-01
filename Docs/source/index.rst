@@ -19,6 +19,7 @@ PeleAnalysis documentation
    analysis/avgPlotfiles
    analysis/avgToPlane
    analysis/checkIso
+   analysis/ciao2plt
    analysis/combinePlts
    analysis/conditionalMean
    analysis/convert2hdf5
