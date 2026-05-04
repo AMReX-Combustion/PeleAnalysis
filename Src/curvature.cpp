@@ -742,7 +742,7 @@ main (int   argc,
                                                 AMREX_D_TERM( - gradUz(i,j,k,0) * NzFab(i,j,k) * NxFab(i,j,k) ,
                                                               - gradUz(i,j,k,1) * NzFab(i,j,k) * NyFab(i,j,k) ,
                                                               - gradUz(i,j,k,2) * NzFab(i,j,k) * NzFab(i,j,k) ) );   //-nn:\nabla u
-                  srFab(i,j,k) = AMREX_D_TERM ( + gradUx(i,j,k,0) ,
+                  srFab(i,j,k) += AMREX_D_TERM ( + gradUx(i,j,k,0) ,
                                                 + gradUy(i,j,k,1) ,
                                                 + gradUz(i,j,k,2) );    // + \nabla \cdot u
                });
