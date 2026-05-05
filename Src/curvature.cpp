@@ -799,7 +799,7 @@ main(int argc, char* argv[])
                   -gradUz(i, j, k, 1) * NzFab(i, j, k) * NyFab(i, j, k),
                   -gradUz(i, j, k, 2) * NzFab(i, j, k) *
                     NzFab(i, j, k))); //-nn:\nabla u
-              srFab(i, j, k) = AMREX_D_TERM(
+              srFab(i, j, k) += AMREX_D_TERM(
                 +gradUx(i, j, k, 0), +gradUy(i, j, k, 1),
                 +gradUz(i, j, k, 2)); // + \nabla \cdot u
             });
