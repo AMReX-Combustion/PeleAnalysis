@@ -48,6 +48,7 @@ USE_CUDA      = FALSE
 #EBASE   = jpdf
 #EBASE   = makePlotfile
 #EBASE   = partStream
+#EBASE   = progVar
 #EBASE   = qCriterion
 #EBASE   = regridPlt
 #EBASE   = rmsVel

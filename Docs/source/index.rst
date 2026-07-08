@@ -35,6 +35,7 @@ PeleAnalysis documentation
    analysis/jpdf
    analysis/makePlotfile
    analysis/partStream
+   analysis/progVar
    analysis/qCriterion
    analysis/regridPlt
    analysis/rmsVel
@@ -51,6 +52,7 @@ PeleAnalysis documentation
    :maxdepth: 2
    :caption: Model Specific:
 
+   modelSpecific/computeMixtureFraction
    modelSpecific/plotQPD
    modelSpecific/plotTransportCoeff
    modelSpecific/plotTYtoLe
