@@ -1,0 +1,25 @@
+# Example input file for favreAvgPlotfiles
+# This tool averages AMReX plotfiles on the same physical domain.
+# It computes density-weighted moments, Favre means, and variance-like quantities.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infiles = plt29000 plt30000 plt31000       # List of AMReX plotfiles to average [REQUIRED]
+outfile = plt_favre_averaged               # DEF: plt_averaged; Output averaged plotfile name
+
+#------------------- VARIABLE SELECTION --------------------------------------------------
+variables = x_velocity y_velocity z_velocity density rhoh temp
+                                           # DEF: all variables; Variables to process.
+                                           # The input plotfiles must contain density.
+
+#------------------- AVERAGING OPTIONS ---------------------------------------------------
+do_average = 1                             # [0, 1], DEF: 1; If 1, output first-moment averages.
+do_variance = 1                            # [0, 1], DEF: 1; If 1, output variance-like quantities.
+do_divide = 1                              # [0, 1], DEF: 1; If 1, divide rho-weighted moments by rho_mean.
+                                           # do_divide=1 gives Favre means and Favre variances.
+                                           # do_divide=0 outputs undivided rho-weighted moments.
+                                           # At least one of do_average or do_variance must be 1.
+
+#------------------- AMR CONTROL ---------------------------------------------------------
+output_max_level = 1000                    # DEF: 1000; Maximum AMR level to keep.
+output_max_grid_size = 32                  # DEF: 32; Maximum grid size in output when grids differ.
+interp_type = 1                            # [0, 1], DEF: 1; 0=piecewise constant, 1=linear interpolation.

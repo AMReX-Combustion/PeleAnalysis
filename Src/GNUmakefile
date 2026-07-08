@@ -37,6 +37,7 @@ USE_CUDA      = FALSE
 #EBASE   = curvature
 #EBASE   = diffPlts
 #EBASE   = dumpFABslice
+#EBASE   = favreAvgPlotfiles
 #EBASE   = filterPlt
 #EBASE   = flattenAMRFile
 #EBASE   = generateTestPlt
@@ -71,7 +72,7 @@ USE_CUDA      = FALSE
 
 CEXE_sources += $(EBASE).cpp
 
-ifeq ($(EBASE),$(filter $(EBASE), template)) # add targets that need utils as space-separated list
+ifeq ($(EBASE),$(filter $(EBASE), template favreAvgPlotfiles)) # add targets that need utils as space-separated list
    USE_UTILS = TRUE
 endif
 
