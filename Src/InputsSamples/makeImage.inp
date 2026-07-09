@@ -1,0 +1,40 @@
+# Example input file for makeImage
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # One or more AMReX plotfiles (space
+                                           # separated). One image is written per
+                                           # plotfile and variable.
+outputDir = images                         # DEF: current dir; created if needed.
+format = png                               # [ppm, png, pdf], DEF: ppm; output format.
+
+#------------------- Variables ------------------------------------------------------------
+vars = temp Y(H2)                          # Space-separated variable list. Stored
+                                           # or derived quantities are both allowed.
+
+#------------------- Colormap -------------------------------------------------------------
+colormap = jet                             # DEF: jet. Built in: jet, grayscale.
+                                           # Also bundled (see docs / Colormaps.H):
+                                           # matplotlib Sequential, Sequential 2 and
+                                           # Diverging maps, e.g. Blues, hot, RdBu,
+                                           # coolwarm, Spectral, ...
+reverse = 0                                # [0, 1], DEF: 0; reverse the colormap.
+goPastMax = 1                              # [0, 1], DEF: 1; jet only: values above
+                                           # the max ramp through magenta to white.
+
+#------------------- Color range ----------------------------------------------------------
+# By default each variable is scaled between its own data min and max. Override the
+# range per variable with useminmax<i> (i is 1-based, matching the order in 'vars').
+#useminmax1 = 300 2200                     # Fix range for variable 1 (temp).
+#useminmax2 = 0 0.02                       # Fix range for variable 2 (Y(H2)).
+
+#------------------- Level / slice control ------------------------------------------------
+#finestLevel = 0                           # DEF: finest level in the file; cap the
+                                           # AMR level used to build the image.
+# 3-D builds only: pick exactly one slice plane, either by cell index (at the
+# finest level used) or by physical coordinate (snapped to the nearest cell).
+#yslice = 0                                # DEF (3-D): yslice=0; by cell index.
+#xslice = 64                               # by cell index.
+#zslice = 128                              # by cell index.
+#ysliceCoord = 0.01                        # by physical coordinate (nearest cell).
+#xsliceCoord = -0.002                      # by physical coordinate (nearest cell).
+#zsliceCoord = -0.002                      # by physical coordinate (nearest cell).

@@ -46,6 +46,7 @@ USE_CUDA      = FALSE
 #EBASE   = isoMEF
 #EBASE   = isosurface
 #EBASE   = jpdf
+#EBASE   = makeImage
 #EBASE   = makePlotfile
 #EBASE   = partStream
 #EBASE   = progVar

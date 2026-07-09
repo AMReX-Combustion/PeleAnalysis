@@ -33,6 +33,7 @@ PeleAnalysis documentation
    analysis/integral
    analysis/isosurface
    analysis/jpdf
+   analysis/makeImage
    analysis/makePlotfile
    analysis/partStream
    analysis/progVar
