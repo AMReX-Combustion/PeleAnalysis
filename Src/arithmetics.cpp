@@ -6,6 +6,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include <AMReX_Reduce.H>
 #include <AMReX_ParallelDescriptor.H>
 
@@ -192,6 +193,11 @@ main(int argc, char* argv[])
           outdata[lev], outdata[lev], inVarB_id, outVar_id, 1, 0);
       }
     }
+
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
 
     Print() << "Writing new data to " << outfileName << std::endl;
     Vector<int> isteps(Nlev, 0);

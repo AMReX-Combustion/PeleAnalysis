@@ -2,13 +2,25 @@
 
 #include <AMReX_DataServices.H>
 #include <AMReX_ParallelDescriptor.H>
+#include <AMReX_ParmParse.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 
 #include <cmath>
 
 using namespace amrex;
 
 namespace analysis_util {
+
+int
+set_plot_nfiles()
+{
+  int n_files = VisMF::GetNOutFiles();
+  ParmParse pp;
+  pp.query("n_files", n_files);
+  VisMF::SetNOutFiles(n_files);
+  return VisMF::GetNOutFiles();
+}
 
 // Returns a BoxArray with at least nprocs boxes by applying maxSize so that
 // WriteMultiLevelPlotfile and AmrData::FillVar do not deadlock in MPI mode
@@ -109,6 +121,9 @@ write_plotfile(
   // Synchronize all ranks before the collective write to avoid deadlock
   // when some ranks arrive later (e.g. after a preceding read_plotfile).
   ParallelDescriptor::Barrier();
+
+  // Honour the `n_files` ParmParse option to cap the number of output files.
+  set_plot_nfiles();
 
   const int n_lev = static_cast<int>(mf.size());
   Vector<int> isteps(n_lev, 0);

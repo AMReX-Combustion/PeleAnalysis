@@ -6,6 +6,7 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 
 using namespace amrex;
 
@@ -166,6 +167,11 @@ main(int argc, char* argv[])
   }
 
   // write pltfile
+  // Cap the number of plotfile data files via the n_files option (AMReX)
+  int n_files = amrex::VisMF::GetNOutFiles();
+  pp.query("n_files", n_files);
+  amrex::VisMF::SetNOutFiles(n_files);
+
   Vector<int> isteps(Nlev, 0);
   Vector<IntVect> refRatios(Nlev - 1, {AMREX_D_DECL(2, 2, 2)});
   amrex::WriteMultiLevelPlotfile(

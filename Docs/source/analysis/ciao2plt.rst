@@ -51,6 +51,7 @@ Tool Options
    #------------------- IO CONTROL -----------------------------------------------------------
    infile  = SJ_H2_000000.h5                  # Input CIAO HDF5 file (required)
    outfile = plt_SJ_H2_000000                 # DEF: plt_<stem>; output plotfile directory
+   n_files = 64                               # DEF: AMReX default; cap on the number of plotfile data files (VisMF), clamped to the MPI rank count
 
 ``infile`` is the only required argument. ``outfile`` defaults to ``plt_`` followed
 by the input filename stem (extension stripped, directory stripped), e.g.

@@ -4,6 +4,8 @@
 infile_head = plane                        # Head (prefix) of FAB-files.
 infile_tail = .zslice.0.Level_0.fab        # Tail (suffix) of FAB-files.
 outfile = output                           # Output plt-file name.
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 start = 0                                  # Start index for input file (%06d integer 
                                            # between infile_head and infile_tail).
 end = 10                                   # End index for input file (%06d integer 

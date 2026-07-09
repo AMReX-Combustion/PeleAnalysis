@@ -6,6 +6,7 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include <AMReX_MLMG.H>
 #include <AMReX_MLPoisson.H>
 #include <AMReX_MLABecLaplacian.H>
@@ -252,6 +253,11 @@ main(int argc, char* argv[])
     nnames[idGr + AMREX_SPACEDIM] = "||grad" + gradVar + "||";
     std::string outfile(getFileRoot(infile) + "_gt");
     pp.query("outfile", outfile);
+
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
 
     Print() << "Writing new data to " << outfile << std::endl;
     Vector<int> isteps(Nlev, 0);

@@ -194,5 +194,9 @@ Output formats
    streamfile = plt00000_stream               # DEF: outfile + "_stream"; Name of writeStreams output file/dir
    writeStreamBin                             # [0, 1], DEF: 0; Write streamlines as binary.
    streamBinfile = plt00000_streamBin         # DEF: outfile + "_streamBin"; Name of writeStreamBin output file/dir
-   
+
+.. note::
+
+   When ``writeParticles`` is enabled, the particle plotfile is written through the AMReX particle I/O layer, whose data-file count is controlled by the native ``particles.particles_nfiles`` option (read directly by AMReX) rather than the ``n_files`` option used by the grid-based tools.
+
 

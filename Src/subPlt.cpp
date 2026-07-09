@@ -153,6 +153,8 @@ main(int argc, char* argv[])
     }
 
     // Write out the subregion pltfile
+    // NOTE: subPlt uses the legacy WritePlotFile writer (one file per rank), so
+    // the n_files option does not apply here.
     WritePlotFile(data_sub, subboxes, amrData, outfile, verbose, names);
   }
   Finalize();

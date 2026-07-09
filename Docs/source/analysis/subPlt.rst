@@ -53,3 +53,7 @@ There are two ways to select which variables to extract. The first is to provide
    verbose                                    # Enable verbose output during data loading
 
 The flag `verbose` enables additional output during execution, reporting which variables are being filled on each AMR level. This is useful for monitoring progress on large plot files or for debugging unexpected output.
+
+.. note::
+
+   ``subPlt`` writes its output through the legacy ``WritePlotFile`` writer, which always writes one data file per MPI rank. The ``n_files`` option available in most other tools therefore does not apply here.

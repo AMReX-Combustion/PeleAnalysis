@@ -6,3 +6,5 @@ outfile = plt00000_flatten                 # DEF: "<infile>_flatten"; Output fil
                                            # (plt file).
 output_level = 0                           # DEF: 0; AMR level of output file.
 output_max_grid_size = 64                  # DEF: 64; Max grid size of output file.
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count

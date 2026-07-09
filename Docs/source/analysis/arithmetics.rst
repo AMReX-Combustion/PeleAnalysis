@@ -57,6 +57,13 @@ Parameters
    Coordinate system identifier passed to the output ``Geometry``.
    ``0`` = Cartesian (default).  Other values follow the AMReX convention.
 
+``n_files``
+   Maximum number of binary files used to write the output plotfile data
+   (AMReX ``VisMF::SetNOutFiles``). Lower this to reduce the number of files
+   created for large parallel post-processing runs. AMReX clamps the value to
+   the number of MPI ranks, so a serial run always writes a single data file.
+   Default: the AMReX default.
+
 Output
 ------
 A new AMReX plotfile containing:

@@ -29,6 +29,7 @@ Tool Options
    infile = plt00000                          # Plot file for surface construction
    outfile_base = plt00000_surf               # DEF: infile+isoCompName+time+isoval; Base name for output files
    distance.outfile = plt00000_distance       # DEF: distance; Name of output distance file, see build_distance_function.
+   n_files = 64                               # DEF: AMReX default; cap on the number of data files for the distance plotfile (VisMF), clamped to the MPI rank count
    writeSurf = 1                              # [0, 1], DEF: 1; Flag to write surface file.
    surfFormat = MEF                           # [MEF, XDMF], DEF: MEF; MEF (Marcs Element Format) is used by other PeleAnalysis tools.
    surface_is_large = 0                       # [0, 1], DEF: 0; Option for memory-intense surfaces. If the surface is large, write data to disk/clear mem/read up into a single fab.

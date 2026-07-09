@@ -3,6 +3,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infiles = plt00000 plt00000_new                       # Plt files to calculate diff. First file is the reference file (for relative difference)
 outfile = plt00000_diff                               # DEF: infiles[0]+"_diff"; Name of output plt file.
+n_files = 64                                          # DEF: AMReX default; max number of plotfile data
+                                                      # files written (VisMF), clamped to the MPI rank count
 finestLevel = 1                                       # DEF: joint finest level of both plt files.
 is_per = 0 0 0                                        # DEF: 0 0 0, Assumed periodicity
 

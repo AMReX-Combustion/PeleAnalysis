@@ -166,6 +166,8 @@ write_plotfile
 Writes a multi-level set of ``MultiFab`` objects to an AMReX plotfile.
 MPI-safe: adds ``Barrier`` calls before and after the collective write,
 and redistributes boxes when the domain has fewer boxes than MPI ranks.
+Honours the ``n_files`` ParmParse option via :ref:`set_plot_nfiles`, so
+tools using this helper support ``n_files`` automatically.
 
 **Inputs**
 
@@ -210,6 +212,40 @@ None (writes to disk).
    const std::string outfile = "plt_result";
    analysis_util::write_plotfile(outfile, data.mf, {"density", "velocity_x"},
                                  data.geoms, data.time, data.ref_ratios);
+
+
+----
+
+.. _set_plot_nfiles:
+
+set_plot_nfiles
+~~~~~~~~~~~~~~~~
+
+**What it does**
+
+Reads the ``n_files`` ParmParse option (if present) and applies it with
+``VisMF::SetNOutFiles`` so that subsequent plotfile writes use at most
+``n_files`` binary data files. Returns the number of output files now in
+effect. When ``n_files`` is not specified, the current AMReX default is left
+unchanged. AMReX clamps the value to the number of MPI ranks, so a serial run
+always writes a single data file.
+
+``write_plotfile`` calls this automatically; a tool that writes plotfiles
+through some other path can call it directly to honour ``n_files``.
+
+**Inputs**
+
+None (reads the global ParmParse table).
+
+**Output**
+
+The number of output files in effect after the call (``int``).
+
+**Example**
+
+::
+
+   analysis_util::set_plot_nfiles();   // apply n_files before a manual write
 
 
 ----

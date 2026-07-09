@@ -102,8 +102,9 @@ Available criterion types
 
    #------------------- Output ----------------------------------------------------------
    plotfile_name = pltTestFile            # DEF: pltTestFile; Name of the output plot file
+   n_files = 64                           # DEF: AMReX default; cap on the number of plotfile data files
 
-The output is a standard AMReX multilevel plot file (one level when ``amr.max_level = 0``) readable by any tool in the PeleAnalysis suite or visualised with VisIt or ParaView.
+The output is a standard AMReX multilevel plot file (one level when ``amr.max_level = 0``) readable by any tool in the PeleAnalysis suite or visualised with VisIt or ParaView. ``n_files`` caps the number of binary files used for the plotfile data (AMReX ``VisMF::SetNOutFiles``); AMReX clamps it to the number of MPI ranks, so a serial run always writes a single data file.
 ::
 
    #------------------- Fields ----------------------------------------------------------

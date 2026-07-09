@@ -1,6 +1,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include <PltFileManager.H>
 
 using namespace amrex;
@@ -97,6 +98,11 @@ main(int argc, char* argv[])
     if (verbose) {
       Print() << " Writting data \n";
     }
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
+
     WriteSingleLevelPlotfile(
       outfile, output, plt_vars, geom, pltData.getTime(), 0);
   }

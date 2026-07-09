@@ -6,6 +6,7 @@
 #include <AMReX_DataServices.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include <AMReX_FillPatchUtil.H>
 #include <Filter.H>
 #include <PltFileManager.H>
@@ -235,6 +236,11 @@ main(int argc, char** argv)
 
   amrex::Print() << "Saving filtered data..." << std::endl;
   std::string outfile(getFileRoot(infile) + "_filtered");
+
+  // Cap the number of plotfile data files via the n_files option (AMReX)
+  int n_files = amrex::VisMF::GetNOutFiles();
+  pp.query("n_files", n_files);
+  amrex::VisMF::SetNOutFiles(n_files);
 
   write_plotfile(
     outfile, Nlev, amrex::GetVecOfConstPtrs(outdata), variableNames,

@@ -5,6 +5,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
+#include <AMReX_VisMF.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_PlotFileUtil.H>
 #include <PelePhysics.H>
@@ -72,8 +73,17 @@ main(int argc, char* argv[])
       spec_names);
     auto eos = pele::physics::PhysicsType::eos();
 
-    constexpr int nCompIn = NUM_SPECIES;
-    constexpr int nCompOut = 1;
+    // Auxiliary variables: names copied unchanged from input to output plotfile
+    int nAuxVar = pp.countval("Aux_Variables");
+    Vector<std::string> auxVar(nAuxVar);
+    for (int ivar = 0; ivar < nAuxVar; ++ivar) {
+      pp.get("Aux_Variables", auxVar[ivar], ivar);
+    }
+
+    const int idAuxLocal = NUM_SPECIES; // aux vars start here in input
+    const int idAuxOut = 1;             // aux vars start here in output
+    const int nCompIn = NUM_SPECIES + nAuxVar;
+    const int nCompOut = 1 + nAuxVar;
     Vector<std::string> outNames(nCompOut);
     Vector<std::string> inNames(nCompIn);
     Vector<int> destFillComps(nCompIn);
@@ -85,6 +95,17 @@ main(int argc, char* argv[])
     // out
     constexpr int idZlocal = 0; // Z out here
     outNames[idZlocal] = "Z";
+
+    // Auxiliary variables are read into the input MultiFab and appended,
+    // unchanged, to the output plotfile after the computed field
+    for (int ivar = 0; ivar < nAuxVar; ++ivar) {
+      if (amrData.StateNumber(auxVar[ivar]) < 0) {
+        amrex::Abort("Unknown auxiliary variable name: " + auxVar[ivar]);
+      }
+      destFillComps[idAuxLocal + ivar] = idAuxLocal + ivar;
+      inNames[idAuxLocal + ivar] = auxVar[ivar];
+      outNames[idAuxOut + ivar] = auxVar[ivar];
+    }
 
     Vector<MultiFab> outdata(Nlev);
     Vector<Geometry> geoms(Nlev);
@@ -178,10 +199,23 @@ main(int argc, char* argv[])
           }
           out_ma[box_no](i, j, k, idZlocal) = (Zloc - Zox) * denom_inv;
         });
+
+      // Copy auxiliary variables unchanged from the input to the output
+      for (int ivar = 0; ivar < nAuxVar; ++ivar) {
+        MultiFab::Copy(
+          outdata[lev], indata, idAuxLocal + ivar, idAuxOut + ivar, 1, nGrow);
+      }
+
       Print() << "Derive finished for level " << lev << std::endl;
     }
 
     std::string outfile(getFileRoot(plotFileName) + outsuffix);
+
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
+
     Print() << "Writing new data to " << outfile << std::endl;
     Vector<int> isteps(Nlev, 0);
     Vector<IntVect> refRatios(Nlev - 1, {AMREX_D_DECL(2, 2, 2)});

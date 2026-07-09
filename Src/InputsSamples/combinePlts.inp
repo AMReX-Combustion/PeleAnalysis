@@ -3,6 +3,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infiles = plt00000 plt00001 plt00002      # pltfiles to combine
 outfile = plt_combined			  # Name of output file
+n_files = 64				  # DEF: AMReX default; max number of plotfile data
+                                          # files written (VisMF), clamped to the MPI rank count
 
 #------------------- Operation control ----------------------------------------------------
 vars = temp HeatRelease       	          # DEF: all possible, list of variables to include in combine

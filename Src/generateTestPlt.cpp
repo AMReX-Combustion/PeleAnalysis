@@ -2,6 +2,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include <AMReX_TagBox.H>
 #include <AMReX_Cluster.H>
 #include <algorithm>
@@ -1003,6 +1004,11 @@ main(int argc, char* argv[])
     // Write multilevel plot file
     std::string plotfile_name = "pltTestFile";
     pp.query("plotfile_name", plotfile_name);
+
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
 
     Vector<int> isteps(Nlev, 0);
     Vector<IntVect> refRatios(Nlev - 1);

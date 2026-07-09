@@ -21,7 +21,8 @@ Example Input File ``grad.inp``::
         #------------------- IO CONTROL -----------------------------------------------------------
         infile = plt00000                         # input pltfile to calcuate grad on
         outfile = plt_grad			  # DEF: <infile>_gt, Name of output file
-        
+        n_files = 64                              # DEF: AMReX default, cap on the number of plotfile data files (VisMF), clamped to the MPI rank count
+
         #------------------- Operation control ----------------------------------------------------
         gradVar = temp		      	          # variable to calculate gradient on
         finestLevel = 4				  # DEF: 1000, max level to consider for gradient 

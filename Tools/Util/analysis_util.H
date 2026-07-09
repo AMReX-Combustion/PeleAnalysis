@@ -60,6 +60,13 @@ int find_var_index(
 
 // --- I/O tools ---
 
+// Read the `n_files` ParmParse option (if present) and apply it to AMReX so
+// that subsequent plotfile writes use at most `n_files` data files
+// (VisMF::SetNOutFiles). Useful to limit file counts for large post-processing
+// campaigns. Returns the number of output files now in effect. When `n_files`
+// is not specified, the current AMReX default is left unchanged.
+int set_plot_nfiles();
+
 struct PlotfileData
 {
   amrex::Vector<amrex::MultiFab> mf;

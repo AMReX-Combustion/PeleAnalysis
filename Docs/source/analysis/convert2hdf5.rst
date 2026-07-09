@@ -75,6 +75,10 @@ Output
 ######
 The output file ``<infile>_hdf5`` is a multi-level AMReX HDF5 plotfile stored as a single dataset. It contains all variables from the input file across all converted AMR levels, and can be opened with any AMReX-compatible HDF5 reader. Run time is printed to stdout on completion.
 
+.. note::
+
+   HDF5 output is written as a single consolidated file, so the ``n_files`` option used by the plain-plotfile tools does not apply to ``convert2hdf5``.
+
 Dependencies
 ############
 This tool requires an HDF5-enabled AMReX build. ``USE_HDF5 = TRUE`` must be set in ``GNUmakefile`` and a compatible HDF5 installation must be available at ``HDF5_HOME``. ZFP compression additionally requires the ZFP and H5Z-ZFP libraries and ``USE_HDF5_ZFP = TRUE``.

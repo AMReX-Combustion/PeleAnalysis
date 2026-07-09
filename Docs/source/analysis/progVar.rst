@@ -50,6 +50,7 @@ the following structure:
    burntVal      = 1.0
    outsuffix     = _prog
    outname       = progVar
+   Aux_Variables = density temp
 
 
 Parameters
@@ -89,6 +90,11 @@ Parameters
    progress variable, in which case the input plotfile does not need the
    ``I_R(<species>)`` fields. Default: ``1`` (source term written).
 
+``Aux_Variables``
+   Names of variables copied unchanged from the input plotfile to the output
+   plotfile. Useful for carrying through fields (e.g. ``density``, ``temp``)
+   that ``progVar`` does not otherwise write. Default: none.
+
 ``finestLevel``
    Finest AMR level up to which the progress variable is computed.
    Default: plotfile finest level.
@@ -107,6 +113,7 @@ A new AMReX plotfile named ``<infile>outsuffix`` containing:
 - ``<outname>`` — the normalized progress variable :math:`C`
 - ``I_R(<outname>)`` — the progress-variable source term (only when
   ``printSource=1``, the default)
+- any ``Aux_Variables`` requested, copied unchanged from the input
 
 The output inherits the domain geometry, coordinate system, and box
 structure from the input plotfile.

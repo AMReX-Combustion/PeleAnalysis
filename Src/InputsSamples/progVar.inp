@@ -1,0 +1,20 @@
+# Example input file for progVar
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Input pltfile to compute the progress variable on
+outsuffix = _prog                          # DEF: _prog; suffix appended to <infile> for output
+outname = progVar                          # DEF: progVar; name of the progress-variable field
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
+
+#------------------- Operation control ----------------------------------------------------
+speciesNames = Y(H2) Y(H2O)                # Species mass fractions summed into the progress variable
+unburntVal = 0.0                           # DEF: 0; sum of the species in the unburnt mixture
+burntVal = 1.0                             # DEF: 1; sum of the species in the burnt mixture
+printSource = 1                            # DEF: 1; set 0 to skip the I_R(<outname>) source term
+finestLevel = 1000                         # DEF: finest level in file; max level to process
+is_per = 1 1 1                             # DEF: 1 1 1; periodicity flags per dimension
+
+#------------------- Auxiliary variables --------------------------------------------------
+Aux_Variables = density temp               # DEF: ""; variable names copied unchanged from the
+                                           # input to the output pltfile

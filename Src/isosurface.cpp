@@ -9,6 +9,7 @@
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_FillPatchUtil.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include "makelevelset3.h"
 
 using namespace amrex;
@@ -1739,6 +1740,11 @@ main(int argc, char* argv[])
           refRatio[lev] = IntVect(AMREX_D_DECL(ir, ir, ir));
         }
       }
+      // Cap the number of plotfile data files via the n_files option (AMReX)
+      int n_files = amrex::VisMF::GetNOutFiles();
+      pp.query("n_files", n_files);
+      amrex::VisMF::SetNOutFiles(n_files);
+
       WriteMultiLevelPlotfile(
         outfile, Nlev, ptrs, {"distance"}, geoms, time, levelSteps, refRatio);
       distance.clear();

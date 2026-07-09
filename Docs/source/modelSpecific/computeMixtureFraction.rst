@@ -43,9 +43,10 @@ the following structure:
 
 .. code-block:: none
 
-   infile      = plt000000
-   fuelName    = H2
-   finestLevel = 2
+   infile        = plt000000
+   fuelName      = H2
+   finestLevel   = 2
+   Aux_Variables = density temp
 
 
 Parameters
@@ -79,6 +80,18 @@ Parameters
    Periodicity flags in each spatial direction (0: non-periodic, 1: periodic).
    Default: ``1 1 1``.
 
+``Aux_Variables``
+   Names of variables copied unchanged from the input plotfile to the output
+   plotfile, for carrying through fields the tool does not otherwise write.
+   Default: none.
+
+``n_files``
+   Maximum number of binary files used to write the output plotfile data
+   (AMReX ``VisMF::SetNOutFiles``). Lower this to reduce the number of files
+   created for large parallel post-processing runs. AMReX clamps the value to
+   the number of MPI ranks, so a serial run always writes a single data file.
+   Default: the AMReX default.
+
 
 Output
 ------
@@ -87,6 +100,7 @@ A new AMReX plotfile named ``<infile>outsuffix`` (by default
 ``<infile>_ZC``) containing:
 
 - ``Z`` — Bilger mixture fraction
+- any ``Aux_Variables`` requested, copied unchanged from the input
 
 The output inherits the domain geometry, coordinate system, and box
 structure from the input plotfile.

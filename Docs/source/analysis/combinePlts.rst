@@ -22,7 +22,8 @@ Example Input File ``combinePlts.inp``::
         #------------------- IO CONTROL -----------------------------------------------------------
         infiles = plt00000 plt00001 plt00002      # pltfiles to combine
         outfile = plt_combined			  # Name of output file
-        
+        n_files = 64                              # DEF: AMReX default, cap on the number of plotfile data files (VisMF), clamped to the MPI rank count
+
         #------------------- Operation control ----------------------------------------------------
         vars = temp HeatRelease       	          # DEF: all possible, list of variables to average COMP or NAME
         finestLevel = 4				  # DEF: -1, gets finest level by defaults, or max level user sets to consider for combine 

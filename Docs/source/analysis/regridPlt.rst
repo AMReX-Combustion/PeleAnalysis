@@ -21,6 +21,7 @@ Tool Options
    #------------------- IO CONTROL -----------------------------------------------------------
    infile  = plt00500                         # Input AMReX plot file
    outfile = plt00500_rg                      # Output regridded plot file
+   n_files = 64                               # DEF: AMReX default; cap on the number of plotfile data files (VisMF), clamped to the MPI rank count
 
 `infile` and `outfile` are both required. `outfile` receives no default and must always be specified explicitly. The output is a standard multi-level AMReX plot file preserving the geometry, refinement ratios, and simulation time of the input.
 ::

@@ -11,6 +11,8 @@ geometry.is_periodic = 0 0 0 # Periodic boundary flags per axis
 
 # Output
 plotfile_name = plt_test      # Directory name written by the tool
+n_files = 64                  # DEF: AMReX default; max number of plotfile data
+                              # files written (VisMF), clamped to the MPI rank count
 
 # --- Multilevel AMR (set amr.max_level = 0 or omit for single-level output) ---
 amr.max_level = 2            # Number of refinement levels above the base grid

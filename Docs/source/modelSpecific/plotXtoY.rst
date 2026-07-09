@@ -30,6 +30,7 @@ The program is controlled via an input file with the following structure:
 
    infile = plt000000
    finestLevel = 2
+   Aux_Variables = density
 
 
 Parameters
@@ -43,6 +44,18 @@ Parameters
    Finest AMR level processed by the conversion.
    Default: finest level available in the plotfile.
 
+``Aux_Variables``
+   Names of variables copied unchanged from the input plotfile to the output
+   plotfile, for carrying through fields the tool does not otherwise write.
+   Default: none.
+
+``n_files``
+   Maximum number of binary files used to write the output plotfile data
+   (AMReX ``VisMF::SetNOutFiles``). Lower this to reduce the number of files
+   created for large parallel post-processing runs. AMReX clamps the value to
+   the number of MPI ranks, so a serial run always writes a single data file.
+   Default: the AMReX default.
+
 
 Output
 ------
@@ -51,6 +64,7 @@ A new AMReX plotfile containing:
 
 - mass fractions ``Y(species)``
 - temperature ``Temp``
+- any ``Aux_Variables`` requested, copied unchanged from the input
 
 The output plotfile name is automatically generated as
 

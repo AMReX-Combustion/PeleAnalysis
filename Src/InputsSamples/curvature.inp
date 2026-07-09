@@ -3,11 +3,13 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infile = plt00000                          # Input file (plt file).
 outfile = plt00000_curvature               # DEF: "<infile>_K"; Output file (plt file).
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 finestLevel = 0                            # DEF: finest level of plot file; Sets the 
                                            # finest level to read.
 
 #------------------- Variables ------------------------------------------------------------
-Aux_Variables = 2 3 4                      # DEF: ""; Variable IDs to be taken from input 
+Aux_Variables = density temp               # DEF: ""; Variable names to be taken from input
                                            # file over to output file without change.
 progressName = Y_H2                        # Name of progress variable
 progMin = 0.0                              # Limit progress variable to progMin.

@@ -58,7 +58,7 @@ Parameters
    Finest AMR level to be processed.
 
 ``Aux_Variables``
-   Variable IDs copied unchanged from input to output plotfile.
+   Names of variables copied unchanged from input to output plotfile.
 
 ``progressName``
    Name of the progress variable.
@@ -92,3 +92,10 @@ Parameters
 
 ``do_velnormal``
    Compute normal velocity.
+
+``n_files``
+   Maximum number of binary files used to write the output plotfile data
+   (AMReX ``VisMF::SetNOutFiles``). Lower this to reduce the number of files
+   created for large parallel post-processing runs. AMReX clamps the value to
+   the number of MPI ranks, so a serial run always writes a single data file.
+   Default: the AMReX default.

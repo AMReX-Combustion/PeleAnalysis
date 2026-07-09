@@ -5,6 +5,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_DataServices.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 
 using namespace amrex;
 
@@ -279,6 +280,11 @@ main(int argc, char* argv[])
   if (verbose) {
     Print() << "*** writing plotfile " << std::endl;
   }
+  // Cap the number of plotfile data files via the n_files option (AMReX)
+  int n_files = amrex::VisMF::GetNOutFiles();
+  pp.query("n_files", n_files);
+  amrex::VisMF::SetNOutFiles(n_files);
+
   int levelSteps;
   WriteSingleLevelPlotfile(outfile, *mf, names, geoms, time, levelSteps);
   amrex::Finalize();

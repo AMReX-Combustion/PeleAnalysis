@@ -5,6 +5,7 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_VisMF.H>
 #include <AMReX_Print.H>
 
 #include "H5Cpp.h"
@@ -364,6 +365,11 @@ main(int argc, char* argv[])
 
     MultiFab data(ba, DistributionMapping(ba), (int)vars.size(), 0);
     read_fields(file, mesh, vars, data);
+
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
 
     Print() << "Writing " << outfile << "...\n";
     WriteSingleLevelPlotfile(outfile, data, vars, geom, time, 0);

@@ -39,6 +39,7 @@ Tool Options
    #------------------- IO CONTROL -----------------------------------------------------------
    infiles = plt29000 plt30000 plt31000     # List of AMReX plotfiles to average [REQUIRED]
    outfile = plt_averaged                   # DEF: plt_averaged; Output averaged plotfile name
+   n_files = 64                             # DEF: AMReX default; cap on the number of plotfile data files
 
 ``infiles`` specifies the list of input AMReX plotfiles to be averaged. All input
 files must have the same physical domain geometry. Multiple files are provided as
@@ -46,6 +47,11 @@ a space-separated list.
 
 ``outfile`` specifies the name of the output plotfile containing the averaged
 statistics. If not provided, the default is ``plt_averaged``.
+
+``n_files`` caps the number of binary files used to write the output plotfile data
+(AMReX ``VisMF::SetNOutFiles``). Lower it to reduce the number of files created for
+large parallel post-processing runs. AMReX clamps the value to the number of MPI
+ranks, so a serial run always writes a single data file. Default: the AMReX default.
 
 ::
 

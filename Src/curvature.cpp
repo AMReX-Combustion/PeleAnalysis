@@ -896,6 +896,12 @@ main(int argc, char* argv[])
       ostate[lev] = new MultiFab(ba, dmap[lev], nCompOut, 0);
       MultiFab::Copy(*ostate[lev], *state[lev], 0, 0, nCompOut, 0);
     }
+
+    // Cap the number of plotfile data files via the n_files option (AMReX)
+    int n_files = amrex::VisMF::GetNOutFiles();
+    pp.query("n_files", n_files);
+    amrex::VisMF::SetNOutFiles(n_files);
+
     Print() << "Writing new data to " << outfile << "\n";
     Vector<int> isteps(Nlev, 0);
     Vector<IntVect> refRatios(Nlev - 1, {AMREX_D_DECL(2, 2, 2)});

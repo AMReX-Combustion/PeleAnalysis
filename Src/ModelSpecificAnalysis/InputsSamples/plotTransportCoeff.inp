@@ -3,9 +3,14 @@
 
 #------------------- IO CONTROL -----------------------------------------------------------
 infile = plt00500                          # Input AMReX plot file (must contain Y(...), temp, density)
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 
 #------------------- AMR Control ----------------------------------------------------------
 finestLevel = 2                            # DEF: finest level in file; Finest AMR level to process
+
+#------------------- Auxiliary variables --------------------------------------------------
+Aux_Variables = density                    # DEF: ""; variable names copied unchanged to output
 
 #------------------- Additional Flags -----------------------------------------------------
 # verbose                                  # Uncomment to enable verbose AMReX data loading output

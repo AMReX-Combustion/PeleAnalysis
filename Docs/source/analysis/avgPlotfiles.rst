@@ -19,6 +19,7 @@ Example Input File ``avgPlotfiles.inp``::
     #------------------- IO CONTROL -----------------------------------------------------------
     infiles = plt00000 plt00001 plt00002      # pltfiles to average
     outfile = plt_averaged                   # Name of output file
+    n_files = 64                             # DEF: AMReX default, cap on the number of plotfile data files (VisMF), clamped to the MPI rank count
 
     #------------------- Operation control ----------------------------------------------------
     variables = temp HeatRelease             # DEF: all possible, list of variable names to average

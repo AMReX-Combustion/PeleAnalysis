@@ -6,6 +6,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infile  = SJ_H2_000000.h5                  # Input CIAO HDF5 file (required)
 outfile = plt_SJ_H2_000000                 # DEF: plt_<stem>; output plotfile directory
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 
 #------------------- Field selection -------------------------------------------------------
 vars = T RHO OH H2O                        # DEF: all fields; space-separated list of

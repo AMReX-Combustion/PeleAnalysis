@@ -3,6 +3,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infile = plt57000                       # input pltfile
 outfile = plt57000_sum                  # DEF: <infile>_<operator>, output pltfile
+n_files = 64                            # DEF: AMReX default; max number of plotfile data
+                                        # files written (VisMF), clamped to the MPI rank count
 
 #------------------- Operation control ----------------------------------------------------
 operator = add                          # arithmetic operator: add, subtract, multiply, divide

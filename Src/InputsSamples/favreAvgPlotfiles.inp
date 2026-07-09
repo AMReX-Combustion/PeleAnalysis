@@ -5,6 +5,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infiles = plt29000 plt30000 plt31000       # List of AMReX plotfiles to average [REQUIRED]
 outfile = plt_favre_averaged               # DEF: plt_averaged; Output averaged plotfile name
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 
 #------------------- VARIABLE SELECTION --------------------------------------------------
 variables = x_velocity y_velocity z_velocity density rhoh temp

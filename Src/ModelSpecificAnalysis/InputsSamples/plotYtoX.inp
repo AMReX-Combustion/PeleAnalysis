@@ -2,4 +2,9 @@
 
 #------------------- IO CONTROL -----------------------------------------------------------
 infile = plt000000                         # Plt-file name.
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 finestLevel = 2                            # DEF: plotfile finest level.
+
+#------------------- Auxiliary variables --------------------------------------------------
+Aux_Variables = density                    # DEF: ""; variable names copied unchanged to output

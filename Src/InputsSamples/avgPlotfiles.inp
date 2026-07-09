@@ -3,6 +3,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infiles = plt00000 plt00001 plt00002      # pltfiles to average
 outfile = plt_averaged			  # DEF: plt_averaged, Name of output file
+n_files = 64				  # DEF: AMReX default; max number of plotfile data
+                                          # files written (VisMF), clamped to the MPI rank count
 
 #------------------- Operation control ----------------------------------------------------
 variables = temp HeatRelease              # DEF: all possible, list of variable names to average

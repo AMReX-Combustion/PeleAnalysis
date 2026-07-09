@@ -4,6 +4,8 @@
 #------------------- IO CONTROL -----------------------------------------------------------
 infile  = plt00500                         # Input AMReX plot file
 outfile = plt00500_rg                      # Output regridded plot file
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 
 #------------------- AMR Control ----------------------------------------------------------
 finestLevel = 2                            # DEF: all levels in file; Finest AMR level to regrid

@@ -9,6 +9,8 @@ is_per = 0 1 0                             # DEF: 0 0 0; Periodicity (0: non-per
 sym_dir = 0 0 0                            # DEF: 0 0 0; Summetry (0: non-symmetric, 1: 
                                            # symmetric).
 outfile = plt000000_qCriterion             # DEF: "<infile>_qCriterion"; outfile name.
+n_files = 64                               # DEF: AMReX default; max number of plotfile data
+                                           # files written (VisMF), clamped to the MPI rank count
 
 #-------------------- Variables -----------------------------------------------------------
 Aux_Variables = Y_H2                       # DEF: "". Auxialiary variables to take from

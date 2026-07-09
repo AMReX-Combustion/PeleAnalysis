@@ -2,6 +2,8 @@
 
 #------------------- IO CONTROL -----------------------------------------------------------
 infile = plt00000		          # pltfile to filter
+n_files = 64				  # DEF: AMReX default; max number of plotfile data
+                                          # files written (VisMF), clamped to the MPI rank count
 
 #------------------- Operation control ----------------------------------------------------
 variables = temp HeatRelease              # DEF: all possible, list of variable names to filter
