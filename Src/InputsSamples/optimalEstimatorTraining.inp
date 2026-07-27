@@ -23,11 +23,29 @@ neurons = 6 12 8                           # Neurons per hidden layer (tanh); th
                                            # is linear and sized by the number of targets
 
 #------------------- Training control -----------------------------------------------------
-nEpochs = 1000                             # DEF: 1000; number of training epochs
-batch_size = 32                            # DEF: -1 (keep pltfile boxes); max box EDGE length
-                                           # in cells, so a batch holds batch_size^DIM samples
-learning_rate = 1e-3                       # DEF: 1e-3; Adam step size
-alpha = 0.01                               # DEF: 0.01; weight of the L2 penalty in
-                                           # loss = (1-alpha)*MSE + alpha*sum(w^2).
-                                           # Keep small: regularisation biases the estimated
-                                           # conditional mean and inflates the irreducible error
+nEpochs = 1000                             # DEF: 1000; hard cap on training epochs
+batch_size = 16384                         # DEF: 16384; SAMPLES (cells) per mini-batch.
+                                           # NOTE: this used to be a box edge length, so an
+                                           # old batch_size=32 meant 32^DIM samples. Small
+                                           # batches are dominated by framework overhead.
+split = 0.7                                # DEF: 0.7; fraction of boxes used for training,
+                                           # the rest is held out for validation
+learning_rate = 1e-3                       # DEF: 1e-3; initial Adam step size
+alpha = 0.0                                # DEF: 0; L2 weight decay. Regularisation biases
+                                           # the estimated conditional mean and so inflates
+                                           # the irreducible error being measured
+use_double = 0                             # DEF: 0; train in float32. The checkpoint is
+                                           # always written in double, so infer is unaffected
+num_threads = -1                           # DEF: libtorch default (1 under MPI); threads
+                                           # used for the matrix products
+
+#------------------- Convergence control --------------------------------------------------
+minEpochs = 100                            # DEF: 100; no early stop before this many epochs
+patience = 50                              # DEF: 50; stop after this many epochs without an
+                                           # improvement > min_delta. 0 disables early stopping
+min_delta = 1e-3                           # DEF: 1e-3; smallest improvement in R2 that counts
+lr_patience = 20                           # DEF: 20; halve the learning rate after this many
+                                           # epochs without improvement. 0 keeps it fixed
+lr_factor = 0.5                            # DEF: 0.5; learning rate multiplier on plateau
+min_lr = 1e-6                              # DEF: 1e-6; floor for the learning rate
+print_every = 1                            # DEF: 1; epoch summary print interval

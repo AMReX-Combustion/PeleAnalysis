@@ -181,23 +181,31 @@ Training Parameters
       that a single, uniformly resolved level is used.
 
 ``batch_size``
-   Maximum box edge length, in cells, used to split the plotfile boxes
-   (``BoxArray::maxSize``). Each resulting box becomes one mini-batch, so the
-   actual number of samples per batch is ``batch_size**AMREX_SPACEDIM``, not
-   ``batch_size``. A value of ``32`` in 2D therefore gives batches of 1024 cells.
-   Default: ``-1`` (keep the plotfile's own box decomposition).
+   Number of **samples** (cells) per mini-batch. Default: ``16384``.
+
+   .. warning::
+
+      This parameter changed meaning. It used to be a box edge length passed to
+      ``BoxArray::maxSize``, so an old input file with ``batch_size = 32``
+      requested batches of :math:`32^{\mathrm{DIM}}` cells — 1024 in 2D, 32768
+      in 3D. Reusing such an input verbatim now asks for 32-sample batches,
+      which is several hundred times slower. The tool prints a warning when
+      ``batch_size < 256``.
+
+   Very small batches spend nearly all of their time in framework overhead
+   rather than arithmetic. Values in the range :math:`10^4`–:math:`10^5` give
+   the best throughput. Set ``-1`` to use the whole local training set as a
+   single batch (full-batch gradient descent).
+
+``split``
+   Fraction of boxes used for training; the remainder is held out for
+   validation and early stopping. Default: ``0.7``.
 
 ``learning_rate``
-   Step size of the Adam optimiser. Default: ``1e-3``.
+   Initial step size of the Adam optimiser. Default: ``1e-3``.
 
 ``alpha``
-   Weight of the :math:`L_2` weight-decay term in the loss,
-
-   .. math::
-
-      \mathcal{L} = (1-\alpha)\,\mathrm{MSE} + \alpha \sum_i w_i^2 .
-
-   Default: ``0.01``.
+   Strength of the :math:`L_2` weight decay applied by Adam. Default: ``0``.
 
    .. warning::
 
@@ -205,11 +213,65 @@ Training Parameters
       *biases the estimated conditional mean*, which inflates the reported
       irreducible error — the very quantity being measured. Since the optimal
       estimator is a property of the data rather than a predictive model,
-      overfitting is far less of a concern here than bias. Use the smallest
-      value that still trains stably, and verify that the result is insensitive
-      to it. Note also that the penalty is an unnormalised sum over all weights,
-      so its magnitude grows with network size and a value tuned for one
-      architecture does not transfer to another.
+      overfitting is far less of a concern here than bias, which is why the
+      default is zero. Early stopping on the validation loss already guards
+      against fitting noise. If you do enable it, verify that the result is
+      insensitive to the value.
+
+``use_double``
+   Set to ``1`` to train in double precision. Default: ``0`` (single
+   precision), which roughly doubles throughput and is entirely adequate for a
+   statistical quantity. This affects training only — the checkpoint is always
+   written in double precision, so ``optimalEstimatorInfer`` is unaffected.
+
+``num_threads``
+   Number of threads libtorch may use for the matrix products. Default: the
+   libtorch default when running on one rank, and ``1`` under MPI, where
+   letting every rank size its own pool from the visible core count would
+   oversubscribe the node badly.
+
+
+Convergence Control
+~~~~~~~~~~~~~~~~~~~
+
+Training stops when the validation loss stops improving, and the weights from
+the best epoch — not the last — are the ones written to disk.
+
+Progress is measured with the coefficient of determination
+
+.. math::
+
+   R^2 = 1 - \frac{\mathrm{MSE}_\mathrm{val}}{\mathrm{Var}(\phi)},
+
+which is dimensionless and bounded above by 1, so a single threshold works
+across every target and every case. :math:`R^2 = 0` corresponds to an estimator
+no better than the unconditional mean.
+
+``nEpochs``
+   Hard upper bound on the number of epochs. Default: ``1000``.
+
+``minEpochs``
+   Minimum number of epochs before early stopping may trigger, so that Adam's
+   initial transient is not mistaken for a plateau. Default: ``100``.
+
+``patience``
+   Stop after this many consecutive epochs without an improvement larger than
+   ``min_delta``. Set to ``0`` to disable early stopping and always run
+   ``nEpochs``. Default: ``50``.
+
+``min_delta``
+   Smallest improvement in :math:`R^2` that counts as progress.
+   Default: ``1e-3``.
+
+``lr_patience``, ``lr_factor``, ``min_lr``
+   After ``lr_patience`` epochs without improvement the learning rate is
+   multiplied by ``lr_factor``, down to a floor of ``min_lr``. Reducing the
+   step size on a plateau usually reaches a lower final loss in fewer total
+   epochs. Set ``lr_patience = 0`` to keep the rate fixed.
+   Defaults: ``20``, ``0.5``, ``1e-6``.
+
+``print_every``
+   Print the epoch summary every N epochs. Default: ``1``.
 
 
 Inference Parameters
@@ -248,8 +310,10 @@ will silently produce nonsense.
    When inference is run on a different snapshot than training, features may fall
    outside the training range and are then mapped outside :math:`[-1, 1]`. The
    network extrapolates there, and because the hidden activations saturate the
-   estimate flattens rather than diverging. Check the printed bounds against the
-   inference data set before interpreting the result.
+   estimate flattens rather than diverging. ``optimalEstimatorInfer`` counts
+   these samples and prints a warning with the affected fraction; a percentage
+   large enough to matter means the training set does not bracket the inference
+   data and the estimator should be retrained on a set that does.
 
 
 Training Procedure
@@ -261,22 +325,29 @@ and a validation set. The split is performed on whole boxes rather than
 individual cells, which keeps spatially adjacent — and therefore strongly
 correlated — cells from appearing on both sides of the split.
 
-Each epoch loops over the training batches performing an Adam update per batch,
-then evaluates the validation loss, and prints both:
+Each epoch reshuffles the training samples, loops over the mini-batches
+performing an Adam update per batch, then evaluates the validation loss and
+prints a summary:
 
 .. code-block:: none
 
-   Epoch [1/1000], Training Loss: 0.0421, Validation Loss: 0.0438
+   Epoch [1/1000], Training Loss: 0.0421, Validation Loss: 0.0438, R2: 0.79, lr: 0.001
 
 Both losses are mean-square errors in the *normalised* target space, so they are
-dimensionless and comparable across targets. A useful reference point is that a
-model which predicts the unconditional mean of a target scores an MSE equal to
-that target's normalised variance; a converged optimal estimator must do
-substantially better than this, otherwise the chosen features carry essentially
-no information about the target.
+dimensionless and comparable across targets. The validation loss is computed as
+a sum of squared errors divided by the global sample count, which makes it
+independent of how the data happens to be distributed over the MPI ranks.
 
-After the final epoch the network is written to ``<model_path>.pt`` and the
-normalisation bounds to ``<minmax_path>.bin``.
+Training ends either at ``nEpochs`` or when the validation loss plateaus (see
+*Convergence Control* above). The weights are then rolled back to the best
+epoch, and the network is written to ``<model_path>.pt`` with the normalisation
+bounds in ``<minmax_path>.bin``.
+
+Under MPI the gradients are summed across all ranks and rescaled to the mean
+after every backward pass, so a run on N ranks takes the same optimiser steps
+as a serial run over the union of the data. All ranks take the same number of
+steps per epoch; because the training set is reshuffled every epoch, the tail
+that this drops on data-rich ranks is a different one each time.
 
 
 Output
@@ -320,8 +391,8 @@ contain the progress variables and mixture fraction (see ``progVar`` and
    # 1. Train the estimator on the training snapshot, finest level only
    optimalEstimatorTraining infile=plt_train \
        features='progVar' 'Z' targets='I_R(progVar)' \
-       neurons=32 64 16 nEpochs=1000 minLevel=2 batch_size=32 \
-       learning_rate=1e-3 alpha=1e-6 \
+       neurons=32 64 16 nEpochs=1000 minLevel=2 batch_size=16384 \
+       learning_rate=1e-3 \
        model_path=progVar-Z/optimal_estimator \
        minmax_path=progVar-Z/minmax 2>&1 | tee progVar-Z/training.log
 
@@ -352,31 +423,26 @@ identical architecture and training budget are far more robust.
 Notes and Current Limitations
 -----------------------------
 
-- **Run in serial.** Although the tools build with ``USE_MPI=TRUE``, the
-  gradients computed on the individual ranks are not synchronised before the
-  optimiser update, so every rank trains its own model on its own subset of the
-  data and only the I/O rank's model is written out. Until this is addressed,
-  ``optimalEstimatorTraining`` must be run with a single rank. Inference is
-  embarrassingly parallel and unaffected.
+- **CPU only.** Both tools run on the host. ``USE_CUDA`` is not supported.
 
-- **CPU only.** The CUDA code paths are present but untested and do not currently
-  build; use ``USE_CUDA=FALSE``.
+- **Each rank needs at least two boxes**, one for training and one for
+  validation; the tool aborts otherwise. With a small number of large boxes,
+  this limits how many ranks are useful. Splitting the plotfile into more boxes
+  (or simply using fewer ranks) resolves it.
 
-- **Performance.** Training cost is dominated by the number of optimiser steps,
-  which is ``nEpochs`` times the number of boxes. A small ``batch_size`` produces
-  very many tiny batches whose cost is dominated by framework overhead rather
-  than arithmetic. Prefer larger ``batch_size`` values (giving batches of
-  :math:`10^4`–:math:`10^5` cells) and make sure the job requests more than one
-  core, since libtorch parallelises the matrix products over threads
-  (``--cpus-per-task`` on Slurm, or ``OMP_NUM_THREADS``).
+- **Throughput.** Training cost is ``nEpochs`` times the number of mini-batches.
+  Make the job request more than one core — libtorch parallelises the matrix
+  products over threads (``--cpus-per-task`` on Slurm) — and keep ``batch_size``
+  large enough that the batches are worth dispatching. When sweeping many
+  feature combinations, running the independent trainings concurrently (a Slurm
+  job array, say) scales far better than adding ranks to a single one.
 
-- **Fixed epoch count.** Training always runs the full ``nEpochs``; there is no
-  early stopping, and the best-scoring weights are not retained. Inspect the
-  printed validation loss to confirm that it has plateaued and is not rising
-  again before trusting the result.
+- **AMR level weighting.** Cells are drawn with equal weight regardless of their
+  volume, and coarse cells underneath finer grids are not masked out. Use
+  ``minLevel = finestLevel`` on refined data sets.
 
 - **Degenerate fields.** A feature or target that is constant over the whole data
-  set makes ``x_max - x_min`` vanish and the normalisation produces ``NaN``.
+  set cannot be normalised; the tool aborts with a message naming the problem.
 
 
 References

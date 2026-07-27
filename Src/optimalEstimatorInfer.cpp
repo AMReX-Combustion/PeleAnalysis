@@ -114,15 +114,19 @@ main(int argc, char* argv[])
     auto model = std::make_shared<Net>(nFeatures, neurons, nTargets);
     torch::load(model, path);
 
-#ifdef AMREX_USE_CUDA
-    torch::Device device0(torch::kCUDA);
-    model.to(device0);
-    amrex::Print() << "Copying model to GPU." << std::endl;
-    // set tensor options
-    auto tensoropt = torch::TensorOptions().dtype(dtype0).device(device0);
-#else
     auto tensoropt = torch::TensorOptions().dtype(dtype0);
-#endif
+
+    // Inference is a single forward pass per box; no autograd graph is needed.
+    torch::NoGradGuard no_grad;
+    model->eval();
+
+    int num_threads = -1;
+    pp.query("num_threads", num_threads);
+    if (num_threads > 0) {
+      torch::set_num_threads(num_threads);
+    } else if (ParallelDescriptor::NProcs() > 1) {
+      torch::set_num_threads(1);
+    }
     Vector<Real> f_max(nFeatures, -1e100);
     Vector<Real> f_min(nFeatures, 1e100);
     Vector<Real> t_max(nTargets, -1e100);
@@ -132,11 +136,20 @@ main(int argc, char* argv[])
     pp.query("minmax_path", minmax_path);
     minmax_path += ".bin";
 
-    std::ifstream file(minmax_path, std::ios::out);
+    std::ifstream file(minmax_path, std::ios::binary);
+    if (!file.good()) {
+      amrex::Abort("Could not open minmax file " + minmax_path);
+    }
     file.read((char*)f_min.dataPtr(), sizeof(Real) * nFeatures);
     file.read((char*)f_max.dataPtr(), sizeof(Real) * nFeatures);
     file.read((char*)t_min.dataPtr(), sizeof(Real) * nTargets);
     file.read((char*)t_max.dataPtr(), sizeof(Real) * nTargets);
+    if (!file) {
+      amrex::Abort(
+        "Short read from " + minmax_path +
+        ": it does not match the requested number of features and targets");
+    }
+    file.close();
 
     for (int nv = 0; nv < nFeatures; nv++) {
       Print() << "f_max[" << nv << "] = " << f_max[nv] << std::endl;
@@ -148,6 +161,9 @@ main(int argc, char* argv[])
     }
 
     // now we have a trained model which should be the same on all processes
+
+    Long nOutOfRange = 0;
+    Long nSamples = 0;
 
     for (int lev = 0; lev < Nlev; ++lev) {
       // Get the array of boxes for this level
@@ -174,9 +190,9 @@ main(int argc, char* argv[])
 
       // Iterate over the multiFabs - distributes each box to a process and
       // iterates over it
-      for (MFIter mfi(indata, TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+      for (MFIter mfi(indata); mfi.isValid(); ++mfi) {
         // box for this iteration
-        const Box& bx = mfi.tilebox();
+        const Box& bx = mfi.validbox();
         const IntVect bx_lo = bx.smallEnd();
 
         const IntVect nbox = bx.size();
@@ -190,56 +206,82 @@ main(int argc, char* argv[])
         Array4<Real> const& outbox_t = outdata[lev].array(mfi, 0);
         Array4<Real> const& outbox_oe = outdata[lev].array(mfi, nTargets);
         Array4<Real> const& outbox_irr = outdata[lev].array(mfi, 2 * nTargets);
-        // magic i,j,k looper (works in serial/MPI/CUDA and 2D/3D)
         // create array to feed to model
-        amrex::Gpu::ManagedVector<Real> trainingVec(ncell * nFeatures);
-        Real* AMREX_RESTRICT trainingPtr = trainingVec.dataPtr();
-        AMREX_PARALLEL_FOR_3D(bx, i, j, k, {
-          int ii = i - bx_lo[0];
-          int jj = j - bx_lo[1];
-          int index = jj * nbox[0] + ii;
+        // The checkpoint is always written in double precision, so the network
+        // is evaluated in double regardless of how amrex::Real is configured.
+        std::vector<double> trainingVec(ncell * nFeatures);
+        double* trainingPtr = trainingVec.data();
+        nSamples += (Long)ncell * nFeatures;
+        amrex::LoopOnCpu(
+          amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
+            int ii = i - bx_lo[0];
+            int jj = j - bx_lo[1];
+            int index = jj * nbox[0] + ii;
 #if AMREX_SPACEDIM == 3
-          int kk = k - bx_lo[2];
-          index += kk * nbox[0] * nbox[1];
+            int kk = k - bx_lo[2];
+            index += kk * nbox[0] * nbox[1];
 #endif
-          for (int n = 0; n < nFeatures; n++) {
-            trainingPtr[index * nFeatures + n] =
-              -1.0 + 2 * (inbox(i, j, k, n) - f_min[n]) / (f_max[n] - f_min[n]);
-          }
-        });
+            for (int n = 0; n < nFeatures; n++) {
+              const double xn = -1.0 + 2.0 * (inbox(i, j, k, n) - f_min[n]) /
+                                         (f_max[n] - f_min[n]);
+              // Features outside the training range put the network into
+              // extrapolation, where the saturated tanh flattens the estimate.
+              if (xn < -1.0 || xn > 1.0) {
+                nOutOfRange++;
+              }
+              trainingPtr[index * nFeatures + n] = xn;
+            }
+          });
         torch::Tensor local_tensor =
           torch::from_blob(trainingPtr, {ncell, nFeatures}, tensoropt);
-        torch::Tensor output = model->forward(local_tensor);
-        output = output.contiguous();
-        amrex::Gpu::ManagedVector<Real> outputVec(ncell * nTargets);
-        Real* AMREX_RESTRICT outputPtr = outputVec.dataPtr();
-        std::memcpy(
-          outputPtr, output.data_ptr<Real>(), ncell * nTargets * sizeof(Real));
-        AMREX_PARALLEL_FOR_3D(bx, i, j, k, {
-          int ii = i - bx_lo[0];
-          int jj = j - bx_lo[1];
-          int index = jj * nbox[0] + ii;
+        torch::Tensor output = model->forward(local_tensor).contiguous();
+        const double* outputPtr = output.data_ptr<double>();
+        amrex::LoopOnCpu(
+          amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
+            int ii = i - bx_lo[0];
+            int jj = j - bx_lo[1];
+            int index = jj * nbox[0] + ii;
 #if AMREX_SPACEDIM == 3
-          int kk = k - bx_lo[2];
-          index += kk * nbox[0] * nbox[1];
+            int kk = k - bx_lo[2];
+            index += kk * nbox[0] * nbox[1];
 #endif
-          for (int n = 0; n < nTargets; n++) {
-            outbox_oe(i, j, k, n) =
-              t_min[n] + 0.5 * (t_max[n] - t_min[n]) *
-                           (outputPtr[index * nTargets + n] + 1.0);
-            outbox_irr(i, j, k, n) =
-              (outbox_t(i, j, k, n) - outbox_oe(i, j, k, n)) *
-              (outbox_t(i, j, k, n) - outbox_oe(i, j, k, n));
-          }
-        });
+            for (int n = 0; n < nTargets; n++) {
+              outbox_oe(i, j, k, n) =
+                t_min[n] + 0.5 * (t_max[n] - t_min[n]) *
+                             (outputPtr[index * nTargets + n] + 1.0);
+              outbox_irr(i, j, k, n) =
+                (outbox_t(i, j, k, n) - outbox_oe(i, j, k, n)) *
+                (outbox_t(i, j, k, n) - outbox_oe(i, j, k, n));
+            }
+          });
       }
       Print() << "Derive finished for level " << lev << std::endl;
     }
+
+    ParallelDescriptor::ReduceLongSum(nOutOfRange);
+    ParallelDescriptor::ReduceLongSum(nSamples);
+    if (nOutOfRange > 0) {
+      Print() << "\n*** WARNING: " << nOutOfRange << " of " << nSamples << " ("
+              << 100.0 * (Real)nOutOfRange / (Real)std::max(Long(1), nSamples)
+              << "%) feature values fall outside the range seen during "
+                 "training.\n"
+              << "    The network extrapolates there and the estimate is not "
+                 "trustworthy.\n"
+              << "    This is expected when inferring on a different snapshot "
+                 "than the one\n"
+              << "    used for training; retrain on a set that brackets the "
+                 "inference data.\n\n";
+    }
+
     std::string outfile = getFileRoot(plotFileName) + "_OE";
     pp.query("outfile", outfile);
     Print() << "Writing new data to " << outfile << std::endl;
     Vector<int> isteps(Nlev, 0);
-    Vector<IntVect> refRatios(Nlev - 1, {AMREX_D_DECL(2, 2, 2)});
+    Vector<IntVect> refRatios(Nlev - 1);
+    for (int lev = 0; lev < Nlev - 1; ++lev) {
+      const int rr = amrData.RefRatio()[lev];
+      refRatios[lev] = IntVect{AMREX_D_DECL(rr, rr, rr)};
+    }
     amrex::WriteMultiLevelPlotfile(
       outfile, Nlev, GetVecOfConstPtrs(outdata), outNames, geoms, 0.0, isteps,
       refRatios);
