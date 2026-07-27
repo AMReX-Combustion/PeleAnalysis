@@ -1,0 +1,33 @@
+# Example input file for optimalEstimatorTraining
+#
+# Trains a feed-forward network to approximate the conditional mean
+# <targets | features> and writes the weights plus the normalisation bounds.
+# Run optimalEstimatorInfer afterwards with the SAME features/targets/neurons.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Input pltfile providing the training data
+model_path = optimal_estimator             # DEF: optimal_estimator; ".pt" is appended
+minmax_path = minmax                       # DEF: minmax; ".bin" is appended. Holds the
+                                           # feature/target min and max used for normalisation
+
+#------------------- Data selection -------------------------------------------------------
+features = temp density                    # Conditioning variables (network inputs)
+targets = I_R(prog)                        # Fields whose conditional mean is sought (outputs)
+minLevel = 0                               # DEF: 0; coarsest AMR level used. Set equal to
+                                           # finestLevel to avoid sampling cells that lie
+                                           # underneath finer grids more than once
+finestLevel = 1000                         # DEF: finest level in file; finest AMR level used
+
+#------------------- Network architecture -------------------------------------------------
+neurons = 6 12 8                           # Neurons per hidden layer (tanh); the output layer
+                                           # is linear and sized by the number of targets
+
+#------------------- Training control -----------------------------------------------------
+nEpochs = 1000                             # DEF: 1000; number of training epochs
+batch_size = 32                            # DEF: -1 (keep pltfile boxes); max box EDGE length
+                                           # in cells, so a batch holds batch_size^DIM samples
+learning_rate = 1e-3                       # DEF: 1e-3; Adam step size
+alpha = 0.01                               # DEF: 0.01; weight of the L2 penalty in
+                                           # loss = (1-alpha)*MSE + alpha*sum(w^2).
+                                           # Keep small: regularisation biases the estimated
+                                           # conditional mean and inflates the irreducible error

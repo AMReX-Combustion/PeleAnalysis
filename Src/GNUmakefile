@@ -62,6 +62,11 @@ USE_CUDA      = FALSE
 #EBASE   = trimMEFgen
 #EBASE   = turbfile
 
+# tools requiring an external PyTorch/libtorch installation.  Kept behind a double ##
+# so CI (which has no libtorch) skips them; see Docs optimalEstimator for build notes.
+##EBASE   = optimalEstimatorTraining
+##EBASE   = optimalEstimatorInfer
+
 # tools that need review/combining/fixing/work.  Comment with double ## t escape from CI
 ##EBASE   = combineMEF
 ##EBASE   = decimateMEF
@@ -91,6 +96,14 @@ endif
 
 ifeq ($(EBASE),$(filter $(EBASE), isosurface buildDistance))
    NEED_DISTANCE = TRUE
+endif
+
+# Either load a PyTorch module / activate an environment providing torch,
+# or run "make pytorch" first to fetch a standalone libtorch.
+ifeq ($(EBASE),$(filter $(EBASE), optimalEstimatorTraining optimalEstimatorInfer))
+  NEED_PYTORCH = TRUE
+  CEXE_headers += optimalEstimatorANN.H
+  CEXE_sources += optimalEstimatorANN.cpp
 endif
 
 ifeq ($(EBASE),convert2hdf5)
