@@ -5,7 +5,9 @@ Description
 -----------
 
 ``computeMixtureFraction`` computes the Bilger mixture fraction ``Z`` from an
-AMReX plotfile.
+AMReX plotfile, and optionally the elemental mass fractions ``Z_C``, ``Z_H``,
+``Z_O`` and ``Z_N``. The fuel stream may be a single species or a blend of
+several.
 The mixture fraction is evaluated from the elemental (C, H, O) composition of
 the mixture using the Bilger formulation and the PelePhysics equation of state,
 so it is consistent with the compiled chemical mechanism.
@@ -21,8 +23,32 @@ For each cell the tool computes
 where :math:`\beta_n` are the species Bilger coupling factors built from the
 elemental composition and atomic weights, and :math:`\beta_\mathrm{fu}`,
 :math:`\beta_\mathrm{ox}` are the values in the pure fuel and oxidizer
-streams. The fuel stream is taken as pure fuel; the oxidizer stream defaults
-to air (:math:`Y_{O_2}=0.233`, :math:`Y_{N_2}=0.767`) and can be overridden.
+streams. The oxidizer stream defaults to air (:math:`Y_{O_2}=0.233`,
+:math:`Y_{N_2}=0.767`) and can be overridden.
+
+The fuel stream is a single species by default, but may also be a blend given
+as a list of species with their mole or mass fractions — for example an
+H\ :sub:`2`/CH\ :sub:`4` mixture. Mole fractions are converted internally with
+
+.. math::
+
+   Y_k = \frac{X_k W_k}{\sum_j X_j W_j}
+
+using the molecular weights of the compiled mechanism.
+
+With ``elementMassFracs=1`` the tool additionally writes the mass fraction of
+each element,
+
+.. math::
+
+   Z_e = \sum_n \frac{n_{e,n} A_e}{W_n} Y_n
+
+where :math:`n_{e,n}` is the number of atoms of element :math:`e` in species
+:math:`n`, :math:`A_e` the atomic weight and :math:`W_n` the molecular weight.
+Being mass fractions of a complete elemental decomposition, ``Z_C``, ``Z_H``,
+``Z_O`` and ``Z_N`` sum to one in every cell. Unlike :math:`Z` they are
+unnormalised and independent of the chosen fuel and oxidizer streams, which
+makes them useful as additional conditioning variables in their own right.
 
 For a reaction progress variable, use the :doc:`../analysis/progVar` tool.
 
@@ -43,10 +69,12 @@ the following structure:
 
 .. code-block:: none
 
-   infile        = plt000000
-   fuelName      = H2
-   finestLevel   = 2
-   Aux_Variables = density temp
+   infile           = plt000000
+   fuelNames        = H2 CH4
+   fuelMoleFracs    = 0.95 0.05
+   elementMassFracs = 1
+   finestLevel      = 2
+   Aux_Variables    = density temp
 
 
 Parameters
@@ -57,8 +85,26 @@ Parameters
    ``Y(<species>)`` for all species in the compiled mechanism.
 
 ``fuelName``
-   Name of the fuel species defining the pure-fuel stream :math:`\beta_\mathrm{fu}`.
+   Name of the fuel species defining the pure-fuel stream
+   :math:`\beta_\mathrm{fu}`, when the fuel is a single species.
    Default: ``H2``.
+
+``fuelNames``
+   Species making up a blended fuel stream, e.g. ``H2 CH4``. Supply the
+   composition with either ``fuelMoleFracs`` or ``fuelMassFracs``. Overrides
+   ``fuelName`` when given.
+
+``fuelMoleFracs``
+   Mole fractions of the ``fuelNames`` species. Normalised internally, so
+   they need not sum exactly to one.
+
+``fuelMassFracs``
+   Mass fractions of the ``fuelNames`` species, as an alternative to
+   ``fuelMoleFracs``. Giving both is an error.
+
+``elementMassFracs``
+   Set to ``1`` to also write ``Z_C``, ``Z_H``, ``Z_O`` and ``Z_N``.
+   Default: ``0``.
 
 ``YO2ox``
    O\ :sub:`2` mass fraction of the oxidizer stream used for
@@ -100,6 +146,8 @@ A new AMReX plotfile named ``<infile>outsuffix`` (by default
 ``<infile>_ZC``) containing:
 
 - ``Z`` — Bilger mixture fraction
+- ``Z_C``, ``Z_H``, ``Z_O``, ``Z_N`` — elemental mass fractions, only when
+  ``elementMassFracs=1``
 - any ``Aux_Variables`` requested, copied unchanged from the input
 
 The output inherits the domain geometry, coordinate system, and box
