@@ -1,5 +1,6 @@
 #include <optimalEstimatorANN.H> //contains and libraries for prescribed architecture
 
+#include <cstring>
 #include <algorithm>
 #include <numeric>
 #include <type_traits>
@@ -14,9 +15,64 @@ static constexpr torch::ScalarType amrexDtype =
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=f1 [options] \n\tOptions:\n";
-  exit(1);
+  std::cerr
+    << "Trains a neural network to approximate the conditional mean\n"
+       "<targets | features>, the optimal estimator, on an AMReX plotfile.\n"
+       "Use optimalEstimatorInfer to evaluate the trained network.\n\n"
+
+    << "Usage:\n"
+    << "  " << argv[0]
+    << " infile=FILE features=\"VAR1 ...\" targets=\"VAR1 ...\" "
+       "neurons=\"N1 ...\" [OPTIONS]\n\n"
+
+    << "Required arguments:\n"
+    << "  infile=FILE             AMReX plotfile holding the training data\n"
+    << "  features=\"VAR1 ...\"     Conditioning variables (network inputs)\n"
+    << "  targets=\"VAR1 ...\"      Variables whose conditional mean is "
+       "sought\n"
+    << "  neurons=\"N1 ...\"        Neurons per hidden layer, one entry per "
+       "layer\n\n"
+
+    << "Options:\n"
+    << "  model_path=PATH         Where to write the network; \".pt\" is "
+       "appended (DEF: optimal_estimator)\n"
+    << "  minmax_path=PATH        Where to write the normalisation bounds; "
+       "\".bin\" is appended (DEF: minmax)\n"
+    << "  minLevel=N              Coarsest AMR level used (DEF: 0)\n"
+    << "  finestLevel=N           Finest AMR level used (DEF: finest in "
+       "file)\n"
+    << "  split=F                 Fraction of boxes used for training "
+       "(DEF: 0.7)\n"
+    << "  nEpochs=N               Upper bound on training epochs (DEF: "
+       "1000)\n"
+    << "  batch_size=N            Samples per mini-batch (DEF: 16384)\n"
+    << "  learning_rate=F         Initial Adam step size (DEF: 1e-3)\n"
+    << "  alpha=F                 L2 weight decay; biases the estimate "
+       "(DEF: 0)\n"
+    << "  use_double=0|1          Train in double precision (DEF: 0)\n"
+    << "  num_threads=N           libtorch threads (DEF: 1 under MPI)\n\n"
+
+    << "Convergence options:\n"
+    << "  minEpochs=N             Earliest epoch that may early-stop (DEF: "
+       "100)\n"
+    << "  patience=N              Stop after N epochs without improvement; "
+       "0 disables (DEF: 50)\n"
+    << "  min_delta=F             Smallest improvement in R2 that counts "
+       "(DEF: 1e-3)\n"
+    << "  lr_patience=N           Reduce the rate after N flat epochs; 0 "
+       "disables (DEF: 20)\n"
+    << "  lr_factor=F             Learning-rate multiplier on a plateau "
+       "(DEF: 0.5)\n"
+    << "  min_lr=F                Learning-rate floor (DEF: 1e-6)\n"
+    << "  print_every=N           Epoch summary interval (DEF: 1)\n"
+    << "  -h, --help              Show this help message\n\n"
+
+    << "The weights of the best-scoring epoch are written, always in double "
+       "precision.\n"
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+       "the documentation.\n";
+
+  std::exit(1);
 }
 
 // Sum the gradients of every parameter across all ranks and rescale to the
@@ -53,8 +109,13 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
   {
-    if (argc < 2)
+    if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
 
     ParmParse pp;
 

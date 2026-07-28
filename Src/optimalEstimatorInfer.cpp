@@ -1,3 +1,4 @@
+#include <cstring>
 #include <string>
 #include <iostream>
 
@@ -14,9 +15,48 @@ using namespace amrex;
 static void
 print_usage(int, char* argv[])
 {
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=f1 [options] \n\tOptions:\n";
-  exit(1);
+  std::cerr
+    << "Evaluates a network trained by optimalEstimatorTraining at every "
+       "cell of an\n"
+       "AMReX plotfile and writes the target, the conditional estimate and "
+       "the squared\n"
+       "residual, whose volume average is the irreducible error.\n\n"
+
+    << "Usage:\n"
+    << "  " << argv[0]
+    << " infile=FILE features=\"VAR1 ...\" targets=\"VAR1 ...\" "
+       "neurons=\"N1 ...\" [OPTIONS]\n\n"
+
+    << "Required arguments:\n"
+    << "  infile=FILE             AMReX plotfile to evaluate the estimator "
+       "on\n"
+    << "  features=\"VAR1 ...\"     Conditioning variables; must match the "
+       "training run\n"
+    << "  targets=\"VAR1 ...\"      Estimated variables; must match the "
+       "training run\n"
+    << "  neurons=\"N1 ...\"        Hidden layers; must match the training "
+       "run\n\n"
+
+    << "Options:\n"
+    << "  model_path=PATH         Network to load; \".pt\" is appended "
+       "(DEF: optimal_estimator)\n"
+    << "  minmax_path=PATH        Normalisation bounds; \".bin\" is appended "
+       "(DEF: minmax)\n"
+    << "  outfile=NAME            Output plotfile (DEF: <infile>_OE)\n"
+    << "  finestLevel=N           Finest AMR level used (DEF: finest in "
+       "file)\n"
+    << "  is_per=I J [K]          Periodicity flags per direction (DEF: 1 1 "
+       "1)\n"
+    << "  num_threads=N           libtorch threads (DEF: 1 under MPI)\n"
+    << "  -h, --help              Show this help message\n\n"
+
+    << "The architecture is not stored in the checkpoint, so features, "
+       "targets and\n"
+    << "neurons must repeat the values used for training.\n"
+    << "Visit PeleAnalysis/Src/InputSamples for examples or refer to "
+       "the documentation.\n";
+
+  std::exit(1);
 }
 
 std::string
@@ -31,8 +71,13 @@ main(int argc, char* argv[])
 {
   Initialize(argc, argv);
   {
-    if (argc < 2)
+    if (argc < 2) {
       print_usage(argc, argv);
+    } else if (
+      (std::strcmp(argv[1], "-h") == 0) ||
+      (std::strcmp(argv[1], "--help") == 0)) {
+      print_usage(argc, argv);
+    }
 
     ParmParse pp;
 
