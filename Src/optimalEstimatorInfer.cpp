@@ -118,6 +118,7 @@ main(int argc, char* argv[])
     // Loop over AMR levels in the plotfile, read the data and do work
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel", finestLevel);
+    finestLevel = std::min(finestLevel, amrData.FinestLevel());
     Vector<int> is_per(AMREX_SPACEDIM, 1);
     pp.queryarr("is_per", is_per, 0, AMREX_SPACEDIM);
     Print() << "Periodicity assumed for this case: ";
