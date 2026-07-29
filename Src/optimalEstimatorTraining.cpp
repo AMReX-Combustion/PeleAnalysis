@@ -325,8 +325,11 @@ main(int argc, char* argv[])
     auto toTensor = [&](std::vector<Real>& host, int64_t nrows, int64_t ncols) {
       auto t = torch::from_blob(
         host.data(), {nrows, ncols}, torch::TensorOptions().dtype(amrexDtype));
-      // .to() copies, so the tensor owns its data and the host buffer can go.
-      auto out = t.to(trainDtype).contiguous();
+      // Force a copy so the tensor owns its storage even when trainDtype ==
+      // amrexDtype, where .to() returns the from_blob tensor unchanged and
+      // `out` would alias the buffer freed on the next line.
+      auto out =
+        t.to(trainDtype, /*non_blocking=*/false, /*copy=*/true).contiguous();
       std::vector<Real>().swap(host);
       return out;
     };
