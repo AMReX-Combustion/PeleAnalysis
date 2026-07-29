@@ -153,9 +153,9 @@ qslimclean:
 
 pytorch:
 	@echo "==> Downloading libtorch ($(ZIPFILE))..."
-	@cd $(PELE_ANALYSIS_HOME)/Tools; \
-	  wget https://download.pytorch.org/libtorch/$(PYTORCH_VERSION)/$(ZIPLINK); \
-	  unzip $(ZIPFILE); rm $(ZIPFILE)
+	@cd $(PELE_ANALYSIS_HOME)/Tools && \
+	  wget https://download.pytorch.org/libtorch/$(PYTORCH_VERSION)/$(ZIPLINK) && \
+	  unzip $(ZIPFILE) && rm $(ZIPFILE)
 
 #-----------------------------------------------------------------------------
 # for debugging.  To see the value of a Makefile variable,
