@@ -63,7 +63,10 @@ std::string
 getFileRoot(const std::string& infile)
 {
   std::vector<std::string> tokens = Tokenize(infile, std::string("/"));
-  return tokens[tokens.size() - 1];
+  while (!tokens.empty() && tokens.back().empty()) {
+    tokens.pop_back();
+  }
+  return tokens.empty() ? infile : tokens.back();
 }
 
 int
