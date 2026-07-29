@@ -175,6 +175,7 @@ main(int argc, char* argv[])
     int finestLevel = amrData.FinestLevel();
     int minLevel = 0;
     pp.query("finestLevel", finestLevel);
+    finestLevel = std::min(finestLevel, amrData.FinestLevel());
     pp.query("minLevel", minLevel);
 
     std::string path = "optimal_estimator";
