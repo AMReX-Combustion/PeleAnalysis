@@ -90,7 +90,7 @@ main(int argc, char* argv[])
     std::string plotFileName;
     pp.get("infile", plotFileName);
 
-    // Fuel stream. Either a single species (fuelName) or a blend given as
+    // Fuel stream. Either a single species or a blend given as
     // fuelNames plus one of fuelMoleFracs / fuelMassFracs.
     Vector<std::string> fuelNames;
     Vector<Real> fuelFracs;
