@@ -143,7 +143,10 @@ main(int argc, char* argv[])
       for (int nf = 0; nf < nFeatures; nf++) {
         outNames[n + nTargets] += features[nf];
         if (nf != nFeatures - 1) {
-          outNames[n + nTargets] += ",";
+          // '-' rather than ',': a comma in a plotfile component name has to be
+        // quoted or escaped in every downstream tool and shell that takes the
+        // name as an argument.
+        outNames[n + nTargets] += "-";
         }
       }
       outNames[n + 2 * nTargets] = "irr_" + outNames[n + nTargets];

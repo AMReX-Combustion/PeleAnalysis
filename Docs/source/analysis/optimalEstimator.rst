@@ -63,11 +63,11 @@ double ``##`` comment; select one explicitly on the command line:
    make -j EBASE=optimalEstimatorInfer    DIM=2
 
 The build first checks whether ``python3 -c "import torch"`` succeeds and, if so,
-reuses that installation's headers and libraries. On the CLAIX-HPC system use the following module:
+reuses that installation's headers and libraries. On the JUPITER-HPC system (status 07/2026) use the following module:
 
 .. code-block:: bash
 
-   module load GCC OpenMPI PyTorch
+   module load GCC/14.3.0 OpenMPI/5.0.8 PyTorch/2.9.1
 
 If no importable ``torch`` is found, the build falls back to a standalone
 libtorch under ``Tools/libtorch``, which can be fetched once with
@@ -356,9 +356,9 @@ Output
 each target :math:`\phi` with feature list :math:`q_1,\dots,q_n`:
 
 - ``<target>`` — the target field, copied unchanged from the input
-- ``<target>_cond_<q1>,...,<qn>`` — the optimal estimator
+- ``<target>_cond_<q1>-...-<qn>`` — the optimal estimator
   :math:`\langle \phi \mid \mathbf{q}\rangle`
-- ``irr_<target>_cond_<q1>,...,<qn>`` — the pointwise squared residual
+- ``irr_<target>_cond_<q1>-...-<qn>`` — the pointwise squared residual
   :math:`(\phi - \langle \phi \mid \mathbf{q}\rangle)^2`
 
 The irreducible error itself is the *volume average* of the third field and is
@@ -366,7 +366,7 @@ obtained by post-processing the output, for example with ``integral``:
 
 .. code-block:: bash
 
-   integral infile=plt00000_OE vars='irr_I_R(progVar)_cond_progVar,Z' \
+   integral infile=plt00000_OE vars='irr_I_R(progVar)_cond_progVar-Z' \
             integralDimension=2 avg=1
 
 Normalising this by the variance of the target gives a dimensionless measure
@@ -404,11 +404,11 @@ contain the progress variables and mixture fraction (see ``progVar`` and
 
    # 3. Volume-average the squared residual to get the irreducible error
    integral infile=plt_test_OE \
-       vars='irr_I_R(progVar)_cond_progVar,Z' integralDimension=2 avg=1
+       vars='irr_I_R(progVar)_cond_progVar-Z' integralDimension=2 avg=1
 
    # 4. Optionally, look at the residual conditioned on the progress variable
    combinePlts infiles=plt_test plt_test_OE outfile=plt_test_results \
-       vars='progVar' 'irr_I_R(progVar)_cond_progVar,Z' is_per=1 0
+       vars='progVar' 'irr_I_R(progVar)_cond_progVar-Z' is_per=1 0
    conditionalMean infile=plt_test_results doBin=true binComp=0 avgComps=1 \
        binMin=0 binMax=1 nBins=256 outSuffix='_conditionalMean'
 
@@ -451,6 +451,7 @@ A. Moreau, O. Teytaud, J.-P. Bertoglio, "Optimal estimation for large-eddy
 simulation of turbulence and application to the analysis of subgrid models",
 Physics of Fluids **18**, 105101 (2006).
 
-The network architecture (``tanh`` hidden layers with a linear output layer)
-follows "Berger et al. (2018)" as cited in the source; the full reference still
-needs to be filled in here.
+B. Berger, Lukas, Konstantin Kleinheinz, Antonio Attili, Fabrizio Bisetti, 
+Heinz Pitsch, and Michael E. Mueller. "Numerically accurate computational 
+techniques for optimal estimator analyses of multi-parameter models." 
+Combustion Theory and Modelling 22, no. 3 (2018): 480-504.
