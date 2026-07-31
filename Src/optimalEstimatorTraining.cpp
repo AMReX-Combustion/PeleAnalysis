@@ -2,7 +2,6 @@
 
 #include <cstring>
 #include <algorithm>
-#include <numeric>
 #include <type_traits>
 #include <vector>
 
@@ -38,7 +37,8 @@ print_usage(int, char* argv[])
        "appended (DEF: optimal_estimator)\n"
     << "  minmax_path=PATH        Where to write the normalisation bounds; "
        "\".bin\" is appended (DEF: minmax)\n"
-    << "  minLevel=N              Coarsest AMR level used (DEF: 0)\n"
+    << "  minLevel=N              Coarsest AMR level used; cells covered by a "
+       "finer level are skipped (DEF: 0)\n"
     << "  finestLevel=N           Finest AMR level used (DEF: finest in "
        "file)\n"
     << "  split=F                 Fraction of boxes used for training "
@@ -49,6 +49,8 @@ print_usage(int, char* argv[])
     << "  learning_rate=F         Initial Adam step size (DEF: 1e-3)\n"
     << "  alpha=F                 L2 weight decay; biases the estimate "
        "(DEF: 0)\n"
+    << "  volume_weight=0|1       Weight each sample by its cell volume "
+       "(DEF: 1)\n"
     << "  use_double=0|1          Train in double precision (DEF: 0)\n"
     << "  num_threads=N           libtorch threads (DEF: 1 under MPI)\n\n"
 
@@ -177,6 +179,9 @@ main(int argc, char* argv[])
     pp.query("finestLevel", finestLevel);
     finestLevel = std::min(finestLevel, amrData.FinestLevel());
     pp.query("minLevel", minLevel);
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+      minLevel >= 0 && minLevel <= finestLevel,
+      "minLevel must lie between 0 and finestLevel");
 
     std::string path = "optimal_estimator";
     pp.query("model_path", path);
@@ -205,6 +210,17 @@ main(int argc, char* argv[])
 
     Vector<MultiFab> indata(Nlev);
 
+    // A coarse cell that lies under a finer level is not an independent
+    // sample: it covers the same physical region as the fine cells that
+    // replace it, and its value is whatever the plotfile happens to carry
+    // there. Taking every cell of every level between minLevel and finestLevel
+    // would therefore feed each refined region to the network once per level
+    // covering it, weighting it by the depth of refinement rather than by its
+    // volume. makeFineMask flags exactly those covered cells, so only the
+    // uncovered ones - the same set AMReX itself uses for a volume average -
+    // are kept below.
+    Vector<iMultiFab> validMask(Nlev);
+
     for (int lev = minLevel; lev < Nlev; lev++) {
       // Get the array of boxes for this level
       const BoxArray ba = amrData.boxArray(lev);
@@ -217,15 +233,75 @@ main(int argc, char* argv[])
                                                                  // call
       Print() << "Data has been read for level " << lev << std::endl;
 
-      // MultiFab::min/max reduce across all ranks, so these bounds are global.
-      for (int nv = 0; nv < nFeatures; nv++) {
-        f_max[nv] = std::max(f_max[nv], indata[lev].max(nv));
-        f_min[nv] = std::min(f_min[nv], indata[lev].min(nv));
+      if (lev < finestLevel) {
+        // 1 where the cell is uncovered and usable, 0 where a finer level
+        // takes over. The finer level is the one requested here, not
+        // necessarily the finest in the file: with finestLevel=N the level-N
+        // data is used whole, exactly as if the file stopped there.
+        const int rr = amrData.RefRatio()[lev];
+        validMask[lev] = makeFineMask(
+          ba, dm, amrData.boxArray(lev + 1), IntVect(AMREX_D_DECL(rr, rr, rr)),
+          /*crse_value=*/1, /*fine_value=*/0);
+      } else {
+        validMask[lev].define(ba, dm, 1, nGrow);
+        validMask[lev].setVal(1);
       }
-      for (int nv = 0; nv < nTargets; nv++) {
-        t_max[nv] = std::max(t_max[nv], indata[lev].max(nv + nFeatures));
-        t_min[nv] = std::min(t_min[nv], indata[lev].min(nv + nFeatures));
+    }
+
+    // Normalisation bounds over the uncovered cells only, so that they
+    // describe exactly the data the network is trained on. The number of
+    // uncovered cells per local box is collected in the same sweep, in the
+    // order the staging loop below walks them.
+    Long nValidLocal = 0;
+    Long nCoveredLocal = 0;
+    Vector<Long> boxCells;
+    for (int lev = minLevel; lev < Nlev; lev++) {
+      for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
+        const Box& bx = mfi.validbox();
+        Array4<const Real> const& fab = indata[lev].const_array(mfi);
+        Array4<const int> const& msk = validMask[lev].const_array(mfi);
+
+        Long nValidBox = 0;
+        amrex::LoopOnCpu(
+          amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
+            if (msk(i, j, k) == 0) {
+              nCoveredLocal++;
+              return;
+            }
+            nValidBox++;
+            for (int nv = 0; nv < nFeatures; nv++) {
+              f_max[nv] = std::max(f_max[nv], fab(i, j, k, nv));
+              f_min[nv] = std::min(f_min[nv], fab(i, j, k, nv));
+            }
+            for (int nv = 0; nv < nTargets; nv++) {
+              const Real v = fab(i, j, k, nv + nFeatures);
+              t_max[nv] = std::max(t_max[nv], v);
+              t_min[nv] = std::min(t_min[nv], v);
+            }
+          });
+        boxCells.push_back(nValidBox);
+        nValidLocal += nValidBox;
       }
+    }
+    // The loop above is per rank; make the bounds global.
+    ParallelDescriptor::ReduceRealMax(f_max.dataPtr(), nFeatures);
+    ParallelDescriptor::ReduceRealMin(f_min.dataPtr(), nFeatures);
+    ParallelDescriptor::ReduceRealMax(t_max.dataPtr(), nTargets);
+    ParallelDescriptor::ReduceRealMin(t_min.dataPtr(), nTargets);
+
+    {
+      Long nValidGlobal = nValidLocal;
+      Long nCoveredGlobal = nCoveredLocal;
+      ParallelDescriptor::ReduceLongSum(nValidGlobal);
+      ParallelDescriptor::ReduceLongSum(nCoveredGlobal);
+      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        nValidGlobal > 0,
+        "Every cell between minLevel and finestLevel is covered by a finer "
+        "level; there is nothing to train on.");
+      Print() << "Cells on levels " << minLevel << "-" << finestLevel << ": "
+              << nValidGlobal + nCoveredGlobal << ", of which " << nCoveredGlobal
+              << " are covered by a finer level and are skipped, leaving "
+              << nValidGlobal << " samples." << std::endl;
     }
 
     for (int nv = 0; nv < nFeatures; nv++) {
@@ -253,55 +329,99 @@ main(int argc, char* argv[])
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
       split > 0.0 && split < 1.0, "split must lie strictly between 0 and 1");
 
-    int nBoxesLocal = 0;
-    for (int lev = minLevel; lev < Nlev; lev++) {
-      nBoxesLocal += indata[lev].local_size();
-    }
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-      nBoxesLocal >= 2,
-      "This rank owns fewer than two boxes and cannot be split into a "
-      "training and a validation set. Run with fewer MPI ranks.");
+    const int nBoxesLocal = boxCells.size();
 
-    Vector<int> boxOrder(nBoxesLocal);
-    std::iota(boxOrder.begin(), boxOrder.end(), 0);
+    // A box that a finer level covers completely carries no samples and must
+    // stay out of the split, or it could be handed the entire validation set
+    // and leave nothing to validate on.
+    Vector<int> boxOrder;
+    for (int i = 0; i < nBoxesLocal; i++) {
+      if (boxCells[i] > 0) {
+        boxOrder.push_back(i);
+      }
+    }
+    const int nUsableBoxes = boxOrder.size();
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+      nUsableBoxes >= 2,
+      "This rank owns fewer than two boxes holding uncovered cells and cannot "
+      "be split into a training and a validation set. Run with fewer MPI "
+      "ranks.");
+
     // Deterministic, but decorrelated between ranks.
     std::mt19937 g(12345 + ParallelDescriptor::MyProc());
     std::shuffle(boxOrder.begin(), boxOrder.end(), g);
 
     const int nTrainBoxes =
-      std::max(1, std::min(nBoxesLocal - 1, (int)(split * nBoxesLocal)));
+      std::max(1, std::min(nUsableBoxes - 1, (int)(split * nUsableBoxes)));
     std::vector<char> isTrainBox(nBoxesLocal, 0);
     for (int i = 0; i < nTrainBoxes; i++) {
       isTrainBox[boxOrder[i]] = 1;
     }
 
-    // Stage all cells into two contiguous host buffers, normalised onto
-    // [-1,1]. Building one large block rather than one small tensor per box is
-    // what makes the mini-batches big enough to be worth dispatching.
-    std::vector<Real> trainFeat, trainTarg, valFeat, valTarg;
-    {
-      Long nCellsLocal = 0;
+    // A conditional mean is an average over volume, but a cell is one sample
+    // whatever its size, so on a multi-level set the fit would be pulled
+    // towards the refined regions: they contribute r^DIM samples where the
+    // unrefined ones contribute a single, physically much larger, cell. Giving
+    // every sample the volume of its cell as a weight in the loss restores the
+    // volume average, and the network then converges on the conditional mean
+    // rather than on a cell-count-weighted approximation to it. The weights are
+    // expressed relative to a finest-level cell; on a single level they are all
+    // 1 and the weighted loss reduces exactly to the unweighted one.
+    int volume_weight = 1;
+    pp.query("volume_weight", volume_weight);
+    Vector<Real> levWeight(Nlev, 1.0);
+    if (volume_weight) {
+      Real vFinest = 1.0;
+      for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
+        vFinest *= amrData.DxLevel()[finestLevel][idim];
+      }
       for (int lev = minLevel; lev < Nlev; lev++) {
-        for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
-          nCellsLocal += mfi.validbox().numPts();
+        Real v = 1.0;
+        for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
+          v *= amrData.DxLevel()[lev][idim];
+        }
+        levWeight[lev] = v / vFinest;
+        if (lev < finestLevel) {
+          Print() << "Level " << lev << " cells carry weight " << levWeight[lev]
+                  << " in the loss (volume relative to a level-" << finestLevel
+                  << " cell)" << std::endl;
         }
       }
-      trainFeat.reserve(nCellsLocal * nFeatures);
-      trainTarg.reserve(nCellsLocal * nTargets);
+    } else if (minLevel < finestLevel) {
+      Print() << "\n*** WARNING: volume_weight=0 with minLevel < finestLevel.\n"
+              << "    Every cell counts once regardless of its size, so the "
+                 "fit is weighted by\n"
+              << "    cell count instead of by volume and is not the "
+                 "conditional mean.\n\n";
     }
+
+    // Stage all cells into contiguous host buffers, normalised onto [-1,1].
+    // Building one large block rather than one small tensor per box is what
+    // makes the mini-batches big enough to be worth dispatching.
+    std::vector<Real> trainFeat, trainTarg, trainW, valFeat, valTarg, valW;
+    trainFeat.reserve(nValidLocal * nFeatures);
+    trainTarg.reserve(nValidLocal * nTargets);
+    trainW.reserve(nValidLocal);
 
     int boxCount = 0;
     for (int lev = minLevel; lev < Nlev; lev++) {
+      const Real w = levWeight[lev];
       for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
         const Box& bx = mfi.validbox();
         Array4<Real> const& fab = indata[lev].array(mfi);
+        Array4<const int> const& msk = validMask[lev].const_array(mfi);
 
         const bool train = isTrainBox[boxCount++] != 0;
         std::vector<Real>& fOut = train ? trainFeat : valFeat;
         std::vector<Real>& tOut = train ? trainTarg : valTarg;
+        std::vector<Real>& wOut = train ? trainW : valW;
 
         amrex::LoopOnCpu(
           amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
+            if (msk(i, j, k) == 0) {
+              return; // covered by a finer level, already sampled there
+            }
+            wOut.push_back(w);
             for (int n = 0; n < nFeatures; n++) {
               fOut.push_back(
                 -1.0 +
@@ -319,6 +439,7 @@ main(int argc, char* argv[])
     // The plotfile data is no longer needed; release it before allocating the
     // tensors so the two copies never coexist.
     indata.clear();
+    validMask.clear();
 
     const int64_t nTrainLocal = (int64_t)trainTarg.size() / nTargets;
     const int64_t nValLocal = (int64_t)valTarg.size() / nTargets;
@@ -337,8 +458,11 @@ main(int argc, char* argv[])
 
     torch::Tensor train_x = toTensor(trainFeat, nTrainLocal, nFeatures);
     torch::Tensor train_y = toTensor(trainTarg, nTrainLocal, nTargets);
+    // One column, so that it broadcasts over the target columns below.
+    torch::Tensor train_w = toTensor(trainW, nTrainLocal, 1);
     torch::Tensor val_x = toTensor(valFeat, nValLocal, nFeatures);
     torch::Tensor val_y = toTensor(valTarg, nValLocal, nTargets);
+    torch::Tensor val_w = toTensor(valW, nValLocal, 1);
 
     // batch_size now counts SAMPLES, not the box edge length it used to mean.
     int64_t batch_size = 16384;
@@ -380,18 +504,21 @@ main(int argc, char* argv[])
 
     // Variance of the targets in normalised space, used to turn the raw MSE
     // into a scale-free coefficient of determination. A model that only ever
-    // predicts the unconditional mean scores R2 = 0.
+    // predicts the unconditional mean scores R2 = 0. Weighted like the loss it
+    // normalises, so that R2 keeps that meaning on a multi-level set.
     Real targVar = 1.0;
     {
-      Real s = val_y.sum().item<double>() + train_y.sum().item<double>();
-      Real s2 =
-        val_y.pow(2).sum().item<double>() + train_y.pow(2).sum().item<double>();
-      Long n = (nTrainLocal + nValLocal) * nTargets;
+      Real s = (val_w * val_y).sum().item<double>() +
+               (train_w * train_y).sum().item<double>();
+      Real s2 = (val_w * val_y.pow(2)).sum().item<double>() +
+                (train_w * train_y.pow(2)).sum().item<double>();
+      Real w = (Real)nTargets * (val_w.sum().item<double>() +
+                                 train_w.sum().item<double>());
       ParallelDescriptor::ReduceRealSum(s);
       ParallelDescriptor::ReduceRealSum(s2);
-      ParallelDescriptor::ReduceLongSum(n);
-      const Real mean = s / (Real)n;
-      targVar = std::max(s2 / (Real)n - mean * mean, Real(1e-30));
+      ParallelDescriptor::ReduceRealSum(w);
+      const Real mean = s / w;
+      targVar = std::max(s2 / w - mean * mean, Real(1e-30));
     }
 
     Real learning_rate = 1e-3;
@@ -451,24 +578,27 @@ main(int argc, char* argv[])
       }
     };
 
-    // Mean squared error over the whole (distributed) set. Accumulating the
-    // sum of squares and dividing by the global count keeps the result
-    // independent of how the data happens to be spread over the ranks.
-    auto evaluate = [&](const torch::Tensor& x, const torch::Tensor& y) {
+    // Volume-weighted mean squared error over the whole (distributed) set.
+    // Accumulating the weighted sum of squares and dividing by the global sum
+    // of weights keeps the result independent of how the data happens to be
+    // spread over the ranks.
+    auto evaluate = [&](const torch::Tensor& x, const torch::Tensor& y,
+                        const torch::Tensor& w) {
       torch::NoGradGuard ng;
       model->eval();
       const int64_t n = x.size(0);
       Real sse = 0.0;
+      Real wsum = 0.0;
       for (int64_t s = 0; s < n; s += batch_size) {
         const int64_t m = std::min(batch_size, n - s);
+        auto wb = w.narrow(0, s, m);
         auto out = model->forward(x.narrow(0, s, m));
-        sse += torch::mse_loss(out, y.narrow(0, s, m), at::Reduction::Sum)
-                 .item<double>();
+        sse += (wb * (out - y.narrow(0, s, m)).pow(2)).sum().item<double>();
+        wsum += (Real)nTargets * wb.sum().item<double>();
       }
-      Long cnt = n * nTargets;
       ParallelDescriptor::ReduceRealSum(sse);
-      ParallelDescriptor::ReduceLongSum(cnt);
-      return cnt > 0 ? sse / (Real)cnt : Real(0);
+      ParallelDescriptor::ReduceRealSum(wsum);
+      return wsum > 0.0 ? sse / wsum : Real(0);
     };
 
     Real best_val = std::numeric_limits<Real>::max();
@@ -492,10 +622,13 @@ main(int argc, char* argv[])
 
         auto xb = train_x.index_select(0, idx);
         auto yb = train_y.index_select(0, idx);
+        auto wb = train_w.index_select(0, idx);
 
         optimizer.zero_grad();
         auto out = model->forward(xb);
-        auto loss = torch::mse_loss(out, yb);
+        // Weighted MSE: sum(w * e^2) / (sum(w) * nTargets). With uniform
+        // weights this is identical to torch::mse_loss(out, yb).
+        auto loss = (wb * (out - yb).pow(2)).sum() / (wb.sum() * nTargets);
         loss.backward();
         allReduceGradients(model);
         optimizer.step();
@@ -506,7 +639,7 @@ main(int argc, char* argv[])
       ParallelDescriptor::ReduceRealSum(epoch_training_loss);
       epoch_training_loss /= (Real)nProcs;
 
-      const Real val_loss = evaluate(val_x, val_y);
+      const Real val_loss = evaluate(val_x, val_y, val_w);
       const Real r2 = 1.0 - val_loss / targVar;
 
       // Every rank sees the same reduced val_loss, so they all take the same

@@ -13,9 +13,10 @@ minmax_path = minmax                       # DEF: minmax; ".bin" is appended. Ho
 #------------------- Data selection -------------------------------------------------------
 features = temp density                    # Conditioning variables (network inputs)
 targets = I_R(prog)                        # Fields whose conditional mean is sought (outputs)
-minLevel = 0                               # DEF: 0; coarsest AMR level used. Set equal to
-                                           # finestLevel to avoid sampling cells that lie
-                                           # underneath finer grids more than once
+minLevel = 0                               # DEF: 0; coarsest AMR level used. Cells covered by a
+                                           # finer level are masked out automatically, so no
+                                           # region is sampled twice. Set equal to finestLevel to
+                                           # train on a single, uniformly resolved level
 finestLevel = 1000                         # DEF: finest level in file; finest AMR level used
 
 #------------------- Network architecture -------------------------------------------------
@@ -30,6 +31,9 @@ batch_size = 16384                         # DEF: 16384; SAMPLES (cells) per min
                                            # batches are dominated by framework overhead.
 split = 0.7                                # DEF: 0.7; fraction of boxes used for training,
                                            # the rest is held out for validation
+volume_weight = 1                          # DEF: 1; weight each sample by the volume of its
+                                           # cell, so the fit is a volume average and not a
+                                           # cell-count average. No effect on a single level
 learning_rate = 1e-3                       # DEF: 1e-3; initial Adam step size
 alpha = 0.0                                # DEF: 0; L2 weight decay. Regularisation biases
                                            # the estimated conditional mean and so inflates

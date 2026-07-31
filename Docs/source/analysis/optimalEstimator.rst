@@ -31,6 +31,20 @@ beyond two or three features. Following Berger et al. (2018), these tools instea
 approximate the conditional mean with a small feed-forward neural network trained
 under a mean-square-error loss, whose minimiser is exactly the conditional mean.
 
+The average in :math:`\langle \cdot \rangle` is over volume, so on an AMR data
+set each sample enters the loss weighted by the volume of its cell:
+
+.. math::
+
+   \mathcal{L} = \frac{\sum_c V_c \left( \phi_c - f(\mathbf{q}_c) \right)^2}
+                      {\sum_c V_c} ,
+
+with :math:`V_c` the cell volume and the sum running over the cells that are not
+covered by a finer level. Minimising this converges on the conditional mean of
+the *field*; an unweighted sum would converge on a cell-count average instead,
+in which a refined region counts :math:`r^{\mathrm{DIM}}` times as heavily as
+the same volume left unrefined. On a single level the two coincide.
+
 The functionality is split across two executables:
 
 ``optimalEstimatorTraining``
@@ -171,13 +185,33 @@ Training Parameters
 ``minLevel``
    Coarsest AMR level to include in the training set. Default: ``0``.
 
-   .. warning::
+   Cells of a level that are covered by the next finer level are excluded
+   automatically, so no physical region enters the sample more than once
+   regardless of how ``minLevel`` and ``finestLevel`` are chosen. The mask comes
+   from ``amrex::makeFineMask``, so the retained cells are exactly the ones
+   AMReX itself uses for a volume average. The number of skipped cells is
+   reported at start-up::
 
-      With the default ``minLevel = 0`` the training set contains coarse cells
-      that lie underneath finer grids, so the same physical region enters the
-      sample more than once and the coarse (filtered) values bias the
-      conditional mean. On refined data sets, set ``minLevel = finestLevel`` so
-      that a single, uniformly resolved level is used.
+      Cells on levels 0-2: 1310720, of which 786432 are covered by a finer
+      level and are skipped, leaving 524288 samples.
+
+   What remains is weighted by cell volume (see ``volume_weight``), so the two
+   grid-dependent biases of a multi-level training set — a region sampled once
+   per level covering it, and a refined region outweighing an unrefined one of
+   the same size — are both removed.
+
+   .. note::
+
+      One difference between the levels is *not* a weighting problem and cannot
+      be fixed by one: the retained cells are a composite of several
+      resolutions, the unrefined regions contributing coarse, filtered values
+      and the refined ones cells at the finest resolution. The conditional mean
+      of a filtered field is not the conditional mean of the resolved field, so
+      a multi-level fit estimates neither cleanly, and which of the two
+      dominates is set by the grid. Setting ``minLevel = finestLevel`` restricts
+      training to one uniformly resolved level and avoids this; it remains the
+      right choice whenever the finest level covers enough of the domain to
+      train on.
 
 ``batch_size``
    Number of **samples** (cells) per mini-batch. Default: ``16384``.
@@ -199,6 +233,25 @@ Training Parameters
 ``split``
    Fraction of boxes used for training; the remainder is held out for
    validation and early stopping. Default: ``0.7``.
+
+``volume_weight``
+   Set to ``0`` to give every cell the same weight in the loss instead of the
+   volume of its cell. Default: ``1``.
+
+   The weights are volumes relative to a cell of ``finestLevel``, so a level
+   whose cells are :math:`r` times as wide carries weight
+   :math:`r^{\mathrm{DIM}}` and ``finestLevel`` itself carries 1. They are
+   reported at start-up::
+
+      Level 0 cells carry weight 16 in the loss (volume relative to a level-2 cell)
+      Level 1 cells carry weight 4 in the loss (volume relative to a level-2 cell)
+
+   The same weights are applied to the validation loss and to the target
+   variance behind :math:`R^2`, so both keep their meaning. On a single level
+   (``minLevel = finestLevel``) every weight is 1 and the setting has no effect
+   whatsoever. Turning it off on a multi-level set makes the fit a cell-count
+   average rather than the conditional mean and is only useful for reproducing
+   an older run; the tool prints a warning when you do.
 
 ``learning_rate``
    Initial step size of the Adam optimiser. Default: ``1e-3``.
@@ -244,7 +297,8 @@ Progress is measured with the coefficient of determination
 
 which is dimensionless and bounded above by 1, so a single threshold works
 across every target and every case. :math:`R^2 = 0` corresponds to an estimator
-no better than the unconditional mean.
+no better than the unconditional mean. Both the validation MSE and the variance
+are volume-weighted, so the ratio is unaffected by the weighting.
 
 ``nEpochs``
    Hard upper bound on the number of epochs. Default: ``1000``.
@@ -289,7 +343,9 @@ Normalisation
 -------------
 
 Both features and targets are linearly mapped onto :math:`[-1, 1]` using the
-minimum and maximum found over all included AMR levels of the *training* file:
+minimum and maximum found over the cells actually used for training — every
+included AMR level of the *training* file, minus the cells covered by a finer
+level:
 
 .. math::
 
@@ -318,11 +374,12 @@ will silently produce nonsense.
 Training Procedure
 ------------------
 
-The cells of every included level are gathered box by box, normalised, and the
-resulting mini-batches are shuffled once and split 70 % / 30 % into a training
-and a validation set. The split is performed on whole boxes rather than
+The uncovered cells of every included level are gathered box by box, normalised,
+and the resulting mini-batches are shuffled once and split 70 % / 30 % into a
+training and a validation set. The split is performed on whole boxes rather than
 individual cells, which keeps spatially adjacent — and therefore strongly
-correlated — cells from appearing on both sides of the split.
+correlated — cells from appearing on both sides of the split. Boxes that a finer
+level covers completely hold no samples and take no part in the split.
 
 Each epoch reshuffles the training samples, loops over the mini-batches
 performing an Adam update per batch, then evaluates the validation loss and
@@ -332,10 +389,11 @@ prints a summary:
 
    Epoch [1/1000], Training Loss: 0.0421, Validation Loss: 0.0438, R2: 0.79, lr: 0.001
 
-Both losses are mean-square errors in the *normalised* target space, so they are
-dimensionless and comparable across targets. The validation loss is computed as
-a sum of squared errors divided by the global sample count, which makes it
-independent of how the data happens to be distributed over the MPI ranks.
+Both losses are volume-weighted mean-square errors in the *normalised* target
+space, so they are dimensionless and comparable across targets. The validation
+loss is computed as a weighted sum of squared errors divided by the global sum
+of weights, which makes it independent of how the data happens to be
+distributed over the MPI ranks.
 
 Training ends either at ``nEpochs`` or when the validation loss plateaus (see
 *Convergence Control* above). The weights are then rolled back to the best
@@ -424,8 +482,9 @@ Notes and Current Limitations
 
 - **CPU only.** Both tools run on the host. ``USE_CUDA`` is not supported.
 
-- **Each rank needs at least two boxes**, one for training and one for
-  validation; the tool aborts otherwise. With a small number of large boxes,
+- **Each rank needs at least two boxes holding uncovered cells**, one for
+  training and one for validation; the tool aborts otherwise. Boxes lying
+  entirely under a finer level do not count. With a small number of large boxes,
   this limits how many ranks are useful. Splitting the plotfile into more boxes
   (or simply using fewer ranks) resolves it.
 
@@ -436,9 +495,12 @@ Notes and Current Limitations
   feature combinations, running the independent trainings concurrently (a Slurm
   job array, say) scales far better than adding ranks to a single one.
 
-- **AMR level weighting.** Cells are drawn with equal weight regardless of their
-  volume, and coarse cells underneath finer grids are not masked out. Use
-  ``minLevel = finestLevel`` on refined data sets.
+- **Mixed resolutions.** Covered cells are masked out and the rest are weighted
+  by volume, so a multi-level training set is no longer biased by the grid in
+  either of those two ways. What remains is that a coarse cell carries a
+  *filtered* value while a fine cell carries a resolved one, and no weighting
+  makes the conditional mean of the one equal to the conditional mean of the
+  other. Training on a single level (``minLevel = finestLevel``) sidesteps it.
 
 - **Degenerate fields.** A feature or target that is constant over the whole data
   set cannot be normalised; the tool aborts with a message naming the problem.
