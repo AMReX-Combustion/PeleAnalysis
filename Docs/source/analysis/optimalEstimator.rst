@@ -63,8 +63,7 @@ double ``##`` comment; select one explicitly on the command line:
    make -j EBASE=optimalEstimatorInfer    DIM=2
 
 The build first checks whether ``python3 -c "import torch"`` succeeds and, if so,
-reuses that installation's headers and libraries. On an HPC system this is
-usually the right path:
+reuses that installation's headers and libraries. On the CLAIX-HPC system use the following module:
 
 .. code-block:: bash
 
