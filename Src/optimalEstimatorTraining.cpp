@@ -701,14 +701,8 @@ main(int argc, char* argv[])
       std::string minmax_path = "minmax";
       pp.query("minmax_path", minmax_path);
       minmax_path += ".bin";
-      std::ofstream file(minmax_path, std::ios::binary);
-      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        file.good(), "Could not open minmax file for writing");
-      file.write((char*)f_min.dataPtr(), sizeof(Real) * nFeatures);
-      file.write((char*)f_max.dataPtr(), sizeof(Real) * nFeatures);
-      file.write((char*)t_min.dataPtr(), sizeof(Real) * nTargets);
-      file.write((char*)t_max.dataPtr(), sizeof(Real) * nTargets);
-      file.close();
+      writeMinMax(
+        minmax_path, features, targets, neurons, f_min, f_max, t_min, t_max);
       Print() << "Wrote " << path << " and " << minmax_path << std::endl;
     }
   }

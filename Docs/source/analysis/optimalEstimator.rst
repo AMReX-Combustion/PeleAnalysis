@@ -61,7 +61,9 @@ irreducible error) or on different snapshots of the same configuration
 (out-of-sample estimate). Both executables must be given the *same* ``features``,
 ``targets`` and ``neurons`` arguments — the network architecture is not stored
 inside the checkpoint and is rebuilt from these values before the weights are
-loaded.
+loaded. All three are recorded in ``<minmax_path>.bin`` and checked when it is
+read back (see *Normalisation*), so a mismatch aborts rather than producing a
+wrong answer.
 
 
 Building
@@ -199,19 +201,6 @@ Training Parameters
    grid-dependent biases of a multi-level training set — a region sampled once
    per level covering it, and a refined region outweighing an unrefined one of
    the same size — are both removed.
-
-   .. note::
-
-      One difference between the levels is *not* a weighting problem and cannot
-      be fixed by one: the retained cells are a composite of several
-      resolutions, the unrefined regions contributing coarse, filtered values
-      and the refined ones cells at the finest resolution. The conditional mean
-      of a filtered field is not the conditional mean of the resolved field, so
-      a multi-level fit estimates neither cleanly, and which of the two
-      dominates is set by the grid. Setting ``minLevel = finestLevel`` restricts
-      training to one uniformly resolved level and avoids this; it remains the
-      right choice whenever the finest level covers enough of the domain to
-      train on.
 
 ``batch_size``
    Number of **samples** (cells) per mini-batch. Default: ``16384``.
@@ -351,14 +340,41 @@ level:
 
    \tilde{x} = -1 + 2\,\frac{x - x_{\min}}{x_{\max} - x_{\min}} .
 
-These bounds are written to ``<minmax_path>.bin`` as a flat binary record of
-``Real`` values in the order ``f_min, f_max, t_min, t_max``, and are read back
-during inference so that the estimator is de-normalised consistently.
+These bounds are written to ``<minmax_path>.bin`` and read back during inference
+so that the estimator is de-normalised consistently. The file is
+self-describing: a header records the format version, the feature and target
+names and the hidden-layer widths, followed by the bounds themselves:
 
-Because the file carries no header, the number of features and targets and the
-floating-point precision must match between training and inference. Building one
-executable with ``PRECISION = DOUBLE`` and the other with ``PRECISION = FLOAT``
-will silently produce nonsense.
+.. code-block:: none
+
+   char[8]  magic "PeleOEMM"
+   int32    format version
+   int32    number of features, int32 number of targets
+   per name, features then targets: int32 length, then that many chars
+   int32    number of hidden layers, then that many int32 widths
+   double   f_min[nF], f_max[nF], t_min[nT], t_max[nT]
+
+``optimalEstimatorInfer`` checks all of it against its own ``features``,
+``targets`` and ``neurons`` arguments — names and layer widths, in order — and
+aborts on any disagreement::
+
+   amrex::Abort::0::minmax.bin was trained with features 'progVar Z', but
+   'Z progVar' were requested. Training and inference must be given the same
+   list, in the same order.
+
+This is the only place the architecture is checked at all: ``torch::load`` does
+*not* object to a checkpoint whose layers differ from the network it is loaded
+into, so before this check a mistyped ``neurons`` ran to completion and wrote a
+plotfile full of nonsense with a zero exit code.
+
+The payload is always double, like the network checkpoint, so the two
+executables may be built with different ``PRECISION`` without difficulty.
+
+Files written before the header was introduced are still read — they are a bare
+dump of the four arrays in the writing build's own precision — but nothing in
+them can be verified, so a warning is printed recommending a retrain. Both
+formats assume the reader and writer share an endianness, as AMReX plotfiles
+themselves largely do.
 
 .. note::
 

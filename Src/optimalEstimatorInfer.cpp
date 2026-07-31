@@ -188,20 +188,11 @@ main(int argc, char* argv[])
     pp.query("minmax_path", minmax_path);
     minmax_path += ".bin";
 
-    std::ifstream file(minmax_path, std::ios::binary);
-    if (!file.good()) {
-      amrex::Abort("Could not open minmax file " + minmax_path);
-    }
-    file.read((char*)f_min.dataPtr(), sizeof(Real) * nFeatures);
-    file.read((char*)f_max.dataPtr(), sizeof(Real) * nFeatures);
-    file.read((char*)t_min.dataPtr(), sizeof(Real) * nTargets);
-    file.read((char*)t_max.dataPtr(), sizeof(Real) * nTargets);
-    if (!file) {
-      amrex::Abort(
-        "Short read from " + minmax_path +
-        ": it does not match the requested number of features and targets");
-    }
-    file.close();
+    // Checks the file against the requested features, targets and neurons, so
+    // an argument list that has drifted out of step with the training run is
+    // reported here rather than quietly producing a wrong estimate.
+    readMinMax(
+      minmax_path, features, targets, neurons, f_min, f_max, t_min, t_max);
 
     for (int nv = 0; nv < nFeatures; nv++) {
       Print() << "f_max[" << nv << "] = " << f_max[nv] << std::endl;
