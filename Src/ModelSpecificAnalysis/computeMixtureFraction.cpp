@@ -18,7 +18,7 @@ print_usage(int, char* argv[])
 {
   std::cerr
     << "Computes the Bilger mixture fraction Z from an AMReX plotfile, and\n"
-       "optionally the elemental mass fractions Z_C, Z_H, Z_O and Z_N.\n"
+       "optionally the mass fraction of every element in the mechanism.\n"
        "The fuel stream may be a single species or a blend.\n\n"
 
     << "Usage:\n"
@@ -41,7 +41,8 @@ print_usage(int, char* argv[])
        "0.233)\n"
     << "  YN2ox=F                 N2 mass fraction of the oxidizer (DEF: "
        "0.767)\n"
-    << "  elementMassFracs=0|1    Also write Z_C, Z_H, Z_O, Z_N (DEF: 0)\n"
+    << "  elementMassFracs=0|1    Also write Z_<elem> for each mechanism "
+       "element (DEF: 0)\n"
     << "  outsuffix=STR           Suffix appended to the input name (DEF: "
        "_ZC)\n"
     << "  finestLevel=N           Finest AMR level used (DEF: finest in "
@@ -90,52 +91,57 @@ main(int argc, char* argv[])
     std::string plotFileName;
     pp.get("infile", plotFileName);
 
-    // Fuel stream. Either a single species or a blend given as
-    // fuelNames plus one of fuelMoleFracs / fuelMassFracs.
+    // Fuel stream. Either a single species or a blend given as fuelNames plus
+    // one of fuelMoleFracs / fuelMassFracs. The component list is settled first
+    // so that reading, validating and normalising the fractions happens once,
+    // on every path, rather than being duplicated per case.
     Vector<std::string> fuelNames;
-    Vector<Real> fuelFracs;
-    bool fuelFracsAreMole = true;
-    const int nFuelNames = pp.countval("fuelNames");
-    if (nFuelNames > 0) {
+    if (pp.countval("fuelNames") > 0) {
       pp.getarr("fuelNames", fuelNames);
-      const int nMole = pp.countval("fuelMoleFracs");
-      const int nMass = pp.countval("fuelMassFracs");
-      if (nMole > 0 && nMass > 0) {
-        amrex::Abort("Give either fuelMoleFracs or fuelMassFracs, not both");
-      }
-      if (nMole > 0) {
-        pp.getarr("fuelMoleFracs", fuelFracs);
-      } else if (nMass > 0) {
-        pp.getarr("fuelMassFracs", fuelFracs);
-        fuelFracsAreMole = false;
-      } else if (nFuelNames == 1) {
-        fuelFracs = {1.0};
-      } else {
-        amrex::Abort(
-          "fuelNames with more than one entry needs fuelMoleFracs or "
-          "fuelMassFracs");
-      }
-      if (fuelNames.size() != fuelFracs.size()) {
-        amrex::Abort("fuelNames and the fuel fractions must have equal length");
-      }
-      Real sumF = 0.0;
-      for (const Real x : fuelFracs) {
-        if (x < 0.0) {
-          amrex::Abort("Fuel fractions must not be negative");
-        }
-        sumF += x;
-      }
-      if (sumF <= 0.0) {
-        amrex::Abort("Fuel fractions must not sum to zero");
-      }
-      for (Real& x : fuelFracs) {
-        x /= sumF;
-      }
     } else {
       std::string fuelName = "H2";
       pp.query("fuelName", fuelName);
       fuelNames = {fuelName};
+    }
+    const int nFuel = static_cast<int>(fuelNames.size());
+
+    Vector<Real> fuelFracs;
+    bool fuelFracsAreMole = true;
+    const int nMole = pp.countval("fuelMoleFracs");
+    const int nMass = pp.countval("fuelMassFracs");
+    if (nMole > 0 && nMass > 0) {
+      amrex::Abort("Give either fuelMoleFracs or fuelMassFracs, not both");
+    }
+    if (nMole > 0) {
+      pp.getarr("fuelMoleFracs", fuelFracs);
+    } else if (nMass > 0) {
+      pp.getarr("fuelMassFracs", fuelFracs);
+      fuelFracsAreMole = false;
+    } else if (nFuel == 1) {
+      // A lone component needs no fraction: any positive value normalises to 1
+      // in the loop below.
       fuelFracs = {1.0};
+    } else {
+      amrex::Abort(
+        "fuelNames with more than one entry needs fuelMoleFracs or "
+        "fuelMassFracs");
+    }
+
+    if (static_cast<int>(fuelFracs.size()) != nFuel) {
+      amrex::Abort("fuelNames and the fuel fractions must have equal length");
+    }
+    Real sumF = 0.0;
+    for (const Real x : fuelFracs) {
+      if (x < 0.0) {
+        amrex::Abort("Fuel fractions must not be negative");
+      }
+      sumF += x;
+    }
+    if (sumF <= 0.0) {
+      amrex::Abort("Fuel fractions must not sum to zero");
+    }
+    for (Real& x : fuelFracs) {
+      x /= sumF;
     }
 
     // Oxidizer stream composition (mass fractions); defaults to air.
@@ -166,6 +172,30 @@ main(int argc, char* argv[])
       spec_names);
     auto eos = pele::physics::PhysicsType::eos();
 
+    // The CHON helpers this tool used to call raise an error for these two, and
+    // the general mechanism calls below would instead return meaningless
+    // numbers, so the check has to be made explicitly.
+    const std::string eosName =
+      pele::physics::PhysicsType::eos_type::identifier();
+    if (eosName == "GammaLaw" || eosName == "Manifold") {
+      amrex::Abort(
+        "computeMixtureFraction needs a chemical mechanism, but the compiled "
+        "EOS is " +
+        eosName);
+    }
+
+    // The element set comes from the mechanism: its size, its names and its
+    // order are all mechanism properties and none of them is CHON in general.
+    // drm19's own order is O H C N Ar, alzeta carries F, IonizedAir carries a
+    // free electron, and Ar or He appear in about half of the bundled
+    // mechanisms. Assuming a CHON quartet silently drops every one of those.
+    Vector<std::string> elemNames;
+    CKSYME_STR(elemNames);
+    Real atw[NUM_ELEMENTS];
+    CKAWT(atw);
+    int ecomp[NUM_SPECIES * NUM_ELEMENTS];
+    CKNCF(ecomp);
+
     // Auxiliary variables: names copied unchanged from input to output plotfile
     int nAuxVar = pp.countval("Aux_Variables");
     Vector<std::string> auxVar(nAuxVar);
@@ -173,12 +203,11 @@ main(int argc, char* argv[])
       pp.get("Aux_Variables", auxVar[ivar], ivar);
     }
 
-    // Output layout: Z, then the four elemental mass fractions when they are
-    // requested, then the auxiliary variables.
+    // Output layout: Z, then one elemental mass fraction per element in the
+    // mechanism when they are requested, then the auxiliary variables.
     constexpr int idZlocal = 0; // Z out here
-    constexpr int nElem = 4;    // C, H, O, N in CHON order
     const int idElemOut = 1;
-    const int nElemOut = elementMassFracs ? nElem : 0;
+    const int nElemOut = elementMassFracs ? NUM_ELEMENTS : 0;
 
     const int idAuxLocal = NUM_SPECIES; // aux vars start here in input
     const int idAuxOut = 1 + nElemOut;  // aux vars start here in output
@@ -194,11 +223,8 @@ main(int argc, char* argv[])
     }
     // out
     outNames[idZlocal] = "Z";
-    if (elementMassFracs) {
-      outNames[idElemOut + 0] = "Z_C";
-      outNames[idElemOut + 1] = "Z_H";
-      outNames[idElemOut + 2] = "Z_O";
-      outNames[idElemOut + 3] = "Z_N";
+    for (int e = 0; e < nElemOut; ++e) {
+      outNames[idElemOut + e] = "Z_" + elemNames[e];
     }
 
     // Auxiliary variables are read into the input MultiFab and appended,
@@ -234,8 +260,8 @@ main(int argc, char* argv[])
 
     // Locate each fuel component in the mechanism ordering used to fill indata
     // (destFillComps[i] = i, inNames[i] = Y(spec_names[i])).
-    Vector<int> fuelIdx(fuelNames.size(), -1);
-    for (int f = 0; f < static_cast<int>(fuelNames.size()); ++f) {
+    Vector<int> fuelIdx(nFuel, -1);
+    for (int f = 0; f < nFuel; ++f) {
       for (int i = 0; i < NUM_SPECIES; ++i) {
         if (spec_names[i] == fuelNames[f]) {
           fuelIdx[f] = i;
@@ -252,55 +278,66 @@ main(int argc, char* argv[])
       }
     }
 
-    // Detailed chem - compute Bilger coefficients
-    // Only interested in CHON -in that order. Compute Bilger weights
-    Array<amrex::Real, 4> Beta_mix;
-    Real atwCHON[4] = {0.0};
-    pele::physics::eos::atomic_weightsCHON<
-      pele::physics::PhysicsType::eos_type>(atwCHON);
-    Beta_mix[0] = (atwCHON[0] != 0.0) ? 2.0 / atwCHON[0] : 0.0;
-    Beta_mix[1] = (atwCHON[1] != 0.0) ? 1.0 / (2.0 * atwCHON[1]) : 0.0;
-    Beta_mix[2] = (atwCHON[2] != 0.0) ? -1.0 / atwCHON[2] : 0.0;
-    Beta_mix[3] = 0.0;
-
-    // Compute each species weight for the Bilger formulation based on elemental
-    // compo Only interested in CHON -in that order.
-    amrex::Array<amrex::Real, NUM_SPECIES> spec_Bilger_fact;
-
-    int ecompCHON[NUM_SPECIES * 4];
-    pele::physics::eos::element_compositionCHON<
-      pele::physics::PhysicsType::eos_type>(ecompCHON);
-    amrex::Real mwt[NUM_SPECIES];
-    eos.molecular_weight(mwt);
-
-    // Fuel stream mass fractions. Mole fractions are converted with
-    //   Y_k = X_k W_k / sum_j (X_j W_j)
-    // which reduces to Y = 1 for the single-species case.
-    {
-      Real denom = 0.0;
-      for (int f = 0; f < static_cast<int>(fuelNames.size()); ++f) {
-        denom +=
-          fuelFracsAreMole ? fuelFracs[f] * mwt[fuelIdx[f]] : fuelFracs[f];
+    // Bilger's coupling function is defined on C, H and O:
+    //   beta = 2 Z_C / W_C + Z_H / (2 W_H) - Z_O / W_O
+    // Each of the three is located by name in the mechanism's element list
+    // rather than assumed to occupy a fixed slot; an element the mechanism does
+    // not carry simply contributes nothing. Every other element - N, Ar, He, a
+    // free electron - has zero weight, which is correct: they are diluents that
+    // the coupling function is meant to ignore.
+    Array<amrex::Real, NUM_ELEMENTS> Beta_mix;
+    for (int e = 0; e < NUM_ELEMENTS; ++e) {
+      Beta_mix[e] = 0.0;
+      if (atw[e] <= 0.0) {
+        continue;
       }
-      for (int f = 0; f < static_cast<int>(fuelNames.size()); ++f) {
-        YF[fuelIdx[f]] =
-          (fuelFracsAreMole ? fuelFracs[f] * mwt[fuelIdx[f]] : fuelFracs[f]) /
-          denom;
-      }
-      Print() << "Fuel stream composition (mass fractions):\n";
-      for (int f = 0; f < static_cast<int>(fuelNames.size()); ++f) {
-        Print() << "  Y(" << fuelNames[f] << ") = " << YF[fuelIdx[f]] << "\n";
+      if (elemNames[e] == "C") {
+        Beta_mix[e] = 2.0 / atw[e];
+      } else if (elemNames[e] == "H") {
+        Beta_mix[e] = 1.0 / (2.0 * atw[e]);
+      } else if (elemNames[e] == "O") {
+        Beta_mix[e] = -1.0 / atw[e];
       }
     }
 
-    // Mass fraction of each element in each species, CHON order,
+    amrex::Array<amrex::Real, NUM_SPECIES> spec_Bilger_fact;
+    amrex::Real mwt[NUM_SPECIES];
+    eos.molecular_weight(mwt);
+
+    // Fuel stream mass fractions. Mole fractions need converting with
+    //   Y_k = X_k W_k / sum_j (X_j W_j)
+    // whereas mass fractions were already normalised to sum to one above and
+    // are therefore the answer as they stand.
+    if (fuelFracsAreMole) {
+      Real denom = 0.0;
+      for (int f = 0; f < nFuel; ++f) {
+        denom += fuelFracs[f] * mwt[fuelIdx[f]];
+      }
+      for (int f = 0; f < nFuel; ++f) {
+        YF[fuelIdx[f]] = fuelFracs[f] * mwt[fuelIdx[f]] / denom;
+      }
+    } else {
+      for (int f = 0; f < nFuel; ++f) {
+        YF[fuelIdx[f]] = fuelFracs[f];
+      }
+    }
+    Print() << "Fuel stream composition (mass fractions):\n";
+    for (int f = 0; f < nFuel; ++f) {
+      Print() << "  Y(" << fuelNames[f] << ") = " << YF[fuelIdx[f]] << "\n";
+    }
+
+    // Mass fraction of each element in each species, in mechanism element
+    // order,
     //   w_elem(e,i) = n_{e,i} * A_e / W_i
-    // so that Z_e = sum_i w_elem(e,i) Y_i.
-    amrex::Array2D<amrex::Real, 0, nElem - 1, 0, NUM_SPECIES - 1> w_elem;
-    for (int e = 0; e < nElem; ++e) {
+    // so that Z_e = sum_i w_elem(e,i) Y_i. This is the same expression as
+    // eos.Y2Z, but with the mechanism lookups hoisted out of the cell loop:
+    // Y2Z rebuilds atomicWeight, get_imw and the whole NUM_SPECIES*NUM_ELEMENTS
+    // composition matrix on every call, which is not something to do per cell.
+    amrex::Array2D<amrex::Real, 0, NUM_ELEMENTS - 1, 0, NUM_SPECIES - 1> w_elem;
+    for (int e = 0; e < NUM_ELEMENTS; ++e) {
       for (int i = 0; i < NUM_SPECIES; ++i) {
         w_elem(e, i) =
-          (atwCHON[e] > 0.0) ? ecompCHON[i * 4 + e] * atwCHON[e] / mwt[i] : 0.0;
+          (atw[e] > 0.0) ? ecomp[i * NUM_ELEMENTS + e] * atw[e] / mwt[i] : 0.0;
       }
     }
 
@@ -308,9 +345,10 @@ main(int argc, char* argv[])
     Zox = 0.0;
     for (int i = 0; i < NUM_SPECIES; ++i) {
       spec_Bilger_fact[i] = 0.0;
-      for (int k = 0; k < 4; k++) {
-        spec_Bilger_fact[i] +=
-          Beta_mix[k] * (ecompCHON[i * 4 + k] * atwCHON[k] / mwt[i]);
+      for (int e = 0; e < NUM_ELEMENTS; ++e) {
+        // w_elem is exactly the n_{e,i} A_e / W_i factor this used to spell out
+        // inline, so it is reused rather than recomputed.
+        spec_Bilger_fact[i] += Beta_mix[e] * w_elem(e, i);
       }
       Zfu += spec_Bilger_fact[i] * YF[i];
       Zox += spec_Bilger_fact[i] * YO[i];
@@ -321,6 +359,47 @@ main(int argc, char* argv[])
     }
     const Real denom_inv = 1.0 / (Zfu - Zox);
     Print() << "Zfu = " << Zfu << ", Zox = " << Zox << std::endl;
+
+    // An element outside C, H and O is invisible to Bilger's coupling function.
+    // That is the right answer while it stands alone - Ar, He and free
+    // electrons are diluents - and it is also the right answer for N, which the
+    // formulation excludes deliberately even in a mechanism with NOx chemistry.
+    // It is not the right answer for anything else that is bonded to C, H or O,
+    // because that element is then part of the combustion chemistry and Z
+    // cannot see it. Warn only in that last case, so the message means
+    // something when it appears: F in the alzeta mechanism triggers it, Ar and
+    // NOx nitrogen do not.
+    auto isBilgerElem = [&](int e) {
+      return elemNames[e] == "C" || elemNames[e] == "H" || elemNames[e] == "O";
+    };
+    for (int e = 0; e < NUM_ELEMENTS; ++e) {
+      if (isBilgerElem(e) || elemNames[e] == "N") {
+        continue;
+      }
+      for (int i = 0; i < NUM_SPECIES; ++i) {
+        if (ecomp[i * NUM_ELEMENTS + e] == 0) {
+          continue;
+        }
+        bool bondedToCHO = false;
+        for (int e2 = 0; e2 < NUM_ELEMENTS; ++e2) {
+          if (isBilgerElem(e2) && ecomp[i * NUM_ELEMENTS + e2] > 0) {
+            bondedToCHO = true;
+            break;
+          }
+        }
+        if (bondedToCHO) {
+          Print() << "\n*** WARNING: element " << elemNames[e]
+                  << " is bonded to C, H or O in " << spec_names[i] << ".\n"
+                  << "    The Bilger coupling function is built on C, H and O "
+                     "alone, so Z does not\n"
+                  << "    account for "
+                  << elemNames[e] << " chemistry. Z_" << elemNames[e]
+                  << " and the other elemental mass\n"
+                  << "    fractions are unaffected.\n\n";
+          break; // one warning per element is enough
+        }
+      }
+    }
 
     for (int lev = 0; lev < Nlev; ++lev) {
       const BoxArray ba = amrData.boxArray(lev);
@@ -346,7 +425,7 @@ main(int argc, char* argv[])
           out_ma[box_no](i, j, k, idZlocal) = (Zloc - Zox) * denom_inv;
 
           if (doElem) {
-            for (int e = 0; e < nElem; ++e) {
+            for (int e = 0; e < NUM_ELEMENTS; ++e) {
               Real Ze = 0.0;
               for (int n = 0; n < NUM_SPECIES; ++n) {
                 Ze += w_elem(e, n) * in_ma[box_no](i, j, k, n);

@@ -5,9 +5,9 @@ Description
 -----------
 
 ``computeMixtureFraction`` computes the Bilger mixture fraction ``Z`` from an
-AMReX plotfile, and optionally the elemental mass fractions ``Z_C``, ``Z_H``,
-``Z_O`` and ``Z_N``. The fuel stream may be a single species or a blend of
-several.
+AMReX plotfile, and optionally the mass fraction of every element in the
+compiled mechanism, one ``Z_<element>`` column each. The fuel stream may be a
+single species or a blend of several.
 The mixture fraction is evaluated from the elemental (C, H, O) composition of
 the mixture using the Bilger formulation and the PelePhysics equation of state,
 so it is consistent with the compiled chemical mechanism.
@@ -45,10 +45,28 @@ each element,
 
 where :math:`n_{e,n}` is the number of atoms of element :math:`e` in species
 :math:`n`, :math:`A_e` the atomic weight and :math:`W_n` the molecular weight.
-Being mass fractions of a complete elemental decomposition, ``Z_C``, ``Z_H``,
-``Z_O`` and ``Z_N`` sum to one in every cell. Unlike :math:`Z` they are
-unnormalised and independent of the chosen fuel and oxidizer streams, which
-makes them useful as additional conditioning variables in their own right.
+
+The element set, its size, its names and its order all come from the compiled
+mechanism, so the tool writes one column per element and nothing is dropped. The
+order is the mechanism's own and is *not* CHON in general — drm19, for instance,
+lists its elements as ``O H C N Ar``, so the columns come out as ``Z_O``,
+``Z_H``, ``Z_C``, ``Z_N``, ``Z_Ar``. Select them by name rather than by
+position. Because the decomposition is complete, the columns sum to one in every
+cell, to the precision of the mechanism's own atomic and molecular weights.
+Unlike :math:`Z` they are unnormalised and independent of the chosen fuel and
+oxidizer streams, which makes them useful as additional conditioning variables
+in their own right.
+
+.. note::
+
+   The Bilger coupling function is built on C, H and O alone, so :math:`Z`
+   itself accounts for no other element. That is deliberate for N — the
+   formulation excludes it even where the mechanism carries NOx chemistry — and
+   harmless for diluents such as Ar and He. Where a mechanism bonds some other
+   element to C, H or O, that element is part of the combustion chemistry and
+   :math:`Z` cannot see it; the tool prints a warning naming the element and an
+   example species. The ``alzeta`` mechanism, which contains fluorine, triggers
+   it. The elemental mass fractions are unaffected either way.
 
 For a reaction progress variable, use the :doc:`../analysis/progVar` tool.
 
@@ -103,8 +121,9 @@ Parameters
    ``fuelMoleFracs``. Giving both is an error.
 
 ``elementMassFracs``
-   Set to ``1`` to also write ``Z_C``, ``Z_H``, ``Z_O`` and ``Z_N``.
-   Default: ``0``.
+   Set to ``1`` to also write one ``Z_<element>`` column for every element in
+   the compiled mechanism. The number of columns and their names therefore
+   depend on the mechanism. Default: ``0``.
 
 ``YO2ox``
    O\ :sub:`2` mass fraction of the oxidizer stream used for
@@ -146,7 +165,8 @@ A new AMReX plotfile named ``<infile>outsuffix`` (by default
 ``<infile>_ZC``) containing:
 
 - ``Z`` — Bilger mixture fraction
-- ``Z_C``, ``Z_H``, ``Z_O``, ``Z_N`` — elemental mass fractions, only when
+- ``Z_<element>``, one per element in the compiled mechanism and in the
+  mechanism's own order — elemental mass fractions, only when
   ``elementMassFracs=1``
 - any ``Aux_Variables`` requested, copied unchanged from the input
 
