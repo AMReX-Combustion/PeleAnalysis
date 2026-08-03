@@ -78,9 +78,9 @@ main(int argc, char* argv[])
     }
 
     std::string outsuffix = "_prog";
-    pp.get("outsuffix", outsuffix);
+    pp.query("outsuffix", outsuffix);
     std::string outname = "progVar";
-    pp.get("outname", outname);
+    pp.query("outname", outname);
 
     // By default the progress-variable source term I_R(<outname>) is written.
     // Set printSource=0 to output only specSum and the progress variable.
@@ -106,6 +106,7 @@ main(int argc, char* argv[])
 
     int finestLevel = amrData.FinestLevel();
     pp.query("finestLevel", finestLevel);
+    finestLevel = std::max(0, std::min(finestLevel, amrData.FinestLevel()));
     int Nlev = finestLevel + 1;
 
     Vector<int> is_per(AMREX_SPACEDIM, 1);
