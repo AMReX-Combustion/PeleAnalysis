@@ -223,6 +223,18 @@ Training Parameters
    Fraction of boxes used for training; the remainder is held out for
    validation and early stopping. Default: ``0.7``.
 
+   The partition is drawn over the whole data set with a fixed seed, keyed on
+   each box's level and its index into that level's ``BoxArray`` — quantities
+   that come from the plotfile header and so do not depend on the distribution
+   mapping. The same boxes therefore end up in the validation set whatever the
+   rank count, and the fraction is exact globally rather than applied to each
+   rank's own box count. The counts are reported at start-up::
+
+      Split 76 boxes into 53 for training and 23 for validation.
+
+   Boxes wholly covered by a finer level hold no samples and take no part in the
+   split.
+
 ``volume_weight``
    Set to ``0`` to give every cell the same weight in the loss instead of the
    volume of its cell. Default: ``1``.
@@ -406,21 +418,40 @@ prints a summary:
    Epoch [1/1000], Training Loss: 0.0421, Validation Loss: 0.0438, R2: 0.79, lr: 0.001
 
 Both losses are volume-weighted mean-square errors in the *normalised* target
-space, so they are dimensionless and comparable across targets. The validation
-loss is computed as a weighted sum of squared errors divided by the global sum
-of weights, which makes it independent of how the data happens to be
-distributed over the MPI ranks.
+space, so they are dimensionless and comparable across targets. Both are
+computed as a weighted sum of squared errors divided by the global sum of
+weights, which makes them independent of how the data happens to be distributed
+over the MPI ranks, and makes the two numbers on the line above the same
+statistic.
 
 Training ends either at ``nEpochs`` or when the validation loss plateaus (see
 *Convergence Control* above). The weights are then rolled back to the best
 epoch, and the network is written to ``<model_path>.pt`` with the normalisation
 bounds in ``<minmax_path>.bin``.
 
-Under MPI the gradients are summed across all ranks and rescaled to the mean
-after every backward pass, so a run on N ranks takes the same optimiser steps
-as a serial run over the union of the data. All ranks take the same number of
-steps per epoch; because the training set is reshuffled every epoch, the tail
-that this drops on data-rich ranks is a different one each time.
+Under MPI each rank normalises its loss by the weight of the mini-batch summed
+over *all* ranks, so its gradient is that rank's share of the global gradient
+and the shares are simply summed after every backward pass. A run on N ranks
+therefore takes the same optimiser steps as a serial run over the union of the
+data, whatever the spread in how much data — or how much *weight* — each rank
+holds.
+
+.. note::
+
+   Rescaling the summed gradients by :math:`1/N` instead, which is what
+   averaging per-rank mean gradients amounts to, is only equivalent when every
+   rank's mini-batch carries the same weight. On a multi-level set it does not:
+   the distribution mapping is built independently per level, so ranks hold
+   uncorrelated shares of coarse and fine boxes. The difference is not a
+   rescaling that the optimiser absorbs but a different objective — it
+   up-weights the ranks holding the least total weight, and in the limit of one
+   level per rank it cancels the volume weighting outright, returning the fit to
+   the cell-count average that ``volume_weight`` exists to avoid.
+
+All ranks take the same number of steps per epoch, which is what keeps them
+issuing the same sequence of collectives; because the training set is reshuffled
+every epoch, the tail that this drops on data-rich ranks is a different one each
+time.
 
 
 Output
@@ -498,11 +529,12 @@ Notes and Current Limitations
 
 - **CPU only.** Both tools run on the host. ``USE_CUDA`` is not supported.
 
-- **Each rank needs at least two boxes holding uncovered cells**, one for
-  training and one for validation; the tool aborts otherwise. Boxes lying
-  entirely under a finer level do not count. With a small number of large boxes,
-  this limits how many ranks are useful. Splitting the plotfile into more boxes
-  (or simply using fewer ranks) resolves it.
+- **Every rank needs at least one training box.** The split is global, so a rank
+  may legitimately draw no *validation* boxes — harmless, since it then simply
+  contributes nothing to either global sum — but a rank left with no *training*
+  data has no batch to take its optimiser step from and the tool aborts. With a
+  small number of large boxes this limits how many ranks are useful; splitting
+  the plotfile into more boxes (or using fewer ranks) resolves it.
 
 - **Throughput.** Training cost is ``nEpochs`` times the number of mini-batches.
   Make the job request more than one core — libtorch parallelises the matrix

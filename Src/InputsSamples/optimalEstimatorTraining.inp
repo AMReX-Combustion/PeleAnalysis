@@ -30,7 +30,9 @@ batch_size = 16384                         # DEF: 16384; SAMPLES (cells) per min
                                            # old batch_size=32 meant 32^DIM samples. Small
                                            # batches are dominated by framework overhead.
 split = 0.7                                # DEF: 0.7; fraction of boxes used for training,
-                                           # the rest is held out for validation
+                                           # the rest is held out for validation. Drawn over the
+                                           # whole data set with a fixed seed, so the same boxes
+                                           # are held out whatever the MPI rank count
 volume_weight = 1                          # DEF: 1; weight each sample by the volume of its
                                            # cell, so the fit is a volume average and not a
                                            # cell-count average. No effect on a single level

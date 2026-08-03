@@ -77,20 +77,33 @@ print_usage(int, char* argv[])
   std::exit(1);
 }
 
-// Sum the gradients of every parameter across all ranks and rescale to the
-// mean, so that each rank applies the same update as a serial run over the
-// union of the data. Must be called after backward() and before step().
+// Sum the gradients of every parameter across all ranks, so that each rank
+// applies the same update as a serial run over the union of the data. Must be
+// called after backward() and before step().
+//
+// There is deliberately no rescaling here. Each rank's loss is its own weighted
+// sum of squared errors divided by the weight of the whole mini-batch summed
+// over ALL ranks, so its gradient is that rank's share of the global gradient
+// and the shares simply add up. Dividing by nProcs instead - which is what
+// averaging per-rank mean gradients amounts to - is only equivalent when every
+// rank's batch carries the same weight, and on a multi-level set it does not:
+// see the comment on batchW in the training loop.
 static void
-allReduceGradients(const std::shared_ptr<Net>& model)
+allReduceGradientSum(const std::shared_ptr<Net>& model)
 {
-  const int nProcs = ParallelDescriptor::NProcs();
-  if (nProcs == 1) {
+  if (ParallelDescriptor::NProcs() == 1) {
     return;
   }
 
   for (const auto& p : model->parameters()) {
     const auto& g = p.grad();
-    if (!g.defined()) {
+    // Every rank runs the same graph, so a parameter is either differentiated
+    // on all ranks or on none. Skipping one on a subset of ranks would leave
+    // them issuing different sets of collectives, which hangs the job rather
+    // than giving a wrong answer, so this is an assert and not a `continue`.
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+      g.defined(), "Parameter has no gradient; ranks would fall out of step");
+    if (g.numel() == 0) {
       continue;
     }
     // The reduction writes through the raw buffer, so it must be contiguous.
@@ -102,7 +115,6 @@ allReduceGradients(const std::shared_ptr<Net>& model)
     } else {
       ParallelDescriptor::ReduceRealSum(g.data_ptr<float>(), g.numel());
     }
-    g.div_(static_cast<double>(nProcs));
   }
 }
 
@@ -248,13 +260,24 @@ main(int argc, char* argv[])
       }
     }
 
+    // A box is identified globally by its level and its index into that
+    // level's BoxArray. The BoxArray comes from the plotfile header and is the
+    // same on every rank whatever the distribution mapping, and MFIter::index()
+    // is the index into it, so this numbering does not depend on how many ranks
+    // the job runs on. The train/validation split below is built on it.
+    Vector<int> levOffset(Nlev, 0);
+    int nBoxesGlobal = 0;
+    for (int lev = minLevel; lev < Nlev; lev++) {
+      levOffset[lev] = nBoxesGlobal;
+      nBoxesGlobal += amrData.boxArray(lev).size();
+    }
+
     // Normalisation bounds over the uncovered cells only, so that they
     // describe exactly the data the network is trained on. The number of
-    // uncovered cells per local box is collected in the same sweep, in the
-    // order the staging loop below walks them.
+    // uncovered cells per box is collected in the same sweep.
     Long nValidLocal = 0;
     Long nCoveredLocal = 0;
-    Vector<Long> boxCells;
+    Vector<Long> boxCells(nBoxesGlobal, 0);
     for (int lev = minLevel; lev < Nlev; lev++) {
       for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
         const Box& bx = mfi.validbox();
@@ -279,7 +302,7 @@ main(int argc, char* argv[])
               t_min[nv] = std::min(t_min[nv], v);
             }
           });
-        boxCells.push_back(nValidBox);
+        boxCells[levOffset[lev] + mfi.index()] = nValidBox;
         nValidLocal += nValidBox;
       }
     }
@@ -288,6 +311,9 @@ main(int argc, char* argv[])
     ParallelDescriptor::ReduceRealMin(f_min.dataPtr(), nFeatures);
     ParallelDescriptor::ReduceRealMax(t_max.dataPtr(), nTargets);
     ParallelDescriptor::ReduceRealMin(t_min.dataPtr(), nTargets);
+    // Each box is owned by exactly one rank and the others left its slot at
+    // zero, so summing hands every rank the cell count of every box.
+    ParallelDescriptor::ReduceLongSum(boxCells.dataPtr(), nBoxesGlobal);
 
     {
       Long nValidGlobal = nValidLocal;
@@ -321,42 +347,50 @@ main(int argc, char* argv[])
         "zero.");
     }
 
-    // Split the local boxes into a training and a validation set. Splitting on
-    // whole boxes rather than individual cells keeps spatially adjacent - and
+    // Split the boxes into a training and a validation set. Splitting on whole
+    // boxes rather than individual cells keeps spatially adjacent - and
     // therefore strongly correlated - cells off both sides of the split.
+    //
+    // The partition is drawn over the global box numbering with a fixed seed,
+    // so it is the same whatever the rank count. Shuffling each rank's own
+    // boxes instead would make the training set itself a function of how many
+    // ranks the job happened to use, which leaves results irreproducible
+    // between job sizes and makes `split` only an approximation globally,
+    // because it is then applied to each rank's box count separately.
+    // (std::shuffle's algorithm is unspecified, so this fixes the partition
+    // across ranks and across runs of one binary, not across compilers.)
     Real split = 0.7;
     pp.query("split", split);
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
       split > 0.0 && split < 1.0, "split must lie strictly between 0 and 1");
 
-    const int nBoxesLocal = boxCells.size();
-
     // A box that a finer level covers completely carries no samples and must
-    // stay out of the split, or it could be handed the entire validation set
-    // and leave nothing to validate on.
+    // stay out of the split, or it could absorb part of the validation set
+    // while contributing nothing to it.
     Vector<int> boxOrder;
-    for (int i = 0; i < nBoxesLocal; i++) {
-      if (boxCells[i] > 0) {
-        boxOrder.push_back(i);
+    for (int b = 0; b < nBoxesGlobal; b++) {
+      if (boxCells[b] > 0) {
+        boxOrder.push_back(b);
       }
     }
     const int nUsableBoxes = boxOrder.size();
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
       nUsableBoxes >= 2,
-      "This rank owns fewer than two boxes holding uncovered cells and cannot "
-      "be split into a training and a validation set. Run with fewer MPI "
-      "ranks.");
+      "Fewer than two boxes hold uncovered cells, so the data cannot be split "
+      "into a training and a validation set.");
 
-    // Deterministic, but decorrelated between ranks.
-    std::mt19937 g(12345 + ParallelDescriptor::MyProc());
+    std::mt19937 g(12345);
     std::shuffle(boxOrder.begin(), boxOrder.end(), g);
 
     const int nTrainBoxes =
       std::max(1, std::min(nUsableBoxes - 1, (int)(split * nUsableBoxes)));
-    std::vector<char> isTrainBox(nBoxesLocal, 0);
+    std::vector<char> isTrainBox(nBoxesGlobal, 0);
     for (int i = 0; i < nTrainBoxes; i++) {
       isTrainBox[boxOrder[i]] = 1;
     }
+    Print() << "Split " << nUsableBoxes << " boxes into " << nTrainBoxes
+            << " for training and " << nUsableBoxes - nTrainBoxes
+            << " for validation." << std::endl;
 
     // A conditional mean is an average over volume, but a cell is one sample
     // whatever its size, so on a multi-level set the fit would be pulled
@@ -403,7 +437,6 @@ main(int argc, char* argv[])
     trainTarg.reserve(nValidLocal * nTargets);
     trainW.reserve(nValidLocal);
 
-    int boxCount = 0;
     for (int lev = minLevel; lev < Nlev; lev++) {
       const Real w = levWeight[lev];
       for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
@@ -411,7 +444,7 @@ main(int argc, char* argv[])
         Array4<Real> const& fab = indata[lev].array(mfi);
         Array4<const int> const& msk = validMask[lev].const_array(mfi);
 
-        const bool train = isTrainBox[boxCount++] != 0;
+        const bool train = isTrainBox[levOffset[lev] + mfi.index()] != 0;
         std::vector<Real>& fOut = train ? trainFeat : valFeat;
         std::vector<Real>& tOut = train ? trainTarg : valTarg;
         std::vector<Real>& wOut = train ? trainW : valW;
@@ -445,6 +478,15 @@ main(int argc, char* argv[])
     const int64_t nValLocal = (int64_t)valTarg.size() / nTargets;
 
     auto toTensor = [&](std::vector<Real>& host, int64_t nrows, int64_t ncols) {
+      // The split is global, so a rank can hold no validation boxes at all.
+      // That is harmless downstream - evaluate() adds nothing to either global
+      // sum - but an empty std::vector may hand back a null pointer, which is
+      // not something to pass to from_blob.
+      if (nrows == 0) {
+        std::vector<Real>().swap(host);
+        return torch::empty(
+          {nrows, ncols}, torch::TensorOptions().dtype(trainDtype));
+      }
       auto t = torch::from_blob(
         host.data(), {nrows, ncols}, torch::TensorOptions().dtype(amrexDtype));
       // Force a copy so the tensor owns its storage even when trainDtype ==
@@ -482,19 +524,27 @@ main(int argc, char* argv[])
                  "prefer >= 4096.\n\n";
     }
 
-    // Every rank must take the same number of optimiser steps or the gradient
-    // reductions will not line up. The per-epoch reshuffle means the tail
-    // dropped on data-rich ranks is a different one each epoch.
+    // Every rank must take the same number of optimiser steps, or they issue
+    // different numbers of collectives and the job hangs. The weighting of
+    // those steps no longer depends on this being an even division: the loss is
+    // normalised by the global batch weight, so a rank contributing a short
+    // batch is accounted for by weight rather than assumed to match the others.
+    // The per-epoch reshuffle means the tail dropped on data-rich ranks is a
+    // different one each epoch.
     int nSteps = (int)((nTrainLocal + batch_size - 1) / batch_size);
     ParallelDescriptor::ReduceIntMin(nSteps);
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-      nSteps > 0, "Some rank has no training data. Run with fewer MPI ranks.");
+      nSteps > 0,
+      "Some rank drew no training boxes in the split. Run with fewer MPI "
+      "ranks, or split the plotfile into more boxes.");
 
     {
       Long nTrainGlobal = nTrainLocal;
       Long nValGlobal = nValLocal;
       ParallelDescriptor::ReduceLongSum(nTrainGlobal);
       ParallelDescriptor::ReduceLongSum(nValGlobal);
+      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        nValGlobal > 0, "The split left no validation data.");
       Print() << "Training samples: " << nTrainGlobal
               << ", validation samples: " << nValGlobal << "\n"
               << "Batch size: " << batch_size << ", steps per epoch: " << nSteps
@@ -613,6 +663,33 @@ main(int argc, char* argv[])
 
       auto perm = torch::randperm(
         nTrainLocal, torch::TensorOptions().dtype(torch::kLong));
+      // Permuted once, so each step's rows are a narrow() view rather than a
+      // fresh index_select, and so the per-step weights can be summed up front.
+      auto w_perm = train_w.index_select(0, perm);
+
+      // Weight of each mini-batch, summed over every rank. The loss has to be
+      // normalised by the weight of the batch as a whole and not by each rank's
+      // own share of it: the gradient of the global weighted MSE is
+      // sum_r grad(S_r) / sum_r W_r, whereas normalising per rank and then
+      // averaging gives (1/P) sum_r grad(S_r)/W_r. Those agree only when every
+      // rank's batch carries the same weight. On a multi-level set they do not
+      // - the distribution mapping is built independently per level, so ranks
+      // hold uncorrelated shares of coarse and fine boxes - and the difference
+      // is not a rescaling the optimiser absorbs but a different objective: it
+      // up-weights ranks holding little total weight and, in the limit of one
+      // level per rank, cancels the volume weighting outright.
+      //
+      // perm is drawn once per epoch, so every step's composition is already
+      // fixed here and all of them reduce in a single collective per epoch
+      // rather than one per step.
+      std::vector<double> batchW(nSteps);
+      for (int s = 0; s < nSteps; ++s) {
+        const int64_t off = (int64_t)s * batch_size;
+        const int64_t m = std::min(batch_size, nTrainLocal - off);
+        batchW[s] =
+          (double)nTargets * w_perm.narrow(0, off, m).sum().item<double>();
+      }
+      ParallelDescriptor::ReduceRealSum(batchW.data(), nSteps);
 
       Real epoch_training_loss = 0.0;
       for (int s = 0; s < nSteps; ++s) {
@@ -622,22 +699,35 @@ main(int argc, char* argv[])
 
         auto xb = train_x.index_select(0, idx);
         auto yb = train_y.index_select(0, idx);
-        auto wb = train_w.index_select(0, idx);
+        auto wb = w_perm.narrow(0, off, m);
+
+        // Cell volumes are strictly positive, so this only trips if the staging
+        // above is broken. batchW is global, so every rank takes the same
+        // branch and the abort cannot hang.
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+          batchW[s] > 0.0, "Mini-batch carries no weight on any rank");
 
         optimizer.zero_grad();
         auto out = model->forward(xb);
-        // Weighted MSE: sum(w * e^2) / (sum(w) * nTargets). With uniform
-        // weights this is identical to torch::mse_loss(out, yb).
-        auto loss = (wb * (out - yb).pow(2)).sum() / (wb.sum() * nTargets);
+        // This rank's share of the global weighted MSE: its own weighted sum of
+        // squared errors over the weight of the whole batch. The divisor is
+        // parameter-independent and identical on every rank, so backward gives
+        // grad(S_r)/W and the shares sum to the exact global gradient in
+        // allReduceGradientSum. It is passed as a plain scalar on purpose -
+        // dividing by a float64 tensor would promote the loss to float64 and
+        // mismatch the float32 parameters when use_double=0.
+        auto loss = (wb * (out - yb).pow(2)).sum() / batchW[s];
         loss.backward();
-        allReduceGradients(model);
+        allReduceGradientSum(model);
         optimizer.step();
 
         epoch_training_loss += loss.item<double>();
       }
+      // Each rank held a share of every step's loss, so summing over the ranks
+      // already gives the global loss - there is nothing further to divide by.
+      // This is now the same statistic as the validation loss below.
       epoch_training_loss /= std::max(1, nSteps);
       ParallelDescriptor::ReduceRealSum(epoch_training_loss);
-      epoch_training_loss /= (Real)nProcs;
 
       const Real val_loss = evaluate(val_x, val_y, val_w);
       const Real r2 = 1.0 - val_loss / targVar;
