@@ -1889,6 +1889,82 @@ main (int   argc,
       const Real uniq_time = end_time_uniq - strt_time_uniq;
       Print() << "Uniquify time: " << uniq_time << '\n';
 
+      // Measure of the extracted iso-level: area in 3D (triangles), arc length in
+      // 2D (2-node segments).
+      //
+      // Disjoint sections need no special handling in either dimension: the
+      // measure is additive over elements and independent of how they connect, and
+      // eltSet is deduplicated so nothing is counted twice. So several separate
+      // contour lines in 2D, or several surface sheets in 3D, all just add up.
+      // Only a per-section breakdown would need the connectivity, which would be a
+      // separate feature.
+      //
+      // This must run BEFORE the surface-output block below. That block releases
+      // eltSet (and, with surface_is_large=1, sortedNodes) to reclaim memory for
+      // large surfaces, so computing the measure afterwards silently reported 0
+      // for any run that also wrote a surface.
+      bool computeArea = false;
+      pp.query("computeArea",computeArea);
+      if (computeArea) {
+        Real measure = 0;
+        int nSkipped = 0;
+        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
+          const Element& elt = *it;
+          if (elt.size() != nodesPerElt) {
+            nSkipped++;
+            continue;
+          }
+
+          bool nodeOutOfRange = false;
+          for (int i = 0; i < nodesPerElt; ++i) {
+            if (elt[i] >= sortedNodes.size()) {
+              std::cerr << "Accessing node past end: element node " << i
+                        << " = " << elt[i] << " of " << sortedNodes.size() << std::endl;
+              nodeOutOfRange = true;
+            }
+          }
+          if (nodeOutOfRange) {
+            nSkipped++;
+            continue;
+          }
+
+#if AMREX_SPACEDIM==2
+          // Segment length.
+          const Real* p0 = sortedNodes[elt[0]]->m_vec;
+          const Real* p1 = sortedNodes[elt[1]]->m_vec;
+
+          measure += std::sqrt(  (p1[0] - p0[0])*(p1[0] - p0[0])
+                               + (p1[1] - p0[1])*(p1[1] - p0[1]) );
+#else
+          // Triangle area, as half the magnitude of the edge cross product.
+          const Real* p0 = sortedNodes[elt[0]]->m_vec;
+          const Real* p1 = sortedNodes[elt[1]]->m_vec;
+          const Real* p2 = sortedNodes[elt[2]]->m_vec;
+
+          measure += 0.5*std::sqrt(
+            std::pow(( p1[1] - p0[1])*(p2[2]-p0[2])
+                     -(p1[2] - p0[2])*(p2[1]-p0[1]), 2)
+
+            + std::pow(( p1[2] - p0[2])*(p2[0]-p0[0])
+                       -(p1[0] - p0[0])*(p2[2]-p0[2]), 2)
+
+            + std::pow(( p1[0] - p0[0])*(p2[1]-p0[1])
+                       -(p1[1] - p0[1])*(p2[0]-p0[0]), 2) );
+#endif
+        }
+
+        if (nSkipped > 0) {
+          std::cerr << "computeArea: skipped " << nSkipped << " of " << eltSet.size()
+                    << " elements (wrong node count or node index out of range)"
+                    << std::endl;
+        }
+#if AMREX_SPACEDIM==2
+        Print() << "Total length = " << measure << '\n';
+#else
+        Print() << "Total area = " << measure << '\n';
+#endif
+      }
+
       const Real strt_time_sout = ParallelDescriptor::second();
       bool writeSurf = true;
       pp.query("writeSurf",writeSurf);
@@ -2233,35 +2309,6 @@ main (int   argc,
       const Real sout_time = end_time_sout - strt_time_sout;
       std::cout << "Surface output time: " << sout_time << '\n';
 
-      // Compute area of isosurface
-      bool computeArea = false;
-      pp.query("computeArea",computeArea);
-      if (computeArea && (AMREX_SPACEDIM==3))  {
-        Real Area = 0;
-        for (std::set<Element>::const_iterator it = eltSet.begin(); it != eltSet.end(); ++it) {
-          const Element& elt = *it;
-          if (elt.size()==3) {
-            if (elt[0]>=sortedNodes.size() || elt[1]>=sortedNodes.size() || elt[2]>=sortedNodes.size()) {
-              std::cerr << "Accessing node past end: " << elt[0] << ", " << elt[1] << ", " << elt[2] << std::endl;
-            }
-
-            const Real* p0 = sortedNodes[elt[0]]->m_vec;
-            const Real* p1 = sortedNodes[elt[1]]->m_vec;
-            const Real* p2 = sortedNodes[elt[2]]->m_vec;
-
-            Area += 0.5*sqrt(
-              pow(( p1[1] - p0[1])*(p2[2]-p0[2])
-                  -(p1[2] - p0[2])*(p2[1]-p0[1]), 2)
-
-              + pow(( p1[2] - p0[2])*(p2[0]-p0[0])
-                    -(p1[0] - p0[0])*(p2[2]-p0[2]), 2)
-
-              + pow(( p1[0] - p0[0])*(p2[1]-p0[1])
-                    -(p1[1] - p0[1])*(p2[0]-p0[0]), 2) );
-          }
-        }
-        Print() << "Total area = " << Area << '\n';
-      }
     } // IOProc
   }
   amrex::Finalize();
