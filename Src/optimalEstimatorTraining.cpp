@@ -325,7 +325,8 @@ main(int argc, char* argv[])
         "Every cell between minLevel and finestLevel is covered by a finer "
         "level; there is nothing to train on.");
       Print() << "Cells on levels " << minLevel << "-" << finestLevel << ": "
-              << nValidGlobal + nCoveredGlobal << ", of which " << nCoveredGlobal
+              << nValidGlobal + nCoveredGlobal << ", of which "
+              << nCoveredGlobal
               << " are covered by a finer level and are skipped, leaving "
               << nValidGlobal << " samples." << std::endl;
     }
@@ -562,8 +563,8 @@ main(int argc, char* argv[])
                (train_w * train_y).sum().item<double>();
       Real s2 = (val_w * val_y.pow(2)).sum().item<double>() +
                 (train_w * train_y.pow(2)).sum().item<double>();
-      Real w = (Real)nTargets * (val_w.sum().item<double>() +
-                                 train_w.sum().item<double>());
+      Real w = (Real)nTargets *
+               (val_w.sum().item<double>() + train_w.sum().item<double>());
       ParallelDescriptor::ReduceRealSum(s);
       ParallelDescriptor::ReduceRealSum(s2);
       ParallelDescriptor::ReduceRealSum(w);
@@ -632,8 +633,9 @@ main(int argc, char* argv[])
     // Accumulating the weighted sum of squares and dividing by the global sum
     // of weights keeps the result independent of how the data happens to be
     // spread over the ranks.
-    auto evaluate = [&](const torch::Tensor& x, const torch::Tensor& y,
-                        const torch::Tensor& w) {
+    auto evaluate = [&](
+                      const torch::Tensor& x, const torch::Tensor& y,
+                      const torch::Tensor& w) {
       torch::NoGradGuard ng;
       model->eval();
       const int64_t n = x.size(0);

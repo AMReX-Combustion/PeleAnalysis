@@ -122,9 +122,8 @@ main(int argc, char* argv[])
       // in the loop below.
       fuelFracs = {1.0};
     } else {
-      amrex::Abort(
-        "fuelNames with more than one entry needs fuelMoleFracs or "
-        "fuelMassFracs");
+      amrex::Abort("fuelNames with more than one entry needs fuelMoleFracs or "
+                   "fuelMassFracs");
     }
 
     if (static_cast<int>(fuelFracs.size()) != nFuel) {
@@ -392,9 +391,8 @@ main(int argc, char* argv[])
                   << " is bonded to C, H or O in " << spec_names[i] << ".\n"
                   << "    The Bilger coupling function is built on C, H and O "
                      "alone, so Z does not\n"
-                  << "    account for "
-                  << elemNames[e] << " chemistry. Z_" << elemNames[e]
-                  << " and the other elemental mass\n"
+                  << "    account for " << elemNames[e] << " chemistry. Z_"
+                  << elemNames[e] << " and the other elemental mass\n"
                   << "    fractions are unaffected.\n\n";
           break; // one warning per element is enough
         }
