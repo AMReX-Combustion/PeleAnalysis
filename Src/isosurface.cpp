@@ -2,6 +2,8 @@
 #include <iostream>
 #include <set>
 #include <list>
+#include <algorithm>
+#include <cmath>
 
 #include <AMReX_ParmParse.H>
 #include <AMReX_MultiFab.H>
@@ -1888,6 +1890,188 @@ main (int   argc,
       const Real end_time_uniq = ParallelDescriptor::second();
       const Real uniq_time = end_time_uniq - strt_time_uniq;
       Print() << "Uniquify time: " << uniq_time << '\n';
+
+      // ---------------------------------------------------------------------
+      // Surface sanity checks.
+      //
+      // Both are cheap, run on the assembled surface, and exist because a
+      // defect here is otherwise silent: it corrupts the reported measure by
+      // tens of percent while every element still looks individually plausible.
+      //
+      // Enable/disable with check_surface (default on).
+      // ---------------------------------------------------------------------
+      bool check_surface = true;
+      pp.query("check_surface",check_surface);
+
+      if (check_surface && !sortedNodes.empty()) {
+
+        // Finest cell size, per direction, by the same route used elsewhere in
+        // this file.
+        Array<Real,AMREX_SPACEDIM> dxf;
+        for (int d=0; d<AMREX_SPACEDIM; ++d) {
+          dxf[d] = pf.probSize()[d] / pf.probDomain(finestLevel).length(d);
+        }
+        Real cellDiag = 0;
+        for (int d=0; d<AMREX_SPACEDIM; ++d) cellDiag += dxf[d]*dxf[d];
+        cellDiag = std::sqrt(cellDiag);
+
+        // CHECK 1 -- edge lengths.
+        //
+        // Marching squares/cubes cuts a single cell, so every edge of every
+        // element lies inside one cell and cannot exceed its diagonal. Anything
+        // longer is a defect, not geometry. In 2D that is the single segment; in
+        // 3D all three triangle edges, since a triangle can be badly shaped
+        // while its area stays unremarkable.
+        //
+        // This catches the known periodic-boundary defect: on a periodic domain
+        // the crossing between the last and first cell centres is interpolated
+        // from their raw coordinates rather than the minimum image, so the node
+        // lands mid-domain. Observed on a 1600^2 phi=0.4 case as segments of
+        // 65.8 mm and 14.1 mm where one cell is 0.05 mm, inflating the reported
+        // arc length by 45% (109% in the worst plotfile of that run). It is
+        // intermittent -- it depends on how boxes fall relative to the periodic
+        // face -- so a single passing case proves nothing, which is exactly why
+        // the check belongs here rather than in a test.
+        Real edge_length_tol = 1.5;
+        pp.query("edge_length_tol",edge_length_tol);
+        const Real edgeMax = edge_length_tol * cellDiag;
+
+        long nBadEdges = 0;
+        Real worstEdge = 0;
+        std::vector<Real> worstA(AMREX_SPACEDIM,0), worstB(AMREX_SPACEDIM,0);
+
+        for (std::set<Element>::const_iterator it=eltSet.begin(); it!=eltSet.end(); ++it) {
+          const Element& elt = *it;
+          if (elt.size() != nodesPerElt) continue;   // reported separately below
+          bool inRange = true;
+          for (int i=0; i<nodesPerElt; ++i) {
+            if (elt[i] < 0 || elt[i] >= long(sortedNodes.size())) inRange = false;
+          }
+          if (!inRange) continue;
+
+          // 2D: the one segment. 3D: all three triangle edges.
+          const int nEdges = (nodesPerElt == 2 ? 1 : nodesPerElt);
+          for (int e=0; e<nEdges; ++e) {
+            const Real* pa = sortedNodes[elt[e]]->m_vec;
+            const Real* pb = sortedNodes[elt[(e+1) % nodesPerElt]]->m_vec;
+            Real len2 = 0;
+            for (int d=0; d<AMREX_SPACEDIM; ++d) {
+              len2 += (pb[d]-pa[d])*(pb[d]-pa[d]);
+            }
+            const Real len = std::sqrt(len2);
+            if (len > edgeMax) {
+              nBadEdges++;
+              if (len > worstEdge) {
+                worstEdge = len;
+                for (int d=0; d<AMREX_SPACEDIM; ++d) { worstA[d]=pa[d]; worstB[d]=pb[d]; }
+              }
+            }
+          }
+        }
+
+        if (nBadEdges > 0) {
+          std::cerr << "WARNING: surface check: " << nBadEdges
+                    << " element edge(s) exceed " << edge_length_tol
+                    << " x the finest cell diagonal (" << cellDiag << ").\n"
+                    << "  Longest is " << worstEdge << " ("
+                    << worstEdge/cellDiag << " cell diagonals), from (";
+          for (int d=0; d<AMREX_SPACEDIM; ++d) {
+            std::cerr << worstA[d] << (d+1<AMREX_SPACEDIM ? "," : "");
+          }
+          std::cerr << ") to (";
+          for (int d=0; d<AMREX_SPACEDIM; ++d) {
+            std::cerr << worstB[d] << (d+1<AMREX_SPACEDIM ? "," : "");
+          }
+          std::cerr << ").\n"
+                    << "  No element of a correct iso-surface spans more than one"
+                    << " cell, so any measure reported below is unreliable.\n";
+          bool anyPer = false;
+          for (int d=0; d<AMREX_SPACEDIM; ++d) if (is_per[d]) anyPer = true;
+          if (anyPer) {
+            std::cerr << "  This case is periodic; the known cause is the"
+                      << " periodic-boundary node placement, which is"
+                      << " intermittent across regrids.\n";
+          }
+        }
+
+        // CHECK 2 -- periodic faces carry matching node images.
+        //
+        // After a correct periodic clip, every contour crossing of a periodic
+        // face leaves one node on each face at the same transverse position, so
+        // the two faces' node sets are images of each other. A dropped sliver, a
+        // duplicated piece, a saddle resolved inconsistently between the two
+        // sides, or a resolution mismatch across the seam all break that.
+        //
+        // NOTE this is inactive until the periodic clip is implemented: without
+        // it the contour terminates at the outermost cell centres and no node
+        // lies on a face, so the check has nothing to compare. It says so rather
+        // than passing silently, which would be worse than not checking.
+        for (int d=0; d<AMREX_SPACEDIM; ++d) {
+          if (!is_per[d]) continue;
+
+          const Real faceTol = 1.0e-3 * dxf[d];
+          const Real lo = pf.probLo()[d];
+          const Real hi = pf.probHi()[d];
+
+          // Transverse coordinates of the nodes on each face, sorted so the two
+          // sets can be compared as multisets.
+          // std::vector, not amrex::Vector: std::sort needs operator< on the
+          // element type, and relying on deduction through the base class is an
+          // avoidable risk.
+          std::vector<std::vector<Real>> onLo, onHi;
+          for (long i=0; i<long(sortedNodes.size()); ++i) {
+            const Real* v = sortedNodes[i]->m_vec;
+            std::vector<Real> transverse;
+            for (int e=0; e<AMREX_SPACEDIM; ++e) if (e != d) transverse.push_back(v[e]);
+            if (std::abs(v[d]-lo) < faceTol) onLo.push_back(transverse);
+            if (std::abs(v[d]-hi) < faceTol) onHi.push_back(transverse);
+          }
+
+          if (onLo.empty() && onHi.empty()) {
+            Print() << "Surface check: direction " << d << " is periodic but no"
+                    << " node lies on either face, so the face-image check is"
+                    << " inactive (expected until the periodic clip is"
+                    << " implemented)." << std::endl;
+            continue;
+          }
+
+          if (onLo.size() != onHi.size()) {
+            std::cerr << "WARNING: surface check: direction " << d
+                      << " is periodic but the faces carry different node"
+                      << " counts (" << onLo.size() << " at " << lo << ", "
+                      << onHi.size() << " at " << hi << "). Every crossing"
+                      << " should leave one node on each face.\n";
+            continue;
+          }
+
+          std::sort(onLo.begin(),onLo.end());
+          std::sort(onHi.begin(),onHi.end());
+          Real worstMismatch = 0;
+          for (long i=0; i<long(onLo.size()); ++i) {
+            Real sep2 = 0;
+            for (long e=0; e<long(onLo[i].size()); ++e) {
+              const Real diff = onLo[i][e]-onHi[i][e];
+              sep2 += diff*diff;
+            }
+            worstMismatch = std::max(worstMismatch,std::sqrt(sep2));
+          }
+          // A pairing is acceptable when the partners agree to well inside a
+          // cell; beyond that the two faces are not images of each other.
+          const Real matchTol = 0.5 * cellDiag;
+          if (worstMismatch > matchTol) {
+            std::cerr << "WARNING: surface check: direction " << d
+                      << " is periodic but its face node sets are not images of"
+                      << " each other: worst partner separation "
+                      << worstMismatch << " against a tolerance of "
+                      << matchTol << " (" << onLo.size() << " nodes per face)."
+                      << "\n";
+          } else {
+            Print() << "Surface check: direction " << d << " periodic faces"
+                    << " match, " << onLo.size() << " node(s) per face, worst"
+                    << " separation " << worstMismatch << "." << std::endl;
+          }
+        }
+      }
 
       // Measure of the extracted iso-level: area in 3D (triangles), arc length in
       // 2D (2-node segments).
