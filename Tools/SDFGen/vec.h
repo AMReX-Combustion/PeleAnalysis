@@ -23,45 +23,45 @@ struct Vec
 {
    T v[N];
 
-   Vec<N,T>(void)
+   Vec(void)
    {}
 
-   explicit Vec<N,T>(T value_for_all)
+   explicit Vec(T value_for_all)
    { for(unsigned int i=0; i<N; ++i) v[i]=value_for_all; }
 
    template<class S>
-   explicit Vec<N,T>(const S *source)
+   explicit Vec(const S *source)
    { for(unsigned int i=0; i<N; ++i) v[i]=(T)source[i]; }
 
    template <class S>
-   explicit Vec<N,T>(const Vec<N,S>& source)
+   explicit Vec(const Vec<N,S>& source)
    { for(unsigned int i=0; i<N; ++i) v[i]=(T)source[i]; }
 
-   Vec<N,T>(T v0, T v1)
+   Vec(T v0, T v1)
    {
       assert(N==2);
       v[0]=v0; v[1]=v1;
    }
 
-   Vec<N,T>(T v0, T v1, T v2)
+   Vec(T v0, T v1, T v2)
    {
       assert(N==3);
       v[0]=v0; v[1]=v1; v[2]=v2;
    }
 
-   Vec<N,T>(T v0, T v1, T v2, T v3)
+   Vec(T v0, T v1, T v2, T v3)
    {
       assert(N==4);
       v[0]=v0; v[1]=v1; v[2]=v2; v[3]=v3;
    }
 
-   Vec<N,T>(T v0, T v1, T v2, T v3, T v4)
+   Vec(T v0, T v1, T v2, T v3, T v4)
    {
       assert(N==5);
       v[0]=v0; v[1]=v1; v[2]=v2; v[3]=v3; v[4]=v4;
    }
 
-     Vec<N,T>(T v0, T v1, T v2, T v3, T v4, T v5)
+     Vec(T v0, T v1, T v2, T v3, T v4, T v5)
    {
       assert(N==6);
       v[0]=v0; v[1]=v1; v[2]=v2; v[3]=v3; v[4]=v4; v[5]=v5;
