@@ -26,8 +26,10 @@ print_usage(int, char* argv[])
 
     << "Required arguments:\n"
     << "  infile=FILE             AMReX plotfile holding the training data\n"
-    << "  infiles=\"F1 F2 ...\"     Several plotfiles, pooled into one training\n"
-    << "                          set for a joint fit (give instead of infile)\n"
+    << "  infiles=\"F1 F2 ...\"     Several plotfiles, pooled into one "
+       "training\n"
+    << "                          set for a joint fit (give instead of "
+       "infile)\n"
     << "  features=\"VAR1 ...\"     Conditioning variables (network inputs)\n"
     << "  targets=\"VAR1 ...\"      Variables whose conditional mean is "
        "sought\n"
