@@ -26,6 +26,8 @@ print_usage(int, char* argv[])
 
     << "Required arguments:\n"
     << "  infile=FILE             AMReX plotfile holding the training data\n"
+    << "  infiles=\"F1 F2 ...\"     Several plotfiles, pooled into one training\n"
+    << "                          set for a joint fit (give instead of infile)\n"
     << "  features=\"VAR1 ...\"     Conditioning variables (network inputs)\n"
     << "  targets=\"VAR1 ...\"      Variables whose conditional mean is "
        "sought\n"
@@ -148,16 +150,25 @@ main(int argc, char* argv[])
       torch::set_num_threads(1);
     }
 
-    // Open plotfile header and create an amrData object pointing into it
-    std::string plotFileName;
-    pp.get("infile", plotFileName);
+    // Training data: one plotfile with infile=, or several with infiles=. The
+    // cells of every file are pooled into a single training set, so that one
+    // estimator can be fitted jointly over a set of cases. The files need not
+    // share a grid, a domain or a level count - a sample is a cell, and cells
+    // only ever enter through their value and their volume - but every one of
+    // them must carry all of the features and targets named below.
+    Vector<std::string> plotFileNames;
+    if (pp.countval("infiles") > 0) {
+      pp.getarr("infiles", plotFileNames);
+    } else {
+      std::string plotFileName;
+      pp.get("infile", plotFileName);
+      plotFileNames = {plotFileName};
+    }
+    const int nFiles = static_cast<int>(plotFileNames.size());
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+      nFiles > 0, "Give at least one plotfile with infile= or infiles=");
     DataServices::SetBatchMode();
     Amrvis::FileType fileType(Amrvis::NEWPLT);
-    DataServices dataServices(plotFileName, fileType);
-    if (!dataServices.AmrDataOk()) {
-      DataServices::Dispatch(DataServices::ExitRequest, NULL);
-    }
-    AmrData& amrData = dataServices.AmrDataRef();
 
     // Set up input field data names, and destination components to load data
     // upon read.
@@ -185,20 +196,18 @@ main(int argc, char* argv[])
       destFillComps[n + nFeatures] = n + nFeatures;
     }
 
-    // Loop over AMR levels in the plotfile, read the data and do work
-    int finestLevel = amrData.FinestLevel();
+    // Level range. finestLevel is a cap rather than a level count: a file that
+    // holds fewer levels is used whole, so cases refined to different depths
+    // can still be trained on together.
+    int finestLevelCap = std::numeric_limits<int>::max();
     int minLevel = 0;
-    pp.query("finestLevel", finestLevel);
-    finestLevel = std::min(finestLevel, amrData.FinestLevel());
+    pp.query("finestLevel", finestLevelCap);
     pp.query("minLevel", minLevel);
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-      minLevel >= 0 && minLevel <= finestLevel,
-      "minLevel must lie between 0 and finestLevel");
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(minLevel >= 0, "minLevel must be >= 0");
 
     std::string path = "optimal_estimator";
     pp.query("model_path", path);
     path += ".pt";
-    int Nlev = finestLevel + 1;
     const int nGrow = 0;
     int n_layers = pp.countval("neurons");
     Vector<int> neurons(n_layers);
@@ -220,8 +229,6 @@ main(int argc, char* argv[])
     Vector<Real> t_max(nTargets, std::numeric_limits<Real>::lowest());
     Vector<Real> t_min(nTargets, std::numeric_limits<Real>::max());
 
-    Vector<MultiFab> indata(Nlev);
-
     // A coarse cell that lies under a finer level is not an independent
     // sample: it covers the same physical region as the fine cells that
     // replace it, and its value is whatever the plotfile happens to carry
@@ -231,86 +238,144 @@ main(int argc, char* argv[])
     // volume. makeFineMask flags exactly those covered cells, so only the
     // uncovered ones - the same set AMReX itself uses for a volume average -
     // are kept below.
-    Vector<iMultiFab> validMask(Nlev);
-
-    for (int lev = minLevel; lev < Nlev; lev++) {
-      // Get the array of boxes for this level
-      const BoxArray ba = amrData.boxArray(lev);
-      // Distribution mapping i.e. how are boxes distributed across processors
-      const DistributionMapping dm(ba);
-
-      indata[lev].define(ba, dm, nCompIn, nGrow);
-      Print() << "Reading data for level " << lev << std::endl;
-      amrData.FillVar(indata[lev], lev, inNames, destFillComps); // magic IO
-                                                                 // call
-      Print() << "Data has been read for level " << lev << std::endl;
-
-      if (lev < finestLevel) {
-        // 1 where the cell is uncovered and usable, 0 where a finer level
-        // takes over. The finer level is the one requested here, not
-        // necessarily the finest in the file: with finestLevel=N the level-N
-        // data is used whole, exactly as if the file stopped there.
-        const int rr = amrData.RefRatio()[lev];
-        validMask[lev] = makeFineMask(
-          ba, dm, amrData.boxArray(lev + 1), IntVect(AMREX_D_DECL(rr, rr, rr)),
+    //
+    // The finer level is the one requested, not necessarily the finest in the
+    // file: with finestLevel=N the level-N data is used whole, exactly as if
+    // the file stopped there.
+    auto makeValidMask = [&](
+                           AmrData& ad, int lev, int fLev, const BoxArray& ba,
+                           const DistributionMapping& dm) {
+      iMultiFab mask;
+      if (lev < fLev) {
+        const int rr = ad.RefRatio()[lev];
+        mask = makeFineMask(
+          ba, dm, ad.boxArray(lev + 1), IntVect(AMREX_D_DECL(rr, rr, rr)),
           /*crse_value=*/1, /*fine_value=*/0);
       } else {
-        validMask[lev].define(ba, dm, 1, nGrow);
-        validMask[lev].setVal(1);
+        mask.define(ba, dm, 1, nGrow);
+        mask.setVal(1);
       }
-    }
+      return mask;
+    };
 
-    // A box is identified globally by its level and its index into that
-    // level's BoxArray. The BoxArray comes from the plotfile header and is the
-    // same on every rank whatever the distribution mapping, and MFIter::index()
-    // is the index into it, so this numbering does not depend on how many ranks
-    // the job runs on. The train/validation split below is built on it.
-    Vector<int> levOffset(Nlev, 0);
+    // What each input file contributes: the levels taken from it, where its
+    // boxes sit in the global numbering, and the volume weight of each level.
+    // Settled in the inventory pass below and reused when the data is staged.
+    struct FileInfo
+    {
+      int finestLevel = 0;
+      Vector<int> levOffset;  // global index of box 0 of each level
+      Vector<Real> levWeight; // cell volume relative to a finest-level cell
+    };
+    Vector<FileInfo> fileInfo(nFiles);
+
+    // A conditional mean is an average over volume, but a cell is one sample
+    // whatever its size, so on a multi-level set the fit would be pulled
+    // towards the refined regions: they contribute r^DIM samples where the
+    // unrefined ones contribute a single, physically much larger, cell. Giving
+    // every sample the volume of its cell as a weight in the loss restores the
+    // volume average, and the network then converges on the conditional mean
+    // rather than on a cell-count-weighted approximation to it. The weights are
+    // expressed relative to a finest-level cell; on a single level they are all
+    // 1 and the weighted loss reduces exactly to the unweighted one.
+    //
+    // Across files the reference is each file's own finest cell. A case then
+    // enters a joint fit weighted by its domain measured in its own finest
+    // cells, so that cases covering comparable regions carry comparable weight
+    // instead of the more finely resolved one dominating through cell count.
+    int volume_weight = 1;
+    pp.query("volume_weight", volume_weight);
+
+    // ----------------------------------------------------------------------
+    // Inventory pass: level ranges, box numbering and usable cells per box.
+    //
+    // The train/validation split is drawn over the boxes of every file at once,
+    // so it cannot be made before all of them have been seen - and staging a
+    // cell requires knowing which side of the split its box fell on. Only
+    // headers and box arrays are touched here; FillVar, the expensive call,
+    // runs once per file, in the staging pass.
+    // ----------------------------------------------------------------------
+    Vector<Long> boxCells; // uncovered cells per box, in the global numbering
     int nBoxesGlobal = 0;
-    for (int lev = minLevel; lev < Nlev; lev++) {
-      levOffset[lev] = nBoxesGlobal;
-      nBoxesGlobal += amrData.boxArray(lev).size();
-    }
-
-    // Normalisation bounds over the uncovered cells only, so that they
-    // describe exactly the data the network is trained on. The number of
-    // uncovered cells per box is collected in the same sweep.
     Long nValidLocal = 0;
     Long nCoveredLocal = 0;
-    Vector<Long> boxCells(nBoxesGlobal, 0);
-    for (int lev = minLevel; lev < Nlev; lev++) {
-      for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
-        Array4<const Real> const& fab = indata[lev].const_array(mfi);
-        Array4<const int> const& msk = validMask[lev].const_array(mfi);
 
-        Long nValidBox = 0;
-        amrex::LoopOnCpu(
-          amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
-            if (msk(i, j, k) == 0) {
-              nCoveredLocal++;
-              return;
-            }
-            nValidBox++;
-            for (int nv = 0; nv < nFeatures; nv++) {
-              f_max[nv] = std::max(f_max[nv], fab(i, j, k, nv));
-              f_min[nv] = std::min(f_min[nv], fab(i, j, k, nv));
-            }
-            for (int nv = 0; nv < nTargets; nv++) {
-              const Real v = fab(i, j, k, nv + nFeatures);
-              t_max[nv] = std::max(t_max[nv], v);
-              t_min[nv] = std::min(t_min[nv], v);
-            }
-          });
-        boxCells[levOffset[lev] + mfi.index()] = nValidBox;
-        nValidLocal += nValidBox;
+    for (int f = 0; f < nFiles; f++) {
+      DataServices dataServices(plotFileNames[f], fileType);
+      if (!dataServices.AmrDataOk()) {
+        DataServices::Dispatch(DataServices::ExitRequest, NULL);
+      }
+      AmrData& amrData = dataServices.AmrDataRef();
+
+      FileInfo& fi = fileInfo[f];
+      fi.finestLevel = std::min(finestLevelCap, amrData.FinestLevel());
+      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        minLevel <= fi.finestLevel,
+        "minLevel is above the finest level of " + plotFileNames[f]);
+      const int Nlev = fi.finestLevel + 1;
+      fi.levOffset.resize(Nlev, 0);
+      fi.levWeight.resize(Nlev, 1.0);
+
+      if (volume_weight) {
+        Real vFinest = 1.0;
+        for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
+          vFinest *= amrData.DxLevel()[fi.finestLevel][idim];
+        }
+        for (int lev = minLevel; lev < Nlev; lev++) {
+          Real v = 1.0;
+          for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
+            v *= amrData.DxLevel()[lev][idim];
+          }
+          fi.levWeight[lev] = v / vFinest;
+          if (lev < fi.finestLevel) {
+            Print() << plotFileNames[f] << ": level " << lev
+                    << " cells carry weight " << fi.levWeight[lev]
+                    << " in the loss (volume relative to a level-"
+                    << fi.finestLevel << " cell)" << std::endl;
+          }
+        }
+      } else if (minLevel < fi.finestLevel) {
+        Print() << "\n*** WARNING: volume_weight=0 with minLevel < "
+                   "finestLevel.\n"
+                << "    Every cell counts once regardless of its size, so the "
+                   "fit is weighted by\n"
+                << "    cell count instead of by volume and is not the "
+                   "conditional mean.\n\n";
+      }
+
+      // A box is identified globally by its file, its level and its index into
+      // that level's BoxArray. The BoxArray comes from the plotfile header and
+      // is the same on every rank whatever the distribution mapping, and
+      // MFIter::index() is the index into it, so this numbering does not depend
+      // on how many ranks the job runs on. The split below is built on it.
+      for (int lev = minLevel; lev < Nlev; lev++) {
+        const BoxArray ba = amrData.boxArray(lev);
+        const DistributionMapping dm(ba);
+        fi.levOffset[lev] = nBoxesGlobal;
+        nBoxesGlobal += ba.size();
+        boxCells.resize(nBoxesGlobal, 0);
+
+        const iMultiFab mask =
+          makeValidMask(amrData, lev, fi.finestLevel, ba, dm);
+        for (MFIter mfi(mask); mfi.isValid(); ++mfi) {
+          const Box& bx = mfi.validbox();
+          Array4<const int> const& msk = mask.const_array(mfi);
+
+          Long nValidBox = 0;
+          amrex::LoopOnCpu(
+            amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
+              if (msk(i, j, k) == 0) {
+                nCoveredLocal++;
+                return;
+              }
+              nValidBox++;
+            });
+          boxCells[fi.levOffset[lev] + mfi.index()] = nValidBox;
+          nValidLocal += nValidBox;
+        }
       }
     }
-    // The loop above is per rank; make the bounds global.
-    ParallelDescriptor::ReduceRealMax(f_max.dataPtr(), nFeatures);
-    ParallelDescriptor::ReduceRealMin(f_min.dataPtr(), nFeatures);
-    ParallelDescriptor::ReduceRealMax(t_max.dataPtr(), nTargets);
-    ParallelDescriptor::ReduceRealMin(t_min.dataPtr(), nTargets);
+
     // Each box is owned by exactly one rank and the others left its slot at
     // zero, so summing hands every rank the cell count of every box.
     ParallelDescriptor::ReduceLongSum(boxCells.dataPtr(), nBoxesGlobal);
@@ -324,28 +389,11 @@ main(int argc, char* argv[])
         nValidGlobal > 0,
         "Every cell between minLevel and finestLevel is covered by a finer "
         "level; there is nothing to train on.");
-      Print() << "Cells on levels " << minLevel << "-" << finestLevel << ": "
-              << nValidGlobal + nCoveredGlobal << ", of which "
-              << nCoveredGlobal
+      Print() << "Cells on levels " << minLevel << " and up of " << nFiles
+              << " plotfile(s): " << nValidGlobal + nCoveredGlobal
+              << ", of which " << nCoveredGlobal
               << " are covered by a finer level and are skipped, leaving "
               << nValidGlobal << " samples." << std::endl;
-    }
-
-    for (int nv = 0; nv < nFeatures; nv++) {
-      Print() << "f_min[" << nv << "] = " << f_min[nv] << ", f_max[" << nv
-              << "] = " << f_max[nv] << std::endl;
-      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        f_max[nv] > f_min[nv],
-        "Feature is constant over the data set; normalisation would divide by "
-        "zero. Remove it from the feature list.");
-    }
-    for (int nv = 0; nv < nTargets; nv++) {
-      Print() << "t_min[" << nv << "] = " << t_min[nv] << ", t_max[" << nv
-              << "] = " << t_max[nv] << std::endl;
-      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        t_max[nv] > t_min[nv],
-        "Target is constant over the data set; normalisation would divide by "
-        "zero.");
     }
 
     // Split the boxes into a training and a validation set. Splitting on whole
@@ -393,87 +441,120 @@ main(int argc, char* argv[])
             << " for training and " << nUsableBoxes - nTrainBoxes
             << " for validation." << std::endl;
 
-    // A conditional mean is an average over volume, but a cell is one sample
-    // whatever its size, so on a multi-level set the fit would be pulled
-    // towards the refined regions: they contribute r^DIM samples where the
-    // unrefined ones contribute a single, physically much larger, cell. Giving
-    // every sample the volume of its cell as a weight in the loss restores the
-    // volume average, and the network then converges on the conditional mean
-    // rather than on a cell-count-weighted approximation to it. The weights are
-    // expressed relative to a finest-level cell; on a single level they are all
-    // 1 and the weighted loss reduces exactly to the unweighted one.
-    int volume_weight = 1;
-    pp.query("volume_weight", volume_weight);
-    Vector<Real> levWeight(Nlev, 1.0);
-    if (volume_weight) {
-      Real vFinest = 1.0;
-      for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
-        vFinest *= amrData.DxLevel()[finestLevel][idim];
-      }
-      for (int lev = minLevel; lev < Nlev; lev++) {
-        Real v = 1.0;
-        for (int idim = 0; idim < AMREX_SPACEDIM; idim++) {
-          v *= amrData.DxLevel()[lev][idim];
-        }
-        levWeight[lev] = v / vFinest;
-        if (lev < finestLevel) {
-          Print() << "Level " << lev << " cells carry weight " << levWeight[lev]
-                  << " in the loss (volume relative to a level-" << finestLevel
-                  << " cell)" << std::endl;
-        }
-      }
-    } else if (minLevel < finestLevel) {
-      Print() << "\n*** WARNING: volume_weight=0 with minLevel < finestLevel.\n"
-              << "    Every cell counts once regardless of its size, so the "
-                 "fit is weighted by\n"
-              << "    cell count instead of by volume and is not the "
-                 "conditional mean.\n\n";
-    }
-
-    // Stage all cells into contiguous host buffers, normalised onto [-1,1].
-    // Building one large block rather than one small tensor per box is what
-    // makes the mini-batches big enough to be worth dispatching.
+    // ----------------------------------------------------------------------
+    // Staging pass: read each file once and copy its usable cells into
+    // contiguous host buffers. Building one large block rather than one small
+    // tensor per box is what makes the mini-batches big enough to be worth
+    // dispatching. A level is released as soon as it has been staged, so only
+    // one level of one file is ever held alongside the buffers.
+    //
+    // Values are staged raw and normalised once the loop is over: the bounds
+    // are only complete after the last file, and keeping every file in memory
+    // to revisit it afterwards is exactly what this pass avoids.
+    // ----------------------------------------------------------------------
     std::vector<Real> trainFeat, trainTarg, trainW, valFeat, valTarg, valW;
     trainFeat.reserve(nValidLocal * nFeatures);
     trainTarg.reserve(nValidLocal * nTargets);
     trainW.reserve(nValidLocal);
 
-    for (int lev = minLevel; lev < Nlev; lev++) {
-      const Real w = levWeight[lev];
-      for (MFIter mfi(indata[lev]); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
-        Array4<Real> const& fab = indata[lev].array(mfi);
-        Array4<const int> const& msk = validMask[lev].const_array(mfi);
+    for (int f = 0; f < nFiles; f++) {
+      DataServices dataServices(plotFileNames[f], fileType);
+      if (!dataServices.AmrDataOk()) {
+        DataServices::Dispatch(DataServices::ExitRequest, NULL);
+      }
+      AmrData& amrData = dataServices.AmrDataRef();
+      const FileInfo& fi = fileInfo[f];
 
-        const bool train = isTrainBox[levOffset[lev] + mfi.index()] != 0;
-        std::vector<Real>& fOut = train ? trainFeat : valFeat;
-        std::vector<Real>& tOut = train ? trainTarg : valTarg;
-        std::vector<Real>& wOut = train ? trainW : valW;
+      for (int lev = minLevel; lev <= fi.finestLevel; lev++) {
+        // Get the array of boxes for this level
+        const BoxArray ba = amrData.boxArray(lev);
+        // Distribution mapping i.e. how are boxes distributed across processors
+        const DistributionMapping dm(ba);
 
-        amrex::LoopOnCpu(
-          amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
-            if (msk(i, j, k) == 0) {
-              return; // covered by a finer level, already sampled there
-            }
-            wOut.push_back(w);
-            for (int n = 0; n < nFeatures; n++) {
-              fOut.push_back(
-                -1.0 +
-                2.0 * (fab(i, j, k, n) - f_min[n]) / (f_max[n] - f_min[n]));
-            }
-            for (int n = 0; n < nTargets; n++) {
-              tOut.push_back(
-                -1.0 + 2.0 * (fab(i, j, k, n + nFeatures) - t_min[n]) /
-                         (t_max[n] - t_min[n]));
-            }
-          });
+        MultiFab indata(ba, dm, nCompIn, nGrow);
+        Print() << "Reading data for level " << lev << " of "
+                << plotFileNames[f] << std::endl;
+        amrData.FillVar(indata, lev, inNames, destFillComps); // magic IO call
+        Print() << "Data has been read for level " << lev << std::endl;
+
+        const iMultiFab mask =
+          makeValidMask(amrData, lev, fi.finestLevel, ba, dm);
+        const Real w = fi.levWeight[lev];
+
+        for (MFIter mfi(indata); mfi.isValid(); ++mfi) {
+          const Box& bx = mfi.validbox();
+          Array4<const Real> const& fab = indata.const_array(mfi);
+          Array4<const int> const& msk = mask.const_array(mfi);
+
+          const bool train = isTrainBox[fi.levOffset[lev] + mfi.index()] != 0;
+          std::vector<Real>& fOut = train ? trainFeat : valFeat;
+          std::vector<Real>& tOut = train ? trainTarg : valTarg;
+          std::vector<Real>& wOut = train ? trainW : valW;
+
+          amrex::LoopOnCpu(
+            amrex::lbound(bx), amrex::ubound(bx), [&](int i, int j, int k) {
+              if (msk(i, j, k) == 0) {
+                return; // covered by a finer level, already sampled there
+              }
+              wOut.push_back(w);
+              for (int n = 0; n < nFeatures; n++) {
+                const Real v = fab(i, j, k, n);
+                f_max[n] = std::max(f_max[n], v);
+                f_min[n] = std::min(f_min[n], v);
+                fOut.push_back(v);
+              }
+              for (int n = 0; n < nTargets; n++) {
+                const Real v = fab(i, j, k, n + nFeatures);
+                t_max[n] = std::max(t_max[n], v);
+                t_min[n] = std::min(t_min[n], v);
+                tOut.push_back(v);
+              }
+            });
+        }
       }
     }
 
-    // The plotfile data is no longer needed; release it before allocating the
-    // tensors so the two copies never coexist.
-    indata.clear();
-    validMask.clear();
+    // Normalisation bounds over the uncovered cells of every file, so that they
+    // describe exactly the data the network is trained on. The sweep above is
+    // per rank; make the bounds global.
+    ParallelDescriptor::ReduceRealMax(f_max.dataPtr(), nFeatures);
+    ParallelDescriptor::ReduceRealMin(f_min.dataPtr(), nFeatures);
+    ParallelDescriptor::ReduceRealMax(t_max.dataPtr(), nTargets);
+    ParallelDescriptor::ReduceRealMin(t_min.dataPtr(), nTargets);
+
+    for (int nv = 0; nv < nFeatures; nv++) {
+      Print() << "f_min[" << nv << "] = " << f_min[nv] << ", f_max[" << nv
+              << "] = " << f_max[nv] << std::endl;
+      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        f_max[nv] > f_min[nv],
+        "Feature is constant over the data set; normalisation would divide by "
+        "zero. Remove it from the feature list.");
+    }
+    for (int nv = 0; nv < nTargets; nv++) {
+      Print() << "t_min[" << nv << "] = " << t_min[nv] << ", t_max[" << nv
+              << "] = " << t_max[nv] << std::endl;
+      AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        t_max[nv] > t_min[nv],
+        "Target is constant over the data set; normalisation would divide by "
+        "zero.");
+    }
+
+    // Onto [-1,1], now that the bounds are those of the whole training set.
+    // One estimator is fitted over all of the files, so they share one set of
+    // bounds - and optimalEstimatorInfer, which reads them back from the minmax
+    // file, then maps every case through the same transformation.
+    auto normalise = [](
+                       std::vector<Real>& v, const Vector<Real>& lo,
+                       const Vector<Real>& hi, int nCol) {
+      for (size_t i = 0; i < v.size(); i++) {
+        const int n = (int)(i % (size_t)nCol);
+        v[i] = -1.0 + 2.0 * (v[i] - lo[n]) / (hi[n] - lo[n]);
+      }
+    };
+    normalise(trainFeat, f_min, f_max, nFeatures);
+    normalise(valFeat, f_min, f_max, nFeatures);
+    normalise(trainTarg, t_min, t_max, nTargets);
+    normalise(valTarg, t_min, t_max, nTargets);
 
     const int64_t nTrainLocal = (int64_t)trainTarg.size() / nTargets;
     const int64_t nValLocal = (int64_t)valTarg.size() / nTargets;

@@ -149,6 +149,17 @@ Shared Parameters
    Path to the input AMReX plotfile. It must contain every field named in
    ``features`` and ``targets``.
 
+``infiles`` (training only)
+   Several such plotfiles, space separated, given instead of ``infile``. Their
+   cells are pooled into one training set, so that a single estimator is fitted
+   jointly over a set of cases. The files need not share a grid, a domain or a
+   level count, but each must carry every field named in ``features`` and
+   ``targets``, and the normalisation bounds written to ``minmax_path`` are
+   those of the pooled set. ``finestLevel`` acts as a cap here: a file holding
+   fewer levels is used whole. Cell volume weights are taken relative to each
+   file's own finest cell, so a case enters the fit with the weight of its
+   domain measured in its own finest cells.
+
 ``features``
    Names of the conditioning variables :math:`\mathbf{q}`, e.g.
    ``progVar Z``. The network input layer has one node per feature.
