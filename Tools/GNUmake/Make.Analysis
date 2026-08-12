@@ -63,6 +63,50 @@ ifeq ($(NEED_QSLIM),TRUE)
   VPATH_LOCATIONS += $(QSLIM_TOOL)
 endif
 
+ifeq ($(NEED_PYTORCH),TRUE)
+  # 1. ATTEMPT TO FIND SYSTEM PYTORCH FIRST
+  # If "import torch" works, reuse that installation's headers and libraries.
+  TORCH_CHECK := $(shell python3 -c "import torch; print(torch.__file__)" 2>/dev/null)
+
+  ifneq ($(TORCH_CHECK),)
+    # --- OPTION A: USE SYSTEM MODULE / PYTHON ENVIRONMENT ---
+    $(info Using PyTorch from system module/Python environment)
+    PYTORCH_ROOT := $(shell python3 -c "import torch, os; print(os.path.dirname(torch.__file__))")
+    TORCH_LIBPATH = $(PYTORCH_ROOT)/lib
+    INCLUDE_LOCATIONS += $(PYTORCH_ROOT)/include $(PYTORCH_ROOT)/include/torch/csrc/api/include
+  else
+    # --- OPTION B: STANDALONE LIBTORCH (run "make pytorch" once) ---
+    $(info PyTorch not importable. Falling back to standalone libtorch in Tools/libtorch)
+
+    PYTORCH_ROOT = $(PELE_ANALYSIS_HOME)/Tools/libtorch
+    TORCH_LIBPATH = $(PYTORCH_ROOT)/lib
+    INCLUDE_LOCATIONS += $(PYTORCH_ROOT)/include $(PYTORCH_ROOT)/include/torch/csrc/api/include
+  endif
+
+  # Architecture-aware download logic for the "make pytorch" target below.
+  # Defined unconditionally so "make pytorch" works even when a system torch
+  # is importable but you want a standalone libtorch anyway.
+  ARCH := $(shell uname -m)
+  ifeq ($(USE_CUDA),TRUE)
+    PYTORCH_VERSION = cu126
+  else
+    PYTORCH_VERSION = cpu
+  endif
+
+  ifeq ($(ARCH),aarch64)
+    ZIPFILE = libtorch-cxx11-abi-shared-with-deps-2.7.0-aarch64+$(PYTORCH_VERSION).zip
+  else
+    ZIPFILE = libtorch-cxx11-abi-shared-with-deps-2.7.0+$(PYTORCH_VERSION).zip
+  endif
+  ZIPLINK = $(subst +,%2B,$(ZIPFILE))
+
+  # 2. SHARED LINKING LOGIC (applies to both options above)
+  TORCH_LIBS = -ltorch -ltorch_cpu -lc10
+  LIBRARY_LOCATIONS += $(TORCH_LIBPATH)
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=1
+  LDFLAGS += -L$(TORCH_LIBPATH) -Wl,--no-as-needed,-rpath=$(TORCH_LIBPATH) $(TORCH_LIBS)
+endif
+
 #-------------------
 # PelePhysics sources
 #-------------------
@@ -106,6 +150,12 @@ qslimclean:
 	@echo "==> Removing qslim library"
 	@cd $(QSLIM_LOC)/libgfx/src; $(MAKE) clean
 	@cd $(QSLIM_LOC)/mixkit/src; $(MAKE) clean
+
+pytorch:
+	@echo "==> Downloading libtorch ($(ZIPFILE))..."
+	@cd $(PELE_ANALYSIS_HOME)/Tools && \
+	  wget https://download.pytorch.org/libtorch/$(PYTORCH_VERSION)/$(ZIPLINK) && \
+	  unzip $(ZIPFILE) && rm $(ZIPFILE)
 
 #-----------------------------------------------------------------------------
 # for debugging.  To see the value of a Makefile variable,

@@ -1,0 +1,24 @@
+# Example input file for optimalEstimatorInfer
+#
+# Evaluates a network trained by optimalEstimatorTraining at every cell and
+# writes the target, the conditional estimate and the squared residual.
+# features, targets and neurons MUST match the training run.
+
+#------------------- IO CONTROL -----------------------------------------------------------
+infile = plt00000                          # Input pltfile to evaluate the estimator on
+outfile = plt00000_OE                      # DEF: <infile basename>_OE; output pltfile name
+model_path = optimal_estimator             # DEF: optimal_estimator; ".pt" is appended
+minmax_path = minmax                       # DEF: minmax; ".bin" is appended. Must be the file
+                                           # written by the corresponding training run
+
+#------------------- Data selection -------------------------------------------------------
+features = temp density                    # Conditioning variables; must match training
+targets = I_R(prog)                        # Estimated fields; must match training
+finestLevel = 1000                         # DEF: finest level in file; finest AMR level used
+is_per = 1 1 1                             # DEF: 1 1 1; periodicity flags per dimension,
+                                           # used only to build the output geometry
+
+#------------------- Network architecture -------------------------------------------------
+neurons = 6 12 8                           # Must match the training run; the architecture is
+                                           # not stored in the checkpoint and is rebuilt from
+                                           # this list before the weights are loaded
