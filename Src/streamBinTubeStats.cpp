@@ -1241,12 +1241,11 @@ writeSurfaceTecplot(
   int fds = nElts * static_cast<int>(AMREX_SPACEDIM);
 
   for (int iElt = 1; iElt < fds;) {
-    os << iElt << " ";
-    ++iElt;
-    os << iElt++ << " ";
-    ++iElt;
-    os << iElt++ << std::endl;
-    ++iElt;
+    os << iElt++ << " " << iElt++
+#if AMREX_SPACEDIM == 3
+       << " " << iElt++
+#endif    
+       << std::endl;
   }
 
   os.close();
